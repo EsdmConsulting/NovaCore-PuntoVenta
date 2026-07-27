@@ -1,0 +1,34 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Colores principales de NovaCoreESDM -->
+
+    <Color x:Key="NovaBlue950">#050B2E</Color>
+    <Color x:Key="NovaBlue900">#081442</Color>
+    <Color x:Key="NovaBlue800">#0D2366</Color>
+    <Color x:Key="NovaBlue700">#123A9E</Color>
+    <Color x:Key="NovaBlue600">#1857D2</Color>
+    <Color x:Key="NovaBlue500">#2474F5</Color>
+
+    <Color x:Key="NovaWhite">#FFFFFF</Color>
+    <Color x:Key="NovaTextSoft">#C7D5F4</Color>
+
+    <SolidColorBrush x:Key="NovaBlue950Brush"
+                     Color="{StaticResource NovaBlue950}" />
+
+    <SolidColorBrush x:Key="NovaBlue900Brush"
+                     Color="{StaticResource NovaBlue900}" />
+
+    <SolidColorBrush x:Key="NovaBlue800Brush"
+                     Color="{StaticResource NovaBlue800}" />
+
+    <SolidColorBrush x:Key="NovaBlue600Brush"
+                     Color="{StaticResource NovaBlue600}" />
+
+    <SolidColorBrush x:Key="NovaWhiteBrush"
+                     Color="{StaticResource NovaWhite}" />
+
+    <SolidColorBrush x:Key="NovaTextSoftBrush"
+                     Color="{StaticResource NovaTextSoft}" />
+
+</ResourceDictionary>

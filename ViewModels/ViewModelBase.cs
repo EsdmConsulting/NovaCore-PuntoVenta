@@ -1,7 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace POS.Desktop.ViewModels;
+namespace NovaCoreESDM.ViewModels;
 
 public abstract class ViewModelBase : ObservableObject
 {
+    
 }

@@ -1,22 +1,544 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:POS.Desktop.ViewModels"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="POS.Desktop.Views.MainWindow"
+        xmlns:vm="using:NovaCoreESDM.ViewModels"
+        xmlns:controls="using:NovaCoreESDM.Controls"
+        x:Class="NovaCoreESDM.Views.MainWindow"
         x:DataType="vm:MainViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="POS.Desktop">
+        Title="NovaCoreESDM - Punto de Venta"
+        Width="1380"
+        Height="820"
+        MinWidth="1050"
+        MinHeight="650"
+        WindowStartupLocation="CenterScreen"
+        Background="#F3F6FB">
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainViewModel />
-    </Design.DataContext>
+    <Grid ColumnDefinitions="250,*">
 
-    <TextBox Text="{Binding Greeting}"
-             HorizontalAlignment="Center"
-             VerticalAlignment="Center" />
+        <!-- MENÚ LATERAL -->
+        <Border Grid.Column="0"
+                Background="{StaticResource NovaBlue950Brush}">
 
+            <Grid RowDefinitions="Auto,*,Auto">
+
+                <!-- Identidad del sistema -->
+                <StackPanel Grid.Row="0"
+                            Margin="24,28,24,24"
+                            Spacing="6">
+
+                    <controls:EsdmLogo/>
+                    
+
+                    <TextBlock Text="NovaCoreESDM"
+                               Foreground="White"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Margin="0,10,0,0"/>
+
+                    <TextBlock Text="Punto de Venta"
+                               Foreground="{StaticResource NovaTextSoftBrush}"
+                               FontSize="12"/>
+                </StackPanel>
+
+                <!-- Navegación -->
+                <ScrollViewer Grid.Row="1"
+                              VerticalScrollBarVisibility="Auto">
+
+                    <StackPanel Margin="14,5"
+                                Spacing="3">
+
+                        <TextBlock Text="MENÚ PRINCIPAL"
+                                   Foreground="#8297C4"
+                                   FontSize="10"
+                                   FontWeight="SemiBold"
+                                   Margin="14,0,0,8"/>
+
+                        <Button Classes="menuItem active">
+                            <Grid ColumnDefinitions="24,*">
+                                <TextBlock Text="⌂"
+                                           FontSize="15"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="Inicio"
+                                           Margin="12,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+
+                        <Button Classes="menuItem">
+                            <Grid ColumnDefinitions="24,*">
+                                <TextBlock Text="▣"
+                                           FontSize="14"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="Ventas"
+                                           Margin="12,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+
+                        <Button Classes="menuItem">
+                            <Grid ColumnDefinitions="24,*">
+                                <TextBlock Text="□"
+                                           FontSize="15"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="Productos"
+                                           Margin="12,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+
+                        <Button Classes="menuItem">
+                            <Grid ColumnDefinitions="24,*">
+                                <TextBlock Text="▤"
+                                           FontSize="14"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="Inventario"
+                                           Margin="12,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+
+                        <Button Classes="menuItem">
+                            <Grid ColumnDefinitions="24,*">
+                                <TextBlock Text="♙"
+                                           FontSize="15"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="Clientes"
+                                           Margin="12,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+
+                        <Button Classes="menuItem">
+                            <Grid ColumnDefinitions="24,*">
+                                <TextBlock Text="$"
+                                           FontSize="15"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="Caja"
+                                           Margin="12,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+
+                        <Button Classes="menuItem">
+                            <Grid ColumnDefinitions="24,*">
+                                <TextBlock Text="▥"
+                                           FontSize="14"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="Reportes"
+                                           Margin="12,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+
+                        <TextBlock Text="SISTEMA"
+                                   Foreground="#8297C4"
+                                   FontSize="10"
+                                   FontWeight="SemiBold"
+                                   Margin="14,22,0,8"/>
+
+                        <Button Classes="menuItem">
+                            <Grid ColumnDefinitions="24,*">
+                                <TextBlock Text="⚙"
+                                           FontSize="14"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock Grid.Column="1"
+                                           Text="Configuración"
+                                           Margin="12,0,0,0"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </Button>
+                        
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Estado inferior -->
+                <Border Grid.Row="2"
+                        Margin="17"
+                        Padding="14"
+                        CornerRadius="12"
+                        Background="#12FFFFFF">
+
+                    <StackPanel Spacing="5">
+
+                        <TextBlock Text="Estado del sistema"
+                                   Foreground="White"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"/>
+
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="8">
+
+                            <Border Width="8"
+                                    Height="8"
+                                    CornerRadius="4"
+                                    Background="#4ADE80"
+                                    VerticalAlignment="Center"/>
+
+                            <TextBlock Text="Disponible sin conexión"
+                                       Foreground="{StaticResource NovaTextSoftBrush}"
+                                       FontSize="11"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- ÁREA PRINCIPAL -->
+        <Grid Grid.Column="1"
+              RowDefinitions="76,*">
+
+            <!-- Barra superior -->
+            <Border Grid.Row="0"
+                    Background="White"
+                    BorderBrush="#E5EAF2"
+                    BorderThickness="0,0,0,1">
+
+                <Grid Margin="30,0"
+                      ColumnDefinitions="*,Auto">
+
+                    <StackPanel VerticalAlignment="Center"
+                                Spacing="3">
+
+                        <TextBlock Text="{Binding TituloPagina}"
+                                   Foreground="#111827"
+                                   FontSize="21"
+                                   FontWeight="SemiBold"/>
+
+                        <TextBlock Text="{Binding FechaActual}"
+                                   Foreground="#6B7280"
+                                   FontSize="12"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                Orientation="Horizontal"
+                                Spacing="14"
+                                VerticalAlignment="Center">
+
+                        <StackPanel VerticalAlignment="Center">
+
+                            <TextBlock Text="{Binding NombreUsuario}"
+                                       Foreground="#1F2937"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Right"/>
+
+                            <TextBlock Text="{Binding NombreSucursal}"
+                                       Foreground="#6B7280"
+                                       FontSize="11"
+                                       HorizontalAlignment="Right"/>
+                        </StackPanel>
+
+                        <Border Width="42"
+                                Height="42"
+                                CornerRadius="21"
+                                Background="{StaticResource NovaBlue600Brush}">
+
+                            <TextBlock Text="A"
+                                       Foreground="White"
+                                       FontSize="17"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Dashboard -->
+            <ScrollViewer Grid.Row="1"
+                          VerticalScrollBarVisibility="Auto">
+
+                <StackPanel Margin="30"
+                            Spacing="22">
+
+                    <!-- Bienvenida -->
+                    <Border Background="{StaticResource NovaBlue950Brush}"
+                            CornerRadius="18"
+                            Padding="30">
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <StackPanel Spacing="7">
+
+                                <TextBlock Text="Bienvenido a NovaCoreESDM"
+                                           Foreground="White"
+                                           FontSize="27"
+                                           FontWeight="SemiBold"/>
+
+                                <TextBlock Text="Consulta la operación general de tu punto de venta."
+                                           Foreground="{StaticResource NovaTextSoftBrush}"
+                                           FontSize="14"/>
+                            </StackPanel>
+
+                            <Border Grid.Column="1"
+                                    Width="76"
+                                    Height="76"
+                                    CornerRadius="22"
+                                    Background="#18FFFFFF">
+
+                                <TextBlock Text="S"
+                                           Foreground="White"
+                                           FontSize="38"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Indicadores -->
+                    <Grid ColumnDefinitions="*,*,*,*"
+                          ColumnSpacing="16">
+
+                        <Border Grid.Column="0"
+                                Classes="dashboardCard">
+
+                            <StackPanel Spacing="7">
+
+                                <TextBlock Text="Ventas del día"
+                                           Classes="cardLabel"/>
+
+                                <TextBlock Text="$0.00"
+                                           Classes="cardValue"/>
+
+                                <TextBlock Text="Sin ventas registradas"
+                                           Classes="cardDetail"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1"
+                                Classes="dashboardCard">
+
+                            <StackPanel Spacing="7">
+
+                                <TextBlock Text="Operaciones"
+                                           Classes="cardLabel"/>
+
+                                <TextBlock Text="0"
+                                           Classes="cardValue"/>
+
+                                <TextBlock Text="Tickets generados"
+                                           Classes="cardDetail"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2"
+                                Classes="dashboardCard">
+
+                            <StackPanel Spacing="7">
+
+                                <TextBlock Text="Productos"
+                                           Classes="cardLabel"/>
+
+                                <TextBlock Text="0"
+                                           Classes="cardValue"/>
+
+                                <TextBlock Text="Productos registrados"
+                                           Classes="cardDetail"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="3"
+                                Classes="dashboardCard">
+
+                            <StackPanel Spacing="7">
+
+                                <TextBlock Text="Caja actual"
+                                           Classes="cardLabel"/>
+
+                                <TextBlock Text="$0.00"
+                                           Classes="cardValue"/>
+
+                                <TextBlock Text="Caja sin apertura"
+                                           Classes="cardDetail"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Contenido inferior -->
+                    <Grid ColumnDefinitions="1.35*,0.85*"
+                          ColumnSpacing="18">
+
+                        <Border Grid.Column="0"
+                                Classes="sectionCard">
+
+                            <StackPanel Spacing="18">
+
+                                <TextBlock Text="Resumen de ventas"
+                                           Classes="sectionTitle"/>
+
+                                <Border Height="230"
+                                        Background="#F7F9FC"
+                                        CornerRadius="12">
+
+                                    <StackPanel HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Spacing="8">
+
+                                        <TextBlock Text="▥"
+                                                   Foreground="#A9B4C8"
+                                                   FontSize="40"
+                                                   HorizontalAlignment="Center"/>
+
+                                        <TextBlock Text="Todavía no hay información para mostrar"
+                                                   Foreground="#64748B"
+                                                   FontSize="13"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1"
+                                Classes="sectionCard">
+
+                            <StackPanel Spacing="12">
+
+                                <TextBlock Text="Accesos rápidos"
+                                           Classes="sectionTitle"
+                                           Margin="0,0,0,4"/>
+
+                                <Button Classes="quickAction"
+                                        HorizontalAlignment="Stretch"
+                                        Content="Nueva venta"/>
+
+                                <Button Classes="quickAction"
+                                        HorizontalAlignment="Stretch"
+                                        Content="Registrar producto"/>
+
+                                <Button Classes="quickAction"
+                                        HorizontalAlignment="Stretch"
+                                        Content="Abrir caja"/>
+
+                                <Button Classes="quickAction"
+                                        HorizontalAlignment="Stretch"
+                                        Content="Consultar inventario"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+
+    <Window.Styles>
+
+        <!-- Menú lateral -->
+        <Style Selector="Button.menuItem">
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground"
+                    Value="{StaticResource NovaTextSoftBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="9"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <Style Selector="Button.menuItem:pointerover">
+            <Setter Property="Background" Value="#16FFFFFF"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style Selector="Button.menuItem:pressed">
+            <Setter Property="Background" Value="#24FFFFFF"/>
+        </Style>
+
+        <Style Selector="Button.menuItem.active">
+            <Setter Property="Background"
+                    Value="{StaticResource NovaBlue600Brush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <!-- Tarjetas -->
+        <Style Selector="Border.dashboardCard">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Padding" Value="22"/>
+            <Setter Property="BorderBrush" Value="#DCE3EE"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="MinHeight" Value="138"/>
+        </Style>
+
+        <Style Selector="TextBlock.cardLabel">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+        </Style>
+
+        <Style Selector="TextBlock.cardValue">
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontSize" Value="27"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style Selector="TextBlock.cardDetail">
+            <Setter Property="Foreground" Value="#8FA1BB"/>
+            <Setter Property="FontSize" Value="11"/>
+        </Style>
+        <!-- Secciones -->
+        <Style Selector="Border.sectionCard">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Padding" Value="22"/>
+            <Setter Property="BorderBrush" Value="#E5EAF2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="TextBlock.sectionTitle">
+            <Setter Property="Foreground" Value="#1F2937"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <!-- Accesos rápidos -->
+        <Style Selector="Button.quickAction">
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="16,0"/>
+            <Setter Property="Background" Value="#F5F7FB"/>
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="9"/>
+            <Setter Property="FontSize" Value="13"/>
+        </Style>
+
+        <Style Selector="Button.quickAction:pointerover">
+            <Setter Property="Background" Value="#EAF0FF"/>
+            <Setter Property="BorderBrush"
+                    Value="{StaticResource NovaBlue600Brush}"/>
+            <Setter Property="Foreground"
+                    Value="{StaticResource NovaBlue600Brush}"/>
+        </Style>
+
+    </Window.Styles>
 </Window>

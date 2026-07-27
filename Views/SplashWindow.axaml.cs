@@ -2,9 +2,9 @@ using Avalonia.Controls;
 
 namespace NovaCoreESDM.Views;
 
-public partial class MainWindow : Window
+public partial class SplashWindow : Window
 {
-    public MainWindow()
+    public SplashWindow()
     {
         InitializeComponent();
     }

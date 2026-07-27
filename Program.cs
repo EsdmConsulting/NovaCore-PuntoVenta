@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using System;
+using NovaCoreESDM;
 
 namespace POS.Desktop;
 

@@ -1,15 +1,24 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="POS.Desktop.App"
-             xmlns:local="using:POS.Desktop"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+             x:Class="NovaCoreESDM.App"
+             xmlns:local="using:NovaCoreESDM"
+             xmlns:desktop="clr-namespace:POS.Desktop"
+             RequestedThemeVariant="Light">
 
     <Application.DataTemplates>
-        <local:ViewLocator />
+        <local:ViewLocator/>
     </Application.DataTemplates>
 
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="/Styles/Colors.axaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
     <Application.Styles>
-        <FluentTheme />
+        <FluentTheme/>
     </Application.Styles>
+
 </Application>

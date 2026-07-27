@@ -1,10 +1,12 @@
+using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using POS.Desktop.ViewModels;
-using POS.Desktop.Views;
+using Avalonia.Threading;
+using NovaCoreESDM.Views;
 
-namespace POS.Desktop;
+
+namespace NovaCoreESDM;
 
 public partial class App : Application
 {
@@ -17,10 +19,22 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainViewModel(),
-            };
+            var splashWindow = new SplashWindow();
+
+            desktop.MainWindow = splashWindow;
+            splashWindow.Show();
+
+            DispatcherTimer.RunOnce(
+                () =>
+                {
+                    var loginWindow = new LoginWindow();
+                    desktop.MainWindow = loginWindow;
+                    loginWindow.Show();
+
+
+                    splashWindow.Close();
+                },
+                TimeSpan.FromSeconds(2));
         }
 
         base.OnFrameworkInitializationCompleted();

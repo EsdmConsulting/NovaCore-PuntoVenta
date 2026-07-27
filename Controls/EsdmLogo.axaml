@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NovaCoreESDM.Controls.EsdmLogo">
+
+    <Border
+        Width="{Binding Width, RelativeSource={RelativeSource AncestorType=UserControl}}"
+        Height="{Binding Height, RelativeSource={RelativeSource AncestorType=UserControl}}"
+        CornerRadius="18"
+        Background="{StaticResource NovaBlue600Brush}">
+
+        <Grid>
+
+            <!-- Letra principal -->
+            <TextBlock Text="E"
+                       FontSize="40"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+
+        </Grid>
+
+    </Border>
+
+</UserControl>

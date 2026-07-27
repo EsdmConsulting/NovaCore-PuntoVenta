@@ -1,0 +1,183 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NovaCoreESDM.ViewModels"
+        xmlns:controls="using:NovaCoreESDM.Controls"
+        x:Class="NovaCoreESDM.Views.LoginWindow"
+        x:DataType="vm:LoginViewModel"
+        Title="NovaCoreESDM - Inicio de sesión"
+        Width="1100"
+        Height="680"
+        MinWidth="900"
+        MinHeight="600"
+        WindowStartupLocation="CenterScreen"
+        Background="#F3F6FB">
+
+    <Grid ColumnDefinitions="1.05*,0.95*">
+
+        <!-- Panel institucional -->
+        <Border Grid.Column="0"
+                Background="{StaticResource NovaBlue950Brush}">
+
+            <Grid>
+                <!-- Elementos decorativos -->
+                <Ellipse Width="620"
+                         Height="620"
+                         HorizontalAlignment="Left"
+                         VerticalAlignment="Top"
+                         Margin="-320,-360,0,0"
+                         Fill="{StaticResource NovaBlue600Brush}"
+                         Opacity="0.20"/>
+
+                <Ellipse Width="450"
+                         Height="450"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Bottom"
+                         Margin="0,0,-230,-270"
+                         Fill="{StaticResource NovaBlue600Brush}"
+                         Opacity="0.16"/>
+
+                <StackPanel Margin="65"
+                            VerticalAlignment="Center"
+                            Spacing="16">
+
+                    <controls:EsdmLogo
+                        Width="82"
+                        Height="82"/>
+                    
+                    <TextBlock Text="NovaCoreESDM"
+                               Foreground="White"
+                               FontSize="38"
+                               FontWeight="SemiBold"/>
+
+                    <TextBlock Text="Punto de Venta"
+                               Foreground="{StaticResource NovaTextSoftBrush}"
+                               FontSize="22"/>
+
+                    <TextBlock Text="Administra ventas, inventarios y operaciones&#10;desde una plataforma moderna y confiable."
+                               Foreground="{StaticResource NovaTextSoftBrush}"
+                               FontSize="15"
+                               LineHeight="24"
+                               Margin="0,10,0,0"/>
+
+                    <Border Background="#18FFFFFF"
+                            CornerRadius="14"
+                            Padding="18"
+                            Margin="0,28,0,0">
+
+                        <Grid ColumnDefinitions="Auto,*">
+                            <Border Width="10"
+                                    Height="10"
+                                    CornerRadius="5"
+                                    Background="#4ADE80"
+                                    VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="1"
+                                       Text="Sistema preparado para trabajar sin conexión"
+                                       Foreground="White"
+                                       FontSize="13"
+                                       Margin="12,0,0,0"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <TextBlock Text="Desarrollado por ESDM Consulting"
+                           Foreground="{StaticResource NovaTextSoftBrush}"
+                           FontSize="11"
+                           Opacity="0.70"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Bottom"
+                           Margin="65,0,0,30"/>
+            </Grid>
+        </Border>
+
+        <!-- Formulario -->
+        <Grid Grid.Column="1"
+              Margin="70">
+
+            <StackPanel Width="370"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="10">
+
+                <TextBlock Text="Bienvenido"
+                           Foreground="#111827"
+                           FontSize="34"
+                           FontWeight="SemiBold"/>
+
+                <TextBlock Text="Ingresa tus credenciales para continuar."
+                           Foreground="#6B7280"
+                           FontSize="14"
+                           Margin="0,0,0,26"/>
+
+                <TextBlock Text="Usuario"
+                           Foreground="#374151"
+                           FontSize="13"
+                           FontWeight="SemiBold"/>
+
+                <TextBox Text="{Binding Usuario}"
+                         Watermark="Escribe tu usuario"
+                         Height="48"
+                         Padding="14,0"
+                         FontSize="14"
+                         CornerRadius="8"/>
+
+                <TextBlock Text="Contraseña"
+                           Foreground="#374151"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           Margin="0,10,0,0"/>
+
+                <TextBox Text="{Binding Contrasena}"
+                         Watermark="Escribe tu contraseña"
+                         PasswordChar="●"
+                         Height="48"
+                         Padding="14,0"
+                         FontSize="14"
+                         CornerRadius="8"/>
+
+                <TextBlock Text="{Binding MensajeError}"
+                           Foreground="#DC2626"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           MinHeight="20"
+                           Margin="0,5,0,0"/>
+
+                <Button Command="{Binding IniciarSesionCommand}"
+                        Height="50"
+                        Margin="0,8,0,0"
+                        Background="{StaticResource NovaBlue600Brush}"
+                        Foreground="White"
+                        CornerRadius="8"
+                        HorizontalContentAlignment="Center"
+                        FontSize="15"
+                        FontWeight="SemiBold">
+
+                    <Grid>
+                        <TextBlock Text="Iniciar sesión"
+                                   IsVisible="{Binding !EstaCargando}"/>
+
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="10"
+                                    IsVisible="{Binding EstaCargando}">
+
+                            <ProgressBar Width="24"
+                                         Height="4"
+                                         IsIndeterminate="True"
+                                         VerticalAlignment="Center"/>
+
+                            <TextBlock Text="Validando..."
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                </Button>
+
+                <TextBlock Text="Versión 0.1.0"
+                           Foreground="#9CA3AF"
+                           FontSize="11"
+                           HorizontalAlignment="Center"
+                           Margin="0,24,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>

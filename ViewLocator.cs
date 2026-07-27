@@ -2,12 +2,12 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using POS.Desktop.ViewModels;
+using NovaCoreESDM.ViewModels;
 
-namespace POS.Desktop;
+namespace NovaCoreESDM;
 
 /// <summary>
-/// Given a view model, returns the corresponding view if possible.
+/// Convierte automáticamente un ViewModel en su View correspondiente.
 /// </summary>
 [RequiresUnreferencedCode(
     "Default implementation of ViewLocator involves reflection which may be trimmed away.",
@@ -19,15 +19,18 @@ public class ViewLocator : IDataTemplate
         if (param is null)
             return null;
 
-        var name = param.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
+        var name = param.GetType().FullName!
+            .Replace("ViewModel", "View", StringComparison.Ordinal);
+
         var type = Type.GetType(name);
 
         if (type != null)
-        {
             return (Control)Activator.CreateInstance(type)!;
-        }
 
-        return new TextBlock { Text = "Not Found: " + name };
+        return new TextBlock
+        {
+            Text = "Vista no encontrada: " + name
+        };
     }
 
     public bool Match(object? data)
