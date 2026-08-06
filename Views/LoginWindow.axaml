@@ -5,6 +5,7 @@
         x:Class="NovaCoreESDM.Views.LoginWindow"
         x:DataType="vm:LoginViewModel"
         Title="NovaCoreESDM - Inicio de sesión"
+        Icon="/Assets/Brand/esdm-app-icon.ico"
         Width="1100"
         Height="680"
         MinWidth="900"
@@ -41,8 +42,8 @@
                             Spacing="16">
 
                     <controls:EsdmLogo
-                        Width="82"
-                        Height="82"/>
+                        Width="150"
+                        Height="150"/>
                     
                     <TextBlock Text="NovaCoreESDM"
                                Foreground="White"

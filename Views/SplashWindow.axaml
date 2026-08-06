@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:NovaCoreESDM.Controls"
         x:Class="NovaCoreESDM.Views.SplashWindow"
         Width="760"
         Height="460"
@@ -32,19 +33,9 @@
                     VerticalAlignment="Center"
                     Spacing="10">
 
-            <Border Width="105"
-                    Height="105"
-                    CornerRadius="53"
-                    Background="{StaticResource NovaBlue600Brush}"
-                    HorizontalAlignment="Center">
-
-                <TextBlock Text="N"
-                           Foreground="{StaticResource NovaWhiteBrush}"
-                           FontSize="58"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
-            </Border>
+            <controls:EsdmLogo
+                Width="135"
+                Height="135"/>
 
             <TextBlock Text="NovaCoreESDM"
                        Foreground="{StaticResource NovaWhiteBrush}"

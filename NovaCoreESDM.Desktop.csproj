@@ -1,25 +1,71 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ApplicationManifest>app.manifest</ApplicationManifest>
+
+        <!-- Identidad de la aplicación -->
+        <AssemblyName>NovaCoreESDM</AssemblyName>
+        <RootNamespace>NovaCoreESDM</RootNamespace>
+
+        <Product>ESDM Punto de Venta</Product>
+        <Company>ESDM Consulting</Company>
+        <Authors>ESDM Consulting</Authors>
+        <Description>
+            Sistema de punto de venta desarrollado por ESDM Consulting.
+        </Description>
+
+        <!-- Versionado -->
+        <Version>0.1.0</Version>
+        <AssemblyVersion>0.1.0.0</AssemblyVersion>
+        <FileVersion>0.1.0.0</FileVersion>
+
+        <!-- Ícono del ejecutable de Windows -->
+        <ApplicationIcon>Assets/Brand/esdm-app-icon.ico</ApplicationIcon>
+
+        <!-- Plataformas que podremos publicar -->
+        <RuntimeIdentifiers>
+            win-x64;win-arm64;osx-arm64;osx-x64
+        </RuntimeIdentifiers>
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Models\"/>
-        <AvaloniaResource Include="Assets\**"/>
+        <Folder Include="Models\" />
+
+        <!-- Ya incluye todos los archivos dentro de Assets,
+             incluyendo PNG, ICO e ICNS -->
+        <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="12.1.0"/>
-        <PackageReference Include="Avalonia.Desktop" Version="12.1.0"/>
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.0"/>
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.0"/>
-        <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
-            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
-            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        <PackageReference Include="Avalonia"
+                          Version="12.1.0" />
+
+        <PackageReference Include="Avalonia.Desktop"
+                          Version="12.1.0" />
+
+        <PackageReference Include="Avalonia.Themes.Fluent"
+                          Version="12.1.0" />
+
+        <PackageReference Include="Avalonia.Fonts.Inter"
+                          Version="12.1.0" />
+
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport"
+                          Version="2.2.3">
+
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">
+                None
+            </IncludeAssets>
+
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">
+                All
+            </PrivateAssets>
         </PackageReference>
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2"/>
+
+        <PackageReference Include="CommunityToolkit.Mvvm"
+                          Version="8.4.2" />
     </ItemGroup>
+
 </Project>
