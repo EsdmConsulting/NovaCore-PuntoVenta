@@ -1,0 +1,988 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NovaCoreESDM.ViewModels.Ventas"
+             xmlns:productos="using:NovaCoreESDM.Models.Productos"
+             xmlns:models="using:NovaCoreESDM.Models"
+
+             x:Class="NovaCoreESDM.Views.Ventas.VentasView"
+             x:DataType="vm:VentasViewModel"
+             x:Name="VentasRoot"
+
+             Background="#F5F7FA">
+
+    <!-- ========================================================= -->
+    <!-- ESTRUCTURA PRINCIPAL                                      -->
+    <!-- ========================================================= -->
+
+    <Grid Margin="20"
+          ColumnDefinitions="*,400"
+          ColumnSpacing="16">
+
+
+        <!-- ===================================================== -->
+        <!-- ZONA DE OPERACIÓN                                     -->
+        <!-- ===================================================== -->
+
+        <Grid Grid.Column="0"
+              RowDefinitions="Auto,Auto,*"
+              RowSpacing="14">
+
+
+            <!-- ================================================= -->
+            <!-- CLIENTE                                           -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="0"
+                    Background="White"
+                    CornerRadius="15"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1"
+                    Padding="16">
+
+                <Grid ColumnDefinitions="Auto,*,Auto"
+                      ColumnSpacing="14">
+
+
+                    <!-- Cliente actual -->
+
+                    <StackPanel VerticalAlignment="Center"
+                                MinWidth="170"
+                                Spacing="3">
+
+                        <TextBlock Text="CLIENTE"
+                                   Foreground="#64748B"
+                                   FontSize="10"
+                                   FontWeight="SemiBold"/>
+
+                        <TextBlock Text="{Binding ClienteSeleccionado}"
+                                   Foreground="#17365D"
+                                   FontSize="15"
+                                   FontWeight="SemiBold"/>
+
+                    </StackPanel>
+
+
+                    <!-- Buscador de cliente -->
+
+                    <TextBox Grid.Column="1"
+                             Height="44"
+                             Watermark="Buscar cliente por nombre o teléfono..."
+                             Padding="14,0"
+                             FontSize="12"
+                             CornerRadius="9"
+                             BorderBrush="#CBD5E1"/>
+
+
+                    <!-- Seleccionar cliente -->
+
+                    <Button Grid.Column="2"
+                            Classes="secondaryButton"
+                            Content="Seleccionar"/>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- BUSCADOR / ESCÁNER                                -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="1"
+                    Background="White"
+                    CornerRadius="15"
+                    BorderBrush="#CBD5E1"
+                    BorderThickness="1"
+                    Padding="4">
+
+                <Grid ColumnDefinitions="Auto,*"
+                      Margin="14,0">
+
+
+                    <Border Width="38"
+                            Height="38"
+                            CornerRadius="10"
+                            Background="#EAF6EE"
+                            VerticalAlignment="Center">
+
+                        <TextBlock Text="⌕"
+                                   Foreground="#16A34A"
+                                   FontSize="22"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+
+                    </Border>
+
+
+                    <TextBox Grid.Column="1"
+                             Text="{Binding TextoBusqueda}"
+                             Height="54"
+                             Watermark="Escanea un código de barras o busca un producto..."
+                             FontSize="15"
+                             Padding="14,0"
+                             BorderThickness="0"
+                             Background="Transparent"/>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- PRODUCTOS                                         -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="2"
+                    Background="White"
+                    CornerRadius="16"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1"
+                    Padding="18">
+
+                <Grid RowDefinitions="Auto,Auto,*">
+
+
+                    <!-- ================================================= -->
+                    <!-- ENCABEZADO                                        -->
+                    <!-- ================================================= -->
+
+                    <Grid Grid.Row="0"
+                          ColumnDefinitions="*,Auto"
+                          Margin="2,0,2,15">
+
+
+                        <StackPanel Spacing="3">
+
+                            <TextBlock Text="Productos"
+                                       Foreground="#17365D"
+                                       FontSize="19"
+                                       FontWeight="SemiBold"/>
+
+                            <TextBlock Text="Busca, escanea o selecciona un producto"
+                                       Foreground="#94A3B8"
+                                       FontSize="11"/>
+
+                        </StackPanel>
+
+
+                        <Border Grid.Column="1"
+                                Background="#EEF4F8"
+                                CornerRadius="9"
+                                Padding="11,6"
+                                VerticalAlignment="Center">
+
+                            <TextBlock Text="{Binding Productos.Count,
+                                                     StringFormat='{}{0} productos'}"
+                                       Foreground="#64748B"
+                                       FontSize="10"
+                                       FontWeight="SemiBold"/>
+
+                        </Border>
+
+                    </Grid>
+
+
+                    <!-- ================================================= -->
+                    <!-- MENSAJE / ERROR                                   -->
+                    <!-- ================================================= -->
+
+                    <TextBlock Grid.Row="1"
+                               Text="{Binding MensajeError}"
+                               Foreground="#C61F2B"
+                               FontSize="11"
+                               TextWrapping="Wrap"
+                               Margin="2,0,2,10"/>
+
+
+                    <!-- ================================================= -->
+                    <!-- CATÁLOGO                                          -->
+                    <!-- ================================================= -->
+
+                    <ScrollViewer Grid.Row="2"
+                                  VerticalScrollBarVisibility="Auto">
+
+                        <ItemsControl ItemsSource="{Binding Productos}">
+
+                            <ItemsControl.ItemsPanel>
+
+                                <ItemsPanelTemplate>
+
+                                    <WrapPanel Orientation="Horizontal"/>
+
+                                </ItemsPanelTemplate>
+
+                            </ItemsControl.ItemsPanel>
+
+
+                            <ItemsControl.ItemTemplate>
+
+                                <DataTemplate x:DataType="productos:ProductoCatalogo">
+
+
+                                    <!-- ================================================= -->
+                                    <!-- TARJETA DEL PRODUCTO                               -->
+                                    <!-- ================================================= -->
+
+                                    <Button Classes="productCard"
+                                            Command="{ReflectionBinding DataContext.SeleccionarProductoCommand,
+                                                                        ElementName=VentasRoot}"
+                                            CommandParameter="{Binding}">
+
+                                        <Grid RowDefinitions="Auto,Auto,Auto"
+                                              RowSpacing="8">
+
+
+                                            <!-- ================================================= -->
+                                            <!-- FOTO DEL PRODUCTO                                  -->
+                                            <!-- ================================================= -->
+
+                                            <!--
+                                                Después cambiaremos este Border por:
+
+                                                <Image Source="{Binding Imagen}"
+                                                       Stretch="Uniform"/>
+
+                                                sin tener que rediseñar la tarjeta.
+                                            -->
+
+                                            <Border Grid.Row="0"
+                                                    Width="125"
+                                                    Height="105"
+                                                    CornerRadius="12"
+                                                    Background="#F3F7F9"
+                                                    HorizontalAlignment="Center">
+
+                                                <StackPanel HorizontalAlignment="Center"
+                                                            VerticalAlignment="Center"
+                                                            Spacing="4">
+
+                                                    <TextBlock Text="▣"
+                                                               Foreground="#A9B8C6"
+                                                               FontSize="30"
+                                                               HorizontalAlignment="Center"/>
+
+                                                    <TextBlock Text="FOTO"
+                                                               Foreground="#94A3B8"
+                                                               FontSize="8"
+                                                               FontWeight="SemiBold"
+                                                               HorizontalAlignment="Center"/>
+
+                                                </StackPanel>
+
+                                            </Border>
+
+
+                                            <!-- ================================================= -->
+                                            <!-- NOMBRE                                             -->
+                                            <!-- ================================================= -->
+
+                                            <TextBlock Grid.Row="1"
+                                                       Text="{Binding NombreComercial}"
+                                                       Classes="productName"/>
+
+
+                                            <!-- ================================================= -->
+                                            <!-- PRESENTACIONES                                     -->
+                                            <!-- ================================================= -->
+
+                                            <Border Grid.Row="2"
+                                                    Background="#EAF6EE"
+                                                    CornerRadius="7"
+                                                    Padding="8,4"
+                                                    HorizontalAlignment="Center">
+
+                                                <TextBlock Text="{Binding Presentaciones.Count,
+                                                                         StringFormat='{}{0} presentación(es)'}"
+                                                           Foreground="#16803B"
+                                                           FontSize="9"
+                                                           FontWeight="SemiBold"/>
+
+                                            </Border>
+
+                                        </Grid>
+
+                                    </Button>
+
+                                </DataTemplate>
+
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+
+                    </ScrollViewer>
+
+                </Grid>
+
+            </Border>
+
+        </Grid>
+
+
+        <!-- ===================================================== -->
+        <!-- CARRITO                                               -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Column="1"
+                Background="White"
+                CornerRadius="16"
+                BorderBrush="#DCE3EE"
+                BorderThickness="1">
+
+            <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+
+                <!-- ================================================= -->
+                <!-- ENCABEZADO                                        -->
+                <!-- ================================================= -->
+
+                <Grid Grid.Row="0"
+                      Margin="20,18,20,14"
+                      ColumnDefinitions="*,Auto">
+
+
+                    <StackPanel Spacing="3">
+
+                        <TextBlock Text="Venta actual"
+                                   Foreground="#17365D"
+                                   FontSize="20"
+                                   FontWeight="SemiBold"/>
+
+                        <TextBlock Text="{Binding ClienteSeleccionado}"
+                                   Foreground="#64748B"
+                                   FontSize="11"/>
+
+                    </StackPanel>
+
+
+                    <Border Grid.Column="1"
+                            Background="#EAF6EE"
+                            CornerRadius="10"
+                            Padding="10,6"
+                            VerticalAlignment="Center">
+
+                        <TextBlock Text="{Binding TextoCantidadProductos}"
+                                   Foreground="#16803B"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"/>
+
+                    </Border>
+
+                </Grid>
+
+
+                <!-- Separador -->
+
+                <Border Grid.Row="1"
+                        Height="1"
+                        Background="#E2E8F0"/>
+
+
+                <!-- ================================================= -->
+                <!-- CARRITO VACÍO                                     -->
+                <!-- ================================================= -->
+
+                <StackPanel Grid.Row="2"
+                            IsVisible="{Binding CarritoVacio}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="9">
+
+                    <Border Width="72"
+                            Height="72"
+                            CornerRadius="23"
+                            Background="#F2F7F4">
+
+                        <TextBlock Text="▣"
+                                   Foreground="#B6C9BC"
+                                   FontSize="32"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+
+                    </Border>
+
+                    <TextBlock Text="La venta está vacía"
+                               Foreground="#334155"
+                               FontSize="15"
+                               FontWeight="SemiBold"
+                               HorizontalAlignment="Center"/>
+
+                    <TextBlock Text="Escanea o selecciona productos"
+                               Foreground="#94A3B8"
+                               FontSize="11"
+                               HorizontalAlignment="Center"/>
+
+                </StackPanel>
+
+
+                <!-- ================================================= -->
+                <!-- PRODUCTOS DEL CARRITO                              -->
+                <!-- ================================================= -->
+
+                <ScrollViewer Grid.Row="2"
+                              IsVisible="{Binding TieneProductos}"
+                              VerticalScrollBarVisibility="Auto">
+
+                    <ItemsControl ItemsSource="{Binding Carrito}"
+                                  Margin="14">
+
+                        <ItemsControl.ItemTemplate>
+
+                            <DataTemplate x:DataType="models:DetalleVenta">
+
+                                <Border Background="#F8FAFC"
+                                        BorderBrush="#E2E8F0"
+                                        BorderThickness="1"
+                                        CornerRadius="12"
+                                        Padding="13"
+                                        Margin="0,0,0,10">
+
+                                    <Grid RowDefinitions="Auto,Auto,Auto"
+                                          ColumnDefinitions="*,Auto">
+
+
+                                        <!-- ================================================= -->
+                                        <!-- PRODUCTO                                           -->
+                                        <!-- ================================================= -->
+
+                                        <StackPanel Grid.Row="0"
+                                                    Grid.Column="0"
+                                                    Spacing="3">
+
+                                            <TextBlock Text="{Binding Producto.Nombre}"
+                                                       Foreground="#172033"
+                                                       FontSize="13"
+                                                       FontWeight="SemiBold"
+                                                       TextWrapping="Wrap"/>
+
+                                            <TextBlock Text="{Binding Producto.NombrePresentacion}"
+                                                       Foreground="#123B69"
+                                                       FontSize="10"
+                                                       FontWeight="SemiBold"/>
+
+                                        </StackPanel>
+
+
+                                        <!-- ================================================= -->
+                                        <!-- ELIMINAR                                           -->
+                                        <!-- ================================================= -->
+
+                                        <Button Grid.Row="0"
+                                                Grid.Column="1"
+                                                Classes="deleteButton"
+                                                Content="×"
+                                                Command="{ReflectionBinding DataContext.EliminarProductoCommand,
+                                                                            ElementName=VentasRoot}"
+                                                CommandParameter="{Binding}"/>
+
+
+                                        <!-- ================================================= -->
+                                        <!-- PRECIO / EXISTENCIA                                -->
+                                        <!-- ================================================= -->
+
+                                        <StackPanel Grid.Row="1"
+                                                    Grid.ColumnSpan="2"
+                                                    Orientation="Horizontal"
+                                                    Spacing="12"
+                                                    Margin="0,7,0,0">
+
+                                            <TextBlock Text="{Binding Producto.Precio,
+                                                                      StringFormat='Precio: ${0:N2}'}"
+                                                       Foreground="#64748B"
+                                                       FontSize="9"/>
+
+                                            <TextBlock Text="{Binding Producto.FactorConversion,
+                                                                      StringFormat='Factor: {0}'}"
+                                                       Foreground="#94A3B8"
+                                                       FontSize="9"/>
+
+                                            <TextBlock Text="{Binding MaximoLinea,
+                                                                      StringFormat='Existencia: {0:N0}'}"
+                                                       Foreground="#16803B"
+                                                       FontSize="9"
+                                                       FontWeight="SemiBold"/>
+
+                                        </StackPanel>
+
+
+                                        <!-- ================================================= -->
+                                        <!-- CONTROLES                                          -->
+                                        <!-- ================================================= -->
+
+                                        <Grid Grid.Row="2"
+                                              Grid.ColumnSpan="2"
+                                              ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto"
+                                              ColumnSpacing="8"
+                                              Margin="0,13,0,0">
+
+
+                                            <!-- Disminuir -->
+
+                                            <Button Grid.Column="0"
+                                                    Classes="quantityButton"
+                                                    Content="−"
+                                                    Command="{ReflectionBinding DataContext.DisminuirCantidadCommand,
+                                                                                ElementName=VentasRoot}"
+                                                    CommandParameter="{Binding}"/>
+
+
+                                            <!-- Cantidad -->
+
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding Cantidad}"
+                                                       Width="28"
+                                                       Foreground="#172033"
+                                                       FontSize="13"
+                                                       FontWeight="SemiBold"
+                                                       TextAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+
+
+                                            <!-- Incrementar -->
+
+                                            <Button Grid.Column="2"
+                                                    Classes="quantityButton"
+                                                    Content="+"
+                                                    Command="{ReflectionBinding DataContext.IncrementarCantidadCommand,
+                                                                                ElementName=VentasRoot}"
+                                                    CommandParameter="{Binding}"
+                                                    IsEnabled="{Binding PuedeIncrementar}"/>
+
+
+                                            <!-- Editar -->
+
+                                            <Button Grid.Column="3"
+                                                    Classes="editButton"
+                                                    Content="Editar"
+                                                    Command="{ReflectionBinding DataContext.EditarCantidadCommand,
+                                                                                ElementName=VentasRoot}"
+                                                    CommandParameter="{Binding}"/>
+
+
+                                            <!-- Importe -->
+
+                                            <TextBlock Grid.Column="5"
+                                                       Text="{Binding Importe,
+                                                                      StringFormat='${0:N2}'}"
+                                                       Foreground="#172033"
+                                                       FontSize="15"
+                                                       FontWeight="Bold"
+                                                       VerticalAlignment="Center"/>
+
+                                        </Grid>
+
+                                    </Grid>
+
+                                </Border>
+
+                            </DataTemplate>
+
+                        </ItemsControl.ItemTemplate>
+
+                    </ItemsControl>
+
+                </ScrollViewer>
+
+
+                <!-- ================================================= -->
+                <!-- TOTALES                                           -->
+                <!-- ================================================= -->
+
+                <Border Grid.Row="3"
+                        Background="#F8FAFC"
+                        BorderBrush="#E2E8F0"
+                        BorderThickness="0,1,0,0"
+                        Padding="20">
+
+                    <StackPanel Spacing="14">
+
+
+                        <!-- Subtotal -->
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <TextBlock Text="Subtotal"
+                                       Foreground="#64748B"
+                                       FontSize="12"/>
+
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Subtotal,
+                                                      StringFormat='${0:N2}'}"
+                                       Foreground="#475569"
+                                       FontSize="12"/>
+
+                        </Grid>
+
+
+                        <!-- Total -->
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <TextBlock Text="Total"
+                                       Foreground="#17365D"
+                                       FontSize="17"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding Total,
+                                                      StringFormat='${0:N2}'}"
+                                       Foreground="#17365D"
+                                       FontSize="28"
+                                       FontWeight="Bold"/>
+
+                        </Grid>
+
+
+                        <!-- Botones -->
+
+                        <Grid ColumnDefinitions="Auto,*"
+                              ColumnSpacing="10">
+
+
+                            <!-- CANCELAR -->
+
+                            <Button Grid.Column="0"
+                                    Content="Cancelar"
+                                    Height="56"
+                                    Padding="18,0"
+                                    CornerRadius="11"
+                                    Background="White"
+                                    Foreground="#C61F2B"
+                                    BorderBrush="#F3A7AD"
+                                    BorderThickness="1"
+                                    Command="{Binding CancelarVentaCommand}"
+                                    IsEnabled="{Binding TieneProductos}"/>
+
+
+                            <!-- COBRAR -->
+
+                            <Button Grid.Column="1"
+                                    Content="COBRAR"
+                                    Height="56"
+                                    CornerRadius="11"
+                                    Background="#16A34A"
+                                    Foreground="White"
+                                    BorderThickness="0"
+                                    HorizontalContentAlignment="Center"
+                                    FontSize="15"
+                                    FontWeight="Bold"
+                                    Command="{Binding CobrarCommand}"
+                                    IsEnabled="{Binding TieneProductos}"/>
+
+                        </Grid>
+
+                    </StackPanel>
+
+                </Border>
+
+            </Grid>
+
+        </Border>
+
+    </Grid>
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <UserControl.Styles>
+
+
+        <!-- ===================================================== -->
+        <!-- BOTÓN SECUNDARIO                                     -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Button.secondaryButton">
+
+            <Setter Property="Height"
+                    Value="44"/>
+
+            <Setter Property="Padding"
+                    Value="17,0"/>
+
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Center"/>
+
+            <Setter Property="Background"
+                    Value="#EEF4F8"/>
+
+            <Setter Property="Foreground"
+                    Value="#123B69"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#C7D5E1"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+
+            <Setter Property="CornerRadius"
+                    Value="9"/>
+
+            <Setter Property="FontSize"
+                    Value="12"/>
+
+            <Setter Property="FontWeight"
+                    Value="SemiBold"/>
+
+        </Style>
+
+
+        <Style Selector="Button.secondaryButton:pointerover">
+
+            <Setter Property="Background"
+                    Value="#E4EEF6"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#123B69"/>
+
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- TARJETA DE PRODUCTO                                  -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Button.productCard">
+
+            <Setter Property="Width"
+                    Value="170"/>
+
+            <Setter Property="MinHeight"
+                    Value="205"/>
+
+            <Setter Property="Margin"
+                    Value="5"/>
+
+            <Setter Property="Padding"
+                    Value="13"/>
+
+            <Setter Property="Background"
+                    Value="White"/>
+
+            <Setter Property="Foreground"
+                    Value="#172033"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#E2E8F0"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+
+            <Setter Property="CornerRadius"
+                    Value="14"/>
+
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Center"/>
+
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center"/>
+
+        </Style>
+
+
+        <Style Selector="Button.productCard:pointerover">
+
+            <Setter Property="Background"
+                    Value="#FBFDFC"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#16A34A"/>
+
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- NOMBRE PRODUCTO                                      -->
+        <!-- ===================================================== -->
+
+        <Style Selector="TextBlock.productName">
+
+            <Setter Property="Foreground"
+                    Value="#283548"/>
+
+            <Setter Property="FontSize"
+                    Value="12"/>
+
+            <Setter Property="FontWeight"
+                    Value="SemiBold"/>
+
+            <Setter Property="TextAlignment"
+                    Value="Center"/>
+
+            <Setter Property="TextWrapping"
+                    Value="Wrap"/>
+
+            <Setter Property="MaxWidth"
+                    Value="145"/>
+
+            <Setter Property="MinHeight"
+                    Value="34"/>
+
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- CANTIDAD                                              -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Button.quantityButton">
+
+            <Setter Property="Width"
+                    Value="31"/>
+
+            <Setter Property="Height"
+                    Value="31"/>
+
+            <Setter Property="Padding"
+                    Value="0"/>
+
+            <Setter Property="Background"
+                    Value="White"/>
+
+            <Setter Property="Foreground"
+                    Value="#334155"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#CBD5E1"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+
+            <Setter Property="CornerRadius"
+                    Value="8"/>
+
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Center"/>
+
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center"/>
+
+            <Setter Property="FontSize"
+                    Value="15"/>
+
+            <Setter Property="FontWeight"
+                    Value="SemiBold"/>
+
+        </Style>
+
+
+        <Style Selector="Button.quantityButton:pointerover">
+
+            <Setter Property="Background"
+                    Value="#EAF6EE"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#16A34A"/>
+
+            <Setter Property="Foreground"
+                    Value="#16803B"/>
+
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- EDITAR CANTIDAD                                      -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Button.editButton">
+
+            <Setter Property="Height"
+                    Value="31"/>
+
+            <Setter Property="Padding"
+                    Value="11,0"/>
+
+            <Setter Property="Background"
+                    Value="#EEF4F8"/>
+
+            <Setter Property="Foreground"
+                    Value="#123B69"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#C7D5E1"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+
+            <Setter Property="CornerRadius"
+                    Value="8"/>
+
+            <Setter Property="FontSize"
+                    Value="10"/>
+
+            <Setter Property="FontWeight"
+                    Value="SemiBold"/>
+
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Center"/>
+
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center"/>
+
+        </Style>
+
+
+        <Style Selector="Button.editButton:pointerover">
+
+            <Setter Property="Background"
+                    Value="#E4EEF6"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#123B69"/>
+
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- ELIMINAR                                             -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Button.deleteButton">
+
+            <Setter Property="Width"
+                    Value="30"/>
+
+            <Setter Property="Height"
+                    Value="30"/>
+
+            <Setter Property="Padding"
+                    Value="0"/>
+
+            <Setter Property="Background"
+                    Value="Transparent"/>
+
+            <Setter Property="Foreground"
+                    Value="#C61F2B"/>
+
+            <Setter Property="BorderThickness"
+                    Value="0"/>
+
+            <Setter Property="CornerRadius"
+                    Value="8"/>
+
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Center"/>
+
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center"/>
+
+            <Setter Property="FontSize"
+                    Value="18"/>
+
+        </Style>
+
+
+        <Style Selector="Button.deleteButton:pointerover">
+
+            <Setter Property="Background"
+                    Value="#FDEBEC"/>
+
+            <Setter Property="Foreground"
+                    Value="#A71722"/>
+
+        </Style>
+
+    </UserControl.Styles>
+
+</UserControl>

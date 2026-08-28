@@ -1,0 +1,459 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:NovaCoreESDM.ViewModels.Caja"
+        xmlns:models="using:NovaCoreESDM.Models.Caja"
+
+        x:Class="NovaCoreESDM.Views.Caja.SeleccionarCajaWindow"
+        x:DataType="vm:SeleccionarCajaViewModel"
+
+        Title="Grupo Luis Fer - Configuración de caja"
+        Icon="/Assets/Brand/esdm-app-icon.ico"
+
+        Width="1080"
+        Height="700"
+
+        MinWidth="900"
+        MinHeight="600"
+
+        WindowStartupLocation="CenterScreen"
+
+        Background="#F6F8F7">
+
+
+    <Grid ColumnDefinitions="390,*">
+
+
+        <!-- ===================================================== -->
+        <!-- PANEL INSTITUCIONAL                                   -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Column="0"
+                Background="#08783D">
+
+            <Grid>
+
+
+                <!-- ================================================= -->
+                <!-- DECORACIÓN                                        -->
+                <!-- ================================================= -->
+
+                <Ellipse Width="520"
+                         Height="520"
+                         HorizontalAlignment="Left"
+                         VerticalAlignment="Top"
+                         Margin="-310,-310,0,0"
+                         Fill="#16A34A"
+                         Opacity="0.13"/>
+
+
+                <Ellipse Width="360"
+                         Height="360"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Bottom"
+                         Margin="0,0,-210,-220"
+                         Fill="#C79A3B"
+                         Opacity="0.10"/>
+
+
+                <Grid Margin="45"
+                      RowDefinitions="Auto,*,Auto">
+
+
+                    <!-- ================================================= -->
+                    <!-- MARCA                                             -->
+                    <!-- ================================================= -->
+
+                    <StackPanel Grid.Row="0"
+                                Spacing="12">
+
+
+                        <Border Width="150"
+                                Height="105"
+                                CornerRadius="16"
+                                Background="White"
+                                Padding="12"
+                                HorizontalAlignment="Left">
+
+                            <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                                   Stretch="Uniform"/>
+
+                        </Border>
+
+
+                        <TextBlock Text="PUNTO DE VENTA"
+                                   Foreground="#D8F3E2"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"/>
+
+
+                        <TextBlock Text="Configuración de terminal"
+                                   Foreground="#BDE5CB"
+                                   FontSize="12"/>
+
+                    </StackPanel>
+
+
+                    <!-- ================================================= -->
+                    <!-- INFORMACIÓN                                       -->
+                    <!-- ================================================= -->
+
+                    <StackPanel Grid.Row="1"
+                                VerticalAlignment="Center"
+                                Spacing="14">
+
+
+                        <TextBlock Text="Asigna esta terminal"
+                                   Foreground="White"
+                                   FontSize="32"
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap"/>
+
+
+                        <TextBlock Text="Selecciona la caja física que utilizará este equipo para registrar ventas y turnos."
+                                   Foreground="#D8F3E2"
+                                   FontSize="15"
+                                   LineHeight="24"
+                                   TextWrapping="Wrap"/>
+
+
+                        <!-- AVISO -->
+
+                        <Border Background="#18FFFFFF"
+                                CornerRadius="12"
+                                Padding="15"
+                                Margin="0,18,0,0">
+
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="10">
+
+
+                                <Border Width="9"
+                                        Height="9"
+                                        CornerRadius="5"
+                                        Background="#4ADE80"
+                                        VerticalAlignment="Center"/>
+
+
+                                <TextBlock Grid.Column="1"
+                                           Text="Esta configuración se guardará en este equipo."
+                                           Foreground="White"
+                                           FontSize="11"
+                                           TextWrapping="Wrap"
+                                           VerticalAlignment="Center"/>
+
+                            </Grid>
+
+                        </Border>
+
+                    </StackPanel>
+
+
+                    <!-- ================================================= -->
+                    <!-- FOOTER                                            -->
+                    <!-- ================================================= -->
+
+                    <TextBlock Grid.Row="2"
+                               Text="Desarrollado por ESDM Consulting"
+                               Foreground="#C8DDCF"
+                               FontSize="11"
+                               Opacity="0.75"/>
+
+                </Grid>
+
+            </Grid>
+
+        </Border>
+
+
+        <!-- ===================================================== -->
+        <!-- PANEL DE SELECCIÓN                                    -->
+        <!-- ===================================================== -->
+
+        <Grid Grid.Column="1"
+              Margin="52"
+              RowDefinitions="Auto,*,Auto">
+
+
+            <!-- ================================================= -->
+            <!-- ENCABEZADO                                        -->
+            <!-- ================================================= -->
+
+            <StackPanel Grid.Row="0"
+                        Spacing="6"
+                        Margin="0,0,0,20">
+
+
+                <TextBlock Text="Selecciona una caja"
+                           Foreground="#21382A"
+                           FontSize="28"
+                           FontWeight="SemiBold"/>
+
+
+                <TextBlock Text="Elige la caja asignada físicamente a este equipo."
+                           Foreground="#718078"
+                           FontSize="13"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- LISTADO DE CAJAS                                  -->
+            <!-- ================================================= -->
+
+            <Grid Grid.Row="1">
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                    <ListBox ItemsSource="{Binding Cajas}"
+                             SelectedItem="{Binding CajaSeleccionada}"
+                             Background="Transparent"
+                             BorderThickness="0">
+
+
+                        <ListBox.ItemTemplate>
+
+
+                            <!-- ========================================= -->
+                            <!-- MODELO REAL DEL BACKEND                   -->
+                            <!-- ========================================= -->
+
+                            <DataTemplate x:DataType="models:Caja">
+
+
+                                <Border Classes="cajaCard">
+
+
+                                    <Grid ColumnDefinitions="Auto,*,Auto"
+                                          ColumnSpacing="15">
+
+
+                                        <!-- ================================= -->
+                                        <!-- ICONO                             -->
+                                        <!-- ================================= -->
+
+                                        <Border Width="48"
+                                                Height="48"
+                                                CornerRadius="14"
+                                                Background="#EAF7EF"
+                                                VerticalAlignment="Center">
+
+
+                                            <TextBlock Text="▣"
+                                                       Foreground="#08783D"
+                                                       FontSize="22"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"/>
+
+                                        </Border>
+
+
+                                        <!-- ================================= -->
+                                        <!-- INFORMACIÓN DE LA CAJA            -->
+                                        <!-- ================================= -->
+
+                                        <StackPanel Grid.Column="1"
+                                                    Spacing="3"
+                                                    VerticalAlignment="Center">
+
+
+                                            <TextBlock Text="{Binding Nombre}"
+                                                       Foreground="#21382A"
+                                                       FontSize="15"
+                                                       FontWeight="SemiBold"/>
+
+
+                                            <TextBlock Text="{Binding Codigo}"
+                                                       Foreground="#08783D"
+                                                       FontSize="11"
+                                                       FontWeight="SemiBold"/>
+
+
+                                            <TextBlock Text="{Binding UnidadNombre}"
+                                                       Foreground="#718078"
+                                                       FontSize="11"/>
+
+                                        </StackPanel>
+
+
+                                        <!-- ================================= -->
+                                        <!-- TERMINAL                          -->
+                                        <!-- ================================= -->
+
+                                        <Border Grid.Column="2"
+                                                Background="#F8FAF9"
+                                                BorderBrush="#E4EAE6"
+                                                BorderThickness="1"
+                                                CornerRadius="9"
+                                                Padding="10,6"
+                                                VerticalAlignment="Center">
+
+
+                                            <StackPanel Spacing="2">
+
+
+                                                <TextBlock Text="Terminal"
+                                                           Foreground="#94A39A"
+                                                           FontSize="9"
+                                                           HorizontalAlignment="Center"/>
+
+
+                                                <TextBlock Text="{Binding NumeroTerminal}"
+                                                           Foreground="#44534A"
+                                                           FontSize="11"
+                                                           FontWeight="SemiBold"
+                                                           HorizontalAlignment="Center"/>
+
+                                            </StackPanel>
+
+                                        </Border>
+
+                                    </Grid>
+
+                                </Border>
+
+                            </DataTemplate>
+
+                        </ListBox.ItemTemplate>
+
+                    </ListBox>
+
+                </ScrollViewer>
+
+            </Grid>
+
+
+            <!-- ================================================= -->
+            <!-- PARTE INFERIOR                                    -->
+            <!-- ================================================= -->
+
+            <StackPanel Grid.Row="2"
+                        Spacing="10"
+                        Margin="0,20,0,0">
+
+
+                <!-- ERROR -->
+
+                <TextBlock Text="{Binding MensajeError}"
+                           Foreground="#B51F2A"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           MinHeight="18"/>
+
+
+                <!-- CONTINUAR -->
+
+                <Button Content="Guardar caja y continuar"
+                        Command="{Binding ConfirmarCajaCommand}"
+                        IsEnabled="{Binding PuedeContinuar}"
+
+                        Height="52"
+
+                        Background="#16A34A"
+                        Foreground="White"
+
+                        BorderThickness="0"
+                        HorizontalContentAlignment="Center"
+
+                        CornerRadius="10"
+
+                        FontSize="14"
+                        FontWeight="SemiBold"/>
+
+            </StackPanel>
+
+        </Grid>
+
+    </Grid>
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <Window.Styles>
+
+
+        <!-- ===================================================== -->
+        <!-- TARJETA DE CAJA                                      -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Border.cajaCard">
+
+            <Setter Property="Background"
+                    Value="White"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#E2E8E4"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+
+            <Setter Property="CornerRadius"
+                    Value="14"/>
+
+            <Setter Property="Padding"
+                    Value="16"/>
+
+            <Setter Property="Margin"
+                    Value="0,0,0,10"/>
+
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- LISTBOX                                               -->
+        <!-- ===================================================== -->
+
+        <Style Selector="ListBoxItem">
+
+            <Setter Property="Padding"
+                    Value="0"/>
+
+            <Setter Property="Margin"
+                    Value="0"/>
+
+            <Setter Property="Background"
+                    Value="Transparent"/>
+
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Stretch"/>
+
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- MOUSE ENCIMA                                         -->
+        <!-- ===================================================== -->
+
+        <Style Selector="ListBoxItem:pointerover Border.cajaCard">
+
+            <Setter Property="BorderBrush"
+                    Value="#86C99A"/>
+
+            <Setter Property="Background"
+                    Value="#F6FBF7"/>
+
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- CAJA SELECCIONADA                                     -->
+        <!-- ===================================================== -->
+
+        <Style Selector="ListBoxItem:selected Border.cajaCard">
+
+            <Setter Property="BorderBrush"
+                    Value="#16A34A"/>
+
+            <Setter Property="BorderThickness"
+                    Value="2"/>
+
+            <Setter Property="Background"
+                    Value="#EAF7EF"/>
+
+        </Style>
+
+
+    </Window.Styles>
+
+</Window>

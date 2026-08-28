@@ -1,0 +1,78 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Ventas.EditarCantidadWindow"
+
+        Width="380"
+        Height="260"
+
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+
+        Title="Editar cantidad"
+        Background="#F5F7FA">
+
+    <Border Background="White"
+            Padding="24"
+            Margin="12"
+            CornerRadius="15">
+
+        <Grid RowDefinitions="Auto,Auto,Auto,*"
+              RowSpacing="14">
+
+
+            <TextBlock Grid.Row="0"
+                       Text="Editar cantidad"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="#17365D"/>
+
+
+            <TextBlock Grid.Row="1"
+                       x:Name="TextoCantidadActual"
+                       FontSize="12"
+                       Foreground="#64748B"/>
+
+
+            <TextBox Grid.Row="2"
+                     x:Name="CantidadTextBox"
+                     Height="46"
+                     FontSize="18"
+                     HorizontalContentAlignment="Center"
+                     Watermark="Cantidad"
+                     BorderBrush="#CBD5E1"
+                     CornerRadius="9"/>
+
+
+            <Grid Grid.Row="3"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="10"
+                  VerticalAlignment="Bottom">
+
+                <Button Grid.Column="0"
+                        Height="44"
+                        Content="Cancelar"
+                        Click="Cancelar_Click"
+                        Background="White"
+                        Foreground="#C61F2B"
+                        BorderBrush="#F3A7AD"
+                        BorderThickness="1"
+                        CornerRadius="9"/>
+
+                <Button Grid.Column="1"
+                        Height="44"
+                        Content="Aceptar"
+                        Click="Aceptar_Click"
+                        Background="#16A34A"
+                        Foreground="White"
+                        BorderThickness="0"
+                        CornerRadius="9"
+                        FontWeight="SemiBold"/>
+
+            </Grid>
+
+        </Grid>
+
+    </Border>
+
+</Window>

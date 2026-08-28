@@ -1,0 +1,126 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Turno.ConfirmarAperturaWindow"
+
+        Title="Confirmar apertura"
+
+        Icon="/Assets/Brand/esdm-app-icon.ico"
+
+        Width="460"
+        Height="330"
+
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+
+        Background="#F6F8F7">
+
+    <Border Background="White"
+            CornerRadius="16"
+            Margin="14"
+            Padding="30">
+
+        <Grid RowDefinitions="Auto,*,Auto">
+
+
+            <!-- ================================================= -->
+            <!-- ENCABEZADO                                        -->
+            <!-- ================================================= -->
+
+            <StackPanel Grid.Row="0"
+                        Spacing="9">
+
+                <Border Width="54"
+                        Height="54"
+                        CornerRadius="27"
+                        Background="#EAF7EF"
+                        HorizontalAlignment="Left">
+
+                    <TextBlock Text="?"
+                               Foreground="#08783D"
+                               FontSize="27"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                </Border>
+
+
+                <TextBlock Text="Confirmar apertura de turno"
+                           Foreground="#21382A"
+                           FontSize="22"
+                           FontWeight="SemiBold"
+                           Margin="0,8,0,0"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- MENSAJE                                           -->
+            <!-- ================================================= -->
+
+            <StackPanel Grid.Row="1"
+                        VerticalAlignment="Center"
+                        Spacing="7">
+
+                <TextBlock Text="¿Estás seguro de iniciar tu turno con un fondo inicial de:"
+                           Foreground="#718078"
+                           FontSize="14"
+                           TextWrapping="Wrap"/>
+
+
+                <TextBlock x:Name="MontoTextBlock"
+                           Text="$0.00"
+                           Foreground="#08783D"
+                           FontSize="30"
+                           FontWeight="Bold"/>
+
+
+                <TextBlock Text="Una vez confirmado, comenzarás las operaciones de caja."
+                           Foreground="#94A39A"
+                           FontSize="11"
+                           TextWrapping="Wrap"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- BOTONES                                           -->
+            <!-- ================================================= -->
+
+            <Grid Grid.Row="2"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="12">
+
+
+                <Button Grid.Column="0"
+                        Content="Cancelar"
+                        Click="Cancelar_Click"
+                        Height="46"
+                        Background="White"
+                        Foreground="#B51F2A"
+                        BorderBrush="#F0B5BA"
+                        BorderThickness="1"
+                        CornerRadius="9"
+                        HorizontalContentAlignment="Center"
+                        FontWeight="SemiBold"/>
+
+
+                <Button Grid.Column="1"
+                        Content="Sí, iniciar turno"
+                        Click="Confirmar_Click"
+                        Height="46"
+                        Background="#16A34A"
+                        Foreground="White"
+                        BorderThickness="0"
+                        CornerRadius="9"
+                        HorizontalContentAlignment="Center"
+                        FontWeight="SemiBold"/>
+
+            </Grid>
+
+        </Grid>
+
+    </Border>
+
+</Window>

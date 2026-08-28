@@ -1,0 +1,116 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Ventas.VentaFinalizadaWindow"
+
+        Width="430"
+        Height="360"
+
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+
+        Title="Venta finalizada"
+        Background="#F6F8F7">
+
+    <Border Background="White"
+            Margin="14"
+            Padding="28"
+            CornerRadius="18">
+
+        <StackPanel Spacing="18">
+
+
+            <!-- ================================================= -->
+            <!-- ICONO                                             -->
+            <!-- ================================================= -->
+
+            <Border Width="64"
+                    Height="64"
+                    CornerRadius="32"
+                    Background="#EAF7EF"
+                    HorizontalAlignment="Center">
+
+                <TextBlock Text="✓"
+                           Foreground="#16A34A"
+                           FontSize="31"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- MENSAJE                                           -->
+            <!-- ================================================= -->
+
+            <StackPanel HorizontalAlignment="Center"
+                        Spacing="6">
+
+                <TextBlock Text="Venta finalizada"
+                           Foreground="#21382A"
+                           FontSize="24"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"/>
+
+                <TextBlock Text="La venta se ha registrado correctamente."
+                           Foreground="#718078"
+                           FontSize="11"
+                           HorizontalAlignment="Center"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- TICKET                                            -->
+            <!-- ================================================= -->
+
+            <Border Background="#F8FAF9"
+                    BorderBrush="#DDE7E0"
+                    BorderThickness="1"
+                    CornerRadius="13"
+                    Padding="18">
+
+                <StackPanel Spacing="5"
+                            HorizontalAlignment="Center">
+
+                    <TextBlock Text="Ticket generado"
+                               Foreground="#94A39A"
+                               FontSize="9"
+                               HorizontalAlignment="Center"/>
+
+                    <TextBlock x:Name="FolioTicketTextBlock"
+                               Text="PV-001-B-00000001"
+                               Foreground="#08783D"
+                               FontSize="17"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"/>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- BOTÓN                                             -->
+            <!-- ================================================= -->
+
+            <Button Height="48"
+                    Content="Aceptar"
+                    Click="Aceptar_Click"
+                    Background="#16A34A"
+                    Foreground="White"
+                    BorderThickness="0"
+                    CornerRadius="10"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    FontSize="13"
+                    FontWeight="SemiBold"/>
+
+        </StackPanel>
+
+    </Border>
+
+</Window>

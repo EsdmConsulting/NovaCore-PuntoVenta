@@ -1,0 +1,691 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:NovaCoreESDM.ViewModels.Inicio"
+
+             x:Class="NovaCoreESDM.Views.Inicio.InicioView"
+             x:DataType="vm:InicioViewModel"
+
+             Background="#F6F8F7">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+
+        <StackPanel Margin="28"
+                    Spacing="20">
+
+
+            <!-- ================================================= -->
+            <!-- BIENVENIDA                                        -->
+            <!-- ================================================= -->
+
+            <Border Background="#08783D"
+                    CornerRadius="18"
+                    Padding="28">
+
+                <Grid ColumnDefinitions="*,Auto"
+                      ColumnSpacing="24">
+
+
+                    <!-- INFORMACIÓN -->
+
+                    <StackPanel VerticalAlignment="Center"
+                                Spacing="7">
+
+                        <TextBlock Text="GRUPO LUIS FER"
+                                   Foreground="#C9F2D8"
+                                   FontSize="11"
+                                   FontWeight="Bold"/>
+
+                        <TextBlock Text="Bienvenido al Punto de Venta"
+                                   Foreground="White"
+                                   FontSize="27"
+                                   FontWeight="SemiBold"/>
+
+                        <TextBlock Text="Administra tus ventas y operaciones desde un solo lugar."
+                                   Foreground="#D8F3E2"
+                                   FontSize="13"/>
+
+
+                        <!-- ESTADO -->
+
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="8"
+                                    Margin="0,12,0,0">
+
+                            <Border Width="9"
+                                    Height="9"
+                                    CornerRadius="5"
+                                    Background="#22C55E"
+                                    VerticalAlignment="Center"/>
+
+                            <TextBlock Text="Sistema listo para operar"
+                                       Foreground="#E6F8ED"
+                                       FontSize="11"
+                                       VerticalAlignment="Center"/>
+
+                        </StackPanel>
+
+                    </StackPanel>
+
+
+                    <!-- LOGO -->
+
+                    <Border Grid.Column="1"
+                            Width="150"
+                            Height="105"
+                            CornerRadius="16"
+                            Background="White"
+                            Padding="12"
+                            VerticalAlignment="Center">
+
+                        <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                               Stretch="Uniform"/>
+
+                    </Border>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- INDICADORES                                       -->
+            <!-- ================================================= -->
+
+            <Grid ColumnDefinitions="*,*,*,*"
+                  ColumnSpacing="15">
+
+
+                <!-- ================================================= -->
+                <!-- VENTAS                                            -->
+                <!-- ================================================= -->
+
+                <Border Grid.Column="0"
+                        Classes="dashboardCard">
+
+                    <StackPanel Spacing="8">
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <TextBlock Text="Ventas del turno"
+                                       Classes="cardLabel"/>
+
+                            <Border Grid.Column="1"
+                                    Width="36"
+                                    Height="36"
+                                    CornerRadius="10"
+                                    Background="#EAF7EF">
+
+                                <TextBlock Text="$"
+                                           Foreground="#08783D"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                            </Border>
+
+                        </Grid>
+
+
+                        <TextBlock Text="$0.00"
+                                   Classes="cardValue"/>
+
+                        <TextBlock Text="Total vendido durante el turno"
+                                   Classes="cardDetail"/>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- ================================================= -->
+                <!-- TICKETS                                           -->
+                <!-- ================================================= -->
+
+                <Border Grid.Column="1"
+                        Classes="dashboardCard">
+
+                    <StackPanel Spacing="8">
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <TextBlock Text="Tickets"
+                                       Classes="cardLabel"/>
+
+                            <Border Grid.Column="1"
+                                    Width="36"
+                                    Height="36"
+                                    CornerRadius="10"
+                                    Background="#F0F8F3">
+
+                                <TextBlock Text="▥"
+                                           Foreground="#16A34A"
+                                           FontSize="15"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                            </Border>
+
+                        </Grid>
+
+
+                        <TextBlock Text="0"
+                                   Classes="cardValue"/>
+
+                        <TextBlock Text="Operaciones realizadas"
+                                   Classes="cardDetail"/>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- ================================================= -->
+                <!-- EFECTIVO                                          -->
+                <!-- ================================================= -->
+
+                <Border Grid.Column="2"
+                        Classes="dashboardCard">
+
+                    <StackPanel Spacing="8">
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <TextBlock Text="Efectivo"
+                                       Classes="cardLabel"/>
+
+                            <Border Grid.Column="1"
+                                    Width="36"
+                                    Height="36"
+                                    CornerRadius="10"
+                                    Background="#EAF7EF">
+
+                                <TextBlock Text="$"
+                                           Foreground="#16A34A"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                            </Border>
+
+                        </Grid>
+
+
+                        <TextBlock Text="$0.00"
+                                   Classes="cardValue"/>
+
+                        <TextBlock Text="Pagos recibidos en efectivo"
+                                   Classes="cardDetail"/>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- ================================================= -->
+                <!-- TARJETA                                           -->
+                <!-- ================================================= -->
+
+                <Border Grid.Column="3"
+                        Classes="dashboardCard">
+
+                    <StackPanel Spacing="8">
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <TextBlock Text="Tarjeta"
+                                       Classes="cardLabel"/>
+
+                            <Border Grid.Column="1"
+                                    Width="36"
+                                    Height="36"
+                                    CornerRadius="10"
+                                    Background="#FFF5EC">
+
+                                <TextBlock Text="▰"
+                                           Foreground="#A96932"
+                                           FontSize="15"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                            </Border>
+
+                        </Grid>
+
+
+                        <TextBlock Text="$0.00"
+                                   Classes="cardValue"/>
+
+                        <TextBlock Text="Pagos realizados con tarjeta"
+                                   Classes="cardDetail"/>
+
+                    </StackPanel>
+
+                </Border>
+
+            </Grid>
+
+
+            <!-- ================================================= -->
+            <!-- PARTE INFERIOR                                    -->
+            <!-- ================================================= -->
+
+            <Grid ColumnDefinitions="1.2*,0.8*"
+                  ColumnSpacing="18">
+
+
+                <!-- ================================================= -->
+                <!-- ACTIVIDAD DEL TURNO                               -->
+                <!-- ================================================= -->
+
+                <Border Grid.Column="0"
+                        Classes="sectionCard">
+
+                    <StackPanel Spacing="17">
+
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <StackPanel Spacing="2">
+
+                                <TextBlock Text="Actividad del turno"
+                                           Classes="sectionTitle"/>
+
+                                <TextBlock Text="Últimos movimientos registrados"
+                                           Foreground="#94A39A"
+                                           FontSize="10"/>
+
+                            </StackPanel>
+
+
+                            <Border Grid.Column="1"
+                                    Background="#F4F7F5"
+                                    CornerRadius="8"
+                                    Padding="10,5"
+                                    VerticalAlignment="Center">
+
+                                <TextBlock Text="Hoy"
+                                           Foreground="#718078"
+                                           FontSize="10"/>
+
+                            </Border>
+
+                        </Grid>
+
+
+                        <Border Height="220"
+                                Background="#F8FAF9"
+                                BorderBrush="#EDF1EE"
+                                BorderThickness="1"
+                                CornerRadius="12">
+
+                            <StackPanel HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Spacing="9">
+
+
+                                <Border Width="64"
+                                        Height="64"
+                                        CornerRadius="20"
+                                        Background="#EAF7EF">
+
+                                    <TextBlock Text="▥"
+                                               Foreground="#7CB88B"
+                                               FontSize="29"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+
+                                </Border>
+
+
+                                <TextBlock Text="Todavía no hay movimientos para mostrar"
+                                           Foreground="#44534A"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"/>
+
+
+                                <TextBlock Text="La actividad aparecerá cuando realices ventas."
+                                           Foreground="#94A39A"
+                                           FontSize="10"
+                                           HorizontalAlignment="Center"/>
+
+                            </StackPanel>
+
+                        </Border>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- ================================================= -->
+                <!-- ACCESOS RÁPIDOS                                   -->
+                <!-- ================================================= -->
+
+                <Border Grid.Column="1"
+                        Classes="sectionCard">
+
+                    <StackPanel Spacing="12">
+
+
+                        <StackPanel Spacing="2"
+                                    Margin="0,0,0,4">
+
+                            <TextBlock Text="Accesos rápidos"
+                                       Classes="sectionTitle"/>
+
+                            <TextBlock Text="Operaciones frecuentes"
+                                       Foreground="#94A39A"
+                                       FontSize="10"/>
+
+                        </StackPanel>
+
+
+                        <!-- NUEVA VENTA -->
+
+                        <Button Classes="quickAction">
+
+                            <Grid ColumnDefinitions="40,*">
+
+
+                                <Border Width="34"
+                                        Height="34"
+                                        CornerRadius="10"
+                                        Background="#EAF7EF">
+
+                                    <TextBlock Text="+"
+                                               Foreground="#16A34A"
+                                               FontSize="20"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+
+                                </Border>
+
+
+                                <StackPanel Grid.Column="1"
+                                            Margin="10,0,0,0"
+                                            VerticalAlignment="Center"
+                                            Spacing="2">
+
+                                    <TextBlock Text="Nueva venta"
+                                               Foreground="#33443A"
+                                               FontWeight="SemiBold"/>
+
+                                    <TextBlock Text="Registrar una nueva operación"
+                                               Foreground="#94A39A"
+                                               FontSize="9"/>
+
+                                </StackPanel>
+
+                            </Grid>
+
+                        </Button>
+
+
+                        <!-- CORTES -->
+
+                        <Button Classes="quickAction">
+
+                            <Grid ColumnDefinitions="40,*">
+
+
+                                <Border Width="34"
+                                        Height="34"
+                                        CornerRadius="10"
+                                        Background="#F4F7F5">
+
+                                    <TextBlock Text="▥"
+                                               Foreground="#08783D"
+                                               FontSize="16"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+
+                                </Border>
+
+
+                                <StackPanel Grid.Column="1"
+                                            Margin="10,0,0,0"
+                                            VerticalAlignment="Center"
+                                            Spacing="2">
+
+                                    <TextBlock Text="Consultar cortes"
+                                               Foreground="#33443A"
+                                               FontWeight="SemiBold"/>
+
+                                    <TextBlock Text="Revisar aperturas y cierres"
+                                               Foreground="#94A39A"
+                                               FontSize="9"/>
+
+                                </StackPanel>
+
+                            </Grid>
+
+                        </Button>
+
+
+                        <!-- ESTADO -->
+
+                        <Border Background="#F8FAF9"
+                                BorderBrush="#EDF1EE"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="12"
+                                Margin="0,4,0,0">
+
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="9">
+
+                                <Border Width="8"
+                                        Height="8"
+                                        CornerRadius="4"
+                                        Background="#16A34A"
+                                        VerticalAlignment="Center"/>
+
+                                <StackPanel Grid.Column="1"
+                                            Spacing="1">
+
+                                    <TextBlock Text="Sistema disponible"
+                                               Foreground="#526158"
+                                               FontSize="10"
+                                               FontWeight="SemiBold"/>
+
+                                    <TextBlock Text="Listo para operar"
+                                               Foreground="#94A39A"
+                                               FontSize="9"/>
+
+                                </StackPanel>
+
+                            </Grid>
+
+                        </Border>
+
+                    </StackPanel>
+
+                </Border>
+
+            </Grid>
+
+        </StackPanel>
+
+    </ScrollViewer>
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <UserControl.Styles>
+
+
+        <!-- ===================================================== -->
+        <!-- TARJETAS DE INDICADORES                               -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Border.dashboardCard">
+
+            <Setter Property="Background"
+                    Value="White"/>
+
+            <Setter Property="CornerRadius"
+                    Value="14"/>
+
+            <Setter Property="Padding"
+                    Value="20"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#E2E8E4"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+
+            <Setter Property="MinHeight"
+                    Value="135"/>
+
+        </Style>
+
+
+        <Style Selector="TextBlock.cardLabel">
+
+            <Setter Property="Foreground"
+                    Value="#718078"/>
+
+            <Setter Property="FontSize"
+                    Value="11"/>
+
+            <Setter Property="FontWeight"
+                    Value="SemiBold"/>
+
+        </Style>
+
+
+        <Style Selector="TextBlock.cardValue">
+
+            <Setter Property="Foreground"
+                    Value="#21382A"/>
+
+            <Setter Property="FontSize"
+                    Value="26"/>
+
+            <Setter Property="FontWeight"
+                    Value="Bold"/>
+
+        </Style>
+
+
+        <Style Selector="TextBlock.cardDetail">
+
+            <Setter Property="Foreground"
+                    Value="#94A39A"/>
+
+            <Setter Property="FontSize"
+                    Value="9"/>
+
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- TARJETAS DE SECCIÓN                                  -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Border.sectionCard">
+
+            <Setter Property="Background"
+                    Value="White"/>
+
+            <Setter Property="CornerRadius"
+                    Value="14"/>
+
+            <Setter Property="Padding"
+                    Value="21"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#E4EAE6"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+
+        </Style>
+
+
+        <Style Selector="TextBlock.sectionTitle">
+
+            <Setter Property="Foreground"
+                    Value="#21382A"/>
+
+            <Setter Property="FontSize"
+                    Value="16"/>
+
+            <Setter Property="FontWeight"
+                    Value="SemiBold"/>
+
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- ACCESOS RÁPIDOS                                      -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Button.quickAction">
+
+            <Setter Property="MinHeight"
+                    Value="60"/>
+
+            <Setter Property="HorizontalAlignment"
+                    Value="Stretch"/>
+
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Stretch"/>
+
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center"/>
+
+            <Setter Property="Padding"
+                    Value="12,8"/>
+
+            <Setter Property="Background"
+                    Value="#F8FAF9"/>
+
+            <Setter Property="Foreground"
+                    Value="#33443A"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#E4EAE6"/>
+
+            <Setter Property="BorderThickness"
+                    Value="1"/>
+
+            <Setter Property="CornerRadius"
+                    Value="10"/>
+
+            <Setter Property="FontSize"
+                    Value="11"/>
+
+        </Style>
+
+
+        <Style Selector="Button.quickAction:pointerover">
+
+            <Setter Property="Background"
+                    Value="#F1F8F3"/>
+
+            <Setter Property="BorderBrush"
+                    Value="#16A34A"/>
+
+        </Style>
+
+
+        <Style Selector="Button.quickAction:pressed">
+
+            <Setter Property="Opacity"
+                    Value="0.82"/>
+
+        </Style>
+
+    </UserControl.Styles>
+
+</UserControl>

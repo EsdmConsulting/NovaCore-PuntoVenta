@@ -1,22 +1,48 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="NovaCoreESDM.App"
              xmlns:local="using:NovaCoreESDM"
-             xmlns:desktop="clr-namespace:POS.Desktop"
+
+             xmlns:inicioViews="using:NovaCoreESDM.Views.Inicio"
+             xmlns:inicioViewModels="using:NovaCoreESDM.ViewModels.Inicio"
+
+             xmlns:ventasViews="using:NovaCoreESDM.Views.Ventas"
+             xmlns:ventasViewModels="using:NovaCoreESDM.ViewModels.Ventas"
+
+             xmlns:cortesViews="using:NovaCoreESDM.Views.Cortes"
+             xmlns:cortesViewModels="using:NovaCoreESDM.ViewModels.Cortes"
+
+             x:Class="NovaCoreESDM.App"
              RequestedThemeVariant="Light">
 
+    <!-- Relación entre cada ViewModel y su pantalla -->
     <Application.DataTemplates>
-        <local:ViewLocator/>
+
+        <DataTemplate DataType="inicioViewModels:InicioViewModel">
+            <inicioViews:InicioView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="ventasViewModels:VentasViewModel">
+            <ventasViews:VentasView/>
+        </DataTemplate>
+
+        <DataTemplate DataType="cortesViewModels:CortesViewModel">
+            <cortesViews:CortesView/>
+        </DataTemplate>
+
     </Application.DataTemplates>
 
+    <!-- Recursos globales -->
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+
                 <ResourceInclude Source="/Styles/Colors.axaml"/>
+
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
 
+    <!-- Tema global -->
     <Application.Styles>
         <FluentTheme/>
     </Application.Styles>

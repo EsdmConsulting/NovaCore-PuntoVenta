@@ -1,11 +1,38 @@
 using System;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using NovaCoreESDM.ViewModels.Cortes;
+using NovaCoreESDM.ViewModels.Inicio;
+using NovaCoreESDM.ViewModels.Ventas;
 
 namespace NovaCoreESDM.ViewModels;
 
 public partial class MainViewModel : ViewModelBase
 {
+    // Instancias de cada módulo.
+    public InicioViewModel InicioModulo { get; }
+
+    public VentasViewModel VentasModulo { get; }
+
+    public CortesViewModel CortesModulo { get; }
+
+    private ViewModelBase _vistaActual;
+
+    public ViewModelBase VistaActual
+    {
+        get => _vistaActual;
+
+        private set
+        {
+            if (SetProperty(ref _vistaActual, value))
+            {
+                OnPropertyChanged(nameof(EsInicio));
+                OnPropertyChanged(nameof(EsNuevaVenta));
+                OnPropertyChanged(nameof(EsCortes));
+            }
+        }
+    }
+
     [ObservableProperty]
     private string _nombreUsuario = "Administrador";
 
@@ -16,20 +43,30 @@ public partial class MainViewModel : ViewModelBase
     private string _tituloPagina = "Inicio";
 
     [ObservableProperty]
-    private string _subtituloPagina = "Resumen general del punto de venta";
+    private string _subtituloPagina =
+        "Resumen general del punto de venta";
 
     [ObservableProperty]
     private string _fechaActual =
         DateTime.Now.ToString("dddd, dd 'de' MMMM 'de' yyyy");
 
-    [ObservableProperty]
-    private string _seccionActual = "Inicio";
+    public bool EsInicio =>
+        VistaActual is InicioViewModel;
 
-    public bool EsInicio => SeccionActual == "Inicio";
+    public bool EsNuevaVenta =>
+        VistaActual is VentasViewModel;
 
-    public bool EsNuevaVenta => SeccionActual == "NuevaVenta";
+    public bool EsCortes =>
+        VistaActual is CortesViewModel;
 
-    public bool EsCortes => SeccionActual == "Cortes";
+    public MainViewModel()
+    {
+        InicioModulo = new InicioViewModel();
+        VentasModulo = new VentasViewModel();
+        CortesModulo = new CortesViewModel();
+
+        _vistaActual = InicioModulo;
+    }
 
     [RelayCommand]
     private void Navegar(string? seccion)
@@ -37,34 +74,28 @@ public partial class MainViewModel : ViewModelBase
         if (string.IsNullOrWhiteSpace(seccion))
             return;
 
-        SeccionActual = seccion;
-
         switch (seccion)
         {
             case "Inicio":
+                VistaActual = InicioModulo;
                 TituloPagina = "Inicio";
-                SubtituloPagina = "Resumen general del punto de venta";
+                SubtituloPagina =
+                    "Resumen general del punto de venta";
                 break;
 
             case "NuevaVenta":
+                VistaActual = VentasModulo;
                 TituloPagina = "Nueva venta";
-                SubtituloPagina = "Selecciona o escanea productos para comenzar";
+                SubtituloPagina =
+                    "Selecciona o escanea productos para comenzar";
                 break;
 
             case "Cortes":
+                VistaActual = CortesModulo;
                 TituloPagina = "Cortes y reportes";
-                SubtituloPagina = "Consulta aperturas, cierres y resultados de caja";
-                break;
-
-            default:
-                SeccionActual = "Inicio";
-                TituloPagina = "Inicio";
-                SubtituloPagina = "Resumen general del punto de venta";
+                SubtituloPagina =
+                    "Consulta aperturas, cierres y resultados de caja";
                 break;
         }
-
-        OnPropertyChanged(nameof(EsInicio));
-        OnPropertyChanged(nameof(EsNuevaVenta));
-        OnPropertyChanged(nameof(EsCortes));
     }
 }

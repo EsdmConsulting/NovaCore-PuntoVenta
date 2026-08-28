@@ -2,7 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="NovaCoreESDM.Controls.EsdmLogo">
 
-    <Image Source="/Assets/Brand/esdm_logo_app.png"
+    <Image Source="/Assets/Brand/esdm_logo_app2.png"
            Stretch="Uniform"
            HorizontalAlignment="Stretch"
            VerticalAlignment="Stretch"/>

@@ -1,0 +1,182 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Ventas.CobroWindow"
+
+        Width="450"
+        Height="480"
+
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+
+        Title="Cobrar venta"
+        Background="#F5F7FA">
+
+    <Border Background="White"
+            Padding="26"
+            Margin="14"
+            CornerRadius="16">
+
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto"
+              RowSpacing="18">
+
+
+            <!-- ================================================= -->
+            <!-- TÍTULO                                            -->
+            <!-- ================================================= -->
+
+            <StackPanel Grid.Row="0"
+                        Spacing="4">
+
+                <TextBlock Text="Cobrar venta"
+                           FontSize="22"
+                           FontWeight="SemiBold"
+                           Foreground="#17365D"/>
+
+                <TextBlock Text="Selecciona el método de pago"
+                           FontSize="11"
+                           Foreground="#64748B"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- TOTAL                                             -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="1"
+                    Background="#F8FAFC"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="18">
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <TextBlock Text="Total a pagar"
+                               Foreground="#475569"
+                               FontSize="13"
+                               VerticalAlignment="Center"/>
+
+                    <TextBlock Grid.Column="1"
+                               x:Name="TextoTotal"
+                               Foreground="#17365D"
+                               FontSize="26"
+                               FontWeight="Bold"/>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- TÍTULO MÉTODOS                                    -->
+            <!-- ================================================= -->
+
+            <TextBlock Grid.Row="2"
+                       Text="Método de pago"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Foreground="#334155"/>
+
+
+            <!-- ================================================= -->
+            <!-- MÉTODOS                                           -->
+            <!-- ================================================= -->
+
+            <Grid Grid.Row="3"
+                  RowDefinitions="Auto,Auto"
+                  ColumnDefinitions="*,*"
+                  RowSpacing="10"
+                  ColumnSpacing="10">
+
+
+                <!-- EFECTIVO -->
+
+                <Button Grid.Row="0"
+                        Grid.Column="0"
+                        Height="74"
+                        Content="Efectivo"
+                        Click="Efectivo_Click"
+                        Background="#EAF6EE"
+                        Foreground="#16803B"
+                        BorderBrush="#B7DFC3"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        HorizontalContentAlignment="Center"/>
+
+
+                <!-- TARJETA -->
+
+                <Button Grid.Row="0"
+                        Grid.Column="1"
+                        Height="74"
+                        Content="Tarjeta"
+                        IsEnabled="False"
+                        Background="#F8FAFC"
+                        Foreground="#94A3B8"
+                        BorderBrush="#E2E8F0"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        HorizontalContentAlignment="Center"/>
+
+
+                <!-- TRANSFERENCIA -->
+
+                <Button Grid.Row="1"
+                        Grid.Column="0"
+                        Height="74"
+                        Content="Transferencia"
+                        IsEnabled="False"
+                        Background="#F8FAFC"
+                        Foreground="#94A3B8"
+                        BorderBrush="#E2E8F0"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        HorizontalContentAlignment="Center"/>
+
+
+                <!-- CRÉDITO -->
+
+                <Button Grid.Row="1"
+                        Grid.Column="1"
+                        Height="74"
+                        Content="Pagar con crédito"
+                        IsEnabled="False"
+                        Background="#F8FAFC"
+                        Foreground="#94A3B8"
+                        BorderBrush="#E2E8F0"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        HorizontalContentAlignment="Center"/>
+
+            </Grid>
+
+
+            <!-- ================================================= -->
+            <!-- CERRAR                                            -->
+            <!-- ================================================= -->
+
+            <Button Grid.Row="4"
+                    Height="42"
+                    Content="Cerrar"
+                    Click="Cerrar_Click"
+                    Background="White"
+                    Foreground="#64748B"
+                    BorderBrush="#CBD5E1"
+                    BorderThickness="1"
+                    CornerRadius="9"/>
+
+        </Grid>
+
+    </Border>
+
+</Window>

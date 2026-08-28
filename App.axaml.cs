@@ -5,6 +5,12 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 using NovaCoreESDM.Views;
 
+using System;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
+using NovaCoreESDM.Views;
 
 namespace NovaCoreESDM;
 
@@ -27,14 +33,18 @@ public partial class App : Application
             DispatcherTimer.RunOnce(
                 () =>
                 {
-                    var loginWindow = new LoginWindow();
-                    desktop.MainWindow = loginWindow;
-                    loginWindow.Show();
+                    var loginWindow =
+                        new LoginWindow();
 
+                    desktop.MainWindow =
+                        loginWindow;
+
+                    loginWindow.Show();
 
                     splashWindow.Close();
                 },
-                TimeSpan.FromSeconds(2));
+                TimeSpan.FromSeconds(2)
+            );
         }
 
         base.OnFrameworkInitializationCompleted();

@@ -1,0 +1,265 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Ventas.EntregaTicketWindow"
+
+        Width="520"
+        Height="470"
+
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+
+        Title="Entrega de ticket"
+        Background="#F6F8F7">
+
+    <Border Background="White"
+            Margin="14"
+            Padding="28"
+            CornerRadius="18">
+
+        <Grid RowDefinitions="Auto,Auto,Auto"
+              RowSpacing="18">
+
+
+            <!-- ================================================= -->
+            <!-- VENTA COMPLETADA                                  -->
+            <!-- ================================================= -->
+
+            <StackPanel Grid.Row="0"
+                        HorizontalAlignment="Center"
+                        Spacing="8">
+
+                <Border Width="58"
+                        Height="58"
+                        CornerRadius="29"
+                        Background="#EAF7EF">
+
+                    <TextBlock Text="✓"
+                               Foreground="#16A34A"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                </Border>
+
+
+                <TextBlock Text="Venta completada"
+                           Foreground="#21382A"
+                           FontSize="23"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"/>
+
+
+                <TextBlock Text="Selecciona cómo deseas entregar el ticket al cliente."
+                           Foreground="#718078"
+                           FontSize="11"
+                           HorizontalAlignment="Center"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- DATOS DEL TICKET                                  -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="1"
+                    Background="#F8FAF9"
+                    BorderBrush="#E4EAE6"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="15">
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <StackPanel Spacing="3">
+
+                        <TextBlock Text="Ticket"
+                                   Foreground="#94A39A"
+                                   FontSize="9"/>
+
+                        <TextBlock x:Name="FolioTicketTextBlock"
+                                   Text="PV-001-B-00000001"
+                                   Foreground="#08783D"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"/>
+
+                    </StackPanel>
+
+
+                    <StackPanel Grid.Column="1"
+                                Spacing="3"
+                                HorizontalAlignment="Right">
+
+                        <TextBlock Text="Total"
+                                   Foreground="#94A39A"
+                                   FontSize="9"
+                                   HorizontalAlignment="Right"/>
+
+                        <TextBlock x:Name="TotalTextBlock"
+                                   Text="$0.00"
+                                   Foreground="#21382A"
+                                   FontSize="18"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Right"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- OPCIONES                                          -->
+            <!-- ================================================= -->
+
+            <Grid Grid.Row="2"
+                  RowDefinitions="100,90"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="14"
+                  RowSpacing="14">
+
+
+                <!-- ================================================= -->
+                <!-- IMPRIMIR                                          -->
+                <!-- ================================================= -->
+
+                <Button Grid.Row="0"
+                        Grid.Column="0"
+                        Click="Imprimir_Click"
+                        Background="#EAF7EF"
+                        Foreground="#08783D"
+                        BorderBrush="#9BDCAF"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center">
+
+                    <StackPanel Spacing="7"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+
+                        <TextBlock Text="🖨"
+                                   FontSize="24"
+                                   HorizontalAlignment="Center"/>
+
+                        <TextBlock Text="Imprimir ticket"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"/>
+
+                    </StackPanel>
+
+                </Button>
+
+
+                <!-- ================================================= -->
+                <!-- WHATSAPP                                          -->
+                <!-- ================================================= -->
+
+                <Button Grid.Row="0"
+                        Grid.Column="1"
+                        Click="WhatsApp_Click"
+                        Background="#F1F8F3"
+                        Foreground="#16803B"
+                        BorderBrush="#B7DFC3"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center">
+
+                    <StackPanel Spacing="7"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center">
+
+                        <Border Width="30"
+                                Height="30"
+                                CornerRadius="15"
+                                Background="#25D366">
+
+                            <TextBlock Text="●"
+                                       Foreground="White"
+                                       FontSize="12"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+
+                        </Border>
+
+                        <TextBlock Text="Enviar por WhatsApp"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   HorizontalAlignment="Center"/>
+
+                    </StackPanel>
+
+                </Button>
+
+
+                <!-- ================================================= -->
+                <!-- SIN TICKET                                        -->
+                <!-- ================================================= -->
+
+                <Button Grid.Row="1"
+                        Grid.ColumnSpan="2"
+                        Click="SinTicket_Click"
+                        Background="White"
+                        Foreground="#526158"
+                        BorderBrush="#CBD5CE"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Center"
+                        Padding="18,12">
+
+                    <Grid ColumnDefinitions="Auto,*"
+                          ColumnSpacing="14">
+
+
+                        <!-- ICONO -->
+
+                        <Border Width="42"
+                                Height="42"
+                                CornerRadius="21"
+                                Background="#F3F6F4"
+                                VerticalAlignment="Center">
+
+                            <TextBlock Text="×"
+                                       Foreground="#718078"
+                                       FontSize="20"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+
+                        </Border>
+
+
+                        <!-- TEXTO -->
+
+                        <StackPanel Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Spacing="4">
+
+                            <TextBlock Text="Finalizar sin ticket"
+                                       Foreground="#526158"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"/>
+
+                            <TextBlock Text="La venta permanecerá registrada aunque no se entregue un ticket."
+                                       Foreground="#94A39A"
+                                       FontSize="9"
+                                       TextWrapping="Wrap"/>
+
+                        </StackPanel>
+
+                    </Grid>
+
+                </Button>
+
+            </Grid>
+
+        </Grid>
+
+    </Border>
+
+</Window>

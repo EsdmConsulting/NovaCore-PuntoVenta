@@ -1,0 +1,102 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Ventas.EnviarWhatsAppWindow"
+
+        Width="430"
+        Height="300"
+
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+
+        Title="Enviar ticket por WhatsApp"
+        Background="#F6F8F7">
+
+    <Border Background="White"
+            Margin="14"
+            Padding="26"
+            CornerRadius="16">
+
+        <Grid RowDefinitions="Auto,Auto,*,Auto"
+              RowSpacing="16">
+
+            <!-- TÍTULO -->
+
+            <StackPanel Grid.Row="0"
+                        Spacing="4">
+
+                <TextBlock Text="Enviar por WhatsApp"
+                           Foreground="#21382A"
+                           FontSize="22"
+                           FontWeight="SemiBold"/>
+
+                <TextBlock Text="Captura el número del cliente."
+                           Foreground="#718078"
+                           FontSize="11"/>
+
+            </StackPanel>
+
+
+            <!-- TELÉFONO -->
+
+            <StackPanel Grid.Row="1"
+                        Spacing="6">
+
+                <TextBlock Text="Número de teléfono"
+                           Foreground="#44534A"
+                           FontSize="12"
+                           FontWeight="SemiBold"/>
+
+                <TextBox x:Name="TelefonoTextBox"
+                         Height="48"
+                         Watermark="Ej. 5512345678"
+                         FontSize="16"
+                         Padding="14,0"
+                         CornerRadius="9"
+                         BorderBrush="#CBD5CE"/>
+
+            </StackPanel>
+
+
+            <!-- MENSAJE -->
+
+            <TextBlock Grid.Row="2"
+                       x:Name="MensajeTextBlock"
+                       Foreground="#B51F2A"
+                       FontSize="11"
+                       TextWrapping="Wrap"/>
+
+
+            <!-- BOTONES -->
+
+            <Grid Grid.Row="3"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="10">
+
+                <Button Grid.Column="0"
+                        Height="44"
+                        Content="Cancelar"
+                        Click="Cancelar_Click"
+                        Background="White"
+                        Foreground="#B51F2A"
+                        BorderBrush="#F0B5BA"
+                        BorderThickness="1"
+                        CornerRadius="9"/>
+
+                <Button Grid.Column="1"
+                        Height="44"
+                        Content="Abrir WhatsApp"
+                        Click="AbrirWhatsApp_Click"
+                        Background="#16A34A"
+                        Foreground="White"
+                        BorderThickness="0"
+                        CornerRadius="9"
+                        FontWeight="SemiBold"/>
+
+            </Grid>
+
+        </Grid>
+
+    </Border>
+
+</Window>

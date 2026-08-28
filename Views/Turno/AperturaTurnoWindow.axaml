@@ -1,0 +1,269 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:NovaCoreESDM.ViewModels.Turno"
+
+        x:Class="NovaCoreESDM.Views.Turno.AperturaTurnoWindow"
+        x:DataType="vm:AperturaTurnoViewModel"
+
+        mc:Ignorable="d"
+
+        Title="Grupo Luis Fer - Apertura de turno"
+        Icon="/Assets/Brand/esdm-app-icon.ico"
+
+        Width="1100"
+        Height="680"
+
+        MinWidth="900"
+        MinHeight="600"
+
+        WindowStartupLocation="CenterScreen"
+
+        Background="#F6F8F7">
+
+    <Grid ColumnDefinitions="420,*">
+
+
+        <!-- ===================================================== -->
+        <!-- PANEL IZQUIERDO                                       -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Column="0"
+                Background="#08783D">
+
+            <Grid>
+
+                <!-- Decoración suave -->
+
+                <Ellipse Width="520"
+                         Height="520"
+                         HorizontalAlignment="Left"
+                         VerticalAlignment="Top"
+                         Margin="-300,-300,0,0"
+                         Fill="#16A34A"
+                         Opacity="0.13"/>
+
+                <Ellipse Width="360"
+                         Height="360"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Bottom"
+                         Margin="0,0,-210,-220"
+                         Fill="#C79A3B"
+                         Opacity="0.10"/>
+
+
+                <Grid Margin="48"
+                      RowDefinitions="Auto,*,Auto">
+
+
+                    <!-- LOGO -->
+
+                    <StackPanel Grid.Row="0"
+                                Spacing="12">
+
+                        <Border Width="150"
+                                Height="105"
+                                CornerRadius="16"
+                                Background="White"
+                                Padding="12">
+
+                            <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                                   Stretch="Uniform"/>
+
+                        </Border>
+
+                        <TextBlock Text="PUNTO DE VENTA"
+                                   Foreground="#D8F3E2"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"/>
+
+                    </StackPanel>
+
+
+                    <!-- MENSAJE -->
+
+                    <StackPanel Grid.Row="1"
+                                VerticalAlignment="Center"
+                                Spacing="14">
+
+                        <TextBlock Text="Comienza tu turno"
+                                   Foreground="White"
+                                   FontSize="34"
+                                   FontWeight="SemiBold"/>
+
+                        <TextBlock Text="Registra el efectivo disponible en caja antes de comenzar las operaciones."
+                                   Foreground="#D8F3E2"
+                                   FontSize="15"
+                                   LineHeight="24"
+                                   TextWrapping="Wrap"/>
+
+
+                        <Border Background="#18FFFFFF"
+                                CornerRadius="12"
+                                Padding="15"
+                                Margin="0,18,0,0">
+
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="10">
+
+                                <Border Width="9"
+                                        Height="9"
+                                        CornerRadius="5"
+                                        Background="#4ADE80"
+                                        VerticalAlignment="Center"/>
+
+                                <TextBlock Text="Sesión iniciada correctamente"
+                                           Foreground="White"
+                                           FontSize="12"
+                                           VerticalAlignment="Center"/>
+
+                            </StackPanel>
+
+                        </Border>
+
+                    </StackPanel>
+
+
+                    <!-- FOOTER -->
+
+                    <TextBlock Grid.Row="2"
+                               Text="Desarrollado por ESDM Consulting"
+                               Foreground="#C8DDCF"
+                               Opacity="0.75"
+                               FontSize="11"/>
+
+                </Grid>
+
+            </Grid>
+
+        </Border>
+
+
+        <!-- ===================================================== -->
+        <!-- PANEL DERECHO                                         -->
+        <!-- ===================================================== -->
+
+        <Grid Grid.Column="1"
+              Margin="70">
+
+            <StackPanel Width="410"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="11">
+
+
+                <TextBlock Text="Apertura de turno"
+                           Foreground="#21382A"
+                           FontSize="32"
+                           FontWeight="SemiBold"/>
+
+                <TextBlock Text="Indica cuánto efectivo tienes físicamente en caja."
+                           Foreground="#718078"
+                           FontSize="14"
+                           Margin="0,0,0,22"/>
+
+
+                <!-- FONDO INICIAL -->
+
+                <TextBlock Text="Fondo inicial"
+                           Foreground="#44534A"
+                           FontSize="13"
+                           FontWeight="SemiBold"/>
+
+
+                <Border Background="White"
+                        BorderBrush="#DDE7E0"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="15,7">
+
+                    <Grid ColumnDefinitions="Auto,*">
+
+                        <TextBlock Text="$"
+                                   Foreground="#718078"
+                                   FontSize="26"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,12,0"/>
+
+                        <NumericUpDown Grid.Column="1"
+                                       Value="{Binding FondoInicial}"
+                                       Minimum="0"
+                                       Increment="50"
+                                       FormatString="0.00"
+                                       FontSize="25"
+                                       FontWeight="SemiBold"
+                                       Foreground="#21382A"
+                                       Background="Transparent"
+                                       BorderThickness="0"/>
+
+                    </Grid>
+
+                </Border>
+
+
+                <TextBlock Text="Este monto debe coincidir con el efectivo disponible físicamente en la caja."
+                           Foreground="#94A39A"
+                           FontSize="11"
+                           TextWrapping="Wrap"
+                           Margin="0,3,0,8"/>
+
+
+                <!-- ERROR -->
+
+                <TextBlock Text="{Binding MensajeError}"
+                           Foreground="#B51F2A"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           MinHeight="20"/>
+
+
+                <!-- BOTÓN -->
+
+                <Button Content="Iniciar turno"
+                        Command="{Binding IniciarTurnoCommand}"
+                        IsEnabled="{Binding PuedeIniciarTurno}"
+                        Height="52"
+                        Margin="0,4,0,0"
+                        Background="#16A34A"
+                        Foreground="White"
+                        HorizontalContentAlignment="Center"
+                        CornerRadius="10"
+                        FontSize="15"
+                        FontWeight="SemiBold"/>
+
+
+                <!-- AYUDA -->
+
+                <Border Background="#F1F8F3"
+                        BorderBrush="#D7E9DD"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="15"
+                        Margin="0,16,0,0">
+
+                    <StackPanel Spacing="5">
+
+                        <TextBlock Text="¿Qué es el fondo inicial?"
+                                   Foreground="#08783D"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"/>
+
+                        <TextBlock Text="Es el efectivo que existe dentro de la caja al comenzar el turno. Se utilizará posteriormente para calcular el corte de caja."
+                                   Foreground="#64746B"
+                                   FontSize="11"
+                                   LineHeight="17"
+                                   TextWrapping="Wrap"/>
+
+                    </StackPanel>
+
+                </Border>
+
+            </StackPanel>
+
+        </Grid>
+
+    </Grid>
+
+</Window>

@@ -1,0 +1,174 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Ventas.PagoEfectivoWindow"
+
+        Width="430"
+        Height="390"
+
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+
+        Title="Pago en efectivo"
+        Background="#F5F7FA">
+
+    <Border Background="White"
+            CornerRadius="16"
+            Padding="26"
+            Margin="14">
+
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto,*,Auto"
+              RowSpacing="16">
+
+
+            <!-- ================================================= -->
+            <!-- TÍTULO                                            -->
+            <!-- ================================================= -->
+
+            <StackPanel Grid.Row="0"
+                        Spacing="4">
+
+                <TextBlock Text="Pago en efectivo"
+                           FontSize="22"
+                           FontWeight="SemiBold"
+                           Foreground="#17365D"/>
+
+                <TextBlock Text="Captura el efectivo recibido"
+                           FontSize="11"
+                           Foreground="#64748B"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- TOTAL                                             -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="1"
+                    Background="#F8FAFC"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="16">
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <TextBlock Text="Total a pagar"
+                               Foreground="#475569"
+                               FontSize="13"
+                               VerticalAlignment="Center"/>
+
+                    <TextBlock Grid.Column="1"
+                               x:Name="TextoTotal"
+                               Foreground="#17365D"
+                               FontSize="24"
+                               FontWeight="Bold"/>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- RECIBIDO                                          -->
+            <!-- ================================================= -->
+
+            <StackPanel Grid.Row="2"
+                        Spacing="6">
+
+                <TextBlock Text="Efectivo recibido"
+                           Foreground="#334155"
+                           FontSize="12"
+                           FontWeight="SemiBold"/>
+
+                <TextBox x:Name="CantidadRecibidaTextBox"
+                         Height="48"
+                         FontSize="20"
+                         HorizontalContentAlignment="Right"
+                         VerticalContentAlignment="Center"
+                         TextChanged="CantidadRecibida_TextChanged"
+                         Watermark="$0.00"
+                         BorderBrush="#CBD5E1"
+                         CornerRadius="9"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- CAMBIO                                            -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="3"
+                    Background="#EAF6EE"
+                    BorderBrush="#B7DFC3"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="16">
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <TextBlock Text="Cambio"
+                               Foreground="#475569"
+                               FontSize="13"
+                               VerticalAlignment="Center"/>
+
+                    <TextBlock Grid.Column="1"
+                               x:Name="TextoCambio"
+                               Text="$0.00"
+                               Foreground="#16803B"
+                               FontSize="22"
+                               FontWeight="Bold"/>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- MENSAJE                                           -->
+            <!-- ================================================= -->
+
+            <TextBlock Grid.Row="4"
+                       x:Name="TextoMensaje"
+                       Foreground="#C61F2B"
+                       FontSize="11"
+                       TextWrapping="Wrap"/>
+
+
+            <!-- ================================================= -->
+            <!-- BOTONES                                           -->
+            <!-- ================================================= -->
+
+            <Grid Grid.Row="5"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="10">
+
+                <Button Grid.Column="0"
+                        Height="44"
+                        Content="Cancelar"
+                        Click="Cancelar_Click"
+                        Background="White"
+                        Foreground="#C61F2B"
+                        BorderBrush="#F3A7AD"
+                        BorderThickness="1"
+                        CornerRadius="9"/>
+
+                <Button Grid.Column="1"
+                        x:Name="ConfirmarButton"
+                        Height="44"
+                        Content="Confirmar pago"
+                        Click="Confirmar_Click"
+                        Background="#16A34A"
+                        Foreground="White"
+                        BorderThickness="0"
+                        CornerRadius="9"
+                        FontWeight="SemiBold"
+                        IsEnabled="False"/>
+
+            </Grid>
+
+        </Grid>
+
+    </Border>
+
+</Window>

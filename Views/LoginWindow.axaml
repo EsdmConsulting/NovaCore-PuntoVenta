@@ -1,166 +1,134 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:NovaCoreESDM.ViewModels"
-        xmlns:controls="using:NovaCoreESDM.Controls"
         x:Class="NovaCoreESDM.Views.LoginWindow"
         x:DataType="vm:LoginViewModel"
-        Title="NovaCoreESDM - Inicio de sesión"
-        Icon="/Assets/Brand/esdm-app-icon.ico"
+        Title="Grupo Luis Fer - Punto de Venta"
+        Icon="/Assets/Brand/esdm-app-icon-2.ico"
         Width="1100"
         Height="680"
         MinWidth="900"
         MinHeight="600"
         WindowStartupLocation="CenterScreen"
-        Background="#F3F6FB">
+        Background="#F8FAFC">
 
-    <Grid ColumnDefinitions="1.05*,0.95*">
+    <Grid>
 
-        <!-- Panel institucional -->
-        <Border Grid.Column="0"
-                Background="{StaticResource NovaBlue950Brush}">
+        <!-- Fondo -->
+        <Border Background="#F8FAFC"/>
 
-            <Grid>
-                <!-- Elementos decorativos -->
-                <Ellipse Width="620"
-                         Height="620"
-                         HorizontalAlignment="Left"
-                         VerticalAlignment="Top"
-                         Margin="-320,-360,0,0"
-                         Fill="{StaticResource NovaBlue600Brush}"
-                         Opacity="0.20"/>
+        <!-- Acentos decorativos inferiores -->
+        <Ellipse Width="650"
+                 Height="650"
+                 HorizontalAlignment="Left"
+                 VerticalAlignment="Bottom"
+                 Margin="-370,0,0,-380"
+                 Fill="#17B455"/>
 
-                <Ellipse Width="450"
-                         Height="450"
-                         HorizontalAlignment="Right"
-                         VerticalAlignment="Bottom"
-                         Margin="0,0,-230,-270"
-                         Fill="{StaticResource NovaBlue600Brush}"
-                         Opacity="0.16"/>
+        <Ellipse Width="620"
+                 Height="620"
+                 HorizontalAlignment="Right"
+                 VerticalAlignment="Bottom"
+                 Margin="0,0,-350,-360"
+                 Fill="#C61F2B"/>
 
-                <StackPanel Margin="65"
-                            VerticalAlignment="Center"
-                            Spacing="16">
+        <!-- Franja superior azul -->
+        <Border Height="10"
+                VerticalAlignment="Top"
+                Background="#123B69"/>
 
-                    <controls:EsdmLogo
-                        Width="150"
-                        Height="150"/>
-                    
-                    <TextBlock Text="NovaCoreESDM"
-                               Foreground="White"
-                               FontSize="38"
-                               FontWeight="SemiBold"/>
+        <!-- Contenedor -->
+        <Border Width="510"
+                Padding="48"
+                CornerRadius="26"
+                Background="White"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                BoxShadow="0 12 35 0 #22000000">
 
-                    <TextBlock Text="Punto de Venta"
-                               Foreground="{StaticResource NovaTextSoftBrush}"
-                               FontSize="22"/>
+            <StackPanel Spacing="12">
 
-                    <TextBlock Text="Administra ventas, inventarios y operaciones&#10;desde una plataforma moderna y confiable."
-                               Foreground="{StaticResource NovaTextSoftBrush}"
-                               FontSize="15"
-                               LineHeight="24"
-                               Margin="0,10,0,0"/>
+                <!-- Logo -->
+                <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                       Width="240"
+                       Height="145"
+                       Stretch="Uniform"
+                       HorizontalAlignment="Center"/>
 
-                    <Border Background="#18FFFFFF"
-                            CornerRadius="14"
-                            Padding="18"
-                            Margin="0,28,0,0">
+                <TextBlock Text="PUNTO DE VENTA"
+                           Foreground="#123B69"
+                           FontSize="26"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           Margin="0,4,0,0"/>
 
-                        <Grid ColumnDefinitions="Auto,*">
-                            <Border Width="10"
-                                    Height="10"
-                                    CornerRadius="5"
-                                    Background="#4ADE80"
-                                    VerticalAlignment="Center"/>
+                <TextBlock Text="Ingresa tus credenciales para continuar"
+                           Foreground="#64748B"
+                           FontSize="13"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,20"/>
 
-                            <TextBlock Grid.Column="1"
-                                       Text="Sistema preparado para trabajar sin conexión"
-                                       Foreground="White"
-                                       FontSize="13"
-                                       Margin="12,0,0,0"
-                                       VerticalAlignment="Center"/>
-                        </Grid>
-                    </Border>
-                </StackPanel>
 
-                <TextBlock Text="Desarrollado por ESDM Consulting"
-                           Foreground="{StaticResource NovaTextSoftBrush}"
-                           FontSize="11"
-                           Opacity="0.70"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Bottom"
-                           Margin="65,0,0,30"/>
-            </Grid>
-        </Border>
-
-        <!-- Formulario -->
-        <Grid Grid.Column="1"
-              Margin="70">
-
-            <StackPanel Width="370"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Spacing="10">
-
-                <TextBlock Text="Bienvenido"
-                           Foreground="#111827"
-                           FontSize="34"
-                           FontWeight="SemiBold"/>
-
-                <TextBlock Text="Ingresa tus credenciales para continuar."
-                           Foreground="#6B7280"
-                           FontSize="14"
-                           Margin="0,0,0,26"/>
-
+                <!-- Usuario -->
                 <TextBlock Text="Usuario"
-                           Foreground="#374151"
+                           Foreground="#334155"
                            FontSize="13"
                            FontWeight="SemiBold"/>
 
                 <TextBox Text="{Binding Usuario}"
                          Watermark="Escribe tu usuario"
-                         Height="48"
+                         Height="50"
                          Padding="14,0"
                          FontSize="14"
-                         CornerRadius="8"/>
+                         CornerRadius="10"/>
 
+
+                <!-- Contraseña -->
                 <TextBlock Text="Contraseña"
-                           Foreground="#374151"
+                           Foreground="#334155"
                            FontSize="13"
                            FontWeight="SemiBold"
-                           Margin="0,10,0,0"/>
+                           Margin="0,8,0,0"/>
 
                 <TextBox Text="{Binding Contrasena}"
                          Watermark="Escribe tu contraseña"
                          PasswordChar="●"
-                         Height="48"
+                         Height="50"
                          Padding="14,0"
                          FontSize="14"
-                         CornerRadius="8"/>
+                         CornerRadius="10"/>
 
+
+                <!-- Error -->
                 <TextBlock Text="{Binding MensajeError}"
-                           Foreground="#DC2626"
+                           Foreground="#C61F2B"
                            FontSize="12"
                            TextWrapping="Wrap"
                            MinHeight="20"
                            Margin="0,5,0,0"/>
 
+
+                <!-- Botón principal -->
                 <Button Command="{Binding IniciarSesionCommand}"
-                        Height="50"
+                        Height="54"
                         Margin="0,8,0,0"
-                        Background="{StaticResource NovaBlue600Brush}"
+                        Background="#16A34A"
                         Foreground="White"
-                        CornerRadius="8"
+                        CornerRadius="10"
                         HorizontalContentAlignment="Center"
                         FontSize="15"
-                        FontWeight="SemiBold">
+                        FontWeight="Bold">
 
                     <Grid>
-                        <TextBlock Text="Iniciar sesión"
-                                   IsVisible="{Binding !EstaCargando}"/>
+
+                        <TextBlock Text="INICIAR SESIÓN"
+                                   IsVisible="{Binding !EstaCargando}"
+                                   HorizontalAlignment="Center"/>
 
                         <StackPanel Orientation="Horizontal"
                                     Spacing="10"
-                                    IsVisible="{Binding EstaCargando}">
+                                    IsVisible="{Binding EstaCargando}"
+                                    HorizontalAlignment="Center">
 
                             <ProgressBar Width="24"
                                          Height="4"
@@ -170,15 +138,25 @@
                             <TextBlock Text="Validando..."
                                        VerticalAlignment="Center"/>
                         </StackPanel>
+
                     </Grid>
                 </Button>
 
-                <TextBlock Text="Versión 0.1.0"
-                           Foreground="#9CA3AF"
+
+                <!-- Footer -->
+                <TextBlock Text="Grupo Luis Fer"
+                           Foreground="#475569"
                            FontSize="11"
                            HorizontalAlignment="Center"
-                           Margin="0,24,0,0"/>
+                           Margin="0,20,0,0"/>
+
+                <TextBlock Text="Versión 0.1.0 · ESDM Consulting"
+                           Foreground="#94A3B8"
+                           FontSize="10"
+                           HorizontalAlignment="Center"/>
+
             </StackPanel>
-        </Grid>
+        </Border>
+
     </Grid>
 </Window>

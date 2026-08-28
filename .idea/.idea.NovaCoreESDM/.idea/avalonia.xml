@@ -6,9 +6,24 @@
         <entry key="App.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Controls/EsdmLogo.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Styles/Colors.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="ViewModels/Ventas/EntregaTicketWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Caja/SeleccionarCajaWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Cortes/CortesView.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Cortes/SeleccionarCajaWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Inicio/InicioView.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/LoginWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/MainWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/SplashWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Turno/AperturaTurnoWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Turno/ConfirmarAperturaWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Ventas/CobroWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Ventas/EditarCantidadWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Ventas/EntregaTicketWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Ventas/EnviarWhatsAppWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Ventas/PagoEfectivoWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Ventas/SeleccionarPresentacionWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Ventas/VentaFinalizadaWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Ventas/VentasView.axaml" value="NovaCoreESDM.Desktop.csproj" />
       </map>
     </option>
   </component>

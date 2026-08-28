@@ -9,7 +9,7 @@
         <!-- Identidad de la aplicación -->
         <AssemblyName>NovaCoreESDM</AssemblyName>
         <RootNamespace>NovaCoreESDM</RootNamespace>
-
+ 
         <Product>ESDM Punto de Venta</Product>
         <Company>ESDM Consulting</Company>
         <Authors>ESDM Consulting</Authors>
@@ -23,7 +23,7 @@
         <FileVersion>0.1.0.0</FileVersion>
 
         <!-- Ícono del ejecutable de Windows -->
-        <ApplicationIcon>Assets/Brand/esdm-app-icon.ico</ApplicationIcon>
+        <ApplicationIcon>Assets/Brand/esdm-app-icon-2.ico</ApplicationIcon>
 
         <!-- Plataformas que podremos publicar -->
         <RuntimeIdentifiers>
@@ -32,7 +32,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Models\" />
 
         <!-- Ya incluye todos los archivos dentro de Assets,
              incluyendo PNG, ICO e ICNS -->
@@ -40,20 +39,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia"
-                          Version="12.1.0" />
+        <PackageReference Include="Avalonia" Version="12.1.0" />
 
-        <PackageReference Include="Avalonia.Desktop"
-                          Version="12.1.0" />
+        <PackageReference Include="Avalonia.Desktop" Version="12.1.0" />
 
-        <PackageReference Include="Avalonia.Themes.Fluent"
-                          Version="12.1.0" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.0" />
 
-        <PackageReference Include="Avalonia.Fonts.Inter"
-                          Version="12.1.0" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.0" />
 
-        <PackageReference Include="AvaloniaUI.DiagnosticsSupport"
-                          Version="2.2.3">
+        <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
 
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">
                 None
@@ -64,8 +58,9 @@
             </PrivateAssets>
         </PackageReference>
 
-        <PackageReference Include="CommunityToolkit.Mvvm"
-                          Version="8.4.2" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+
+        <PackageReference Include="SkiaSharp" Version="3.119.4" />
     </ItemGroup>
 
 </Project>
