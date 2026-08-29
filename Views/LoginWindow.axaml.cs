@@ -1,7 +1,9 @@
 using System;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using NovaCoreESDM.Models.Session;
 using NovaCoreESDM.Services.Configuration;
+using NovaCoreESDM.Services.Printing;
 using NovaCoreESDM.ViewModels;
 using NovaCoreESDM.Views.Caja;
 using NovaCoreESDM.Views.Turno;
@@ -31,6 +33,7 @@ public partial class LoginWindow : Window
         _viewModel.InicioSesionExitoso +=
             OnInicioSesionExitoso;
     }
+
 
     private async void OnInicioSesionExitoso()
     {
@@ -86,8 +89,10 @@ public partial class LoginWindow : Window
             // 4. YA EXISTE UN TURNO ACTIVO GUARDADO LOCALMENTE
             // =====================================================
 
-            if (configuracion.IdTurnoActivo.HasValue &&
-                configuracion.IdTurnoActivo.Value > 0)
+            if (
+                configuracion.IdTurnoActivo.HasValue &&
+                configuracion.IdTurnoActivo.Value > 0
+            )
             {
                 PosSession.IdTurno =
                     configuracion.IdTurnoActivo.Value;
@@ -145,6 +150,60 @@ public partial class LoginWindow : Window
         {
             _viewModel.MensajeError =
                 $"No fue posible preparar la terminal: {ex.Message}";
+        }
+    }
+
+
+    // =========================================================
+    // TEMPORAL: PRUEBA DEL CAJÓN DE EFECTIVO
+    // =========================================================
+
+    private async void AbrirCajonPrueba_Click(
+        object? sender,
+        RoutedEventArgs e)
+    {
+        try
+        {
+            var printerService =
+                new WindowsRawPrinterService();
+
+
+            var resultado =
+                await printerService
+                    .AbrirCajonAsync();
+
+
+            if (resultado)
+            {
+                Console.WriteLine(
+                    "====================================");
+
+                Console.WriteLine(
+                    "COMANDO DE APERTURA ENVIADO AL CAJÓN");
+
+                Console.WriteLine(
+                    "====================================");
+            }
+            else
+            {
+                Console.WriteLine(
+                    "La impresora no confirmó el comando del cajón."
+                );
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                "====================================");
+
+            Console.WriteLine(
+                "ERROR AL ABRIR CAJÓN:");
+
+            Console.WriteLine(
+                ex.Message);
+
+            Console.WriteLine(
+                "====================================");
         }
     }
 

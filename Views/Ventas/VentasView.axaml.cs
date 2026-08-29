@@ -1,34 +1,50 @@
 using System;
 using System.Threading.Tasks;
+
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
+
 using NovaCoreESDM.Models;
 using NovaCoreESDM.Models.Productos;
 using NovaCoreESDM.Models.Tickets;
+
 using NovaCoreESDM.Services.Configuration;
+
 using NovaCoreESDM.ViewModels.Ventas;
+using Avalonia.VisualTree;
 
 namespace NovaCoreESDM.Views.Ventas;
+
+
 
 public partial class VentasView : UserControl
 {
     private readonly TerminalConfigurationService
         _terminalConfigurationService;
 
-    private VentasViewModel? _viewModel;
 
-    private bool _productosCargados;
+    private VentasViewModel?
+        _viewModel;
+
+
+    private bool
+        _productosCargados;
 
 
     public VentasView()
     {
         AvaloniaXamlLoader.Load(this);
 
+
         _terminalConfigurationService =
             new TerminalConfigurationService();
 
+
         AttachedToVisualTree +=
             OnAttachedToVisualTree;
+
 
         DetachedFromVisualTree +=
             OnDetachedFromVisualTree;
@@ -58,17 +74,22 @@ public partial class VentasView : UserControl
                 _viewModel.SolicitarSeleccionPresentacion -=
                     OnSolicitarSeleccionPresentacion;
 
+
                 _viewModel.SolicitarEditarCantidad -=
                     OnSolicitarEditarCantidad;
+
 
                 _viewModel.SolicitarCobro -=
                     OnSolicitarCobro;
 
+
                 _viewModel.SolicitarEntregaTicket -=
                     OnSolicitarEntregaTicket;
 
+
                 _viewModel.SolicitarTelefonoWhatsApp -=
                     OnSolicitarTelefonoWhatsApp;
+
 
                 _viewModel.SolicitarConfirmacionVentaFinalizada -=
                     OnSolicitarConfirmacionVentaFinalizada;
@@ -90,17 +111,22 @@ public partial class VentasView : UserControl
             _viewModel.SolicitarSeleccionPresentacion +=
                 OnSolicitarSeleccionPresentacion;
 
+
             _viewModel.SolicitarEditarCantidad +=
                 OnSolicitarEditarCantidad;
+
 
             _viewModel.SolicitarCobro +=
                 OnSolicitarCobro;
 
+
             _viewModel.SolicitarEntregaTicket +=
                 OnSolicitarEntregaTicket;
 
+
             _viewModel.SolicitarTelefonoWhatsApp +=
                 OnSolicitarTelefonoWhatsApp;
+
 
             _viewModel.SolicitarConfirmacionVentaFinalizada +=
                 OnSolicitarConfirmacionVentaFinalizada;
@@ -108,7 +134,11 @@ public partial class VentasView : UserControl
 
 
         if (_productosCargados)
+        {
+            EnfocarBuscadorProductos();
+
             return;
+        }
 
 
         _productosCargados =
@@ -121,6 +151,58 @@ public partial class VentasView : UserControl
 
         await viewModel
             .CargarVentaActualAsync();
+        
+        EnfocarBuscadorProductos();
+
+        // =====================================================
+        // DEJAR ESCÁNER LISTO
+        // =====================================================
+
+        EnfocarBuscadorProductos();
+    }
+
+
+// =========================================================
+// ESCÁNER / ENTER
+// =========================================================
+
+    private async void BuscadorProductosTextBox_KeyDown(
+        object? sender,
+        KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter)
+            return;
+
+        e.Handled = true;
+
+        if (_viewModel is null)
+            return;
+
+        var codigo =
+            BuscadorProductosTextBox
+                ?.Text
+                ?.Trim();
+
+        if (string.IsNullOrWhiteSpace(codigo))
+            return;
+
+        try
+        {
+            await _viewModel
+                .ProcesarCodigoEscaneadoAsync(
+                    codigo
+                );
+
+            BuscadorProductosTextBox.Text =
+                string.Empty;
+        }
+        catch (Exception ex)
+        {
+            _viewModel.MensajeError =
+                $"No fue posible procesar el código: {ex.Message}";
+        }
+
+        // NO reenfocar por ahora
     }
 
 
@@ -135,62 +217,73 @@ public partial class VentasView : UserControl
             return;
 
 
-        var configuracion =
-            await _terminalConfigurationService
-                .ObtenerConfiguracionAsync();
-
-
-        if (configuracion is null)
+        try
         {
-            _viewModel.MensajeError =
-                "No existe una caja configurada para este equipo.";
-
-            return;
-        }
+            var configuracion =
+                await _terminalConfigurationService
+                    .ObtenerConfiguracionAsync();
 
 
-        var owner =
-            TopLevel.GetTopLevel(this)
-            as Window;
+            if (configuracion is null)
+            {
+                _viewModel.MensajeError =
+                    "No existe una caja configurada para este equipo.";
+
+                return;
+            }
 
 
-        if (owner is null)
-        {
-            _viewModel.MensajeError =
-                "No fue posible abrir el selector de presentación.";
-
-            return;
-        }
+            var owner =
+                TopLevel.GetTopLevel(this)
+                as Window;
 
 
-        var selector =
-            new SeleccionarPresentacionWindow(
-                producto,
-                configuracion.UnidadCodigo
-            );
+            if (owner is null)
+            {
+                _viewModel.MensajeError =
+                    "No fue posible abrir el selector de presentación.";
+
+                return;
+            }
 
 
-        var resultado =
-            await selector
-                .ShowDialog<bool>(
-                    owner
+            var selector =
+                new SeleccionarPresentacionWindow(
+                    producto,
+                    configuracion.UnidadCodigo
                 );
 
 
-        if (
-            !resultado ||
-            selector.PresentacionSeleccionada is null
-        )
-        {
-            return;
+            var resultado =
+                await selector
+                    .ShowDialog<bool>(
+                        owner
+                    );
+
+
+            if (
+                !resultado ||
+                selector.PresentacionSeleccionada is null
+            )
+            {
+                return;
+            }
+
+
+            await _viewModel
+                .AgregarPresentacionAlCarritoAsync(
+                    producto,
+                    selector.PresentacionSeleccionada
+                );
         }
-
-
-        await _viewModel
-            .AgregarPresentacionAlCarritoAsync(
-                producto,
-                selector.PresentacionSeleccionada
-            );
+        finally
+        {
+            /*
+             * Tanto si agrega como si cancela,
+             * regresamos al escáner.
+             */
+            EnfocarBuscadorProductos();
+        }
     }
 
 
@@ -205,42 +298,49 @@ public partial class VentasView : UserControl
             return;
 
 
-        var owner =
-            TopLevel.GetTopLevel(this)
-            as Window;
-
-
-        if (owner is null)
+        try
         {
-            _viewModel.MensajeError =
-                "No fue posible abrir el editor de cantidad.";
-
-            return;
-        }
+            var owner =
+                TopLevel.GetTopLevel(this)
+                as Window;
 
 
-        var ventana =
-            new EditarCantidadWindow(
-                detalle.Cantidad
-            );
+            if (owner is null)
+            {
+                _viewModel.MensajeError =
+                    "No fue posible abrir el editor de cantidad.";
+
+                return;
+            }
 
 
-        var resultado =
-            await ventana
-                .ShowDialog<bool>(
-                    owner
+            var ventana =
+                new EditarCantidadWindow(
+                    detalle.Cantidad
                 );
 
 
-        if (!resultado)
-            return;
+            var resultado =
+                await ventana
+                    .ShowDialog<bool>(
+                        owner
+                    );
 
 
-        await _viewModel
-            .ActualizarCantidadManualAsync(
-                detalle,
-                ventana.CantidadSeleccionada
-            );
+            if (!resultado)
+                return;
+
+
+            await _viewModel
+                .ActualizarCantidadManualAsync(
+                    detalle,
+                    ventana.CantidadSeleccionada
+                );
+        }
+        finally
+        {
+            EnfocarBuscadorProductos();
+        }
     }
 
 
@@ -254,82 +354,100 @@ public partial class VentasView : UserControl
             return;
 
 
-        var owner =
-            TopLevel.GetTopLevel(this)
-            as Window;
-
-
-        if (owner is null)
+        try
         {
-            _viewModel.MensajeError =
-                "No fue posible abrir la ventana de cobro.";
-
-            return;
-        }
+            var owner =
+                TopLevel.GetTopLevel(this)
+                as Window;
 
 
-        // =====================================================
-        // SELECTOR DE MÉTODO DE PAGO
-        // =====================================================
+            if (owner is null)
+            {
+                _viewModel.MensajeError =
+                    "No fue posible abrir la ventana de cobro.";
 
-        var ventana =
-            new CobroWindow(
-                _viewModel.Total
-            );
-
-
-        var resultado =
-            await ventana
-                .ShowDialog<bool>(
-                    owner
-                );
+                return;
+            }
 
 
-        if (!resultado)
-            return;
+            // =====================================================
+            // SELECTOR DE MÉTODO DE PAGO
+            // =====================================================
 
-
-        // =====================================================
-        // EFECTIVO
-        // =====================================================
-
-        if (
-            ventana.MetodoSeleccionado ==
-            "EFECTIVO"
-        )
-        {
-            var pagoEfectivo =
-                new PagoEfectivoWindow(
+            var ventana =
+                new CobroWindow(
                     _viewModel.Total
                 );
 
 
-            var pagoConfirmado =
-                await pagoEfectivo
+            var resultado =
+                await ventana
                     .ShowDialog<bool>(
                         owner
                     );
 
 
-            if (!pagoConfirmado)
+            if (!resultado)
                 return;
 
 
-            // =================================================
-            // REGISTRAR PAGO
-            // =================================================
+            // =====================================================
+            // EFECTIVO
+            // =====================================================
 
-            var pagoRegistrado =
-                await _viewModel
-                    .RegistrarPagoEfectivoAsync(
-                        _viewModel.Total,
-                        pagoEfectivo.CantidadRecibida,
-                        pagoEfectivo.Cambio
+            if (
+                ventana.MetodoSeleccionado ==
+                "EFECTIVO"
+            )
+            {
+                var pagoEfectivo =
+                    new PagoEfectivoWindow(
+                        _viewModel.Total
                     );
 
 
-            if (!pagoRegistrado)
-                return;
+                var pagoConfirmado =
+                    await pagoEfectivo
+                        .ShowDialog<bool>(
+                            owner
+                        );
+
+
+                if (!pagoConfirmado)
+                    return;
+
+
+                // =================================================
+                // REGISTRAR PAGO
+                // =================================================
+
+                var pagoRegistrado =
+                    await _viewModel
+                        .RegistrarPagoEfectivoAsync(
+                            _viewModel.Total,
+                            pagoEfectivo.CantidadRecibida,
+                            pagoEfectivo.Cambio
+                        );
+
+
+                if (!pagoRegistrado)
+                    return;
+            }
+        }
+        finally
+        {
+            /*
+             * Si:
+             *
+             * - cerró Cobro
+             * - canceló efectivo
+             * - terminó correctamente
+             *
+             * siempre dejamos el POS preparado
+             * para el siguiente escaneo.
+             */
+
+            EnfocarBuscadorProductos();
         }
     }
 
@@ -438,6 +556,33 @@ public partial class VentasView : UserControl
     }
 
 
+// =========================================================
+// ENFOCAR BUSCADOR / ESCÁNER
+// =========================================================
+
+    private void EnfocarBuscadorProductos()
+    {
+        Dispatcher.UIThread.Post(
+            () =>
+            {
+                if (BuscadorProductosTextBox is null)
+                    return;
+
+
+                if (!BuscadorProductosTextBox.IsAttachedToVisualTree())
+                    return;
+
+
+                BuscadorProductosTextBox.Focus();
+
+
+                BuscadorProductosTextBox.CaretIndex =
+                    BuscadorProductosTextBox.Text?.Length
+                    ?? 0;
+            });
+    }
+
+
     // =========================================================
     // DESVINCULAR EVENTOS
     // =========================================================
@@ -451,17 +596,22 @@ public partial class VentasView : UserControl
             _viewModel.SolicitarSeleccionPresentacion -=
                 OnSolicitarSeleccionPresentacion;
 
+
             _viewModel.SolicitarEditarCantidad -=
                 OnSolicitarEditarCantidad;
+
 
             _viewModel.SolicitarCobro -=
                 OnSolicitarCobro;
 
+
             _viewModel.SolicitarEntregaTicket -=
                 OnSolicitarEntregaTicket;
 
+
             _viewModel.SolicitarTelefonoWhatsApp -=
                 OnSolicitarTelefonoWhatsApp;
+
 
             _viewModel.SolicitarConfirmacionVentaFinalizada -=
                 OnSolicitarConfirmacionVentaFinalizada;

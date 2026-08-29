@@ -147,6 +147,55 @@ public class WindowsRawPrinterService
                 );
             });
     }
+    
+    
+    
+    // =========================================================
+// ABRIR CAJÓN DE EFECTIVO
+// =========================================================
+
+    public Task<bool> AbrirCajonAsync()
+    {
+        return Task.Run(
+            () =>
+            {
+                /*
+                 * ESC/POS:
+                 *
+                 * ESC p m t1 t2
+                 *
+                 * 0x1B = ESC
+                 * 0x70 = p
+                 * 0x00 = pin / conector 0
+                 * 0x19 = duración del pulso ON
+                 * 0xFA = duración del pulso OFF
+                 *
+                 * IMPORTANTE:
+                 * Este comando NO imprime.
+                 *
+                 * Únicamente le pide a la impresora
+                 * que envíe el pulso eléctrico
+                 * al puerto del cajón.
+                 */
+
+                var comandoAbrirCajon =
+                    new byte[]
+                    {
+                        0x1B,
+                        0x70,
+                        0x00,
+                        0x19,
+                        0xFA
+                    };
+
+
+                return ImprimirRaw(
+                    NombreImpresora,
+                    comandoAbrirCajon,
+                    "Grupo Luis Fer - Abrir cajon"
+                );
+            });
+    }
 
 
     // =========================================================

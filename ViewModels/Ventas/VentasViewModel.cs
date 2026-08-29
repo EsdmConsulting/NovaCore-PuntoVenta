@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +17,10 @@ namespace NovaCoreESDM.ViewModels.Ventas;
 using NovaCoreESDM.Services.WhatsApp;
 using System.Linq;
 using NovaCoreESDM.Models.Tickets;
+using System.Collections.Generic;
+
+using NovaCoreESDM.Models.Clientes;
+using NovaCoreESDM.Services.Clientes;
 
 
 public partial class VentasViewModel : ViewModelBase
@@ -41,6 +46,16 @@ public partial class VentasViewModel : ViewModelBase
     
     private readonly WhatsAppService
         _whatsAppService;
+    
+    private readonly ProductoImagenService
+        _productoImagenService;
+    
+    private readonly List<ProductoCatalogo>
+        _productosCatalogoCompleto =
+            new();
+    
+    private readonly ClientesService
+        _clientesService;
 
 
     // =========================================================
@@ -61,6 +76,40 @@ public partial class VentasViewModel : ViewModelBase
     [ObservableProperty]
     private string _clienteSeleccionado =
         "Cliente mostrador";
+    
+    // =========================================================
+    // CLIENTES
+    // =========================================================
+
+    public ObservableCollection<ClientePos>
+        ClientesEncontrados { get; } =
+        new();
+
+
+    [ObservableProperty]
+    private string _textoBusquedaCliente =
+        string.Empty;
+
+
+    [ObservableProperty]
+    private ClientePos? _clientePosSeleccionado;
+
+
+    [ObservableProperty]
+    private bool _mostrarSugerenciasClientes;
+
+
+    // Evita volver a buscar cuando nosotros mismos
+    // escribimos el nombre del cliente seleccionado.
+    private bool
+        _ignorandoCambioBusquedaCliente;
+
+
+    // Sirve para ignorar respuestas viejas si el cajero
+    // escribe muy rápido.
+    private int
+        _versionBusquedaCliente;
+    
 
     [ObservableProperty]
     private string _textoBusqueda =
@@ -203,6 +252,12 @@ public partial class VentasViewModel : ViewModelBase
 
         _whatsAppService =
             new WhatsAppService();
+        
+        _productoImagenService =
+            new ProductoImagenService();
+        
+        _clientesService =
+            new ClientesService();
     }
 
 
@@ -210,91 +265,119 @@ public partial class VentasViewModel : ViewModelBase
     // CARGAR CATÁLOGO
     // =========================================================
 
-    [RelayCommand]
-    public async Task CargarProductosAsync()
+[RelayCommand]
+public async Task CargarProductosAsync()
+{
+    EstaCargandoProductos = true;
+    MensajeError = string.Empty;
+
+    try
     {
-        EstaCargandoProductos = true;
-        MensajeError = string.Empty;
+        var configuracion =
+            await _terminalConfigurationService
+                .ObtenerConfiguracionAsync();
 
-        try
-        {
-            var configuracion =
-                await _terminalConfigurationService
-                    .ObtenerConfiguracionAsync();
-
-            if (configuracion is null)
-            {
-                MensajeError =
-                    "No existe una caja configurada para este equipo.";
-
-                return;
-            }
-
-            var resultado =
-                await _productosService
-                    .ObtenerCatalogoAsync();
-
-            Productos.Clear();
-
-            if (resultado.Status != 1)
-            {
-                MensajeError =
-                    string.IsNullOrWhiteSpace(
-                        resultado.Message)
-                        ? "No fue posible consultar el catálogo de productos."
-                        : resultado.Message;
-
-                return;
-            }
-
-            /*
-             * Mostramos únicamente productos:
-             *
-             * - Habilitados para venta.
-             * - Activos.
-             * - Configurados para el Punto de Venta
-             *   correspondiente a esta terminal.
-             */
-            var productosPuntoVenta =
-                resultado.Data
-                    .Where(p =>
-                        p.AplicaVenta &&
-                        p.Estatus != 3)
-                    .Where(p =>
-                        p.Disponibilidad.Any(d =>
-                            d.UnidadCodigo.Equals(
-                                configuracion.UnidadCodigo,
-                                StringComparison.OrdinalIgnoreCase)
-                            &&
-                            d.Estatus != 3
-                        ))
-                    .OrderBy(p =>
-                        p.NombreComercial);
-
-            foreach (var producto in productosPuntoVenta)
-            {
-                Productos.Add(producto);
-            }
-
-            if (Productos.Count == 0)
-            {
-                MensajeError =
-                    "No existen productos disponibles para este punto de venta.";
-            }
-        }
-        catch (Exception ex)
+        if (configuracion is null)
         {
             MensajeError =
-                $"No fue posible cargar los productos: {ex.Message}";
-        }
-        finally
-        {
-            EstaCargandoProductos = false;
+                "No existe una caja configurada para este equipo.";
 
-            OnPropertyChanged(
-                nameof(TieneProductosDisponibles));
+            return;
+        }
+
+        var resultado =
+            await _productosService
+                .ObtenerCatalogoAsync();
+
+        Productos.Clear();
+
+        if (resultado.Status != 1)
+        {
+            MensajeError =
+                string.IsNullOrWhiteSpace(
+                    resultado.Message)
+                    ? "No fue posible consultar el catálogo de productos."
+                    : resultado.Message;
+
+            return;
+        }
+
+        /*
+         * Mostramos únicamente productos:
+         *
+         * - Habilitados para venta.
+         * - Activos.
+         * - Configurados para el Punto de Venta
+         *   correspondiente a esta terminal.
+         */
+        var productosPuntoVenta =
+            resultado.Data
+                .Where(p =>
+                    p.AplicaVenta &&
+                    p.Estatus != 3)
+                .Where(p =>
+                    p.Disponibilidad.Any(d =>
+                        d.UnidadCodigo.Equals(
+                            configuracion.UnidadCodigo,
+                            StringComparison.OrdinalIgnoreCase)
+                        &&
+                        d.Estatus != 3
+                    ))
+                .OrderBy(p =>
+                    p.NombreComercial);
+
+        _productosCatalogoCompleto.Clear();
+
+        foreach (var producto in productosPuntoVenta)
+        {
+            _productosCatalogoCompleto.Add(
+                producto
+            );
+
+            Productos.Add(
+                producto
+            );
+        }
+
+
+        // =====================================================
+        // CARGAR IMÁGENES EN SEGUNDO PLANO
+        // =====================================================
+
+        /*
+         * No usamos await aquí.
+         *
+         * Queremos que los productos aparezcan inmediatamente
+         * y que las fotografías se carguen poco a poco
+         * sin bloquear el Punto de Venta.
+         */
+
+        _ = CargarImagenesProductosAsync();
+
+
+        if (Productos.Count == 0)
+        {
+            MensajeError =
+                "No existen productos disponibles para este punto de venta.";
         }
     }
+    catch (Exception ex)
+    {
+        MensajeError =
+            $"No fue posible cargar los productos: {ex.Message}";
+    }
+    finally
+    {
+        EstaCargandoProductos = false;
+
+        OnPropertyChanged(
+            nameof(TieneProductosDisponibles));
+    }
+}
+
+
+
+
 
 
     // =========================================================
@@ -387,10 +470,12 @@ public partial class VentasViewModel : ViewModelBase
                  * aquí irá el id_cliente real.
                  */
                 IdCliente =
-                    null,
+                    ClientePosSeleccionado?.Id,
 
                 TipoCliente =
-                    "PUBLICO_GENERAL",
+                    ClientePosSeleccionado is null
+                        ? "PUBLICO_GENERAL"
+                        : "CLIENTE",
 
                 TipoVenta =
                     "CONTADO",
@@ -801,6 +886,406 @@ public async Task AgregarPresentacionAlCarritoAsync(
             false;
     }
 }
+
+
+// =========================================================
+// CARGAR IMÁGENES DE PRODUCTOS
+// =========================================================
+
+private async Task CargarImagenesProductosAsync()
+{
+    foreach (var producto in Productos)
+    {
+        // =====================================================
+        // PRODUCTO SIN IMAGEN
+        // =====================================================
+
+        if (producto.ImagenUrl is null)
+            continue;
+
+
+        try
+        {
+            // =================================================
+            // DESCARGAR IMAGEN
+            // =================================================
+
+            var bitmap =
+                await _productoImagenService
+                    .CargarImagenAsync(
+                        producto.ImagenUrl
+                    );
+
+
+            if (bitmap is null)
+                continue;
+
+
+            // =================================================
+            // ASIGNAR BITMAP AL PRODUCTO
+            // =================================================
+
+            producto.ImagenBitmap =
+                bitmap;
+        }
+        catch (Exception ex)
+        {
+            /*
+             * Una imagen dañada o inexistente
+             * NO debe impedir que el POS funcione.
+             */
+
+            Console.WriteLine(
+                "====================================");
+
+            Console.WriteLine(
+                "ERROR CARGANDO IMAGEN DE PRODUCTO:");
+
+            Console.WriteLine(
+                producto.NombreComercial);
+
+            Console.WriteLine(
+                producto.ImagenUrl);
+
+            Console.WriteLine(
+                ex.Message);
+
+            Console.WriteLine(
+                "====================================");
+        }
+    }
+}
+
+// =========================================================
+// PROCESAR CÓDIGO ESCANEADO
+// =========================================================
+
+public async Task ProcesarCodigoEscaneadoAsync(
+    string codigo)
+{
+    if (string.IsNullOrWhiteSpace(codigo))
+        return;
+
+
+    codigo =
+        codigo.Trim();
+
+
+    MensajeError =
+        string.Empty;
+
+
+    // =====================================================
+    // 1. BUSCAR PRIMERO POR CÓDIGO DE PRESENTACIÓN
+    // =====================================================
+
+    foreach (var producto in
+             _productosCatalogoCompleto)
+    {
+        if (producto is null)
+            continue;
+
+
+        if (producto.Presentaciones is null)
+            continue;
+
+
+        var presentacion =
+            producto.Presentaciones
+                .FirstOrDefault(
+                    p =>
+                        p is not null
+                        &&
+                        p.Estatus == 1
+                        &&
+                        !string.IsNullOrWhiteSpace(
+                            p.CodigoBarras
+                        )
+                        &&
+                        string.Equals(
+                            p.CodigoBarras.Trim(),
+                            codigo,
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                );
+
+
+        if (presentacion is null)
+            continue;
+
+
+        // =================================================
+        // CÓDIGO IDENTIFICA EXACTAMENTE UNA PRESENTACIÓN
+        // =================================================
+
+        /*
+         * Aquí NO mostramos selector.
+         *
+         * Ejemplo:
+         *
+         * Coca Cola 600 ml
+         * código = 7501234567890
+         *
+         * Ya sabemos exactamente qué presentación
+         * escaneó el cajero.
+         */
+
+        await AgregarPresentacionEscaneadaAsync(
+            producto,
+            presentacion
+        );
+
+
+        return;
+    }
+
+
+    // =====================================================
+    // 2. BUSCAR POR CÓDIGO GENERAL DEL PRODUCTO
+    // =====================================================
+
+    var productoEncontrado =
+        _productosCatalogoCompleto
+            .FirstOrDefault(
+                p =>
+                    p is not null
+                    &&
+                    p.Estatus == 1
+                    &&
+                    p.AplicaVenta
+                    &&
+                    !string.IsNullOrWhiteSpace(
+                        p.CodigoBarras
+                    )
+                    &&
+                    string.Equals(
+                        p.CodigoBarras.Trim(),
+                        codigo,
+                        StringComparison.OrdinalIgnoreCase
+                    )
+            );
+
+
+    // =====================================================
+    // 3. NO EXISTE EL CÓDIGO
+    // =====================================================
+
+    if (productoEncontrado is null)
+    {
+        MensajeError =
+            $"No se encontró ningún producto con el código de barras {codigo}.";
+
+        return;
+    }
+
+
+    // =====================================================
+    // 4. VALIDAR PRESENTACIONES
+    // =====================================================
+
+    if (
+        productoEncontrado.Presentaciones is null
+        ||
+        productoEncontrado.Presentaciones.Count == 0
+    )
+    {
+        MensajeError =
+            $"El producto {productoEncontrado.NombreComercial} no tiene presentaciones configuradas.";
+
+        return;
+    }
+
+
+    var presentacionesActivas =
+        productoEncontrado
+            .Presentaciones
+            .Where(
+                p =>
+                    p is not null
+                    &&
+                    p.Estatus == 1
+            )
+            .ToList();
+
+
+    if (presentacionesActivas.Count == 0)
+    {
+        MensajeError =
+            $"El producto {productoEncontrado.NombreComercial} no tiene presentaciones activas.";
+
+        return;
+    }
+
+
+    // =====================================================
+    // 5. SOLO TIENE UNA PRESENTACIÓN
+    // =====================================================
+
+    if (presentacionesActivas.Count == 1)
+    {
+        /*
+         * Si solamente existe una presentación,
+         * no tiene sentido preguntarle al cajero.
+         */
+
+        await AgregarPresentacionEscaneadaAsync(
+            productoEncontrado,
+            presentacionesActivas[0]
+        );
+
+
+        return;
+    }
+
+
+    // =====================================================
+    // 6. TIENE VARIAS PRESENTACIONES
+    // =====================================================
+
+    /*
+     * Aquí el código pertenece al producto general.
+     *
+     * Ejemplo:
+     *
+     * Coca Cola
+     *
+     * Presentaciones:
+     *
+     * - 600 ml
+     * - 1.5 L
+     * - 2 L
+     *
+     * Como no sabemos cuál quiere vender,
+     * abrimos automáticamente el selector.
+     */
+
+    SolicitarSeleccionPresentacion?.Invoke(
+        productoEncontrado
+    );
+}
+
+
+// =========================================================
+// AGREGAR PRESENTACIÓN DESDE ESCÁNER
+// =========================================================
+
+private async Task AgregarPresentacionEscaneadaAsync(
+    ProductoCatalogo producto,
+    PresentacionProducto presentacion)
+{
+    // =====================================================
+    // 1. ¿YA ESTÁ EN EL CARRITO?
+    // =====================================================
+
+    var detalleExistente =
+        Carrito
+            .FirstOrDefault(
+                detalle =>
+                    detalle.Producto.Id ==
+                        producto.Id
+                    &&
+                    detalle.Producto.IdPresentacion ==
+                        presentacion.Id
+            );
+
+
+    // =====================================================
+    // 2. YA EXISTE → AUMENTAR CANTIDAD
+    // =====================================================
+
+    if (detalleExistente is not null)
+    {
+        await IncrementarCantidadAsync(
+            detalleExistente
+        );
+
+        return;
+    }
+
+    if (
+        presentacion.Precios is null
+        ||
+        presentacion.Precios.Count == 0
+    )
+    {
+        MensajeError =
+            $"La presentación {presentacion.NombrePresentacion} no tiene precios configurados.";
+
+        return;
+    }
+
+    // =====================================================
+    // 3. OBTENER PRECIO DE LA PRESENTACIÓN
+    // =====================================================
+
+    var precio =
+        presentacion.Precios
+            .Where(
+                p =>
+                    p.Estatus == 1
+                    &&
+                    string.Equals(
+                        p.TipoPrecio,
+                        "MENUDEO",
+                        StringComparison.OrdinalIgnoreCase
+                    )
+            )
+            .OrderByDescending(
+                p => p.FechaInicio
+            )
+            .FirstOrDefault();
+
+
+    if (precio is null)
+    {
+        MensajeError =
+            $"La presentación {presentacion.NombrePresentacion} no tiene precio de menudeo configurado.";
+
+        return;
+    }
+
+
+    // =====================================================
+    // 4. CONVERTIR A PresentacionVentaItem
+    // =====================================================
+
+    var presentacionVenta =
+        new PresentacionVentaItem
+        {
+            IdPresentacion =
+                presentacion.Id,
+
+            NombrePresentacion =
+                presentacion.NombrePresentacion,
+
+            UnidadMedida =
+                presentacion.UnidadMedida,
+
+            FactorConversion =
+                presentacion.FactorConversion,
+
+            CodigoBarras =
+                presentacion.CodigoBarras,
+
+            Precio =
+                precio.Precio,
+
+            TienePrecio =
+                true
+        };
+
+
+    // =====================================================
+    // 5. AGREGAR AL CARRITO
+    // =====================================================
+
+    await AgregarPresentacionAlCarritoAsync(
+        producto,
+        presentacionVenta
+    );
+}
+
+
 
 
 
@@ -1340,16 +1825,10 @@ public async Task ActualizarCantidadManualAsync(
 // REGISTRO DE PAGO
 // =========================================================
 
-/*
- * También está pendiente sincronizar esto
- * con el backend.
- */
-
-
-    public async Task<bool> RegistrarPagoEfectivoAsync(
-        decimal importeAplicado,
-        decimal recibido,
-        decimal cambio)
+public async Task<bool> RegistrarPagoEfectivoAsync(
+    decimal importeAplicado,
+    decimal recibido,
+    decimal cambio)
 {
     if (IdVentaActual <= 0)
     {
@@ -1382,6 +1861,13 @@ public async Task ActualizarCantidadManualAsync(
 
     try
     {
+        UltimoMontoRecibido =
+            recibido;
+
+        UltimoCambio =
+            cambio;
+
+
         var request =
             new RegistrarPagoRequest
             {
@@ -1409,7 +1895,8 @@ public async Task ActualizarCantidadManualAsync(
             await _ventasService
                 .RegistrarPagoAsync(
                     IdVentaActual,
-                    request);
+                    request
+                );
 
 
         if (
@@ -1418,7 +1905,9 @@ public async Task ActualizarCantidadManualAsync(
         )
         {
             MensajeError =
-                string.IsNullOrWhiteSpace(resultado.Msg)
+                string.IsNullOrWhiteSpace(
+                    resultado.Msg
+                )
                     ? "No fue posible registrar el pago."
                     : resultado.Msg;
 
@@ -1433,13 +1922,62 @@ public async Task ActualizarCantidadManualAsync(
 
             return false;
         }
-        
-        
 
 
-// =========================================================
-// PAGO COMPLETO → FINALIZAR AUTOMÁTICAMENTE
-// =========================================================
+        // =====================================================
+        // PAGO COMPLETO → ABRIR CAJÓN
+        // =====================================================
+
+        try
+        {
+            var cajonAbierto =
+                await _printerService
+                    .AbrirCajonAsync();
+
+
+            if (cajonAbierto)
+            {
+                Console.WriteLine(
+                    "====================================");
+
+                Console.WriteLine(
+                    "CAJÓN DE EFECTIVO ABIERTO");
+
+                Console.WriteLine(
+                    $"Recibido: ${recibido:N2}");
+
+                Console.WriteLine(
+                    $"Cambio: ${cambio:N2}");
+
+                Console.WriteLine(
+                    "====================================");
+            }
+            else
+            {
+                Console.WriteLine(
+                    "El pago fue registrado, pero el cajón no confirmó la apertura."
+                );
+            }
+        }
+        catch (Exception exCajon)
+        {
+            Console.WriteLine(
+                "====================================");
+
+            Console.WriteLine(
+                "PAGO REGISTRADO, PERO FALLÓ LA APERTURA DEL CAJÓN:");
+
+            Console.WriteLine(
+                exCajon.Message);
+
+            Console.WriteLine(
+                "====================================");
+        }
+
+
+        // =====================================================
+        // PAGO COMPLETO → FINALIZAR VENTA
+        // =====================================================
 
         var finalizada =
             await FinalizarVentaAsync();
@@ -1447,24 +1985,8 @@ public async Task ActualizarCantidadManualAsync(
 
         if (!finalizada)
         {
-            /*
-             * IMPORTANTE:
-             *
-             * El pago YA quedó registrado.
-             *
-             * Por eso NO debemos volver a registrar
-             * el pago si finalizar.php falla.
-             *
-             * Después podremos implementar recuperación
-             * automática de ventas totalmente pagadas
-             * pendientes de finalizar.
-             */
-
             return false;
         }
-
-
-        return true;
 
 
         return true;
@@ -2498,7 +3020,50 @@ private async Task CancelarVentaAsync()
                 $"No fue posible imprimir: {ex.Message}";
         }
     }
+   
     
+    // =========================================================
+// PRUEBA DE CAJÓN
+// =========================================================
+
+    [RelayCommand]
+    private async Task AbrirCajonPruebaAsync()
+    {
+        MensajeError =
+            string.Empty;
+
+
+        try
+        {
+            var resultado =
+                await _printerService
+                    .AbrirCajonAsync();
+
+
+            if (!resultado)
+            {
+                MensajeError =
+                    "La impresora no confirmó el comando de apertura del cajón.";
+
+                return;
+            }
+
+
+            Console.WriteLine(
+                "====================================");
+
+            Console.WriteLine(
+                "COMANDO DE APERTURA DEL CAJÓN ENVIADO");
+
+            Console.WriteLine(
+                "====================================");
+        }
+        catch (Exception ex)
+        {
+            MensajeError =
+                $"No fue posible abrir el cajón: {ex.Message}";
+        }
+    }
     
     
     // =========================================================
@@ -2604,6 +3169,728 @@ private async Task CancelarVentaAsync()
 
         ActualizarTotales();
     }
+    
+    
+    // =========================================================
+// FILTRAR PRODUCTOS
+// =========================================================
+
+private void FiltrarProductos(
+    string texto)
+{
+    texto =
+        NormalizarTexto(
+            texto
+        );
+
+
+    // =====================================================
+    // SIN BÚSQUEDA → MOSTRAR TODO
+    // =====================================================
+
+    if (string.IsNullOrWhiteSpace(texto))
+    {
+        Productos.Clear();
+
+        foreach (var producto in
+                 _productosCatalogoCompleto)
+        {
+            Productos.Add(
+                producto
+            );
+        }
+
+        OnPropertyChanged(
+            nameof(TieneProductosDisponibles));
+
+        return;
+    }
+
+
+    // =====================================================
+    // BUSCAR Y CALCULAR RELEVANCIA
+    // =====================================================
+
+    var resultados =
+        _productosCatalogoCompleto
+            .Select(
+                producto =>
+                    new
+                    {
+                        Producto =
+                            producto,
+
+                        Puntaje =
+                            CalcularPuntajeBusqueda(
+                                producto,
+                                texto
+                            )
+                    })
+            .Where(
+                x =>
+                    x.Puntaje > 0
+            )
+            .OrderByDescending(
+                x =>
+                    x.Puntaje
+            )
+            .ThenBy(
+                x =>
+                    x.Producto
+                        .NombreComercial
+            )
+            .Select(
+                x =>
+                    x.Producto
+            )
+            .ToList();
+
+
+    // =====================================================
+    // ACTUALIZAR RESULTADOS VISIBLES
+    // =====================================================
+
+    Productos.Clear();
+
+
+    foreach (var producto in resultados)
+    {
+        Productos.Add(
+            producto
+        );
+    }
+
+
+    OnPropertyChanged(
+        nameof(TieneProductosDisponibles));
+}
+
+
+// =========================================================
+// CALCULAR RELEVANCIA DE BÚSQUEDA
+// =========================================================
+
+private static int CalcularPuntajeBusqueda(
+    ProductoCatalogo producto,
+    string busqueda)
+{
+    var nombre =
+        NormalizarTexto(
+            producto.NombreComercial
+        );
+
+
+    var codigo =
+        NormalizarTexto(
+            producto.Codigo
+        );
+
+
+    var sku =
+        NormalizarTexto(
+            producto.Sku
+        );
+
+
+    var codigoBarras =
+        NormalizarTexto(
+            producto.CodigoBarras
+        );
+
+
+    // =====================================================
+    // COINCIDENCIA EXACTA
+    // =====================================================
+
+    if (nombre == busqueda)
+        return 1000;
+
+
+    // =====================================================
+    // NOMBRE COMIENZA CON LO ESCRITO
+    // =====================================================
+
+    if (nombre.StartsWith(
+            busqueda))
+    {
+        return 900;
+    }
+
+
+    // =====================================================
+    // EL NOMBRE CONTIENE LO ESCRITO
+    // =====================================================
+
+    if (nombre.Contains(
+            busqueda))
+    {
+        return 800;
+    }
+
+
+    // =====================================================
+    // CÓDIGO / SKU / BARRAS
+    // =====================================================
+
+    if (
+        codigo.Contains(busqueda) ||
+        sku.Contains(busqueda) ||
+        codigoBarras.Contains(busqueda)
+    )
+    {
+        return 700;
+    }
+
+
+    // =====================================================
+    // BUSCAR PALABRAS INDIVIDUALES
+    // =====================================================
+
+    var palabrasNombre =
+        nombre.Split(
+            ' ',
+            StringSplitOptions
+                .RemoveEmptyEntries
+        );
+
+
+    foreach (var palabra in palabrasNombre)
+    {
+        if (palabra.StartsWith(
+                busqueda))
+        {
+            return 650;
+        }
+
+
+        var distancia =
+            CalcularDistanciaLevenshtein(
+                palabra,
+                busqueda
+            );
+
+
+        /*
+         * Permitimos:
+         *
+         * palabra corta -> 1 error
+         * palabra más larga -> hasta 2 errores
+         */
+
+        var tolerancia =
+            Math.Max(
+                palabra.Length,
+                busqueda.Length
+            ) >= 7
+                ? 2
+                : 1;
+
+
+        if (distancia <= tolerancia)
+        {
+            return
+                500 - distancia;
+        }
+    }
+
+
+    return 0;
+}
+
+
+private static string NormalizarTexto(
+    string? texto)
+{
+    if (string.IsNullOrWhiteSpace(
+            texto))
+    {
+        return string.Empty;
+    }
+
+
+    var normalizado =
+        texto
+            .Trim()
+            .ToLowerInvariant()
+            .Normalize(
+                System.Text
+                    .NormalizationForm
+                    .FormD
+            );
+
+
+    var caracteres =
+        normalizado
+            .Where(
+                c =>
+                    System.Globalization
+                        .CharUnicodeInfo
+                        .GetUnicodeCategory(c)
+                    !=
+                    System.Globalization
+                        .UnicodeCategory
+                        .NonSpacingMark
+            )
+            .ToArray();
+
+
+    return new string(
+            caracteres
+        )
+        .Normalize(
+            System.Text
+                .NormalizationForm
+                .FormC
+        );
+}
+
+private static int CalcularDistanciaLevenshtein(
+    string origen,
+    string destino)
+{
+    if (string.IsNullOrEmpty(origen))
+        return destino.Length;
+
+
+    if (string.IsNullOrEmpty(destino))
+        return origen.Length;
+
+
+    var matriz =
+        new int[
+            origen.Length + 1,
+            destino.Length + 1
+        ];
+
+
+    for (
+        var i = 0;
+        i <= origen.Length;
+        i++)
+    {
+        matriz[i, 0] =
+            i;
+    }
+
+
+    for (
+        var j = 0;
+        j <= destino.Length;
+        j++)
+    {
+        matriz[0, j] =
+            j;
+    }
+
+
+    for (
+        var i = 1;
+        i <= origen.Length;
+        i++)
+    {
+        for (
+            var j = 1;
+            j <= destino.Length;
+            j++)
+        {
+            var costo =
+                origen[i - 1] ==
+                destino[j - 1]
+                    ? 0
+                    : 1;
+
+
+            matriz[i, j] =
+                Math.Min(
+                    Math.Min(
+                        matriz[i - 1, j] + 1,
+                        matriz[i, j - 1] + 1
+                    ),
+                    matriz[i - 1, j - 1]
+                    + costo
+                );
+        }
+    }
+
+
+    return matriz[
+        origen.Length,
+        destino.Length
+    ];
+}
+
+partial void OnTextoBusquedaChanged(
+    string value)
+{
+    FiltrarProductos(
+        value
+    );
+}
+
+
+
+    // =========================================================
+    // CAMBIO EN TEXTO DE BÚSQUEDA DE CLIENTE
+    // =========================================================
+
+    partial void OnTextoBusquedaClienteChanged(
+        string value)
+    {
+        if (_ignorandoCambioBusquedaCliente)
+            return;
+
+
+        _ =
+            BuscarClientesAsync(
+                value
+            );
+    }
+    
+    // =========================================================
+// BUSCAR CLIENTES
+// =========================================================
+
+    private async Task BuscarClientesAsync(
+        string texto)
+    {
+        texto =
+            texto?.Trim()
+            ?? string.Empty;
+
+
+        // Cada nueva escritura obtiene una versión distinta.
+        var versionActual =
+            ++_versionBusquedaCliente;
+
+
+        // =====================================================
+        // MENOS DE 2 CARACTERES
+        // =====================================================
+
+        if (texto.Length < 2)
+        {
+            ClientesEncontrados.Clear();
+
+            MostrarSugerenciasClientes =
+                false;
+
+            return;
+        }
+
+
+        /*
+         * Pequeño debounce.
+         *
+         * Si escribe:
+         *
+         * E
+         * ES
+         * EST
+         * ESTE
+         *
+         * evitamos intentar actualizar visualmente
+         * una respuesta vieja.
+         */
+
+        await Task.Delay(
+            250
+        );
+
+
+        if (versionActual !=
+            _versionBusquedaCliente)
+        {
+            return;
+        }
+
+
+        var resultado =
+            await _clientesService
+                .BuscarClientesAsync(
+                    texto
+                );
+
+
+        /*
+         * Mientras la API respondía pudo haber
+         * cambiado nuevamente el texto.
+         */
+
+        if (versionActual !=
+            _versionBusquedaCliente)
+        {
+            return;
+        }
+
+
+        ClientesEncontrados.Clear();
+
+
+        if (resultado.Res != 1)
+        {
+            MostrarSugerenciasClientes =
+                false;
+
+            MensajeError =
+                resultado.Msg
+                ?? "No fue posible buscar clientes.";
+
+            return;
+        }
+
+
+        foreach (var cliente in
+                 resultado.Data)
+        {
+            ClientesEncontrados.Add(
+                cliente
+            );
+        }
+
+
+        MostrarSugerenciasClientes =
+            ClientesEncontrados.Count > 0;
+    }
+    
+// =========================================================
+// SELECCIONAR CLIENTE
+// =========================================================
+
+[RelayCommand]
+private async Task SeleccionarClienteAsync(
+    ClientePos? cliente)
+{
+    if (cliente is null)
+        return;
+
+
+    MensajeError =
+        string.Empty;
+
+
+    // =====================================================
+    // GUARDAR ESTADO ANTERIOR
+    // =====================================================
+
+    var clienteAnterior =
+        ClientePosSeleccionado;
+
+    var nombreAnterior =
+        ClienteSeleccionado;
+
+
+    // =====================================================
+    // UI OPTIMISTA
+    // =====================================================
+
+    ClientePosSeleccionado =
+        cliente;
+
+    ClienteSeleccionado =
+        cliente.Nombre;
+
+
+    _ignorandoCambioBusquedaCliente =
+        true;
+
+    TextoBusquedaCliente =
+        cliente.Nombre;
+
+    _ignorandoCambioBusquedaCliente =
+        false;
+
+
+    ClientesEncontrados.Clear();
+
+    MostrarSugerenciasClientes =
+        false;
+
+
+    // =====================================================
+    // TODAVÍA NO EXISTE VENTA
+    // =====================================================
+
+    /*
+     * No hacemos PUT.
+     *
+     * Cuando se agregue el primer producto,
+     * create.php utilizará ClientePosSeleccionado.Id.
+     */
+
+    if (IdVentaActual <= 0)
+        return;
+
+
+    // =====================================================
+    // LA VENTA YA EXISTE → ACTUALIZAR CLIENTE
+    // =====================================================
+
+    var request =
+        new ActualizarVentaRequest
+        {
+            IdCliente =
+                cliente.Id,
+
+            TipoCliente =
+                "CLIENTE"
+        };
+
+
+    var resultado =
+        await _ventasService
+            .ActualizarVentaAsync(
+                IdVentaActual,
+                request
+            );
+
+
+    if (resultado.Res == 1)
+        return;
+
+
+    // =====================================================
+    // BACKEND RECHAZÓ → RESTAURAR
+    // =====================================================
+
+    ClientePosSeleccionado =
+        clienteAnterior;
+
+    ClienteSeleccionado =
+        nombreAnterior;
+
+
+    _ignorandoCambioBusquedaCliente =
+        true;
+
+    TextoBusquedaCliente =
+        clienteAnterior?.Nombre
+        ?? string.Empty;
+
+    _ignorandoCambioBusquedaCliente =
+        false;
+
+
+    MensajeError =
+        string.IsNullOrWhiteSpace(
+            resultado.Msg)
+            ? "No fue posible asignar el cliente a la venta."
+            : resultado.Msg;
+}
+    
+// =========================================================
+// VOLVER A CLIENTE MOSTRADOR
+// =========================================================
+
+[RelayCommand]
+private async Task QuitarClienteAsync()
+{
+    MensajeError =
+        string.Empty;
+
+
+    // =====================================================
+    // GUARDAR ESTADO ANTERIOR
+    // =====================================================
+
+    var clienteAnterior =
+        ClientePosSeleccionado;
+
+    var nombreAnterior =
+        ClienteSeleccionado;
+
+
+    // =====================================================
+    // UI OPTIMISTA
+    // =====================================================
+
+    ClientePosSeleccionado =
+        null;
+
+    ClienteSeleccionado =
+        "Cliente mostrador";
+
+
+    _ignorandoCambioBusquedaCliente =
+        true;
+
+    TextoBusquedaCliente =
+        string.Empty;
+
+    _ignorandoCambioBusquedaCliente =
+        false;
+
+
+    ClientesEncontrados.Clear();
+
+    MostrarSugerenciasClientes =
+        false;
+
+
+    // =====================================================
+    // TODAVÍA NO EXISTE VENTA
+    // =====================================================
+
+    if (IdVentaActual <= 0)
+        return;
+
+
+    // =====================================================
+    // VENTA EXISTENTE → QUITAR CLIENTE
+    // =====================================================
+
+    var request =
+        new ActualizarVentaRequest
+        {
+            IdCliente =
+                null,
+
+            TipoCliente =
+                "PUBLICO_GENERAL"
+        };
+
+
+    var resultado =
+        await _ventasService
+            .ActualizarVentaAsync(
+                IdVentaActual,
+                request
+            );
+
+
+    if (resultado.Res == 1)
+        return;
+
+
+    // =====================================================
+    // BACKEND RECHAZÓ → RESTAURAR
+    // =====================================================
+
+    ClientePosSeleccionado =
+        clienteAnterior;
+
+    ClienteSeleccionado =
+        nombreAnterior;
+
+
+    _ignorandoCambioBusquedaCliente =
+        true;
+
+    TextoBusquedaCliente =
+        clienteAnterior?.Nombre
+        ?? string.Empty;
+
+    _ignorandoCambioBusquedaCliente =
+        false;
+
+
+    MensajeError =
+        string.IsNullOrWhiteSpace(
+            resultado.Msg)
+            ? "No fue posible cambiar la venta a cliente mostrador."
+            : resultado.Msg;
+}
+    
+    
 
 
     // =========================================================

@@ -67,6 +67,7 @@
                            FontSize="13"
                            HorizontalAlignment="Center"
                            Margin="0,0,0,20"/>
+                
 
 
                 <!-- Usuario -->
@@ -137,10 +138,30 @@
 
                             <TextBlock Text="Validando..."
                                        VerticalAlignment="Center"/>
+
                         </StackPanel>
 
                     </Grid>
+
                 </Button>
+
+
+                <!-- ===================================================== -->
+                <!-- TEMPORAL: PRUEBA DEL CAJÓN                            -->
+                <!-- ===================================================== -->
+
+                <Button Content="PRUEBA: ABRIR CAJÓN"
+                        Click="AbrirCajonPrueba_Click"
+                        Height="42"
+                        Margin="0,4,0,0"
+                        Background="White"
+                        Foreground="#08783D"
+                        BorderBrush="#16A34A"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        HorizontalContentAlignment="Center"
+                        FontSize="12"
+                        FontWeight="SemiBold"/>
 
 
                 <!-- Footer -->
@@ -159,4 +180,4 @@
         </Border>
 
     </Grid>
-</Window>
+</Window> 

@@ -287,6 +287,104 @@ public class VentasService
             };
         }
     }
+    
+    
+    
+    // =========================================================
+// ACTUALIZAR DATOS GENERALES DE LA VENTA
+// =========================================================
+
+public async Task<ActualizarVentaResponse>
+    ActualizarVentaAsync(
+        int idVenta,
+        ActualizarVentaRequest request)
+{
+    try
+    {
+        var response =
+            await ApiClient.Http
+                .PutAsJsonAsync(
+                    $"api/pos/ventas/{idVenta}",
+                    request
+                );
+
+
+        var contenido =
+            await response.Content
+                .ReadAsStringAsync();
+
+
+        Console.WriteLine(
+            "====================================");
+
+        Console.WriteLine(
+            "RESPUESTA API ACTUALIZAR VENTA:");
+
+        Console.WriteLine(
+            $"HTTP STATUS: {(int)response.StatusCode} {response.StatusCode}");
+
+        Console.WriteLine(
+            contenido);
+
+        Console.WriteLine(
+            "====================================");
+
+
+        contenido =
+            LimpiarRespuestaPhp(
+                contenido
+            );
+
+
+        if (string.IsNullOrWhiteSpace(
+                contenido))
+        {
+            return new ActualizarVentaResponse
+            {
+                Res = 0,
+                Msg =
+                    "El servidor no devolvió información al actualizar la venta."
+            };
+        }
+
+
+        var resultado =
+            JsonSerializer
+                .Deserialize<ActualizarVentaResponse>(
+                    contenido,
+                    JsonOptions
+                );
+
+
+        return resultado
+               ?? new ActualizarVentaResponse
+               {
+                   Res = 0,
+                   Msg =
+                       "El servidor devolvió una respuesta inválida al actualizar la venta."
+               };
+    }
+    catch (JsonException ex)
+    {
+        return new ActualizarVentaResponse
+        {
+            Res = 0,
+            Msg =
+                $"La respuesta al actualizar la venta no tiene un formato válido: {ex.Message}"
+        };
+    }
+    catch (Exception ex)
+    {
+        return new ActualizarVentaResponse
+        {
+            Res = 0,
+            Msg =
+                $"No fue posible actualizar la venta: {ex.Message}"
+        };
+    }
+}
+
+
 
 
     // =========================================================
