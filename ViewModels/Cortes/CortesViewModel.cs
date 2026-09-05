@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using NovaCoreESDM.Models.Session;
 using NovaCoreESDM.Services.Turnos;
+using NovaCoreESDM.Services.Cortes;
+using NovaCoreESDM.Models.Turno;
 
 namespace NovaCoreESDM.ViewModels.Cortes;
 
@@ -16,6 +18,20 @@ public partial class CortesViewModel
     private readonly TurnosService
         _turnosService;
 
+    private readonly CortesService
+        _cortesService;
+    
+    private ResumenTurnoData? _resumenActual;
+
+    public ResumenTurnoData? ResumenActual
+    {
+        get => _resumenActual;
+
+        private set =>
+            SetField(
+                ref _resumenActual,
+                value);
+    }
 
     // ============================================================
     // ESTADO GENERAL
@@ -583,6 +599,10 @@ public partial class CortesViewModel
             new TurnosService();
 
 
+        _cortesService =
+            new CortesService();
+
+
         EstablecerSinTurno();
     }
 
@@ -664,15 +684,21 @@ public partial class CortesViewModel
 
                 return;
             }
-
-
+            
             if (resultado.Data is null)
             {
+                ResumenActual =
+                    null;
+
                 MensajeError =
                     "El servidor no devolvió información del turno.";
 
                 return;
             }
+
+
+            ResumenActual =
+                resultado.Data;
 
 
             var resumen =
@@ -840,6 +866,12 @@ public partial class CortesViewModel
                     0m,
                     ingresosCaja -
                     AbonosCreditoEfectivo);
+            
+            // ====================================================
+            // HISTORIAL DE CORTES
+            // ====================================================
+
+            await CargarHistorialAsync();
 
 
             // ====================================================
@@ -904,6 +936,139 @@ public partial class CortesViewModel
         {
             EstaCargando =
                 false;
+        }
+    }
+    
+    
+    // ============================================================
+    // CARGAR HISTORIAL DE CORTES
+    // ============================================================
+
+    public async Task CargarHistorialAsync()
+    {
+        try
+        {
+            var resultado =
+                await _cortesService
+                    .ObtenerCortesAsync(
+                        limit: 20);
+
+
+            Cortes.Clear();
+
+
+            if (resultado.Res != 1)
+            {
+                Console.WriteLine(
+                    "========================================");
+
+                Console.WriteLine(
+                    "NO FUE POSIBLE CARGAR HISTORIAL:");
+
+                Console.WriteLine(
+                    resultado.Msg ??
+                    "Sin mensaje del servidor.");
+
+                Console.WriteLine(
+                    "========================================");
+
+
+                NotificarHistorial();
+
+                return;
+            }
+
+
+            if (resultado.Data?.Cortes is null)
+            {
+                NotificarHistorial();
+
+                return;
+            }
+
+
+            foreach (var corte in
+                     resultado.Data.Cortes)
+            {
+                var fecha =
+                    ObtenerFechaCorte(
+                        corte.FechaCorte);
+
+
+                Cortes.Add(
+                    new CorteHistorialItemViewModel
+                    {
+                        IdCorte =
+                            corte.Id,
+
+                        IdTurno =
+                            corte.IdTurno,
+
+                        Caja =
+                            ObtenerNombreCaja(
+                                corte.CajaNombre,
+                                corte.CajaCodigo),
+
+                        Fecha =
+                            fecha.Fecha,
+
+                        Hora =
+                            fecha.Hora,
+
+                        EfectivoEsperado =
+                            corte.EfectivoEsperado,
+
+                        EfectivoDeclarado =
+                            corte.EfectivoDeclarado,
+
+                        Diferencia =
+                            corte.Diferencia,
+
+                        EstadoDiferencia =
+                            string.IsNullOrWhiteSpace(
+                                corte.EstadoDiferencia)
+
+                                ? ObtenerEstadoDiferencia(
+                                    corte.Diferencia)
+
+                                : corte.EstadoDiferencia!
+                    });
+            }
+
+
+            NotificarHistorial();
+
+
+            Console.WriteLine(
+                "========================================");
+
+            Console.WriteLine(
+                "HISTORIAL DE CORTES CARGADO:");
+
+            Console.WriteLine(
+                $"Cortes: {Cortes.Count}");
+
+            Console.WriteLine(
+                "========================================");
+        }
+        catch (Exception ex)
+        {
+            Cortes.Clear();
+
+            NotificarHistorial();
+
+
+            Console.WriteLine(
+                "========================================");
+
+            Console.WriteLine(
+                "ERROR CARGANDO HISTORIAL:");
+
+            Console.WriteLine(
+                ex);
+
+            Console.WriteLine(
+                "========================================");
         }
     }
 
@@ -1026,6 +1191,9 @@ public partial class CortesViewModel
 
         EfectivoEsperado =
             0m;
+        
+        ResumenActual =
+            null;
     }
 
 
@@ -1178,7 +1346,107 @@ public partial class CortesViewModel
             new PropertyChangedEventArgs(
                 propertyName));
     }
+    
+    
+    // ============================================================
+    // FORMATEAR FECHA DE CORTE
+    // ============================================================
+
+    private static (
+        string Fecha,
+        string Hora)
+        ObtenerFechaCorte(
+            string? valor)
+    {
+        if (string.IsNullOrWhiteSpace(
+                valor))
+        {
+            return (
+                "—",
+                "--:--");
+        }
+
+
+        if (DateTimeOffset.TryParse(
+                valor,
+                out var fechaOffset))
+        {
+            var local =
+                fechaOffset.ToLocalTime();
+
+
+            return (
+                local.ToString("dd/MM/yyyy"),
+                local.ToString("HH:mm"));
+        }
+
+
+        if (DateTime.TryParse(
+                valor,
+                out var fecha))
+        {
+            return (
+                fecha.ToString("dd/MM/yyyy"),
+                fecha.ToString("HH:mm"));
+        }
+
+
+        return (
+            valor,
+            "--:--");
+    }
+
+
+    // ============================================================
+    // NOMBRE DE CAJA
+    // ============================================================
+
+    private static string ObtenerNombreCaja(
+        string? nombre,
+        string? codigo)
+    {
+        if (!string.IsNullOrWhiteSpace(
+                nombre))
+        {
+            return nombre;
+        }
+
+
+        if (!string.IsNullOrWhiteSpace(
+                codigo))
+        {
+            return codigo;
+        }
+
+
+        return "Caja";
+    }
+
+
+    // ============================================================
+    // ESTADO DE DIFERENCIA
+    // ============================================================
+
+    private static string ObtenerEstadoDiferencia(
+        decimal diferencia)
+    {
+        if (diferencia > 0m)
+        {
+            return "SOBRANTE";
+        }
+
+
+        if (diferencia < 0m)
+        {
+            return "FALTANTE";
+        }
+
+
+        return "CUADRADO";
+    }
 }
+
+
 
 
 // ================================================================

@@ -1,0 +1,178 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="NovaCoreESDM.Views.Cortes.ConfirmarCierreCorteWindow"
+    Width="540"
+    Height="430"
+    CanResize="False"
+    WindowStartupLocation="CenterOwner"
+    Title="Confirmar cierre"
+    Background="#F7F9F8">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <StackPanel
+            Margin="32"
+            Spacing="18">
+
+            <Border
+                Width="62"
+                Height="62"
+                CornerRadius="20"
+                Background="#FEF2F2"
+                HorizontalAlignment="Left">
+
+                <TextBlock
+                    Text="!"
+                    Foreground="#C61F2B"
+                    FontSize="28"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
+
+            </Border>
+
+
+            <StackPanel Spacing="7">
+
+                <TextBlock
+                    Text="Confirmar cierre de turno"
+                    Foreground="#21382A"
+                    FontSize="23"
+                    FontWeight="SemiBold"/>
+
+                <TextBlock
+                    Text="Revisa la información antes de finalizar."
+                    Foreground="#66776D"
+                    FontSize="13"/>
+
+            </StackPanel>
+
+
+            <Border
+                Background="White"
+                BorderBrush="#E2E8E4"
+                BorderThickness="1"
+                CornerRadius="12"
+                Padding="17">
+
+                <StackPanel Spacing="11">
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <TextBlock
+                            Text="Efectivo esperado"
+                            Foreground="#718078"/>
+
+                        <TextBlock
+                            Grid.Column="1"
+                            x:Name="TxtEsperado"
+                            Text="$0.00"
+                            Foreground="#21382A"
+                            FontWeight="SemiBold"/>
+
+                    </Grid>
+
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <TextBlock
+                            Text="Efectivo contado"
+                            Foreground="#718078"/>
+
+                        <TextBlock
+                            Grid.Column="1"
+                            x:Name="TxtContado"
+                            Text="$0.00"
+                            Foreground="#21382A"
+                            FontWeight="SemiBold"/>
+
+                    </Grid>
+
+
+                    <Border
+                        Height="1"
+                        Background="#E6EBE8"/>
+
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <TextBlock
+                            Text="Diferencia"
+                            Foreground="#718078"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Grid.Column="1"
+                            x:Name="TxtDiferencia"
+                            Text="$0.00"
+                            FontWeight="Bold"
+                            FontSize="16"/>
+
+                    </Grid>
+
+
+                    <TextBlock
+                        x:Name="TxtEstado"
+                        Text="CUADRADO"
+                        FontSize="11"
+                        FontWeight="Bold"
+                        HorizontalAlignment="Right"/>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <Border
+                Background="#FFF8E8"
+                BorderBrush="#F3D89B"
+                BorderThickness="1"
+                CornerRadius="10"
+                Padding="14">
+
+                <TextBlock
+                    Text="Al confirmar, el turno será cerrado y el corte quedará registrado. Esta operación no debe repetirse."
+                    Foreground="#84611D"
+                    FontSize="11"
+                    TextWrapping="Wrap"/>
+
+            </Border>
+
+        </StackPanel>
+
+
+        <Border
+            Grid.Row="1"
+            Background="White"
+            BorderBrush="#E2E8E4"
+            BorderThickness="0,1,0,0"
+            Padding="24,18">
+
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Spacing="10">
+
+                <Button
+                    Content="Volver"
+                    Width="110"
+                    Height="42"
+                    Click="Volver_Click"/>
+
+                <Button
+                    Content="Sí, cerrar turno"
+                    Width="150"
+                    Height="42"
+                    Background="#C61F2B"
+                    Foreground="White"
+                    FontWeight="SemiBold"
+                    Click="Confirmar_Click"/>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+
+</Window>

@@ -1,0 +1,176 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="NovaCoreESDM.Views.Cortes.CorteRealizadoWindow"
+    Width="540"
+    Height="520"
+    CanResize="False"
+    WindowStartupLocation="CenterOwner"
+    Title="Corte realizado"
+    Background="#F7F9F8">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <StackPanel
+            Margin="32"
+            Spacing="19">
+
+            <!-- ICONO -->
+
+            <Border
+                Width="72"
+                Height="72"
+                CornerRadius="24"
+                Background="#EAF7EF"
+                HorizontalAlignment="Center">
+
+                <TextBlock
+                    Text="✓"
+                    Foreground="#08783D"
+                    FontSize="34"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
+
+            </Border>
+
+
+            <!-- TITULO -->
+
+            <StackPanel
+                Spacing="5"
+                HorizontalAlignment="Center">
+
+                <TextBlock
+                    Text="Corte realizado correctamente"
+                    Foreground="#21382A"
+                    FontSize="22"
+                    FontWeight="SemiBold"
+                    HorizontalAlignment="Center"/>
+
+                <TextBlock
+                    x:Name="TxtCorte"
+                    Text="Corte registrado"
+                    Foreground="#718078"
+                    FontSize="12"
+                    HorizontalAlignment="Center"/>
+
+            </StackPanel>
+
+
+            <!-- RESUMEN -->
+
+            <Border
+                Background="White"
+                BorderBrush="#E2E8E4"
+                BorderThickness="1"
+                CornerRadius="14"
+                Padding="20">
+
+                <StackPanel Spacing="13">
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <TextBlock
+                            Text="Efectivo esperado"
+                            Foreground="#718078"/>
+
+                        <TextBlock
+                            Grid.Column="1"
+                            x:Name="TxtEsperado"
+                            Text="$0.00"
+                            Foreground="#21382A"
+                            FontWeight="SemiBold"/>
+
+                    </Grid>
+
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <TextBlock
+                            Text="Efectivo contado"
+                            Foreground="#718078"/>
+
+                        <TextBlock
+                            Grid.Column="1"
+                            x:Name="TxtDeclarado"
+                            Text="$0.00"
+                            Foreground="#21382A"
+                            FontWeight="SemiBold"/>
+
+                    </Grid>
+
+
+                    <Border
+                        Height="1"
+                        Background="#E6EBE8"/>
+
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <TextBlock
+                            Text="Diferencia"
+                            Foreground="#718078"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Grid.Column="1"
+                            x:Name="TxtDiferencia"
+                            Text="$0.00"
+                            FontSize="19"
+                            FontWeight="Bold"/>
+
+                    </Grid>
+
+
+                    <Border
+                        x:Name="BorderEstado"
+                        HorizontalAlignment="Right"
+                        CornerRadius="8"
+                        Padding="10,5">
+
+                        <TextBlock
+                            x:Name="TxtEstado"
+                            Text="CUADRADO"
+                            FontSize="10"
+                            FontWeight="Bold"/>
+
+                    </Border>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <TextBlock
+                Text="El turno ha sido cerrado y el corte quedó registrado en el historial."
+                Foreground="#7C8D82"
+                FontSize="11"
+                TextWrapping="Wrap"
+                TextAlignment="Center"/>
+
+        </StackPanel>
+
+
+        <Border
+            Grid.Row="1"
+            Background="White"
+            BorderBrush="#E2E8E4"
+            BorderThickness="0,1,0,0"
+            Padding="24,18">
+
+            <Button
+                Content="Finalizar"
+                Width="140"
+                Height="44"
+                Background="#08783D"
+                Foreground="White"
+                FontWeight="SemiBold"
+                HorizontalAlignment="Center"
+                Click="Finalizar_Click"/>
+
+        </Border>
+
+    </Grid>
+
+</Window>

@@ -8,7 +8,11 @@
         <entry key="Styles/Colors.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="ViewModels/Ventas/EntregaTicketWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/Caja/SeleccionarCajaWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Cortes/ConfirmarCierreCorteWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Cortes/ConfirmarInicioCorteWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Cortes/CorteRealizadoWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/Cortes/CortesView.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Cortes/RealizarCorteWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/Cortes/SeleccionarCajaWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/Credito/ConfirmarPagoCreditoWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/Credito/PagoCreditoEfectivoWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
@@ -19,6 +23,7 @@
         <entry key="Views/Inicio/InicioView.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/LoginWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/MainWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Sesion/CerrarSesionWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/SplashWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/Turno/AperturaTurnoWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/Turno/ConfirmarAperturaWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />

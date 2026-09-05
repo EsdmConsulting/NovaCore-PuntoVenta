@@ -1,0 +1,158 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="NovaCoreESDM.Views.Sesion.CerrarSesionWindow"
+    Width="560"
+    Height="430"
+    CanResize="False"
+    WindowStartupLocation="CenterOwner"
+    Title="Cerrar sesión"
+    Background="#F7F9F8">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <StackPanel
+            Margin="32"
+            Spacing="18">
+
+            <Border
+                Width="64"
+                Height="64"
+                CornerRadius="20"
+                Background="#FEF2F2"
+                HorizontalAlignment="Left">
+
+                <TextBlock
+                    Text="↪"
+                    Foreground="#C61F2B"
+                    FontSize="30"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
+
+            </Border>
+
+
+            <StackPanel Spacing="7">
+
+                <TextBlock
+                    x:Name="TxtTitulo"
+                    Text="Cerrar sesión"
+                    Foreground="#21382A"
+                    FontSize="23"
+                    FontWeight="SemiBold"/>
+
+                <TextBlock
+                    x:Name="TxtDescripcion"
+                    Text="¿Deseas cerrar la sesión actual?"
+                    Foreground="#66776D"
+                    FontSize="13"
+                    TextWrapping="Wrap"/>
+
+            </StackPanel>
+
+
+            <!-- AVISO DE TURNO ACTIVO -->
+
+            <Border
+                x:Name="BorderTurnoActivo"
+                IsVisible="False"
+                Background="#FFF8E8"
+                BorderBrush="#F3D89B"
+                BorderThickness="1"
+                CornerRadius="11"
+                Padding="15">
+
+                <StackPanel Spacing="5">
+
+                    <TextBlock
+                        Text="Turno abierto"
+                        Foreground="#8A641D"
+                        FontSize="12"
+                        FontWeight="SemiBold"/>
+
+                    <TextBlock
+                        x:Name="TxtTurnoActivo"
+                        Text="Existe un turno activo en esta caja."
+                        Foreground="#84611D"
+                        FontSize="11"
+                        TextWrapping="Wrap"/>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- INFORMACIÓN -->
+
+            <Border
+                Background="White"
+                BorderBrush="#E2E8E4"
+                BorderThickness="1"
+                CornerRadius="11"
+                Padding="15">
+
+                <TextBlock
+                    x:Name="TxtInformacion"
+                    Text="La configuración de esta terminal y caja permanecerá guardada."
+                    Foreground="#64748B"
+                    FontSize="11"
+                    TextWrapping="Wrap"/>
+
+            </Border>
+
+        </StackPanel>
+
+
+        <!-- BOTONES -->
+
+        <Border
+            Grid.Row="1"
+            Background="White"
+            BorderBrush="#E2E8E4"
+            BorderThickness="0,1,0,0"
+            Padding="24,18">
+
+            <Grid
+                ColumnDefinitions="Auto,*,Auto,Auto"
+                ColumnSpacing="10">
+
+                <Button
+                    Grid.Column="0"
+                    Content="Volver"
+                    Width="105"
+                    Height="42"
+                    Click="Volver_Click"/>
+
+
+                <Button
+                    Grid.Column="2"
+                    x:Name="BtnIrACorte"
+                    Content="Ir a realizar corte"
+                    Width="155"
+                    Height="42"
+                    IsVisible="False"
+                    Background="#08783D"
+                    Foreground="White"
+                    FontWeight="SemiBold"
+                    Click="IrACorte_Click"/>
+
+
+                <Button
+                    Grid.Column="3"
+                    x:Name="BtnCerrarSesion"
+                    Content="Cerrar sesión"
+                    Width="135"
+                    Height="42"
+                    Background="#C61F2B"
+                    Foreground="White"
+                    FontWeight="SemiBold"
+                    Click="CerrarSesion_Click"/>
+
+            </Grid>
+
+        </Border>
+
+    </Grid>
+
+</Window>

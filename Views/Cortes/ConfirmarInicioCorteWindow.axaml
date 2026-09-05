@@ -1,0 +1,105 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="NovaCoreESDM.Views.Cortes.ConfirmarInicioCorteWindow"
+    Width="520"
+    Height="355"
+    CanResize="False"
+    WindowStartupLocation="CenterOwner"
+    Title="Confirmar corte"
+    Background="#F7F9F8">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <StackPanel
+            Margin="32"
+            Spacing="18">
+
+            <Border
+                Width="62"
+                Height="62"
+                CornerRadius="20"
+                Background="#FFF5E8"
+                HorizontalAlignment="Left">
+
+                <TextBlock
+                    Text="!"
+                    Foreground="#B7791F"
+                    FontSize="28"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
+
+            </Border>
+
+
+            <StackPanel Spacing="8">
+
+                <TextBlock
+                    Text="¿Realizar corte de caja?"
+                    Foreground="#21382A"
+                    FontSize="23"
+                    FontWeight="SemiBold"/>
+
+                <TextBlock
+                    x:Name="TxtDescripcion"
+                    Text="Estás por iniciar el cierre del turno actual."
+                    Foreground="#66776D"
+                    FontSize="13"
+                    TextWrapping="Wrap"/>
+
+            </StackPanel>
+
+
+            <Border
+                Background="#FFF8E8"
+                BorderBrush="#F1D398"
+                BorderThickness="1"
+                CornerRadius="10"
+                Padding="14">
+
+                <TextBlock
+                    Text="A continuación deberás contar físicamente el efectivo de la caja antes de confirmar el cierre."
+                    Foreground="#84611D"
+                    FontSize="11"
+                    TextWrapping="Wrap"/>
+
+            </Border>
+
+        </StackPanel>
+
+
+        <Border
+            Grid.Row="1"
+            Background="White"
+            BorderBrush="#E2E8E4"
+            BorderThickness="0,1,0,0"
+            Padding="24,18">
+
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Spacing="10">
+
+                <Button
+                    Content="Cancelar"
+                    Width="110"
+                    Height="42"
+                    Click="Cancelar_Click"/>
+
+                <Button
+                    Content="Continuar"
+                    Width="125"
+                    Height="42"
+                    Background="#08783D"
+                    Foreground="White"
+                    FontWeight="SemiBold"
+                    Click="Continuar_Click"/>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+
+</Window>

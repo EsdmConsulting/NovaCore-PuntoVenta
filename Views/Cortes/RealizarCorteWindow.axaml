@@ -1,0 +1,412 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="NovaCoreESDM.Views.Cortes.RealizarCorteWindow"
+    Width="720"
+    Height="760"
+    MinWidth="680"
+    MinHeight="700"
+    WindowStartupLocation="CenterOwner"
+    CanResize="False"
+    Title="Realizar corte"
+    Background="#F5F7FA">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- ================================================= -->
+        <!-- HEADER -->
+        <!-- ================================================= -->
+
+        <Border
+            Grid.Row="0"
+            Background="#17365D"
+            Padding="28,22">
+
+            <Grid ColumnDefinitions="*,Auto">
+
+                <StackPanel
+                    Grid.Column="0"
+                    Spacing="5">
+
+                    <TextBlock
+                        Text="Realizar corte"
+                        Foreground="White"
+                        FontSize="24"
+                        FontWeight="Bold"/>
+
+                    <TextBlock
+                        x:Name="TxtInformacionTurno"
+                        Text="Cierre de caja"
+                        Foreground="#DCE7F5"
+                        FontSize="13"/>
+
+                </StackPanel>
+
+                <Border
+                    Grid.Column="1"
+                    Background="#294B73"
+                    CornerRadius="8"
+                    Padding="12,7"
+                    VerticalAlignment="Center">
+
+                    <TextBlock
+                        Text="CIERRE DE TURNO"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        FontSize="11"/>
+
+                </Border>
+
+            </Grid>
+
+        </Border>
+
+
+        <!-- ================================================= -->
+        <!-- CONTENIDO -->
+        <!-- ================================================= -->
+
+        <ScrollViewer
+            Grid.Row="1"
+            VerticalScrollBarVisibility="Auto">
+
+            <StackPanel
+                Margin="28,24"
+                Spacing="18">
+
+                <!-- RESUMEN DE EFECTIVO -->
+
+                <Border
+                    Background="White"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="22">
+
+                    <StackPanel Spacing="13">
+
+                        <TextBlock
+                            Text="Composición del efectivo"
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Foreground="#17365D"/>
+
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <TextBlock
+                                Text="Fondo inicial"
+                                Foreground="#64748B"/>
+
+                            <TextBlock
+                                Grid.Column="1"
+                                x:Name="TxtFondoInicial"
+                                Text="$0.00"
+                                FontWeight="SemiBold"
+                                Foreground="#1E293B"/>
+
+                        </Grid>
+
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <TextBlock
+                                Text="Ventas en efectivo"
+                                Foreground="#64748B"/>
+
+                            <TextBlock
+                                Grid.Column="1"
+                                x:Name="TxtVentasEfectivo"
+                                Text="$0.00"
+                                FontWeight="SemiBold"
+                                Foreground="#1E293B"/>
+
+                        </Grid>
+
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <TextBlock
+                                Text="Abonos de crédito en efectivo"
+                                Foreground="#64748B"/>
+
+                            <TextBlock
+                                Grid.Column="1"
+                                x:Name="TxtAbonosCreditoEfectivo"
+                                Text="$0.00"
+                                FontWeight="SemiBold"
+                                Foreground="#1E293B"/>
+
+                        </Grid>
+
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <TextBlock
+                                Text="Otros ingresos"
+                                Foreground="#64748B"/>
+
+                            <TextBlock
+                                Grid.Column="1"
+                                x:Name="TxtOtrosIngresos"
+                                Text="$0.00"
+                                FontWeight="SemiBold"
+                                Foreground="#1E293B"/>
+
+                        </Grid>
+
+
+                        <Separator
+                            Background="#E2E8F0"/>
+
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <TextBlock
+                                Text="Retiros"
+                                Foreground="#64748B"/>
+
+                            <TextBlock
+                                Grid.Column="1"
+                                x:Name="TxtRetiros"
+                                Text="-$0.00"
+                                FontWeight="SemiBold"
+                                Foreground="#C61F2B"/>
+
+                        </Grid>
+
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <TextBlock
+                                Text="Egresos"
+                                Foreground="#64748B"/>
+
+                            <TextBlock
+                                Grid.Column="1"
+                                x:Name="TxtEgresos"
+                                Text="-$0.00"
+                                FontWeight="SemiBold"
+                                Foreground="#C61F2B"/>
+
+                        </Grid>
+
+
+                        <Grid ColumnDefinitions="*,Auto">
+
+                            <TextBlock
+                                Text="Devoluciones"
+                                Foreground="#64748B"/>
+
+                            <TextBlock
+                                Grid.Column="1"
+                                x:Name="TxtDevoluciones"
+                                Text="-$0.00"
+                                FontWeight="SemiBold"
+                                Foreground="#C61F2B"/>
+
+                        </Grid>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- EFECTIVO ESPERADO -->
+
+                <Border
+                    Background="#EDF7F0"
+                    BorderBrush="#B7DFC1"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="20">
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <StackPanel Spacing="3">
+
+                            <TextBlock
+                                Text="EFECTIVO ESPERADO"
+                                FontSize="11"
+                                FontWeight="Bold"
+                                Foreground="#15803D"/>
+
+                            <TextBlock
+                                Text="Según los movimientos registrados"
+                                FontSize="11"
+                                Foreground="#64748B"/>
+
+                        </StackPanel>
+
+
+                        <TextBlock
+                            Grid.Column="1"
+                            x:Name="TxtEfectivoEsperado"
+                            Text="$0.00"
+                            FontSize="25"
+                            FontWeight="Bold"
+                            Foreground="#15803D"
+                            VerticalAlignment="Center"/>
+
+                    </Grid>
+
+                </Border>
+
+
+                <!-- EFECTIVO CONTADO -->
+
+                <StackPanel Spacing="7">
+
+                    <TextBlock
+                        Text="Efectivo contado físicamente"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Foreground="#334155"/>
+
+                    <TextBlock
+                        Text="Ingresa cuánto dinero hay realmente en caja."
+                        FontSize="11"
+                        Foreground="#64748B"/>
+
+                    <TextBox
+                        x:Name="TxtEfectivoContado"
+                        Height="50"
+                        FontSize="20"
+                        FontWeight="SemiBold"
+                        Watermark="0.00"
+                        HorizontalContentAlignment="Right"
+                        VerticalContentAlignment="Center"
+                        TextChanged="EfectivoContado_TextChanged"/>
+
+                </StackPanel>
+
+
+                <!-- DIFERENCIA -->
+
+                <Border
+                    x:Name="BorderDiferencia"
+                    Background="#F8FAFC"
+                    BorderBrush="#CBD5E1"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="18">
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+                        <StackPanel Spacing="4">
+
+                            <TextBlock
+                                Text="Diferencia"
+                                FontSize="13"
+                                Foreground="#64748B"/>
+
+                            <TextBlock
+                                x:Name="TxtEstadoDiferencia"
+                                Text="PENDIENTE"
+                                FontSize="13"
+                                FontWeight="Bold"
+                                Foreground="#64748B"/>
+
+                        </StackPanel>
+
+
+                        <TextBlock
+                            Grid.Column="1"
+                            x:Name="TxtDiferencia"
+                            Text="$0.00"
+                            FontSize="23"
+                            FontWeight="Bold"
+                            Foreground="#334155"
+                            VerticalAlignment="Center"/>
+
+                    </Grid>
+
+                </Border>
+
+
+                <!-- OBSERVACIONES -->
+
+                <StackPanel Spacing="7">
+
+                    <TextBlock
+                        Text="Observaciones"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        Foreground="#334155"/>
+
+                    <TextBox
+                        x:Name="TxtObservaciones"
+                        MinHeight="70"
+                        MaxHeight="100"
+                        AcceptsReturn="True"
+                        TextWrapping="Wrap"
+                        Watermark="Opcional..."/>
+
+                </StackPanel>
+
+
+                <!-- MENSAJE -->
+
+                <TextBlock
+                    x:Name="TxtMensaje"
+                    Text=""
+                    IsVisible="False"
+                    TextWrapping="Wrap"
+                    Foreground="#C61F2B"
+                    FontSize="12"/>
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+
+        <!-- ================================================= -->
+        <!-- FOOTER -->
+        <!-- ================================================= -->
+
+        <Border
+            Grid.Row="2"
+            Background="White"
+            BorderBrush="#E2E8F0"
+            BorderThickness="0,1,0,0"
+            Padding="28,18">
+
+            <Grid ColumnDefinitions="*,Auto,Auto">
+
+                <TextBlock
+                    Grid.Column="0"
+                    Text="El cierre finalizará el turno actual."
+                    Foreground="#64748B"
+                    FontSize="11"
+                    VerticalAlignment="Center"/>
+
+
+                <Button
+                    Grid.Column="1"
+                    x:Name="BtnCancelar"
+                    Content="Cancelar"
+                    Width="110"
+                    Height="42"
+                    Margin="0,0,10,0"
+                    Click="Cancelar_Click"/>
+
+
+                <Button
+                    Grid.Column="2"
+                    x:Name="BtnConfirmar"
+                    Content="Confirmar corte"
+                    Width="155"
+                    Height="42"
+                    Background="#16A34A"
+                    Foreground="White"
+                    FontWeight="SemiBold"
+                    IsEnabled="False"
+                    Click="Confirmar_Click"/>
+
+            </Grid>
+
+        </Border>
+
+    </Grid>
+
+</Window>

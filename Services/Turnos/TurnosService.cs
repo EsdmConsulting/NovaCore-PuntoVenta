@@ -9,6 +9,7 @@ using NovaCoreESDM.Services.Api;
 
 namespace NovaCoreESDM.Services.Turnos;
 
+
 public class TurnosService
 {
     // =========================================================
@@ -607,6 +608,186 @@ public async Task<ActividadTurnoResponse> ObtenerActividadTurnoAsync(
 
                 Msg =
                     $"No fue posible abrir el turno: {ex.Message}"
+            };
+        }
+    }
+    
+    
+    // =========================================================
+    // CERRAR TURNO
+    // =========================================================
+
+    public async Task<CerrarTurnoResponse> CerrarTurnoAsync(
+        CerrarTurnoRequest request)
+    {
+        try
+        {
+            // =====================================================
+            // VALIDACIONES LOCALES
+            // =====================================================
+
+            if (request.IdTurno <= 0)
+            {
+                return new CerrarTurnoResponse
+                {
+                    Res = 0,
+
+                    Msg =
+                        "El turno no es válido."
+                };
+            }
+
+
+            if (request.EfectivoDeclarado < 0m)
+            {
+                return new CerrarTurnoResponse
+                {
+                    Res = 0,
+
+                    Msg =
+                        "El efectivo declarado no puede ser negativo."
+                };
+            }
+
+
+            // =====================================================
+            // PETICIÓN
+            // =====================================================
+
+            var response =
+                await ApiClient.Http.PostAsJsonAsync(
+                    "api/pos/turnos/cerrar",
+                    request);
+
+
+            var contenido =
+                await response.Content
+                    .ReadAsStringAsync();
+
+
+            // =====================================================
+            // DEBUG
+            // =====================================================
+
+            Console.WriteLine(
+                "====================================");
+
+
+            Console.WriteLine(
+                "RESPUESTA API CERRAR TURNO:");
+
+
+            Console.WriteLine(
+                $"HTTP STATUS: {(int)response.StatusCode} {response.StatusCode}");
+
+
+            Console.WriteLine(
+                contenido);
+
+
+            Console.WriteLine(
+                "====================================");
+
+
+            // =====================================================
+            // LIMPIAR RESPUESTA PHP
+            // =====================================================
+
+            contenido =
+                LimpiarRespuestaPhp(
+                    contenido);
+
+
+            if (string.IsNullOrWhiteSpace(
+                    contenido))
+            {
+                return new CerrarTurnoResponse
+                {
+                    Res = 0,
+
+                    Msg =
+                        "El servidor no devolvió información al cerrar el turno."
+                };
+            }
+
+
+            // =====================================================
+            // DESERIALIZAR
+            // =====================================================
+
+            try
+            {
+                var resultado =
+                    JsonSerializer.Deserialize<CerrarTurnoResponse>(
+                        contenido,
+                        JsonOptions);
+
+
+                if (resultado is null)
+                {
+                    return new CerrarTurnoResponse
+                    {
+                        Res = 0,
+
+                        Msg =
+                            "El servidor devolvió una respuesta inválida al cerrar el turno."
+                    };
+                }
+
+
+                return resultado;
+            }
+            catch (JsonException ex)
+            {
+                Console.WriteLine(
+                    "====================================");
+
+
+                Console.WriteLine(
+                    "ERROR DESERIALIZANDO CIERRE DE TURNO:");
+
+
+                Console.WriteLine(
+                    ex);
+
+
+                Console.WriteLine(
+                    "====================================");
+
+
+                return new CerrarTurnoResponse
+                {
+                    Res = 0,
+
+                    Msg =
+                        "La respuesta del servidor al cerrar el turno no es válida."
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                "====================================");
+
+
+            Console.WriteLine(
+                "ERROR CERRANDO TURNO:");
+
+
+            Console.WriteLine(
+                ex);
+
+
+            Console.WriteLine(
+                "====================================");
+
+
+            return new CerrarTurnoResponse
+            {
+                Res = 0,
+
+                Msg =
+                    $"No fue posible cerrar el turno: {ex.Message}"
             };
         }
     }

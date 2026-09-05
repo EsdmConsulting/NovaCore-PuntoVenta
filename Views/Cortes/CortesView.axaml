@@ -86,15 +86,79 @@
 
                     <Button
                         Grid.Column="1"
-                        Classes="primaryButton"
-                        Width="175"
-                        VerticalAlignment="Center"
-
-                        Content="Realizar corte"
-
+                        Click="RealizarCorte_Click"
                         IsEnabled="{Binding PuedeRealizarCorte}"
-                        
-                        Click="RealizarCorte_Click"/>
+                        Width="245"
+                        Height="74"
+                        Padding="18,10"
+                        Background="White"
+                        Foreground="#087D3E"
+                        BorderBrush="#D1FAE5"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Center"
+                        Cursor="Hand">
+
+                        <Grid
+                            ColumnDefinitions="Auto,*,Auto"
+                            VerticalAlignment="Center">
+
+                            <!-- ICONO -->
+                            <Border
+                                Grid.Column="0"
+                                Width="40"
+                                Height="40"
+                                CornerRadius="10"
+                                Background="#E8F8EF"
+                                Margin="0,0,13,0">
+
+                                <TextBlock
+                                    Text="✓"
+                                    FontSize="20"
+                                    FontWeight="Bold"
+                                    Foreground="#087D3E"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+
+                            </Border>
+
+
+                            <!-- TEXTO -->
+                            <StackPanel
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Spacing="2">
+
+                                <TextBlock
+                                    Text="Realizar corte"
+                                    FontSize="16"
+                                    FontWeight="Bold"
+                                    Foreground="#123B2A"/>
+
+                                <TextBlock
+                                    Text="Cerrar turno actual"
+                                    FontSize="11"
+                                    Foreground="#6B8278"/>
+
+                            </StackPanel>
+
+
+                            <!-- FLECHA -->
+                            <TextBlock
+                                Grid.Column="2"
+                                Text="›"
+                                FontSize="25"
+                                FontWeight="SemiBold"
+                                Foreground="#087D3E"
+                                Margin="12,0,0,0"
+                                VerticalAlignment="Center"/>
+
+                        </Grid>
+
+                    </Button>
 
                 </Grid>
 
