@@ -128,7 +128,7 @@
                         </Grid>
 
 
-                        <TextBlock Text="$0.00"
+                        <TextBlock Text="{Binding VentasTurno, StringFormat='{}{0:C2}'}"
                                    Classes="cardValue"/>
 
                         <TextBlock Text="Total vendido durante el turno"
@@ -171,7 +171,7 @@
                         </Grid>
 
 
-                        <TextBlock Text="0"
+                        <TextBlock Text="{Binding Tickets}"
                                    Classes="cardValue"/>
 
                         <TextBlock Text="Operaciones realizadas"
@@ -214,7 +214,7 @@
                         </Grid>
 
 
-                        <TextBlock Text="$0.00"
+                        <TextBlock Text="{Binding Efectivo, StringFormat='{}{0:C2}'}"
                                    Classes="cardValue"/>
 
                         <TextBlock Text="Pagos recibidos en efectivo"
@@ -256,7 +256,7 @@
                         </Grid>
 
 
-                        <TextBlock Text="$0.00"
+                        <TextBlock Text="{Binding Tarjeta, StringFormat='{}{0:C2}'}"
                                    Classes="cardValue"/>
 
                         <TextBlock Text="Pagos realizados con tarjeta"
@@ -316,16 +316,124 @@
                         </Grid>
 
 
-                        <Border Height="220"
-                                Background="#F8FAF9"
-                                BorderBrush="#EDF1EE"
-                                BorderThickness="1"
-                                CornerRadius="12">
+                    <!-- ===================================================== -->
+                    <!-- LISTA DE ACTIVIDAD DEL TURNO                          -->
+                    <!-- ===================================================== -->
+
+                    <Border Background="#F8FAF9"
+                            BorderBrush="#EDF1EE"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="10">
+
+                        <Grid>
+
+                            <!-- ================================================= -->
+                            <!-- LISTA REAL                                        -->
+                            <!-- ================================================= -->
+
+                            <ItemsControl ItemsSource="{Binding ActividadTurno}"
+                                          IsVisible="{Binding TieneActividad}">
+
+                                <ItemsControl.ItemTemplate>
+
+                                    <DataTemplate>
+
+                                        <Border Background="White"
+                                                BorderBrush="#E8EEEA"
+                                                BorderThickness="0,0,0,1"
+                                                Padding="10,9">
+
+                                            <Grid ColumnDefinitions="Auto,*,Auto"
+                                                  ColumnSpacing="12">
+
+
+                                                <!-- ===================================== -->
+                                                <!-- ICONO                                -->
+                                                <!-- ===================================== -->
+
+                                                <Border Width="38"
+                                                        Height="38"
+                                                        CornerRadius="10"
+                                                        Background="#EAF7EF"
+                                                        VerticalAlignment="Center">
+
+                                                    <TextBlock Text="▥"
+                                                               Foreground="#08783D"
+                                                               FontSize="16"
+                                                               HorizontalAlignment="Center"
+                                                               VerticalAlignment="Center"/>
+
+                                                </Border>
+
+
+                                                <!-- ===================================== -->
+                                                <!-- INFORMACIÓN                          -->
+                                                <!-- ===================================== -->
+
+                                                <StackPanel Grid.Column="1"
+                                                            VerticalAlignment="Center"
+                                                            Spacing="2">
+
+                                                    <TextBlock Text="{Binding Titulo}"
+                                                               Foreground="#33443A"
+                                                               FontWeight="SemiBold"
+                                                               FontSize="11"/>
+
+                                                    <TextBlock Text="{Binding Descripcion}"
+                                                               Foreground="#87958C"
+                                                               FontSize="9"
+                                                               TextTrimming="CharacterEllipsis"/>
+
+                                                    <TextBlock Text="{Binding Referencia}"
+                                                               Foreground="#A0AAA4"
+                                                               FontSize="8"/>
+
+                                                </StackPanel>
+
+
+                                                <!-- ===================================== -->
+                                                <!-- IMPORTE                              -->
+                                                <!-- ===================================== -->
+
+                                                <StackPanel Grid.Column="2"
+                                                            HorizontalAlignment="Right"
+                                                            VerticalAlignment="Center"
+                                                            Spacing="2">
+
+                                                    <TextBlock Text="{Binding Importe, StringFormat='{}{0:C2}'}"
+                                                               Foreground="#21382A"
+                                                               FontWeight="SemiBold"
+                                                               FontSize="11"
+                                                               HorizontalAlignment="Right"/>
+
+                                                    <TextBlock Text="{Binding Fecha}"
+                                                               Foreground="#94A39A"
+                                                               FontSize="8"
+                                                               HorizontalAlignment="Right"/>
+
+                                                </StackPanel>
+
+                                            </Grid>
+
+                                        </Border>
+
+                                    </DataTemplate>
+
+                                </ItemsControl.ItemTemplate>
+
+                            </ItemsControl>
+
+
+                            <!-- ================================================= -->
+                            <!-- ESTADO VACÍO                                      -->
+                            <!-- ================================================= -->
 
                             <StackPanel HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
-                                        Spacing="9">
-
+                                        Spacing="9"
+                                        Margin="0,28"
+                                        IsVisible="{Binding NoTieneActividad}">
 
                                 <Border Width="64"
                                         Height="64"
@@ -348,14 +456,16 @@
                                            HorizontalAlignment="Center"/>
 
 
-                                <TextBlock Text="La actividad aparecerá cuando realices ventas."
+                                <TextBlock Text="La actividad aparecerá cuando realices operaciones."
                                            Foreground="#94A39A"
                                            FontSize="10"
                                            HorizontalAlignment="Center"/>
 
                             </StackPanel>
 
-                        </Border>
+                        </Grid>
+
+                    </Border>
 
                     </StackPanel>
 
@@ -387,8 +497,9 @@
 
                         <!-- NUEVA VENTA -->
 
-                        <Button Classes="quickAction">
-
+                        <Button Classes="quickAction"
+                                Command="{Binding NuevaVentaCommand}">
+                            
                             <Grid ColumnDefinitions="40,*">
 
 
@@ -429,11 +540,11 @@
 
                         <!-- CORTES -->
 
-                        <Button Classes="quickAction">
-
+                        <Button Classes="quickAction"
+                                Command="{Binding ConsultarCortesCommand}">
+                            
                             <Grid ColumnDefinitions="40,*">
-
-
+                                
                                 <Border Width="34"
                                         Height="34"
                                         CornerRadius="10"

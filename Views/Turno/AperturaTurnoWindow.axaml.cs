@@ -1,6 +1,8 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+
+using NovaCoreESDM.Models.Turno;
 using NovaCoreESDM.ViewModels;
 using NovaCoreESDM.ViewModels.Turno;
 
@@ -8,45 +10,107 @@ namespace NovaCoreESDM.Views.Turno;
 
 public partial class AperturaTurnoWindow : Window
 {
-    private readonly AperturaTurnoViewModel _viewModel;
+    private readonly AperturaTurnoViewModel
+        _viewModel;
+
+
+    // =========================================================
+    // CONSTRUCTOR
+    // =========================================================
 
     public AperturaTurnoWindow()
     {
         AvaloniaXamlLoader.Load(this);
 
+
         _viewModel =
             new AperturaTurnoViewModel();
+
 
         DataContext =
             _viewModel;
 
+
+        // =====================================================
+        // EVENTOS
+        // =====================================================
+
         _viewModel.SolicitarConfirmacionTurno +=
             OnSolicitarConfirmacionTurno;
+
+
+        _viewModel.SolicitarConfirmacionTurnoExistente +=
+            OnSolicitarConfirmacionTurnoExistente;
+
 
         _viewModel.TurnoAbiertoCorrectamente +=
             OnTurnoAbiertoCorrectamente;
     }
+
+
+    // =========================================================
+    // CONFIRMAR APERTURA NUEVA
+    // =========================================================
 
     private async void OnSolicitarConfirmacionTurno(
         decimal fondoInicial)
     {
         var confirmacion =
             new ConfirmarAperturaWindow(
-                fondoInicial
-            );
+                fondoInicial);
+
 
         var resultado =
             await confirmacion
                 .ShowDialog<bool>(this);
 
+
         if (!resultado)
+        {
             return;
+        }
+
 
         await _viewModel
             .ConfirmarAperturaAsync(
-                fondoInicial
-            );
+                fondoInicial);
     }
+
+
+    // =========================================================
+    // TURNO YA EXISTENTE
+    // =========================================================
+
+    private async void OnSolicitarConfirmacionTurnoExistente(
+        TurnoAbierto turno,
+        bool mismoUsuario)
+    {
+        var confirmacion =
+            new ContinuarTurnoWindow(
+                turno,
+                mismoUsuario);
+
+
+        var resultado =
+            await confirmacion
+                .ShowDialog<bool>(this);
+
+
+        if (!resultado)
+        {
+            return;
+        }
+
+
+        await _viewModel
+            .ContinuarTurnoExistenteAsync(
+                turno);
+    }
+
+
+    // =========================================================
+    // TURNO LISTO
+    // =========================================================
 
     private void OnTurnoAbiertoCorrectamente()
     {
@@ -57,18 +121,32 @@ public partial class AperturaTurnoWindow : Window
                     new MainViewModel()
             };
 
+
         mainWindow.Show();
+
 
         Close();
     }
 
-    protected override void OnClosed(EventArgs e)
+
+    // =========================================================
+    // LIMPIEZA
+    // =========================================================
+
+    protected override void OnClosed(
+        EventArgs e)
     {
         _viewModel.SolicitarConfirmacionTurno -=
             OnSolicitarConfirmacionTurno;
 
+
+        _viewModel.SolicitarConfirmacionTurnoExistente -=
+            OnSolicitarConfirmacionTurnoExistente;
+
+
         _viewModel.TurnoAbiertoCorrectamente -=
             OnTurnoAbiertoCorrectamente;
+
 
         base.OnClosed(e);
     }

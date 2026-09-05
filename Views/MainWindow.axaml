@@ -129,6 +129,33 @@
                             </Grid>
 
                         </Button>
+                        
+                        <!-- ================================================= -->
+                        <!-- PAGAR CRÉDITO                                     -->
+                        <!-- ================================================= -->
+
+                        <Button Classes="menuItem"
+                                Classes.active="{Binding EsPagoCredito}"
+                                Command="{Binding NavegarCommand}"
+                                CommandParameter="PagoCredito">
+
+                                <Grid ColumnDefinitions="30,*">
+
+                                        <TextBlock Text="$"
+                                                   FontSize="17"
+                                                   FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+
+                                        <TextBlock Grid.Column="1"
+                                                   Text="Pagar crédito"
+                                                   Margin="10,0,0,0"
+                                                   VerticalAlignment="Center"
+                                                   FontWeight="SemiBold"/>
+
+                                </Grid>
+
+                        </Button>
 
 
                         <!-- ================================================= -->

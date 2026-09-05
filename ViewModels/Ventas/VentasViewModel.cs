@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NovaCoreESDM.Models;
+using NovaCoreESDM.Models.Credito;
 using NovaCoreESDM.Models.Productos;
 using NovaCoreESDM.Models.Session;
 using NovaCoreESDM.Models.Ventas;
@@ -21,6 +22,7 @@ using System.Collections.Generic;
 
 using NovaCoreESDM.Models.Clientes;
 using NovaCoreESDM.Services.Clientes;
+using NovaCoreESDM.Services.Credito;
 
 
 public partial class VentasViewModel : ViewModelBase
@@ -56,6 +58,9 @@ public partial class VentasViewModel : ViewModelBase
     
     private readonly ClientesService
         _clientesService;
+    
+    private readonly CreditoService
+        _creditoService;
 
 
     // =========================================================
@@ -258,6 +263,9 @@ public partial class VentasViewModel : ViewModelBase
         
         _clientesService =
             new ClientesService();
+        
+        _creditoService =
+            new CreditoService();
     }
 
 
@@ -475,7 +483,7 @@ public async Task CargarProductosAsync()
                 TipoCliente =
                     ClientePosSeleccionado is null
                         ? "PUBLICO_GENERAL"
-                        : "CLIENTE",
+                        : "FRECUENTE",
 
                 TipoVenta =
                     "CONTADO",
@@ -2005,6 +2013,168 @@ public async Task<bool> RegistrarPagoEfectivoAsync(
     }
 }
 
+
+// =========================================================
+// FINALIZAR VENTA A CRÉDITO
+// =========================================================
+
+public async Task<bool> FinalizarVentaCreditoAsync()
+{
+    // =====================================================
+    // VALIDAR VENTA
+    // =====================================================
+
+    if (IdVentaActual <= 0)
+    {
+        MensajeError =
+            "No existe una venta activa.";
+
+        return false;
+    }
+
+
+    // =====================================================
+    // VALIDAR CLIENTE
+    // =====================================================
+
+    if (ClientePosSeleccionado is null)
+    {
+        MensajeError =
+            "Selecciona un cliente para realizar la venta a crédito.";
+
+        return false;
+    }
+
+
+    if (EstaProcesandoVenta)
+        return false;
+
+
+    EstaProcesandoVenta =
+        true;
+
+    MensajeError =
+        string.Empty;
+
+
+    try
+    {
+        // =================================================
+        // 1. MARCAR LA VENTA COMO CRÉDITO
+        // =================================================
+
+        var request =
+            new ActualizarVentaRequest
+            {
+                IdCliente =
+                    ClientePosSeleccionado.Id,
+
+                TipoCliente =
+                    "FRECUENTE",
+
+                TipoVenta =
+                    "CREDITO"
+            };
+
+
+        var resultadoActualizar =
+            await _ventasService
+                .ActualizarVentaAsync(
+                    IdVentaActual,
+                    request
+                );
+
+
+        if (resultadoActualizar.Res != 1)
+        {
+            MensajeError =
+                string.IsNullOrWhiteSpace(
+                    resultadoActualizar.Msg)
+                    ? "No fue posible preparar la venta a crédito."
+                    : resultadoActualizar.Msg;
+
+            return false;
+        }
+
+
+        Console.WriteLine(
+            "====================================");
+
+        Console.WriteLine(
+            "VENTA MARCADA COMO CRÉDITO");
+
+        Console.WriteLine(
+            $"ID Venta: {IdVentaActual}");
+
+        Console.WriteLine(
+            $"Cliente: {ClientePosSeleccionado.Nombre}");
+
+        Console.WriteLine(
+            $"Total: ${Total:N2}");
+
+        Console.WriteLine(
+            "====================================");
+
+
+        // =================================================
+        // 2. FINALIZAR
+        // =================================================
+        //
+        // Aquí entra nuestro finalizar.php actualizado.
+        //
+        // El backend:
+        //
+        // - vuelve a validar el crédito;
+        // - descuenta inventario;
+        // - genera ticket;
+        // - finaliza la venta;
+        // - genera REMISIÓN PPD;
+        // - genera movimiento CARGO.
+        //
+        // Y FinalizarVentaAsync después procesa
+        // impresión / WhatsApp / ticket.
+        // =================================================
+
+        var finalizada =
+            await FinalizarVentaAsync();
+
+
+        if (!finalizada)
+        {
+            /*
+             * NO regresamos automáticamente a CONTADO.
+             *
+             * Esto es intencional.
+             *
+             * Si hubo un problema de red justo después
+             * del COMMIT, no queremos hacer otro cambio
+             * sin conocer el estado real del servidor.
+             *
+             * La venta se puede recuperar posteriormente.
+             */
+
+            return false;
+        }
+
+
+        return true;
+    }
+    catch (Exception ex)
+    {
+        MensajeError =
+            $"No fue posible realizar la venta a crédito: {ex.Message}";
+
+        return false;
+    }
+    finally
+    {
+        EstaProcesandoVenta =
+            false;
+    }
+}
+
+
+
 // =========================================================
 // FINALIZAR VENTA
 // =========================================================
@@ -2494,6 +2664,192 @@ public async Task<bool> FinalizarVentaAsync()
     }
 }
 
+
+
+// =========================================================
+// PROBAR ESTADO DE CRÉDITO
+// =========================================================
+
+public async Task<bool> ConsultarCreditoActualAsync()
+{
+    MensajeError =
+        string.Empty;
+
+
+    // =====================================================
+    // VALIDAR CLIENTE
+    // =====================================================
+
+    if (ClientePosSeleccionado is null)
+    {
+        MensajeError =
+            "Selecciona un cliente para realizar una venta a crédito.";
+
+        return false;
+    }
+
+
+    // =====================================================
+    // VALIDAR VENTA
+    // =====================================================
+
+    if (Carrito.Count == 0)
+    {
+        MensajeError =
+            "Agrega productos antes de consultar el crédito.";
+
+        return false;
+    }
+
+
+    if (Total <= 0)
+    {
+        MensajeError =
+            "El total de la venta no es válido.";
+
+        return false;
+    }
+
+
+    // =====================================================
+    // CONSULTAR MOTOR CENTRAL
+    // =====================================================
+
+    var resultado =
+        await _creditoService
+            .ConsultarEstadoAsync(
+                ClientePosSeleccionado.Id,
+                Total
+            );
+
+
+    if (
+        resultado.Res != 1 ||
+        resultado.Data is null
+    )
+    {
+        MensajeError =
+            string.IsNullOrWhiteSpace(
+                resultado.Msg)
+                ? "No fue posible consultar el crédito del cliente."
+                : resultado.Msg;
+
+        return false;
+    }
+
+
+    // =====================================================
+    // CRÉDITO NO AUTORIZADO
+    // =====================================================
+
+    if (!resultado.Data.PuedeVenderCredito)
+    {
+        var motivos =
+            resultado.Data
+                .MotivosBloqueo;
+
+
+        MensajeError =
+            motivos.Count > 0
+                ? string.Join(
+                    " ",
+                    motivos
+                )
+                : "El cliente no tiene crédito disponible para esta venta.";
+
+        return false;
+    }
+
+
+    // =====================================================
+    // CRÉDITO AUTORIZADO
+    // =====================================================
+
+    Console.WriteLine(
+        "====================================");
+
+    Console.WriteLine(
+        "CRÉDITO AUTORIZADO");
+
+    Console.WriteLine(
+        $"Cliente: {ClientePosSeleccionado.Nombre}");
+
+    Console.WriteLine(
+        $"Id cliente: {ClientePosSeleccionado.Id}");
+
+    Console.WriteLine(
+        $"Total venta: ${Total:N2}");
+
+    Console.WriteLine(
+        "====================================");
+
+
+    MensajeError =
+        string.Empty;
+
+
+    return true;
+}
+
+
+public async Task<EstadoCreditoResponse?>
+    ObtenerCreditoActualAsync()
+{
+    MensajeError =
+        string.Empty;
+
+
+    if (ClientePosSeleccionado is null)
+    {
+        MensajeError =
+            "Selecciona un cliente para realizar una venta a crédito.";
+
+        return null;
+    }
+
+
+    if (Carrito.Count == 0)
+    {
+        MensajeError =
+            "Agrega productos antes de consultar el crédito.";
+
+        return null;
+    }
+
+
+    if (Total <= 0)
+    {
+        MensajeError =
+            "El total de la venta no es válido.";
+
+        return null;
+    }
+
+
+    var resultado =
+        await _creditoService
+            .ConsultarEstadoAsync(
+                ClientePosSeleccionado.Id,
+                Total
+            );
+
+
+    if (
+        resultado.Res != 1 ||
+        resultado.Data is null
+    )
+    {
+        MensajeError =
+            string.IsNullOrWhiteSpace(resultado.Msg)
+                ? "No fue posible consultar el crédito del cliente."
+                : resultado.Msg;
+
+        return null;
+    }
+
+
+    return resultado;
+}
 
 
 
@@ -3732,7 +4088,7 @@ private async Task SeleccionarClienteAsync(
                 cliente.Id,
 
             TipoCliente =
-                "CLIENTE"
+                "FRECUENTE"
         };
 
 

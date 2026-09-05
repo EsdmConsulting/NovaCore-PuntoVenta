@@ -8,13 +8,19 @@
              xmlns:ventasViews="using:NovaCoreESDM.Views.Ventas"
              xmlns:ventasViewModels="using:NovaCoreESDM.ViewModels.Ventas"
 
+             xmlns:creditoViews="using:NovaCoreESDM.Views.Credito"
+             xmlns:creditoViewModels="using:NovaCoreESDM.ViewModels.Credito"
+
              xmlns:cortesViews="using:NovaCoreESDM.Views.Cortes"
              xmlns:cortesViewModels="using:NovaCoreESDM.ViewModels.Cortes"
 
              x:Class="NovaCoreESDM.App"
              RequestedThemeVariant="Light">
 
-    <!-- Relación entre cada ViewModel y su pantalla -->
+    <!-- ===================================================== -->
+    <!-- RELACIÓN VIEWMODEL -> VIEW                            -->
+    <!-- ===================================================== -->
+
     <Application.DataTemplates>
 
         <DataTemplate DataType="inicioViewModels:InicioViewModel">
@@ -25,26 +31,44 @@
             <ventasViews:VentasView/>
         </DataTemplate>
 
+        <DataTemplate DataType="creditoViewModels:PagoCreditoViewModel">
+            <creditoViews:PagoCreditoView/>
+        </DataTemplate>
+
         <DataTemplate DataType="cortesViewModels:CortesViewModel">
             <cortesViews:CortesView/>
         </DataTemplate>
 
     </Application.DataTemplates>
 
-    <!-- Recursos globales -->
+
+    <!-- ===================================================== -->
+    <!-- RECURSOS GLOBALES                                    -->
+    <!-- ===================================================== -->
+
     <Application.Resources>
+
         <ResourceDictionary>
+
             <ResourceDictionary.MergedDictionaries>
 
                 <ResourceInclude Source="/Styles/Colors.axaml"/>
 
             </ResourceDictionary.MergedDictionaries>
+
         </ResourceDictionary>
+
     </Application.Resources>
 
-    <!-- Tema global -->
+
+    <!-- ===================================================== -->
+    <!-- TEMA GLOBAL                                          -->
+    <!-- ===================================================== -->
+
     <Application.Styles>
+
         <FluentTheme/>
+
     </Application.Styles>
 
 </Application>

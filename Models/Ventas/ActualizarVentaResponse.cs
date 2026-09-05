@@ -7,9 +7,21 @@ public class ActualizarVentaRequest
     [JsonPropertyName("id_cliente")]
     public int? IdCliente { get; set; }
 
+
     [JsonPropertyName("tipo_cliente")]
-    public string TipoCliente { get; set; } =
-        string.Empty;
+    [JsonIgnore(
+        Condition =
+            JsonIgnoreCondition.WhenWritingNull
+    )]
+    public string? TipoCliente { get; set; }
+
+
+    [JsonPropertyName("tipo_venta")]
+    [JsonIgnore(
+        Condition =
+            JsonIgnoreCondition.WhenWritingNull
+    )]
+    public string? TipoVenta { get; set; }
 }
 
 

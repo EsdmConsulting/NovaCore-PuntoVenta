@@ -101,6 +101,10 @@ public class WindowsRawPrinterService
         IntPtr pBytes,
         int dwCount,
         out int dwWritten);
+    
+    
+    
+    
 
 
     // =========================================================
@@ -126,6 +130,8 @@ public class WindowsRawPrinterService
                 )
         );
     }
+    
+    
 
 
     // =========================================================
@@ -151,8 +157,8 @@ public class WindowsRawPrinterService
     
     
     // =========================================================
-// ABRIR CAJÓN DE EFECTIVO
-// =========================================================
+    // ABRIR CAJÓN DE EFECTIVO
+    // =========================================================
 
     public Task<bool> AbrirCajonAsync()
     {

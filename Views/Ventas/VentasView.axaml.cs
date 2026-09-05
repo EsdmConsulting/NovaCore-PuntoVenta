@@ -342,7 +342,7 @@ public partial class VentasView : UserControl
             EnfocarBuscadorProductos();
         }
     }
-
+    
 
     // =========================================================
     // COBRAR
@@ -370,68 +370,159 @@ public partial class VentasView : UserControl
             }
 
 
-            // =====================================================
-            // SELECTOR DE MÉTODO DE PAGO
-            // =====================================================
+            // =========================================================
+            // FLUJO DE COBRO
+            // =========================================================
 
-            var ventana =
-                new CobroWindow(
-                    _viewModel.Total
-                );
-
-
-            var resultado =
-                await ventana
-                    .ShowDialog<bool>(
-                        owner
-                    );
-
-
-            if (!resultado)
-                return;
-
-
-            // =====================================================
-            // EFECTIVO
-            // =====================================================
-
-            if (
-                ventana.MetodoSeleccionado ==
-                "EFECTIVO"
-            )
+            while (true)
             {
-                var pagoEfectivo =
-                    new PagoEfectivoWindow(
-                        _viewModel.Total
+                // =====================================================
+                // SELECTOR DE MÉTODO DE PAGO
+                // =====================================================
+
+                var ventana =
+                    new CobroWindow(
+                        _viewModel.Total,
+                        _viewModel
                     );
 
 
-                var pagoConfirmado =
-                    await pagoEfectivo
+                var resultado =
+                    await ventana
                         .ShowDialog<bool>(
                             owner
                         );
 
 
-                if (!pagoConfirmado)
+                // =====================================================
+                // CERRÓ / CANCELÓ TODO EL COBRO
+                // =====================================================
+
+                if (!resultado)
                     return;
 
 
-                // =================================================
-                // REGISTRAR PAGO
-                // =================================================
+                // =====================================================
+                // EFECTIVO
+                // =====================================================
 
-                var pagoRegistrado =
-                    await _viewModel
-                        .RegistrarPagoEfectivoAsync(
-                            _viewModel.Total,
-                            pagoEfectivo.CantidadRecibida,
-                            pagoEfectivo.Cambio
+                if (
+                    ventana.MetodoSeleccionado ==
+                    "EFECTIVO"
+                )
+                {
+                    var pagoEfectivo =
+                        new PagoEfectivoWindow(
+                            _viewModel.Total
                         );
 
 
-                if (!pagoRegistrado)
+                    var pagoConfirmado =
+                        await pagoEfectivo
+                            .ShowDialog<bool>(
+                                owner
+                            );
+
+
+                    // =================================================
+                    // CANCELÓ EFECTIVO
+                    // =================================================
+                    //
+                    // Regresamos al selector de método de pago.
+                    // =================================================
+
+                    if (!pagoConfirmado)
+                        continue;
+
+
+                    // =================================================
+                    // REGISTRAR PAGO
+                    // =================================================
+
+                    var pagoRegistrado =
+                        await _viewModel
+                            .RegistrarPagoEfectivoAsync(
+                                _viewModel.Total,
+                                pagoEfectivo.CantidadRecibida,
+                                pagoEfectivo.Cambio
+                            );
+
+
+                    if (!pagoRegistrado)
+                        return;
+
+
+                    // =================================================
+                    // PAGO TERMINADO
+                    // =================================================
+
                     return;
+                }
+
+
+                // =====================================================
+                // CRÉDITO
+                // =====================================================
+
+                if (
+                    ventana.MetodoSeleccionado ==
+                    "CREDITO"
+                )
+                {
+                    // =================================================
+                    // FINALIZAR VENTA A CRÉDITO
+                    // =================================================
+                    //
+                    // Este método:
+                    //
+                    // 1. Actualiza tipo_venta = CREDITO.
+                    // 2. Conserva al cliente seleccionado.
+                    // 3. Llama FinalizarVentaAsync().
+                    // 4. El backend vuelve a validar el crédito.
+                    // 5. Genera REMISIÓN PPD + CARGO.
+                    // 6. Descuenta inventario.
+                    // 7. Genera ticket.
+                    // =================================================
+
+                    var ventaCreditoFinalizada =
+                        await _viewModel
+                            .FinalizarVentaCreditoAsync();
+
+
+                    // =================================================
+                    // ERROR / RECHAZO
+                    // =================================================
+
+                    if (!ventaCreditoFinalizada)
+                    {
+                        /*
+                         * No hacemos retry automático.
+                         *
+                         * MensajeError contendrá el motivo
+                         * entregado por backend.
+                         */
+
+                        return;
+                    }
+
+
+                    // =================================================
+                    // VENTA A CRÉDITO TERMINADA
+                    // =================================================
+
+                    return;
+                }
+
+
+                // =====================================================
+                // OTROS MÉTODOS
+                // =====================================================
+                //
+                // Tarjeta y transferencia se agregarán después.
+                //
+                // Si por alguna razón llega un método todavía no
+                // implementado, volvemos a mostrar el selector.
+                // =====================================================
             }
         }
         finally
@@ -442,6 +533,7 @@ public partial class VentasView : UserControl
              * - cerró Cobro
              * - canceló efectivo
              * - terminó correctamente
+             * - terminó crédito
              *
              * siempre dejamos el POS preparado
              * para el siguiente escaneo.

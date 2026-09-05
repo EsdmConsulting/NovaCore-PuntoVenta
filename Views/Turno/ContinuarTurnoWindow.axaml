@@ -1,0 +1,353 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+    x:Class="NovaCoreESDM.Views.Turno.ContinuarTurnoWindow"
+
+    Width="620"
+    Height="570"
+
+    CanResize="False"
+    WindowStartupLocation="CenterOwner"
+
+    Title="Turno existente"
+
+    Background="#F3F6FA">
+
+
+    <Border
+        Margin="14"
+        Padding="30"
+        Background="White"
+        CornerRadius="18">
+
+
+        <Grid
+            RowDefinitions="Auto,Auto,*,Auto"
+            RowSpacing="22">
+
+
+            <!-- ================================================= -->
+            <!-- ENCABEZADO                                        -->
+            <!-- ================================================= -->
+
+            <StackPanel
+                Grid.Row="0"
+                Spacing="7">
+
+
+                <TextBlock
+                    Text="Turno ya abierto"
+                    Foreground="#0B3D6E"
+                    FontSize="30"
+                    FontWeight="SemiBold"/>
+
+
+                <TextBlock
+                    Text="Esta caja ya tiene una operación activa."
+                    Foreground="#73808C"
+                    FontSize="13"/>
+
+            </StackPanel>
+
+
+
+            <!-- ================================================= -->
+            <!-- ALERTA                                            -->
+            <!-- ================================================= -->
+
+            <Border
+                Grid.Row="1"
+                Background="#FFF8E8"
+                BorderBrush="#F0D38B"
+                BorderThickness="1"
+                CornerRadius="12"
+                Padding="16">
+
+
+                <Grid
+                    ColumnDefinitions="Auto,*"
+                    ColumnSpacing="13">
+
+
+                    <Border
+                        Width="36"
+                        Height="36"
+                        CornerRadius="18"
+                        Background="#F5DFA6"
+                        VerticalAlignment="Center">
+
+
+                        <TextBlock
+                            Text="!"
+                            Foreground="#8A6422"
+                            FontSize="18"
+                            FontWeight="Bold"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+
+                    </Border>
+
+
+                    <StackPanel
+                        Grid.Column="1"
+                        Spacing="4"
+                        VerticalAlignment="Center">
+
+
+                        <TextBlock
+                            x:Name="TituloAdvertenciaTextBlock"
+                            Text="Existe un turno abierto"
+                            Foreground="#72541E"
+                            FontSize="13"
+                            FontWeight="SemiBold"/>
+
+
+                        <TextBlock
+                            x:Name="MensajeAdvertenciaTextBlock"
+                            Text="Si continúas, trabajarás sobre el mismo turno."
+                            Foreground="#8A6A2C"
+                            FontSize="11"
+                            TextWrapping="Wrap"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+            </Border>
+
+
+
+            <!-- ================================================= -->
+            <!-- INFORMACIÓN                                       -->
+            <!-- ================================================= -->
+
+            <Border
+                Grid.Row="2"
+                Background="#F7F9FB"
+                BorderBrush="#E2E8EE"
+                BorderThickness="1"
+                CornerRadius="14"
+                Padding="20">
+
+
+                <StackPanel Spacing="14">
+
+
+                    <!-- TURNO -->
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+
+                        <TextBlock
+                            Text="Turno"
+                            Classes="infoLabel"/>
+
+
+                        <TextBlock
+                            x:Name="TurnoTextBlock"
+                            Grid.Column="1"
+                            Text="—"
+                            Classes="infoValue"/>
+
+                    </Grid>
+
+
+                    <Border
+                        Height="1"
+                        Background="#E4E9ED"/>
+
+
+                    <!-- CAJA -->
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+
+                        <TextBlock
+                            Text="Caja"
+                            Classes="infoLabel"/>
+
+
+                        <TextBlock
+                            x:Name="CajaTextBlock"
+                            Grid.Column="1"
+                            Text="—"
+                            Classes="infoValue"/>
+
+                    </Grid>
+
+
+                    <Border
+                        Height="1"
+                        Background="#E4E9ED"/>
+
+
+                    <!-- USUARIO -->
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+
+                        <TextBlock
+                            Text="Abierto por"
+                            Classes="infoLabel"/>
+
+
+                        <TextBlock
+                            x:Name="UsuarioTextBlock"
+                            Grid.Column="1"
+                            Text="—"
+                            Classes="infoValue"/>
+
+                    </Grid>
+
+
+                    <Border
+                        Height="1"
+                        Background="#E4E9ED"/>
+
+
+                    <!-- FECHA -->
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+
+                        <TextBlock
+                            Text="Fecha de apertura"
+                            Classes="infoLabel"/>
+
+
+                        <TextBlock
+                            x:Name="FechaTextBlock"
+                            Grid.Column="1"
+                            Text="—"
+                            Classes="infoValue"/>
+
+                    </Grid>
+
+
+                    <Border
+                        Height="1"
+                        Background="#E4E9ED"/>
+
+
+                    <!-- FONDO -->
+
+                    <Grid ColumnDefinitions="*,Auto">
+
+
+                        <TextBlock
+                            Text="Fondo inicial"
+                            Classes="infoLabel"/>
+
+
+                        <TextBlock
+                            x:Name="FondoTextBlock"
+                            Grid.Column="1"
+                            Text="$0.00"
+                            Foreground="#08783D"
+                            FontSize="15"
+                            FontWeight="SemiBold"/>
+
+                    </Grid>
+
+                </StackPanel>
+
+            </Border>
+
+
+
+            <!-- ================================================= -->
+            <!-- BOTONES                                           -->
+            <!-- ================================================= -->
+
+            <Grid
+                Grid.Row="3"
+                ColumnDefinitions="*,*"
+                ColumnSpacing="12">
+
+
+                <Button
+                    Grid.Column="0"
+                    Height="50"
+
+                    Content="Cancelar"
+
+                    Click="Cancelar_Click"
+
+                    Background="#F2F4F6"
+                    Foreground="#53606B"
+
+                    BorderBrush="#E0E5E9"
+                    BorderThickness="1"
+
+                    CornerRadius="10"
+
+                    FontSize="13"
+                    FontWeight="SemiBold"/>
+
+
+                <Button
+                    Grid.Column="1"
+                    Height="50"
+
+                    Content="Continuar turno"
+
+                    Click="Continuar_Click"
+
+                    Background="#16A34A"
+                    Foreground="White"
+
+                    BorderThickness="0"
+
+                    CornerRadius="10"
+
+                    FontSize="13"
+                    FontWeight="SemiBold"/>
+
+            </Grid>
+
+        </Grid>
+
+    </Border>
+
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                    -->
+    <!-- ========================================================= -->
+
+    <Window.Styles>
+
+
+        <Style Selector="TextBlock.infoLabel">
+
+            <Setter
+                Property="Foreground"
+                Value="#7B8790"/>
+
+            <Setter
+                Property="FontSize"
+                Value="12"/>
+
+        </Style>
+
+
+        <Style Selector="TextBlock.infoValue">
+
+            <Setter
+                Property="Foreground"
+                Value="#33414B"/>
+
+            <Setter
+                Property="FontSize"
+                Value="12"/>
+
+            <Setter
+                Property="FontWeight"
+                Value="SemiBold"/>
+
+        </Style>
+
+    </Window.Styles>
+
+</Window>

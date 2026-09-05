@@ -1,0 +1,924 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+             xmlns:vm="using:NovaCoreESDM.ViewModels.Credito"
+             xmlns:clientes="using:NovaCoreESDM.Models.Clientes"
+
+             x:Class="NovaCoreESDM.Views.Credito.PagoCreditoView"
+
+             x:Name="PagoCreditoRoot"
+
+             x:DataType="vm:PagoCreditoViewModel"
+
+             Background="#F3F6FA">
+
+    <Grid RowDefinitions="Auto,Auto,*"
+          Margin="26"
+          RowSpacing="18">
+
+        <!-- ================================================= -->
+        <!-- ENCABEZADO                                        -->
+        <!-- ================================================= -->
+
+        <Grid Grid.Row="0"
+              ColumnDefinitions="*,Auto">
+
+            <StackPanel Spacing="4">
+
+                <TextBlock Text="Pagar crédito"
+                           FontSize="30"
+                           FontWeight="Bold"
+                           Foreground="#0B3D6E"/>
+
+                <TextBlock Text="Consulta saldos, documentos pendientes y registra abonos de crédito."
+                           FontSize="13"
+                           Foreground="#64748B"/>
+
+            </StackPanel>
+
+            <Border Grid.Column="1"
+                    Background="#EFFAF2"
+                    BorderBrush="#B8E8C3"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="14,8"
+                    VerticalAlignment="Center">
+
+                <StackPanel Orientation="Horizontal"
+                            Spacing="8">
+
+                    <Border Width="8"
+                            Height="8"
+                            CornerRadius="4"
+                            Background="#16A34A"
+                            VerticalAlignment="Center"/>
+
+                    <TextBlock Text="Módulo de crédito"
+                               FontSize="11"
+                               FontWeight="SemiBold"
+                               Foreground="#16803B"
+                               VerticalAlignment="Center"/>
+
+                </StackPanel>
+
+            </Border>
+
+        </Grid>
+
+
+        <!-- ================================================= -->
+        <!-- CLIENTE                                           -->
+        <!-- ================================================= -->
+
+        <Border Grid.Row="1"
+                Background="White"
+                BorderBrush="#D7E0EB"
+                BorderThickness="1"
+                CornerRadius="15"
+                Padding="18">
+
+            <Grid ColumnDefinitions="58,1.1*,1.4*,Auto"
+                  ColumnSpacing="16">
+
+                <!-- ICONO -->
+
+                <Border Grid.Column="0"
+                        Width="52"
+                        Height="52"
+                        Background="#EEF2FF"
+                        CornerRadius="12"
+                        VerticalAlignment="Center">
+
+                    <TextBlock Text="👤"
+                               FontSize="24"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                </Border>
+
+
+                <!-- CLIENTE SELECCIONADO -->
+
+                <StackPanel Grid.Column="1"
+                            Spacing="4"
+                            VerticalAlignment="Center">
+
+                    <TextBlock Text="Cliente seleccionado"
+                               FontSize="11"
+                               Foreground="#64748B"/>
+
+                    <TextBlock Text="{Binding ClienteSeleccionado.Nombre}"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="#17365D"/>
+
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="6">
+
+                        <TextBlock Text="{Binding ClienteSeleccionado.Codigo}"
+                                   FontSize="10"
+                                   Foreground="#64748B"/>
+
+                        <TextBlock Text="•"
+                                   FontSize="10"
+                                   Foreground="#94A3B8"/>
+
+                        <TextBlock Text="{Binding ClienteSeleccionado.Rfc}"
+                                   FontSize="10"
+                                   Foreground="#64748B"/>
+
+                    </StackPanel>
+
+                </StackPanel>
+
+
+                <!-- ================================================= -->
+                <!-- BUSCADOR                                          -->
+                <!-- ================================================= -->
+
+                <Grid Grid.Column="2"
+                      RowDefinitions="Auto,Auto">
+
+                    <TextBox Grid.Row="0"
+                             Text="{Binding TextoBusquedaCliente,
+                                            Mode=TwoWay,
+                                            UpdateSourceTrigger=PropertyChanged}"
+
+                             Height="44"
+
+                             Watermark="Buscar cliente por nombre..."
+
+                             Padding="14,0"
+
+                             FontSize="12"
+
+                             CornerRadius="9"
+
+                             BorderBrush="#CBD5E1"/>
+
+
+                    <!-- ============================================= -->
+                    <!-- SUGERENCIAS                                   -->
+                    <!-- ============================================= -->
+
+                    <Border Grid.Row="1"
+                            IsVisible="{Binding MostrarSugerenciasClientes}"
+
+                            Background="White"
+
+                            BorderBrush="#CBD5E1"
+                            BorderThickness="1"
+
+                            CornerRadius="9"
+
+                            Margin="0,5,0,0"
+
+                            MaxHeight="220"
+
+                            ZIndex="100">
+
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+
+                            <ItemsControl ItemsSource="{Binding ClientesEncontrados}">
+
+                                <ItemsControl.ItemTemplate>
+
+                                    <DataTemplate x:DataType="clientes:ClientePos">
+
+                                        <Button Content="{Binding Nombre}"
+
+                                                Command="{ReflectionBinding DataContext.SeleccionarClienteCommand,
+                                                                            ElementName=PagoCreditoRoot}"
+
+                                                CommandParameter="{Binding}"
+
+                                                Height="40"
+
+                                                Padding="12,0"
+
+                                                Background="White"
+
+                                                Foreground="#334155"
+
+                                                BorderThickness="0"
+
+                                                HorizontalContentAlignment="Left"/>
+
+                                    </DataTemplate>
+
+                                </ItemsControl.ItemTemplate>
+
+                            </ItemsControl>
+
+                        </ScrollViewer>
+
+                    </Border>
+
+                </Grid>
+
+
+                <!-- LIMPIAR CLIENTE -->
+
+                <Button Grid.Column="3"
+                        Width="120"
+                        Height="42"
+
+                        Content="Limpiar"
+
+                        Command="{Binding LimpiarClienteCommand}"
+
+                        Background="White"
+
+                        Foreground="#64748B"
+
+                        BorderBrush="#CBD5E1"
+                        BorderThickness="1"
+
+                        CornerRadius="9"
+
+                        VerticalAlignment="Center"/>
+
+            </Grid>
+
+        </Border>
+
+
+        <!-- ================================================= -->
+        <!-- CONTENIDO                                         -->
+        <!-- ================================================= -->
+
+        <Grid Grid.Row="2"
+              ColumnDefinitions="1.55*,0.75*"
+              ColumnSpacing="18">
+
+            <!-- ================================================= -->
+            <!-- IZQUIERDA                                         -->
+            <!-- ================================================= -->
+
+            <Grid Grid.Column="0"
+                  RowDefinitions="Auto,*"
+                  RowSpacing="16">
+
+                <!-- ================================================= -->
+                <!-- RESUMEN                                           -->
+                <!-- ================================================= -->
+
+                <Grid Grid.Row="0"
+                      ColumnDefinitions="*,*,*"
+                      ColumnSpacing="12">
+
+                    <!-- SALDO PENDIENTE -->
+
+                    <Border Grid.Column="0"
+                            Background="#4B36DD"
+                            CornerRadius="14"
+                            Padding="18">
+
+                        <StackPanel Spacing="7">
+
+                            <TextBlock Text="Saldo pendiente"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       Foreground="#E4E1FF"/>
+
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="2">
+
+                                <TextBlock Text="$"
+                                           FontSize="24"
+                                           FontWeight="Bold"
+                                           Foreground="White"/>
+
+                                <TextBlock Text="{Binding SaldoTotalTexto}"                                           FontSize="24"
+                                           FontWeight="Bold"
+                                           Foreground="White"/>
+
+                            </StackPanel>
+
+                            <TextBlock Text="Deuda total actual"
+                                       FontSize="10"
+                                       Foreground="#CFCBFF"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+
+                    <!-- DISPONIBLE -->
+
+                    <Border Grid.Column="1"
+                            Background="#EFFAF2"
+                            BorderBrush="#B8E8C3"
+                            BorderThickness="1"
+                            CornerRadius="14"
+                            Padding="18">
+
+                        <StackPanel Spacing="7">
+
+                            <TextBlock Text="Crédito disponible"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       Foreground="#4F765C"/>
+
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="2">
+
+                                <TextBlock Text="$"
+                                           FontSize="23"
+                                           FontWeight="Bold"
+                                           Foreground="#16803B"/>
+
+                                <TextBlock Text="{Binding CreditoDisponibleTexto}"                                           FontSize="23"
+                                           FontWeight="Bold"
+                                           Foreground="#16803B"/>
+
+                            </StackPanel>
+
+                            <TextBlock Text="Disponible para nuevas compras"
+                                       FontSize="10"
+                                       Foreground="#65846C"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+
+                    <!-- VENCIDO -->
+
+                    <Border Grid.Column="2"
+                            Background="#FFF7F7"
+                            BorderBrush="#F4C7CB"
+                            BorderThickness="1"
+                            CornerRadius="14"
+                            Padding="18">
+
+                        <StackPanel Spacing="7">
+
+                            <TextBlock Text="Saldo vencido"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       Foreground="#8A4A50"/>
+
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="2">
+
+                                <TextBlock Text="$"
+                                           FontSize="23"
+                                           FontWeight="Bold"
+                                           Foreground="#C61F2B"/>
+
+                                <TextBlock Text="{Binding SaldoVencidoTexto}"                                           FontSize="23"
+                                           FontWeight="Bold"
+                                           Foreground="#C61F2B"/>
+
+                            </StackPanel>
+
+                            <TextBlock Text="Documentos fuera de plazo"
+                                       FontSize="10"
+                                       Foreground="#9A656A"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+                </Grid>
+
+
+                <!-- ================================================= -->
+                <!-- DOCUMENTOS                                        -->
+                <!-- ================================================= -->
+
+                <Border Grid.Row="1"
+                        Background="White"
+                        BorderBrush="#D7E0EB"
+                        BorderThickness="1"
+                        CornerRadius="15"
+                        Padding="18">
+
+                    <Grid RowDefinitions="Auto,Auto,*"
+                          RowSpacing="12">
+
+                        <!-- ENCABEZADO -->
+
+                        <Grid Grid.Row="0"
+                              ColumnDefinitions="*,Auto,Auto"
+                              ColumnSpacing="9">
+
+                            <StackPanel Spacing="3">
+
+                                <TextBlock Text="Documentos pendientes"
+                                           FontSize="17"
+                                           FontWeight="Bold"
+                                           Foreground="#17365D"/>
+
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="4">
+
+                                    <TextBlock Text="{Binding DocumentosSeleccionados}"
+                                               FontSize="11"
+                                               FontWeight="SemiBold"
+                                               Foreground="#4B36DD"/>
+
+                                    <TextBlock Text="documento(s) seleccionado(s)"
+                                               FontSize="11"
+                                               Foreground="#64748B"/>
+
+                                </StackPanel>
+
+                            </StackPanel>
+
+
+                            <Button Grid.Column="1"
+                                    Height="38"
+                                    Content="Seleccionar todos"
+
+                                    Command="{Binding SeleccionarTodosCommand}"
+
+                                    Background="#F8FAFC"
+                                    Foreground="#475569"
+
+                                    BorderBrush="#CBD5E1"
+                                    BorderThickness="1"
+
+                                    CornerRadius="9"
+                                    Padding="14,0"/>
+
+
+                            <Button Grid.Column="2"
+                                    Height="38"
+                                    Content="Limpiar"
+
+                                    Command="{Binding LimpiarSeleccionCommand}"
+
+                                    Background="White"
+                                    Foreground="#64748B"
+
+                                    BorderBrush="#CBD5E1"
+                                    BorderThickness="1"
+
+                                    CornerRadius="9"
+                                    Padding="14,0"/>
+
+                        </Grid>
+
+
+                        <!-- COLUMNAS -->
+
+                        <Border Grid.Row="1"
+                                Background="#F8FAFC"
+                                CornerRadius="8"
+                                Padding="12,8">
+
+                            <Grid ColumnDefinitions="34,1.5*,0.85*,0.8*,0.9*"
+                                  ColumnSpacing="12">
+
+                                <TextBlock Grid.Column="1"
+                                           Text="Documento"
+                                           FontSize="10"
+                                           FontWeight="SemiBold"
+                                           Foreground="#64748B"/>
+
+                                <TextBlock Grid.Column="2"
+                                           Text="Saldo"
+                                           FontSize="10"
+                                           FontWeight="SemiBold"
+                                           Foreground="#64748B"/>
+
+                                <TextBlock Grid.Column="3"
+                                           Text="Estado"
+                                           FontSize="10"
+                                           FontWeight="SemiBold"
+                                           Foreground="#64748B"/>
+
+                                <TextBlock Grid.Column="4"
+                                           Text="Monto a aplicar"
+                                           FontSize="10"
+                                           FontWeight="SemiBold"
+                                           Foreground="#64748B"/>
+
+                            </Grid>
+
+                        </Border>
+
+
+                        <!-- LISTADO -->
+
+                        <ScrollViewer Grid.Row="2"
+                                      VerticalScrollBarVisibility="Auto">
+
+                            <ItemsControl ItemsSource="{Binding DocumentosPendientes}">
+
+                                <ItemsControl.ItemTemplate>
+
+                                    <DataTemplate x:DataType="vm:DocumentoPagoCreditoItem">
+
+                                        <Border Margin="0,0,0,9"
+                                                Padding="12"
+                                                Background="#FBFCFE"
+                                                BorderBrush="#E2E8F0"
+                                                BorderThickness="1"
+                                                CornerRadius="11">
+
+                                            <Grid ColumnDefinitions="34,1.5*,0.85*,0.8*,0.9*"
+                                                  ColumnSpacing="12">
+
+                                                <!-- CHECK -->
+
+                                                <CheckBox Grid.Column="0"
+                                                          IsChecked="{Binding Seleccionado}"
+                                                          VerticalAlignment="Center"
+                                                          HorizontalAlignment="Center"/>
+
+
+                                                <!-- DOCUMENTO -->
+
+                                                <StackPanel Grid.Column="1"
+                                                            Spacing="3"
+                                                            VerticalAlignment="Center">
+
+                                                    <TextBlock Text="{Binding Folio}"
+                                                               FontSize="12"
+                                                               FontWeight="Bold"
+                                                               Foreground="#17365D"/>
+
+                                                    <StackPanel Orientation="Horizontal"
+                                                                Spacing="4">
+
+                                                        <TextBlock Text="{Binding TipoDocumento}"
+                                                                   FontSize="9"
+                                                                   Foreground="#64748B"/>
+
+                                                        <TextBlock Text="•"
+                                                                   FontSize="9"
+                                                                   Foreground="#94A3B8"/>
+
+                                                        <TextBlock Text="Vence:"
+                                                                   FontSize="9"
+                                                                   Foreground="#64748B"/>
+
+                                                        <TextBlock Text="{Binding FechaVencimiento}"
+                                                                   FontSize="9"
+                                                                   Foreground="#64748B"/>
+
+                                                    </StackPanel>
+
+                                                </StackPanel>
+
+
+                                                <!-- SALDO -->
+
+                                                <StackPanel Grid.Column="2"
+                                                            Orientation="Horizontal"
+                                                            Spacing="2"
+                                                            VerticalAlignment="Center">
+
+                                                    <TextBlock Text="$"
+                                                               FontSize="12"
+                                                               FontWeight="Bold"
+                                                               Foreground="#17253B"/>
+
+                                                    <TextBlock Text="{Binding SaldoTexto}"                                                               FontSize="12"
+                                                               FontWeight="Bold"
+                                                               Foreground="#17253B"/>
+
+                                                </StackPanel>
+
+
+                                                <!-- ESTADO -->
+
+                                                <Border Grid.Column="3"
+                                                        Background="#F1F5F9"
+                                                        CornerRadius="7"
+                                                        Padding="8,5"
+                                                        HorizontalAlignment="Left"
+                                                        VerticalAlignment="Center">
+
+                                                    <TextBlock Text="{Binding EstadoTexto}"
+                                                               FontSize="10"
+                                                               FontWeight="SemiBold"
+                                                               Foreground="#475569"/>
+
+                                                </Border>
+
+
+                                                <!-- MONTO -->
+
+                                                <Grid Grid.Column="4"
+                                                      ColumnDefinitions="Auto,*"
+                                                      VerticalAlignment="Center">
+
+                                                    <TextBlock Text="$"
+                                                               Margin="8,0,0,0"
+                                                               FontSize="12"
+                                                               Foreground="#475569"
+                                                               VerticalAlignment="Center"/>
+
+                                                    <TextBox Grid.Column="1"
+                                                             Text="{Binding MontoAplicarTexto,
+                                                            Mode=TwoWay,
+                                                            UpdateSourceTrigger=PropertyChanged}"
+
+                                                             LostFocus="MontoAplicarTextBox_LostFocus"
+
+                                                             Height="38"
+
+                                                             HorizontalContentAlignment="Right"
+                                                             VerticalContentAlignment="Center"
+
+                                                             BorderBrush="#CBD5E1"
+                                                             BorderThickness="1"
+
+                                                             CornerRadius="8"
+
+                                                             Padding="8,0"/>
+
+                                                </Grid>
+
+                                            </Grid>
+
+                                        </Border>
+
+                                    </DataTemplate>
+
+                                </ItemsControl.ItemTemplate>
+
+                            </ItemsControl>
+
+                        </ScrollViewer>
+
+                    </Grid>
+
+                </Border>
+
+            </Grid>
+
+
+            <!-- ================================================= -->
+            <!-- DERECHA - REGISTRAR PAGO                          -->
+            <!-- ================================================= -->
+
+            <Border Grid.Column="1"
+                    Background="White"
+                    BorderBrush="#D7E0EB"
+                    BorderThickness="1"
+                    CornerRadius="15"
+                    Padding="18">
+
+                <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto"
+                      RowSpacing="12">
+
+                    <!-- ================================================= -->
+                    <!-- TÍTULO                                            -->
+                    <!-- ================================================= -->
+
+                    <StackPanel Grid.Row="0"
+                                Spacing="3">
+
+                        <TextBlock Text="Registrar pago"
+                                   FontSize="19"
+                                   FontWeight="Bold"
+                                   Foreground="#17365D"/>
+
+                        <TextBlock Text="Selecciona los documentos y define cómo se aplicará el abono."
+                                   FontSize="10"
+                                   Foreground="#64748B"
+                                   TextWrapping="Wrap"/>
+
+                    </StackPanel>
+
+
+                    <!-- ================================================= -->
+                    <!-- TOTAL SELECCIONADO                                -->
+                    <!-- ================================================= -->
+
+                    <Border Grid.Row="1"
+                            Background="#F6F4FF"
+                            BorderBrush="#D7D0FF"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="14">
+
+                        <StackPanel Spacing="4">
+
+                            <TextBlock Text="Total seleccionado"
+                                       FontSize="10"
+                                       FontWeight="SemiBold"
+                                       Foreground="#7065B5"/>
+
+
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="2">
+
+                                <TextBlock Text="$"
+                                           FontSize="25"
+                                           FontWeight="Bold"
+                                           Foreground="#4938D6"/>
+
+                                <TextBlock Text="{Binding TotalSeleccionadoTexto}"                                           FontSize="25"
+                                           FontWeight="Bold"
+                                           Foreground="#4938D6"/>
+
+                            </StackPanel>
+
+
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="4">
+
+                                <TextBlock Text="{Binding DocumentosSeleccionados}"
+                                           FontSize="9"
+                                           FontWeight="SemiBold"
+                                           Foreground="#7065B5"/>
+
+                                <TextBlock Text="documento(s) seleccionado(s)"
+                                           FontSize="9"
+                                           Foreground="#7065B5"/>
+
+                            </StackPanel>
+
+                        </StackPanel>
+
+                    </Border>
+
+
+                    <!-- ================================================= -->
+                    <!-- FORMA DE PAGO                                    -->
+                    <!-- ================================================= -->
+
+                    <StackPanel Grid.Row="2"
+                                Spacing="5">
+
+                        <TextBlock Text="Forma de pago"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Foreground="#334155"/>
+
+                        <ComboBox ItemsSource="{Binding FormasPago}"
+                                  SelectedItem="{Binding FormaPagoSeleccionada}"
+                                  Height="40"
+                                  HorizontalAlignment="Stretch"
+                                  Padding="11,0"/>
+
+                    </StackPanel>
+
+
+                    <!-- ================================================= -->
+                    <!-- REFERENCIA                                       -->
+                    <!-- ================================================= -->
+
+                    <StackPanel Grid.Row="3"
+                                Spacing="5">
+
+                        <TextBlock Text="Referencia"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Foreground="#334155"/>
+
+                        <TextBox Text="{Binding Referencia}"
+                                 Height="40"
+                                 Watermark="Opcional"
+                                 BorderBrush="#CBD5E1"
+                                 BorderThickness="1"
+                                 CornerRadius="9"
+                                 Padding="11,0"/>
+
+                    </StackPanel>
+
+
+                    <!-- ================================================= -->
+                    <!-- INFORMACIÓN                                      -->
+                    <!-- ================================================= -->
+
+                    <Border Grid.Row="4"
+                            Background="#F8FAFC"
+                            BorderBrush="#E2E8F0"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="10">
+
+                        <Grid ColumnDefinitions="26,*"
+                              ColumnSpacing="9">
+
+                            <Border Grid.Column="0"
+                                    Width="25"
+                                    Height="25"
+                                    CornerRadius="7"
+                                    Background="#EEF2FF"
+                                    VerticalAlignment="Top">
+
+                                <TextBlock Text="i"
+                                           FontSize="11"
+                                           FontWeight="Bold"
+                                           Foreground="#4B36DD"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                            </Border>
+
+
+                            <TextBlock Grid.Column="1"
+                                       Text="Puedes pagar un documento completo, realizar un abono parcial, seleccionar varios documentos o liquidar todo el crédito."
+                                       FontSize="9"
+                                       Foreground="#64748B"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center"/>
+
+                        </Grid>
+
+                    </Border>
+
+
+                    <!-- ================================================= -->
+                    <!-- MENSAJES / ESPACIO FLEXIBLE                      -->
+                    <!-- ================================================= -->
+
+                    <Grid Grid.Row="5"
+                          MinHeight="10">
+
+                        <StackPanel VerticalAlignment="Bottom"
+                                    Spacing="4">
+
+                            <TextBlock Text="{Binding MensajeError}"
+                                       Foreground="#C61F2B"
+                                       FontSize="10"
+                                       FontWeight="SemiBold"
+                                       TextWrapping="Wrap"/>
+
+                            <TextBlock Text="{Binding MensajeExito}"
+                                       Foreground="#16803B"
+                                       FontSize="10"
+                                       FontWeight="SemiBold"
+                                       TextWrapping="Wrap"/>
+
+                        </StackPanel>
+
+                    </Grid>
+
+
+                    <!-- ================================================= -->
+                    <!-- BOTONES                                          -->
+                    <!-- ================================================= -->
+
+                    <Grid Grid.Row="6"
+                          ColumnDefinitions="1.3*,0.85*"
+                          ColumnSpacing="8"
+                          Margin="0,0,0,4">
+
+                        <!-- PAGAR SELECCIONADOS -->
+
+                        <Button Grid.Column="0"
+                                Height="46"
+                                Command="{Binding PagarSeleccionadosCommand}"
+                                Background="#4B36DD"
+                                Foreground="White"
+                                BorderThickness="0"
+                                CornerRadius="10"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center">
+
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="6"
+                                        HorizontalAlignment="Center">
+
+                                <TextBlock Text="✓"
+                                           FontSize="13"
+                                           FontWeight="Bold"/>
+
+                                <TextBlock Text="Pagar seleccionados"
+                                           FontSize="11"
+                                           FontWeight="Bold"/>
+
+                            </StackPanel>
+
+                        </Button>
+
+
+                        <!-- LIQUIDAR TODO -->
+
+                        <Button Grid.Column="1"
+                                Height="46"
+                                Command="{Binding PagarTodoCommand}"
+                                Background="#EFFAF2"
+                                Foreground="#16803B"
+                                BorderBrush="#B8E8C3"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center">
+
+                            <TextBlock Text="Liquidar todo"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"/>
+
+                        </Button>
+
+                    </Grid>
+
+                </Grid>
+
+            </Border>
+
+        </Grid>
+
+    </Grid>
+
+</UserControl>

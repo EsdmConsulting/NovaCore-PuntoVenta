@@ -1,0 +1,202 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Credito.PagoCreditoTransferenciaWindow"
+
+        Width="470"
+        Height="520"
+
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+
+        Title="Pago por transferencia"
+        Background="#F3F6FA">
+
+    <Border Margin="16"
+            Padding="24"
+            Background="White"
+            BorderBrush="#D7E0EB"
+            BorderThickness="1"
+            CornerRadius="18">
+
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto"
+              RowSpacing="18">
+
+            <!-- ================================================= -->
+            <!-- ENCABEZADO                                        -->
+            <!-- ================================================= -->
+
+            <StackPanel Grid.Row="0"
+                        Spacing="5">
+
+                <TextBlock Text="Pago por transferencia"
+                           FontSize="23"
+                           FontWeight="Bold"
+                           Foreground="#17365D"/>
+
+                <TextBlock Text="Captura la referencia de la transferencia recibida."
+                           FontSize="11"
+                           Foreground="#64748B"
+                           TextWrapping="Wrap"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- TOTAL                                             -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="1"
+                    Background="#F6F4FF"
+                    BorderBrush="#D7D0FF"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="16">
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <TextBlock Text="Total a cobrar"
+                               FontSize="12"
+                               Foreground="#7065B5"
+                               VerticalAlignment="Center"/>
+
+                    <TextBlock Grid.Column="1"
+                               x:Name="TextoTotal"
+                               Text="$0.00"
+                               FontSize="25"
+                               FontWeight="Bold"
+                               Foreground="#4938D6"/>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- REFERENCIA                                        -->
+            <!-- ================================================= -->
+
+            <StackPanel Grid.Row="2"
+                        Spacing="7">
+
+                <TextBlock Text="Referencia de transferencia"
+                           FontSize="12"
+                           FontWeight="SemiBold"
+                           Foreground="#334155"/>
+
+                <TextBox x:Name="ReferenciaTextBox"
+                         Height="48"
+
+                         Watermark="Ej. SPEI-123456789"
+
+                         FontSize="14"
+
+                         TextChanged="Referencia_TextChanged"
+
+                         BorderBrush="#CBD5E1"
+                         BorderThickness="1"
+
+                         CornerRadius="9"
+
+                         Padding="12,0"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- INFORMACIÓN                                       -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="3"
+                    Background="#F8FAFC"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="13"
+                    VerticalAlignment="Top">
+
+                <Grid ColumnDefinitions="28,*"
+                      ColumnSpacing="10">
+
+                    <Border Grid.Column="0"
+                            Width="26"
+                            Height="26"
+                            Background="#EEF2FF"
+                            CornerRadius="8"
+                            VerticalAlignment="Top">
+
+                        <TextBlock Text="i"
+                                   Foreground="#4B36DD"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+
+                    </Border>
+
+
+                    <TextBlock Grid.Column="1"
+                               Text="Verifica que la transferencia haya sido recibida antes de confirmar. El abono al crédito se registrará al continuar."
+                               FontSize="10"
+                               Foreground="#64748B"
+                               TextWrapping="Wrap"/>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- BOTONES                                           -->
+            <!-- ================================================= -->
+
+            <Grid Grid.Row="4"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="10">
+
+                <Button Grid.Column="0"
+                        Height="50"
+
+                        Content="Cancelar"
+
+                        Click="Cancelar_Click"
+
+                        Background="White"
+                        Foreground="#C61F2B"
+
+                        BorderBrush="#F3A7AD"
+                        BorderThickness="1"
+
+                        CornerRadius="10"
+
+                        FontSize="13"
+                        FontWeight="SemiBold"/>
+
+
+                <Button Grid.Column="1"
+                        x:Name="ConfirmarButton"
+
+                        Height="50"
+
+                        Content="Confirmar pago"
+
+                        Click="Confirmar_Click"
+
+                        Background="#4B36DD"
+                        Foreground="White"
+
+                        BorderThickness="0"
+
+                        CornerRadius="10"
+
+                        FontSize="13"
+                        FontWeight="Bold"
+
+                        IsEnabled="False"/>
+
+            </Grid>
+
+        </Grid>
+
+    </Border>
+
+</Window>

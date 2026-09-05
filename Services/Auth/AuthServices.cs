@@ -10,81 +10,175 @@ namespace NovaCoreESDM.Services.Auth;
 
 public class AuthService
 {
-    public async Task<LoginResponse> LoginAsync(
-        string usuario,
-        string password)
+public async Task<LoginResponse> LoginAsync(
+    string usuario,
+    string password)
+{
+    try
     {
-        try
-        {
-            var body = new
+        var body =
+            new
             {
                 usuario,
                 password
             };
 
-            var response =
-                await ApiClient.Http.PostAsJsonAsync(
+
+        var response =
+            await ApiClient.Http
+                .PostAsJsonAsync(
                     "api/pos/auth/login",
                     body
                 );
 
-            var contenido =
-                await response.Content.ReadAsStringAsync();
 
-            // Por seguridad mientras terminamos de limpiar
-            // todos los Notices del servidor.
-            var inicioJson =
-                contenido.IndexOf('{');
+        var contenido =
+            await response.Content
+                .ReadAsStringAsync();
 
-            if (inicioJson >= 0)
-            {
-                contenido =
-                    contenido.Substring(inicioJson);
-            }
 
-            if (string.IsNullOrWhiteSpace(contenido))
-            {
-                return new LoginResponse
-                {
-                    Res = 0,
-                    Msg = "El servidor no devolvió información."
-                };
-            }
+        // =====================================================
+        // DEBUG RESPUESTA REAL DEL SERVIDOR
+        // =====================================================
 
-            var resultado =
-                JsonSerializer.Deserialize<LoginResponse>(
-                    contenido,
-                    new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
+        Console.WriteLine(
+            "====================================");
 
-            if (resultado is null)
-            {
-                return new LoginResponse
-                {
-                    Res = 0,
-                    Msg = "El servidor devolvió una respuesta inválida."
-                };
-            }
+        Console.WriteLine(
+            "RESPUESTA LOGIN:");
 
-            return resultado;
-        }
-        catch (HttpRequestException)
+        Console.WriteLine(
+            $"HTTP STATUS: {(int)response.StatusCode} {response.StatusCode}");
+
+        Console.WriteLine(
+            contenido);
+
+        Console.WriteLine(
+            "====================================");
+
+
+        // =====================================================
+        // RESPUESTA VACÍA
+        // =====================================================
+
+        if (string.IsNullOrWhiteSpace(
+                contenido))
         {
             return new LoginResponse
             {
                 Res = 0,
-                Msg = "No fue posible conectarse con el servidor."
+                Msg =
+                    "El servidor no devolvió información."
             };
         }
-        catch (Exception ex)
+
+
+        // =====================================================
+        // BUSCAR INICIO DEL JSON
+        // =====================================================
+
+        var inicioJson =
+            contenido.IndexOf('{');
+
+
+        /*
+         * Si NO existe un {
+         *
+         * entonces el servidor NO nos devolvió JSON.
+         *
+         * Probablemente:
+         *
+         * - HTML
+         * - 404
+         * - 500
+         * - página de Apache
+         * - error PHP
+         */
+
+        if (inicioJson < 0)
         {
             return new LoginResponse
             {
                 Res = 0,
-                Msg = $"Ocurrió un error inesperado al iniciar sesión: {ex.Message}"
+                Msg =
+                    $"El servidor devolvió una respuesta inválida. HTTP {(int)response.StatusCode}."
             };
         }
+
+
+        contenido =
+            contenido.Substring(
+                inicioJson
+            );
+
+
+        // =====================================================
+        // DESERIALIZAR
+        // =====================================================
+
+        var resultado =
+            JsonSerializer.Deserialize<LoginResponse>(
+                contenido,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive =
+                        true
+                }
+            );
+
+
+        if (resultado is null)
+        {
+            return new LoginResponse
+            {
+                Res = 0,
+                Msg =
+                    "El servidor devolvió una respuesta inválida."
+            };
+        }
+
+
+        return resultado;
     }
+    catch (JsonException ex)
+    {
+        Console.WriteLine(
+            "====================================");
+
+        Console.WriteLine(
+            "ERROR JSON LOGIN:");
+
+        Console.WriteLine(
+            ex);
+
+        Console.WriteLine(
+            "====================================");
+
+
+        return new LoginResponse
+        {
+            Res = 0,
+            Msg =
+                $"La respuesta del servidor no tiene un formato válido: {ex.Message}"
+        };
+    }
+    catch (HttpRequestException)
+    {
+        return new LoginResponse
+        {
+            Res = 0,
+            Msg =
+                "No fue posible conectarse con el servidor."
+        };
+    }
+    catch (Exception ex)
+    {
+        return new LoginResponse
+        {
+            Res = 0,
+            Msg =
+                $"Ocurrió un error inesperado al iniciar sesión: {ex.Message}"
+        };
+    }
+}
 }

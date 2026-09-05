@@ -1,0 +1,273 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:creditoVm="using:NovaCoreESDM.ViewModels.Credito"
+
+        x:Class="NovaCoreESDM.Views.Credito.ConfirmarPagoCreditoWindow"
+
+        Width="560"
+        Height="620"
+
+        MinWidth="520"
+        MinHeight="580"
+
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+
+        Title="Confirmar pago"
+        Background="#F3F6FA">
+
+    <Border Margin="18"
+            Padding="24"
+            Background="White"
+            BorderBrush="#D7E0EB"
+            BorderThickness="1"
+            CornerRadius="18">
+
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto"
+              RowSpacing="18">
+
+            <!-- ================================================= -->
+            <!-- ENCABEZADO                                        -->
+            <!-- ================================================= -->
+
+            <StackPanel Grid.Row="0"
+                        Spacing="8"
+                        HorizontalAlignment="Center">
+
+                <Border Width="64"
+                        Height="64"
+                        CornerRadius="32"
+                        Background="#FFF7E8">
+
+                    <TextBlock Text="?"
+                               FontSize="30"
+                               FontWeight="Bold"
+                               Foreground="#D97706"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                </Border>
+
+                <TextBlock Text="¿Confirmar pago?"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           Foreground="#17365D"
+                           HorizontalAlignment="Center"/>
+
+                <TextBlock Text="Verifica la información antes de continuar."
+                           FontSize="11"
+                           Foreground="#64748B"
+                           HorizontalAlignment="Center"/>
+
+            </StackPanel>
+
+            <!-- ================================================= -->
+            <!-- CLIENTE / TOTAL                                   -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="1"
+                    Background="#F8FAFC"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="16">
+
+                <Grid ColumnDefinitions="*,Auto"
+                      ColumnSpacing="12">
+
+                    <StackPanel Grid.Column="0"
+                                Spacing="4">
+
+                        <TextBlock Text="Cliente"
+                                   FontSize="10"
+                                   Foreground="#64748B"/>
+
+                        <TextBlock x:Name="TextoCliente"
+                                   Text="Cliente"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   Foreground="#17365D"/>
+
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                Spacing="4"
+                                HorizontalAlignment="Right">
+
+                        <TextBlock Text="Total a cobrar"
+                                   FontSize="10"
+                                   Foreground="#64748B"
+                                   HorizontalAlignment="Right"/>
+
+                        <TextBlock x:Name="TextoTotal"
+                                   Text="$0.00"
+                                   FontSize="20"
+                                   FontWeight="Bold"
+                                   Foreground="#4B36DD"
+                                   HorizontalAlignment="Right"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+            </Border>
+
+            <!-- ================================================= -->
+            <!-- FORMA DE PAGO                                    -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="2"
+                    Background="#F6F4FF"
+                    BorderBrush="#D7D0FF"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="14">
+
+                <Grid ColumnDefinitions="*,Auto">
+
+                    <StackPanel Spacing="3">
+
+                        <TextBlock Text="Forma de pago"
+                                   FontSize="10"
+                                   Foreground="#7065B5"/>
+
+                        <TextBlock x:Name="TextoFormaPago"
+                                   Text="EFECTIVO"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   Foreground="#4938D6"/>
+
+                    </StackPanel>
+
+                    <TextBlock Grid.Column="1"
+                               Text="→"
+                               FontSize="22"
+                               FontWeight="Bold"
+                               Foreground="#4938D6"
+                               VerticalAlignment="Center"/>
+
+                </Grid>
+
+            </Border>
+
+            <!-- ================================================= -->
+            <!-- DOCUMENTOS                                       -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="3"
+                    Background="#FBFCFE"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="14">
+
+                <Grid RowDefinitions="Auto,*"
+                      RowSpacing="10">
+
+                    <TextBlock Text="Documentos a pagar"
+                               FontSize="14"
+                               FontWeight="Bold"
+                               Foreground="#17365D"/>
+
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto">
+
+                        <ItemsControl x:Name="ListaDocumentos">
+
+                            <ItemsControl.ItemTemplate>
+
+                                <DataTemplate x:DataType="creditoVm:DocumentoPagoCreditoItem">
+                                    
+                                    <Border Margin="0,0,0,8"
+                                            Padding="10"
+                                            Background="White"
+                                            BorderBrush="#E2E8F0"
+                                            BorderThickness="1"
+                                            CornerRadius="9">
+
+                                        <Grid ColumnDefinitions="*,Auto"
+                                              ColumnSpacing="10">
+
+                                            <StackPanel Grid.Column="0"
+                                                        Spacing="2">
+
+                                                <TextBlock Text="{Binding Folio}"
+                                                           FontSize="12"
+                                                           FontWeight="Bold"
+                                                           Foreground="#17365D"/>
+
+                                                <TextBlock Text="{Binding TipoDocumento}"
+                                                           FontSize="9"
+                                                           Foreground="#64748B"/>
+
+                                            </StackPanel>
+
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding MontoAplicarTexto}"
+                                                       FontSize="12"
+                                                       FontWeight="Bold"
+                                                       Foreground="#16803B"
+                                                       VerticalAlignment="Center"/>
+
+                                        </Grid>
+
+                                    </Border>
+
+                                </DataTemplate>
+
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+
+                    </ScrollViewer>
+
+                </Grid>
+
+            </Border>
+
+            <!-- ================================================= -->
+            <!-- BOTONES                                          -->
+            <!-- ================================================= -->
+
+            <Grid Grid.Row="4"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="10">
+
+                <Button Grid.Column="0"
+                        Height="50"
+                        Content="Cancelar"
+                        Click="Cancelar_Click"
+
+                        Background="White"
+                        Foreground="#C61F2B"
+
+                        BorderBrush="#F3A7AD"
+                        BorderThickness="1"
+
+                        CornerRadius="10"
+
+                        FontSize="13"
+                        FontWeight="SemiBold"/>
+
+                <Button Grid.Column="1"
+                        Height="50"
+                        Content="Continuar"
+                        Click="Continuar_Click"
+
+                        Background="#4B36DD"
+                        Foreground="White"
+
+                        BorderThickness="0"
+
+                        CornerRadius="10"
+
+                        FontSize="13"
+                        FontWeight="Bold"/>
+
+            </Grid>
+
+        </Grid>
+
+    </Border>
+
+</Window>

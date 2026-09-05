@@ -1,0 +1,587 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="NovaCoreESDM.Views.Ventas.CreditoVentaWindow"
+
+        Width="980"
+        Height="840"
+
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+
+        Title="Venta a crédito"
+        Background="#F3F6FA">
+
+    <Border Margin="14"
+            Padding="28"
+            Background="White"
+            CornerRadius="18">
+
+        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
+              RowSpacing="20">
+
+            <!-- ================================================= -->
+            <!-- ENCABEZADO                                        -->
+            <!-- ================================================= -->
+
+            <StackPanel Grid.Row="0"
+                        Spacing="5">
+
+                <TextBlock Text="Venta a crédito"
+                           FontSize="34"
+                           FontWeight="Bold"
+                           Foreground="#0B3D6E"/>
+
+                <TextBlock Text="Revisa la información antes de confirmar la operación"
+                           FontSize="14"
+                           Foreground="#5F7591"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- CLIENTE + TOTAL                                   -->
+            <!-- ================================================= -->
+
+            <Grid Grid.Row="1"
+                  ColumnDefinitions="1.2*,*"
+                  ColumnSpacing="18">
+
+                <!-- CLIENTE -->
+
+                <Border Grid.Column="0"
+                        Background="#FFFFFF"
+                        BorderBrush="#D7E0EB"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        Padding="20">
+
+                    <Grid ColumnDefinitions="64,*"
+                          ColumnSpacing="16">
+
+                        <Border Width="56"
+                                Height="56"
+                                Background="#EEF0FF"
+                                CornerRadius="12"
+                                VerticalAlignment="Center">
+
+                            <TextBlock Text="👤"
+                                       FontSize="28"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+
+                        </Border>
+
+
+                        <StackPanel Grid.Column="1"
+                                    Spacing="4"
+                                    VerticalAlignment="Center">
+
+                            <TextBlock Text="Cliente"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="#4338CA"/>
+
+                            <TextBlock x:Name="TextoCliente"
+                                       FontSize="17"
+                                       FontWeight="Bold"
+                                       Foreground="#17253B"
+                                       TextWrapping="Wrap"/>
+
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="8">
+
+                                <TextBlock x:Name="TextoCodigoCliente"
+                                           FontSize="11"
+                                           Foreground="#64748B"/>
+
+                                <TextBlock Text="•"
+                                           Foreground="#94A3B8"/>
+
+                                <TextBlock x:Name="TextoRfcCliente"
+                                           FontSize="11"
+                                           Foreground="#64748B"/>
+
+                            </StackPanel>
+
+                        </StackPanel>
+
+                    </Grid>
+
+                </Border>
+
+
+                <!-- TOTAL -->
+
+                <Border Grid.Column="1"
+                        Background="#4B36DD"
+                        CornerRadius="14"
+                        Padding="20">
+
+                    <Grid ColumnDefinitions="64,*"
+                          ColumnSpacing="16">
+
+                        <Border Width="56"
+                                Height="56"
+                                Background="#22FFFFFF"
+                                CornerRadius="12"
+                                VerticalAlignment="Center">
+
+                            <TextBlock Text="🛒"
+                                       FontSize="28"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+
+                        </Border>
+
+
+                        <StackPanel Grid.Column="1"
+                                    Spacing="6"
+                                    VerticalAlignment="Center">
+
+                            <TextBlock Text="Total de la venta"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="#E8E7FF"/>
+
+                            <TextBlock x:Name="TextoTotalVenta"
+                                       FontSize="31"
+                                       FontWeight="Bold"
+                                       Foreground="White"
+                                       HorizontalAlignment="Right"/>
+
+                        </StackPanel>
+
+                    </Grid>
+
+                </Border>
+
+            </Grid>
+
+
+            <!-- ================================================= -->
+            <!-- ESTADO ACTUAL + PROYECCIÓN                        -->
+            <!-- ================================================= -->
+
+            <Grid Grid.Row="2"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="18">
+
+                <!-- ACTUAL -->
+
+                <Border Grid.Column="0"
+                        Background="#FFFFFF"
+                        BorderBrush="#D7E0EB"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        Padding="18">
+
+                    <StackPanel Spacing="14">
+
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="10">
+
+                            <Border Width="42"
+                                    Height="42"
+                                    Background="#E7F8EC"
+                                    CornerRadius="10">
+
+                                <TextBlock Text="💳"
+                                           FontSize="22"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                            </Border>
+
+                            <TextBlock Text="Estado actual del crédito"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="#17365D"
+                                       VerticalAlignment="Center"/>
+
+                        </StackPanel>
+
+
+                        <Border Height="1"
+                                Background="#E5E7EB"/>
+
+
+                        <Grid RowDefinitions="Auto,Auto,Auto"
+                              ColumnDefinitions="*,Auto"
+                              RowSpacing="12">
+
+                            <TextBlock Grid.Row="0"
+                                       Text="Límite de crédito"
+                                       FontSize="12"
+                                       Foreground="#64748B"/>
+
+                            <TextBlock Grid.Row="0"
+                                       Grid.Column="1"
+                                       x:Name="TextoLimiteCredito"
+                                       FontWeight="Bold"
+                                       Foreground="#17253B"/>
+
+
+                            <TextBlock Grid.Row="1"
+                                       Text="Saldo utilizado"
+                                       FontSize="12"
+                                       Foreground="#64748B"/>
+
+                            <TextBlock Grid.Row="1"
+                                       Grid.Column="1"
+                                       x:Name="TextoSaldoDeudor"
+                                       FontWeight="Bold"
+                                       Foreground="#17253B"/>
+
+
+                            <Border Grid.Row="2"
+                                    Grid.ColumnSpan="2"
+                                    Background="#EFFAF2"
+                                    CornerRadius="9"
+                                    Padding="10">
+
+                                <Grid ColumnDefinitions="*,Auto">
+
+                                    <TextBlock Text="Disponible"
+                                               Foreground="#15803D"
+                                               FontWeight="SemiBold"/>
+
+                                    <TextBlock Grid.Column="1"
+                                               x:Name="TextoDisponible"
+                                               Foreground="#15803D"
+                                               FontWeight="Bold"/>
+
+                                </Grid>
+
+                            </Border>
+
+                        </Grid>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- PROYECCIÓN -->
+
+                <Border Grid.Column="1"
+                        Background="#FFFFFF"
+                        BorderBrush="#D7E0EB"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        Padding="18">
+
+                    <StackPanel Spacing="14">
+
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="10">
+
+                            <Border Width="42"
+                                    Height="42"
+                                    Background="#F0ECFF"
+                                    CornerRadius="10">
+
+                                <TextBlock Text="📊"
+                                           FontSize="22"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                            </Border>
+
+                            <TextBlock Text="Después de esta venta"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="#17365D"
+                                       VerticalAlignment="Center"/>
+
+                        </StackPanel>
+
+
+                        <Border Height="1"
+                                Background="#E5E7EB"/>
+
+
+                        <Grid RowDefinitions="Auto,Auto"
+                              ColumnDefinitions="*,Auto"
+                              RowSpacing="12">
+
+                            <TextBlock Grid.Row="0"
+                                       Text="Saldo proyectado"
+                                       FontSize="12"
+                                       Foreground="#64748B"/>
+
+                            <TextBlock Grid.Row="0"
+                                       Grid.Column="1"
+                                       x:Name="TextoSaldoProyectado"
+                                       FontWeight="Bold"
+                                       Foreground="#17253B"/>
+
+
+                            <Border Grid.Row="1"
+                                    Grid.ColumnSpan="2"
+                                    Background="#F6F4FF"
+                                    BorderBrush="#D7D0FF"
+                                    BorderThickness="1"
+                                    CornerRadius="9"
+                                    Padding="10">
+
+                                <Grid ColumnDefinitions="*,Auto">
+
+                                    <TextBlock Text="Disponible proyectado"
+                                               Foreground="#4938D6"
+                                               FontWeight="SemiBold"/>
+
+                                    <TextBlock Grid.Column="1"
+                                               x:Name="TextoDisponibleProyectado"
+                                               Foreground="#4938D6"
+                                               FontWeight="Bold"/>
+
+                                </Grid>
+
+                            </Border>
+
+                        </Grid>
+
+                    </StackPanel>
+
+                </Border>
+
+            </Grid>
+
+
+            <!-- ================================================= -->
+            <!-- CONDICIONES                                       -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="3"
+                    Background="#FBFCFE"
+                    BorderBrush="#CFE0F3"
+                    BorderThickness="1"
+                    CornerRadius="14"
+                    Padding="18">
+
+                <StackPanel Spacing="14">
+
+                    <StackPanel Orientation="Horizontal"
+                                Spacing="10">
+
+                        <Border Width="40"
+                                Height="40"
+                                Background="#E8F2FF"
+                                CornerRadius="10">
+
+                            <TextBlock Text="📅"
+                                       FontSize="20"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+
+                        </Border>
+
+                        <TextBlock Text="Condiciones y estatus del crédito"
+                                   FontSize="15"
+                                   FontWeight="Bold"
+                                   Foreground="#17365D"
+                                   VerticalAlignment="Center"/>
+
+                    </StackPanel>
+
+
+                    <Grid ColumnDefinitions="*,*,*,*,*"
+                          ColumnSpacing="8">
+
+                        <!-- PLAZO -->
+
+                        <StackPanel Grid.Column="0"
+                                    HorizontalAlignment="Center"
+                                    Spacing="3">
+
+                            <TextBlock Text="Plazo de crédito"
+                                       FontSize="11"
+                                       Foreground="#64748B"
+                                       HorizontalAlignment="Center"/>
+
+                            <TextBlock x:Name="TextoDiasCredito"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       Foreground="#17365D"
+                                       HorizontalAlignment="Center"/>
+
+                        </StackPanel>
+
+
+                        <!-- TOLERANCIA -->
+
+                        <StackPanel Grid.Column="1"
+                                    HorizontalAlignment="Center"
+                                    Spacing="3">
+
+                            <TextBlock Text="Tolerancia"
+                                       FontSize="11"
+                                       Foreground="#64748B"
+                                       HorizontalAlignment="Center"/>
+
+                            <TextBlock x:Name="TextoTolerancia"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       Foreground="#17365D"
+                                       HorizontalAlignment="Center"/>
+
+                        </StackPanel>
+
+
+                        <!-- INICIO -->
+
+                        <StackPanel Grid.Column="2"
+                                    HorizontalAlignment="Center"
+                                    Spacing="3">
+
+                            <TextBlock Text="Fecha de inicio"
+                                       FontSize="11"
+                                       Foreground="#64748B"
+                                       HorizontalAlignment="Center"/>
+
+                            <TextBlock x:Name="TextoFechaInicio"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Foreground="#17365D"
+                                       HorizontalAlignment="Center"/>
+
+                        </StackPanel>
+
+
+                        <!-- VENCIMIENTO -->
+
+                        <StackPanel Grid.Column="3"
+                                    HorizontalAlignment="Center"
+                                    Spacing="3">
+
+                            <TextBlock Text="Fecha de vencimiento"
+                                       FontSize="11"
+                                       Foreground="#64748B"
+                                       HorizontalAlignment="Center"/>
+
+                            <TextBlock x:Name="TextoFechaVencimiento"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Foreground="#17365D"
+                                       HorizontalAlignment="Center"/>
+
+                        </StackPanel>
+
+
+                        <!-- SEMÁFORO -->
+
+                        <StackPanel Grid.Column="4"
+                                    HorizontalAlignment="Center"
+                                    Spacing="5">
+
+                            <TextBlock Text="Semáforo"
+                                       FontSize="11"
+                                       Foreground="#64748B"
+                                       HorizontalAlignment="Center"/>
+
+                            <Border x:Name="SemaforoBorder"
+                                    Background="#EAF9EE"
+                                    CornerRadius="12"
+                                    Padding="14,6">
+
+                                <TextBlock x:Name="TextoSemaforo"
+                                           Foreground="#16803B"
+                                           FontWeight="Bold"
+                                           FontSize="12"/>
+
+                            </Border>
+
+                        </StackPanel>
+
+                    </Grid>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- AUTORIZADO                                        -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="4"
+                    Background="#EFFAF2"
+                    BorderBrush="#B8E8C3"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="16">
+
+                <Grid ColumnDefinitions="48,*"
+                      ColumnSpacing="12">
+
+                    <TextBlock Text="✓"
+                               FontSize="30"
+                               FontWeight="Bold"
+                               Foreground="#15803D"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="1"
+                                Spacing="3"
+                                VerticalAlignment="Center">
+
+                        <TextBlock Text="Crédito autorizado para esta venta"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   Foreground="#15803D"/>
+
+                        <TextBlock Text="El cliente cuenta con disponibilidad suficiente para cubrir el monto de la venta."
+                                   FontSize="11"
+                                   Foreground="#476458"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- BOTONES                                           -->
+            <!-- ================================================= -->
+
+            <Grid Grid.Row="5"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="18"
+                  Margin="0,0,0,6">
+
+                <Button Grid.Column="0"
+                        Height="52"
+                        Content="✕   Cancelar operación"
+                        Click="Cancelar_Click"
+                        Background="White"
+                        Foreground="#53657D"
+                        BorderBrush="#BCC8D6"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"/>
+
+
+                <Button Grid.Column="1"
+                        Height="52"
+                        Content="✓   Confirmar venta a crédito"
+                        Click="Confirmar_Click"
+                        Background="#4B36DD"
+                        Foreground="White"
+                        BorderThickness="0"
+                        CornerRadius="10"
+                        FontSize="14"
+                        FontWeight="Bold"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"/>
+
+            </Grid>
+
+        </Grid>
+
+    </Border>
+
+</Window>

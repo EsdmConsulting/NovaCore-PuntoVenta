@@ -1,15 +1,20 @@
 using System;
 using System.Threading.Tasks;
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+
 using NovaCoreESDM.Models.Session;
 using NovaCoreESDM.Models.Turno;
+
 using NovaCoreESDM.Services.Configuration;
 using NovaCoreESDM.Services.Turnos;
+using NovaCoreESDM.Models.Configuration;
 
 namespace NovaCoreESDM.ViewModels.Turno;
 
-public partial class AperturaTurnoViewModel : ViewModelBase
+public partial class AperturaTurnoViewModel
+    : ViewModelBase
 {
     private readonly TerminalConfigurationService
         _terminalConfigurationService;
@@ -17,6 +22,10 @@ public partial class AperturaTurnoViewModel : ViewModelBase
     private readonly TurnosService
         _turnosService;
 
+
+    // =========================================================
+    // PROPIEDADES
+    // =========================================================
 
     [ObservableProperty]
     private decimal? _fondoInicial;
@@ -37,13 +46,43 @@ public partial class AperturaTurnoViewModel : ViewModelBase
         !EstaCargando;
 
 
+    // =========================================================
+    // EVENTOS
+    // =========================================================
+
+    /*
+     * Confirmación normal antes de crear un turno.
+     */
     public event Action<decimal>?
         SolicitarConfirmacionTurno;
 
 
+    /*
+     * NUEVO:
+     *
+     * Se dispara cuando la caja ya tiene un turno abierto.
+     *
+     * La vista deberá mostrar una ventana preguntando:
+     *
+     * ¿Deseas continuar con este turno?
+     */
+    public event Action<TurnoAbierto, bool>?
+        SolicitarConfirmacionTurnoExistente;
+
+
+    /*
+     * Se dispara cuando:
+     *
+     * - Se abrió un turno nuevo.
+     * - El usuario confirmó continuar uno existente.
+     */
     public event Action?
         TurnoAbiertoCorrectamente;
 
+
+    // =========================================================
+    // CONSTRUCTOR
+    // =========================================================
 
     public AperturaTurnoViewModel()
     {
@@ -54,6 +93,10 @@ public partial class AperturaTurnoViewModel : ViewModelBase
             new TurnosService();
     }
 
+
+    // =========================================================
+    // CAMBIOS DE PROPIEDADES
+    // =========================================================
 
     partial void OnFondoInicialChanged(
         decimal? value)
@@ -73,6 +116,10 @@ public partial class AperturaTurnoViewModel : ViewModelBase
             nameof(PuedeIniciarTurno));
     }
 
+
+    // =========================================================
+    // INICIAR TURNO
+    // =========================================================
 
     [RelayCommand]
     private void IniciarTurno()
@@ -120,9 +167,9 @@ public partial class AperturaTurnoViewModel : ViewModelBase
 
         try
         {
-            // =====================================================
-            // 1. CONFIGURACIÓN LOCAL DE LA TERMINAL
-            // =====================================================
+            // =================================================
+            // 1. CONFIGURACIÓN DE TERMINAL
+            // =================================================
 
             var configuracion =
                 await _terminalConfigurationService
@@ -138,9 +185,9 @@ public partial class AperturaTurnoViewModel : ViewModelBase
             }
 
 
-            // =====================================================
+            // =================================================
             // 2. REQUEST
-            // =====================================================
+            // =================================================
 
             var request =
                 new AbrirTurnoRequest
@@ -156,9 +203,9 @@ public partial class AperturaTurnoViewModel : ViewModelBase
                 };
 
 
-            // =====================================================
+            // =================================================
             // DEBUG
-            // =====================================================
+            // =================================================
 
             Console.WriteLine(
                 "====================================");
@@ -173,9 +220,6 @@ public partial class AperturaTurnoViewModel : ViewModelBase
                 $"FondoInicial: {request.FondoInicial}");
 
             Console.WriteLine(
-                $"Observaciones: {request.Observaciones}");
-
-            Console.WriteLine(
                 $"PosSession.IdUsuario: {PosSession.IdUsuario}");
 
             Console.WriteLine(
@@ -188,9 +232,9 @@ public partial class AperturaTurnoViewModel : ViewModelBase
                 "====================================");
 
 
-            // =====================================================
-            // 3. LLAMAR BACKEND
-            // =====================================================
+            // =================================================
+            // 3. BACKEND
+            // =================================================
 
             var resultado =
                 await _turnosService
@@ -198,142 +242,125 @@ public partial class AperturaTurnoViewModel : ViewModelBase
                         request);
 
 
-            // =====================================================
-            // 4. OBTENER ID REAL DEL TURNO
-            // =====================================================
+            // =================================================
+            // 4. TURNO NUEVO
+            // =================================================
 
-            /*
-             * Nuestro modelo TurnoAbierto ya contempla:
-             *
-             * apertura normal:
-             * data.id
-             *
-             * turno existente:
-             * data.id_turno
-             */
-
-            var idTurno =
-                resultado.Data?.IdTurno
-                ?? 0;
-
-
-            // =====================================================
-            // 5. SI EL BACKEND DEVOLVIÓ ERROR
-            // =====================================================
-
-            if (resultado.Res != 1)
+            if (resultado.Res == 1)
             {
-                /*
-                 * Caso especial:
-                 *
-                 * El backend nos está diciendo:
-                 *
-                 * "Ya existe un turno abierto para esta caja."
-                 *
-                 * Eso NO es un error operativo para NovaCore.
-                 * Simplemente recuperamos ese turno.
-                 */
-
-                var esTurnoExistente =
-                    idTurno > 0
-                    &&
-                    !string.IsNullOrWhiteSpace(
-                        resultado.Msg)
-                    &&
-                    resultado.Msg.Contains(
-                        "Ya existe un turno abierto",
-                        StringComparison.OrdinalIgnoreCase);
+                var turno =
+                    resultado.Data?.Turno;
 
 
-                if (!esTurnoExistente)
+                if (turno is null ||
+                    turno.IdTurno <= 0)
                 {
                     MensajeError =
-                        string.IsNullOrWhiteSpace(
-                            resultado.Msg)
-                            ? "No fue posible iniciar el turno."
-                            : resultado.Msg;
+                        "El servidor no devolvió un turno válido.";
 
                     return;
                 }
 
 
-                Console.WriteLine(
-                    "====================================");
-
-                Console.WriteLine(
-                    "TURNO YA EXISTENTE RECUPERADO:");
-
-                Console.WriteLine(
-                    $"IdTurno: {idTurno}");
-
-                Console.WriteLine(
-                    "====================================");
-            }
+                await EstablecerTurnoActivoAsync(
+                    turno.IdTurno,
+                    configuracion);
 
 
-            // =====================================================
-            // 6. VALIDAR ID DEL TURNO
-            // =====================================================
-
-            if (idTurno <= 0)
-            {
-                MensajeError =
-                    "El servidor no devolvió un identificador válido del turno.";
+                TurnoAbiertoCorrectamente?.Invoke();
 
                 return;
             }
 
 
-            // =====================================================
-            // 7. SESIÓN OPERATIVA DEL POS
-            // =====================================================
+            // =================================================
+            // 5. TURNO YA EXISTENTE
+            // =================================================
 
-            PosSession.IdEmpresa =
-                configuracion.IdEmpresa;
-
-            PosSession.IdUnidadOperativa =
-                configuracion.IdUnidadOperativa;
-
-            PosSession.IdCaja =
-                configuracion.IdCaja;
-
-            PosSession.CodigoCaja =
-                configuracion.CodigoCaja;
-
-            PosSession.NombreCaja =
-                configuracion.NombreCaja;
-
-            PosSession.IdTurno =
-                idTurno;
+            if (resultado.YaExisteTurno)
+            {
+                var turnoExistente =
+                    resultado.Data?.TurnoExistente;
 
 
-            // =====================================================
-            // 8. GUARDAR TURNO ACTIVO LOCALMENTE
-            // =====================================================
+                if (turnoExistente is null ||
+                    turnoExistente.IdTurno <= 0)
+                {
+                    MensajeError =
+                        "La caja tiene un turno abierto, pero el servidor no devolvió su información.";
 
-            await _terminalConfigurationService
-                .GuardarTurnoActivoAsync(
-                    idTurno);
-
-
-            Console.WriteLine(
-                "====================================");
-
-            Console.WriteLine(
-                "TURNO GUARDADO LOCALMENTE:");
-
-            Console.WriteLine(
-                $"IdTurno: {PosSession.IdTurno}");
-
-            Console.WriteLine(
-                "====================================");
+                    return;
+                }
 
 
-            // =====================================================
-            // 9. LISTO
-            // =====================================================
+                var puedeContinuar =
+                    resultado.Data?.PuedeContinuar
+                    ?? false;
 
-            TurnoAbiertoCorrectamente?.Invoke();
+
+                if (!puedeContinuar)
+                {
+                    MensajeError =
+                        "El turno existente no puede ser recuperado.";
+
+                    return;
+                }
+
+
+                var mismoUsuario =
+                    resultado.Data?.MismoUsuario
+                    ?? false;
+
+
+                Console.WriteLine(
+                    "====================================");
+
+                Console.WriteLine(
+                    "TURNO EXISTENTE DETECTADO:");
+
+                Console.WriteLine(
+                    $"IdTurno: {turnoExistente.IdTurno}");
+
+                Console.WriteLine(
+                    $"Caja: {turnoExistente.CajaNombre}");
+
+                Console.WriteLine(
+                    $"Usuario apertura: {turnoExistente.UsuarioAperturaNombre}");
+
+                Console.WriteLine(
+                    $"Mismo usuario: {mismoUsuario}");
+
+                Console.WriteLine(
+                    "====================================");
+
+
+                /*
+                 * IMPORTANTE:
+                 *
+                 * Aquí YA NO guardamos el turno automáticamente.
+                 *
+                 * Primero la interfaz debe preguntarle al usuario.
+                 */
+
+                SolicitarConfirmacionTurnoExistente?.Invoke(
+                    turnoExistente,
+                    mismoUsuario);
+
+                return;
+            }
+
+
+            // =================================================
+            // 6. ERROR NORMAL
+            // =================================================
+
+            MensajeError =
+                string.IsNullOrWhiteSpace(
+                    resultado.Msg)
+
+                    ? "No fue posible iniciar el turno."
+
+                    : resultado.Msg;
         }
         catch (Exception ex)
         {
@@ -346,4 +373,181 @@ public partial class AperturaTurnoViewModel : ViewModelBase
                 false;
         }
     }
+
+
+    // =========================================================
+    // CONTINUAR TURNO EXISTENTE
+    // =========================================================
+
+    public async Task ContinuarTurnoExistenteAsync(
+        TurnoAbierto turno)
+    {
+        EstaCargando =
+            true;
+
+        MensajeError =
+            string.Empty;
+
+
+        try
+        {
+            if (turno.IdTurno <= 0)
+            {
+                MensajeError =
+                    "El turno seleccionado no es válido.";
+
+                return;
+            }
+
+
+            var configuracion =
+                await _terminalConfigurationService
+                    .ObtenerConfiguracionAsync();
+
+
+            if (configuracion is null)
+            {
+                MensajeError =
+                    "No existe una caja configurada para este equipo.";
+
+                return;
+            }
+
+
+            /*
+             * Seguridad adicional:
+             *
+             * El turno recuperado debe pertenecer exactamente
+             * a la caja configurada en esta terminal.
+             */
+
+            if (turno.IdCaja !=
+                configuracion.IdCaja)
+            {
+                MensajeError =
+                    "El turno abierto pertenece a una caja diferente.";
+
+                return;
+            }
+
+
+            await EstablecerTurnoActivoAsync(
+                turno.IdTurno,
+                configuracion);
+
+
+            Console.WriteLine(
+                "====================================");
+
+            Console.WriteLine(
+                "TURNO EXISTENTE CONFIRMADO:");
+
+            Console.WriteLine(
+                $"IdTurno: {turno.IdTurno}");
+
+            Console.WriteLine(
+                $"Caja: {turno.CajaNombre}");
+
+            Console.WriteLine(
+                "====================================");
+
+
+            TurnoAbiertoCorrectamente?.Invoke();
+        }
+        catch (Exception ex)
+        {
+            MensajeError =
+                $"No fue posible continuar con el turno: {ex.Message}";
+        }
+        finally
+        {
+            EstaCargando =
+                false;
+        }
+    }
+
+
+    // =========================================================
+    // ESTABLECER TURNO ACTIVO
+    // =========================================================
+
+private async Task EstablecerTurnoActivoAsync(
+    int idTurno,
+    TerminalConfiguration configuracion)
+{
+    /*
+     * Toda la lógica para establecer el turno activo
+     * queda centralizada aquí.
+     *
+     * Se utiliza tanto cuando:
+     *
+     * - Se crea un turno nuevo.
+     * - Se confirma continuar un turno existente.
+     */
+
+    if (idTurno <= 0)
+    {
+        throw new ArgumentException(
+            "El identificador del turno no es válido.",
+            nameof(idTurno));
+    }
+
+
+    // =====================================================
+    // SESIÓN OPERATIVA
+    // =====================================================
+
+    PosSession.IdEmpresa =
+        configuracion.IdEmpresa;
+
+    PosSession.IdUnidadOperativa =
+        configuracion.IdUnidadOperativa;
+
+    PosSession.IdCaja =
+        configuracion.IdCaja;
+
+    PosSession.CodigoCaja =
+        configuracion.CodigoCaja;
+
+    PosSession.NombreCaja =
+        configuracion.NombreCaja;
+
+    PosSession.IdTurno =
+        idTurno;
+
+
+    // =====================================================
+    // PERSISTENCIA LOCAL
+    // =====================================================
+
+    await _terminalConfigurationService
+        .GuardarTurnoActivoAsync(
+            idTurno);
+
+
+    // =====================================================
+    // DEBUG
+    // =====================================================
+
+    Console.WriteLine(
+        "====================================");
+
+    Console.WriteLine(
+        "TURNO ACTIVO ESTABLECIDO:");
+
+    Console.WriteLine(
+        $"IdTurno: {PosSession.IdTurno}");
+
+    Console.WriteLine(
+        $"IdCaja: {PosSession.IdCaja}");
+
+    Console.WriteLine(
+        $"Caja: {PosSession.NombreCaja}");
+
+    Console.WriteLine(
+        $"CodigoCaja: {PosSession.CodigoCaja}");
+
+    Console.WriteLine(
+        "====================================");
+}
 }

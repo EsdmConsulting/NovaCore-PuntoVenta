@@ -1,7 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 
-        x:Class="NovaCoreESDM.Views.Ventas.PagoEfectivoWindow"
+        x:Class="NovaCoreESDM.Views.Credito.PagoCreditoEfectivoWindow"
 
         Width="720"
         Height="650"
@@ -74,7 +74,7 @@
                                    FontWeight="SemiBold"
                                    Foreground="#E8E7FF"/>
 
-                        <TextBlock Text="Importe total de la venta actual"
+                        <TextBlock Text="Importe total del abono de crédito"
                                    FontSize="11"
                                    Foreground="#CFCBFF"/>
 
