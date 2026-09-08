@@ -12,8 +12,7 @@ public partial class PagoCreditoEfectivoWindow : Window
     // TOTAL
     // =========================================================
 
-    private readonly decimal
-        _total;
+    private readonly decimal _total;
 
 
     // =========================================================
@@ -48,18 +47,13 @@ public partial class PagoCreditoEfectivoWindow : Window
             total;
 
 
+        // Siempre mostramos moneda en pesos con símbolo $
         TextoTotal.Text =
-            _total.ToString(
-                "C2",
-                CultureInfo.CurrentCulture
-            );
+            $"${_total:N2}";
 
 
         TextoCambio.Text =
-            0m.ToString(
-                "C2",
-                CultureInfo.CurrentCulture
-            );
+            $"${0m:N2}";
 
 
         Opened +=
@@ -79,6 +73,7 @@ public partial class PagoCreditoEfectivoWindow : Window
         object? sender,
         TextChangedEventArgs e)
     {
+        // Limpiamos cualquier mensaje anterior
         TextoMensaje.Text =
             string.Empty;
 
@@ -89,6 +84,10 @@ public partial class PagoCreditoEfectivoWindow : Window
                 .Trim()
             ?? string.Empty;
 
+
+        // =====================================================
+        // CAMPO VACÍO
+        // =====================================================
 
         if (
             string.IsNullOrWhiteSpace(
@@ -104,10 +103,7 @@ public partial class PagoCreditoEfectivoWindow : Window
 
 
             TextoCambio.Text =
-                0m.ToString(
-                    "C2",
-                    CultureInfo.CurrentCulture
-                );
+                $"${0m:N2}";
 
 
             ConfirmarButton.IsEnabled =
@@ -156,10 +152,7 @@ public partial class PagoCreditoEfectivoWindow : Window
 
 
             TextoCambio.Text =
-                0m.ToString(
-                    "C2",
-                    CultureInfo.CurrentCulture
-                );
+                $"${0m:N2}";
 
 
             ConfirmarButton.IsEnabled =
@@ -168,6 +161,37 @@ public partial class PagoCreditoEfectivoWindow : Window
 
             TextoMensaje.Text =
                 "Captura un importe válido.";
+
+
+            return;
+        }
+
+
+        // =====================================================
+        // VALIDAR QUE NO SEA NEGATIVO
+        // =====================================================
+
+        if (
+            recibido < 0m
+        )
+        {
+            CantidadRecibida =
+                0m;
+
+            Cambio =
+                0m;
+
+
+            TextoCambio.Text =
+                $"${0m:N2}";
+
+
+            ConfirmarButton.IsEnabled =
+                false;
+
+
+            TextoMensaje.Text =
+                "El efectivo recibido no puede ser negativo.";
 
 
             return;
@@ -196,10 +220,7 @@ public partial class PagoCreditoEfectivoWindow : Window
 
 
             TextoCambio.Text =
-                0m.ToString(
-                    "C2",
-                    CultureInfo.CurrentCulture
-                );
+                $"${0m:N2}";
 
 
             ConfirmarButton.IsEnabled =
@@ -224,10 +245,7 @@ public partial class PagoCreditoEfectivoWindow : Window
 
 
         TextoCambio.Text =
-            Cambio.ToString(
-                "C2",
-                CultureInfo.CurrentCulture
-            );
+            $"${Cambio:N2}";
 
 
         ConfirmarButton.IsEnabled =

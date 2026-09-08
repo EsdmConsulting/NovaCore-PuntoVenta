@@ -51,6 +51,17 @@ public partial class RealizarCorteWindow : Window
 
 
     // ============================================================
+    // ACCIÓN DESPUÉS DEL CORTE
+    // ============================================================
+
+    public AccionDespuesCorte AccionPosterior
+    {
+        get;
+        private set;
+    } = AccionDespuesCorte.Ninguna;
+
+
+    // ============================================================
     // CONSTRUCTOR
     // ============================================================
 
@@ -227,9 +238,8 @@ public partial class RealizarCorteWindow : Window
 
             _tieneEfectivoCapturado =
                 true;
-            
-            OcultarError();
 
+            OcultarError();
         }
         else
         {
@@ -501,8 +511,8 @@ public partial class RealizarCorteWindow : Window
 
             ResultadoCierre =
                 resultado;
-            
-            
+
+
             // ========================================================
             // MOSTRAR RESULTADO FINAL
             // ========================================================
@@ -512,10 +522,23 @@ public partial class RealizarCorteWindow : Window
                     resultado);
 
 
-            await ventanaResultado
-                .ShowDialog(
-                    this);
+            var accion =
+                await ventanaResultado
+                    .ShowDialog<AccionDespuesCorte>(
+                        this);
 
+
+            // ========================================================
+            // GUARDAR ACCIÓN ELEGIDA
+            // ========================================================
+
+            AccionPosterior =
+                accion;
+
+
+            // ========================================================
+            // CERRAR VENTANA DE CORTE
+            // ========================================================
 
             Close(
                 true);

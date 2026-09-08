@@ -654,9 +654,12 @@ public async Task<ActividadTurnoResponse> ObtenerActividadTurnoAsync(
             // PETICIÓN
             // =====================================================
 
+            var endpoint =
+                $"api/pos/turnos/{request.IdTurno}/cerrar";
+
             var response =
                 await ApiClient.Http.PostAsJsonAsync(
-                    "api/pos/turnos/cerrar",
+                    endpoint,
                     request);
 
 

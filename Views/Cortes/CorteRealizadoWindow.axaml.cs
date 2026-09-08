@@ -8,8 +8,14 @@ using NovaCoreESDM.Models.Turno;
 
 namespace NovaCoreESDM.Views.Cortes;
 
-public partial class CorteRealizadoWindow
-    : Window
+public enum AccionDespuesCorte
+{
+    Ninguna = 0,
+    AbrirNuevoTurno = 1,
+    CerrarSesion = 2
+}
+
+public partial class CorteRealizadoWindow : Window
 {
     public CorteRealizadoWindow(
         CerrarTurnoResponse resultado)
@@ -134,13 +140,35 @@ public partial class CorteRealizadoWindow
     }
 
 
-    private void Finalizar_Click(
+    // ============================================================
+    // ABRIR NUEVO TURNO
+    // ============================================================
+
+    private void AbrirNuevoTurno_Click(
         object? sender,
         RoutedEventArgs e)
     {
-        Close();
+        Close(
+            AccionDespuesCorte.AbrirNuevoTurno);
     }
 
+
+    // ============================================================
+    // CERRAR SESIÓN
+    // ============================================================
+
+    private void CerrarSesion_Click(
+        object? sender,
+        RoutedEventArgs e)
+    {
+        Close(
+            AccionDespuesCorte.CerrarSesion);
+    }
+
+
+    // ============================================================
+    // FORMATO MONEDA
+    // ============================================================
 
     private static string FormatearMoneda(
         decimal valor)

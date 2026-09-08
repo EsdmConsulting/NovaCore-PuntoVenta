@@ -2,10 +2,13 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     x:Class="NovaCoreESDM.Views.Cortes.CorteRealizadoWindow"
+
     Width="540"
-    Height="520"
+    Height="580"
+
     CanResize="False"
     WindowStartupLocation="CenterOwner"
+
     Title="Corte realizado"
     Background="#F7F9F8">
 
@@ -15,7 +18,9 @@
             Margin="32"
             Spacing="19">
 
-            <!-- ICONO -->
+            <!-- ===================================================== -->
+            <!-- ICONO                                                 -->
+            <!-- ===================================================== -->
 
             <Border
                 Width="72"
@@ -35,7 +40,9 @@
             </Border>
 
 
-            <!-- TITULO -->
+            <!-- ===================================================== -->
+            <!-- TITULO                                                -->
+            <!-- ===================================================== -->
 
             <StackPanel
                 Spacing="5"
@@ -58,7 +65,9 @@
             </StackPanel>
 
 
-            <!-- RESUMEN -->
+            <!-- ===================================================== -->
+            <!-- RESUMEN                                               -->
+            <!-- ===================================================== -->
 
             <Border
                 Background="White"
@@ -142,6 +151,10 @@
             </Border>
 
 
+            <!-- ===================================================== -->
+            <!-- MENSAJE                                               -->
+            <!-- ===================================================== -->
+
             <TextBlock
                 Text="El turno ha sido cerrado y el corte quedó registrado en el historial."
                 Foreground="#7C8D82"
@@ -152,6 +165,10 @@
         </StackPanel>
 
 
+        <!-- ========================================================= -->
+        <!-- ACCIONES                                                  -->
+        <!-- ========================================================= -->
+
         <Border
             Grid.Row="1"
             Background="White"
@@ -159,15 +176,35 @@
             BorderThickness="0,1,0,0"
             Padding="24,18">
 
-            <Button
-                Content="Finalizar"
-                Width="140"
-                Height="44"
-                Background="#08783D"
-                Foreground="White"
-                FontWeight="SemiBold"
-                HorizontalAlignment="Center"
-                Click="Finalizar_Click"/>
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="12">
+
+                <!-- CERRAR SESIÓN -->
+
+                <Button
+                    Grid.Column="0"
+                    Height="46"
+                    Content="Cerrar sesión"
+                    Background="#C61F2B"
+                    Foreground="White"
+                    FontWeight="SemiBold"
+                    CornerRadius="9"
+                    Click="CerrarSesion_Click"/>
+
+
+                <!-- ABRIR NUEVO TURNO -->
+
+                <Button
+                    Grid.Column="1"
+                    Height="46"
+                    Content="Abrir nuevo turno"
+                    Background="#08783D"
+                    Foreground="White"
+                    FontWeight="SemiBold"
+                    CornerRadius="9"
+                    Click="AbrirNuevoTurno_Click"/>
+
+            </Grid>
 
         </Border>
 

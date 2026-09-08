@@ -1079,12 +1079,16 @@ public partial class CortesViewModel
 
     public void SolicitarRealizarCorte()
     {
-        if (!PuedeRealizarCorte)
+        // Si todavía estamos cargando información,
+        // evitamos ejecutar el proceso.
+        if (EstaCargando)
         {
             return;
         }
 
 
+        // La vista será la encargada de explicar
+        // por qué puede o no realizarse el corte.
         RealizarCorteSolicitado?.Invoke(
             this,
             EventArgs.Empty);

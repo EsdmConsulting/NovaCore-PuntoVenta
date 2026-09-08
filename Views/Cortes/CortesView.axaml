@@ -87,7 +87,6 @@
                     <Button
                         Grid.Column="1"
                         Click="RealizarCorte_Click"
-                        IsEnabled="{Binding PuedeRealizarCorte}"
                         Width="245"
                         Height="74"
                         Padding="18,10"
