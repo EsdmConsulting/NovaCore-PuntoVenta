@@ -1,0 +1,1014 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:NovaCoreESDM.ViewModels.Cancelaciones"
+    xmlns:models="clr-namespace:NovaCoreESDM.Models.Cancelaciones"
+
+    x:Class="NovaCoreESDM.Views.Cancelaciones.CancelacionesView"
+    x:DataType="vm:CancelacionesViewModel"
+    x:Name="Root"
+
+    Background="#F5F7F6">
+
+
+    <ScrollViewer
+        VerticalScrollBarVisibility="Auto"
+        HorizontalScrollBarVisibility="Disabled">
+
+
+        <StackPanel
+            Margin="28"
+            Spacing="20">
+
+
+            <!-- ================================================= -->
+            <!-- HERO                                               -->
+            <!-- ================================================= -->
+
+            <Border
+                Background="#7F1D1D"
+                CornerRadius="20"
+                Padding="30">
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="24">
+
+
+                    <StackPanel
+                        Spacing="7"
+                        VerticalAlignment="Center">
+
+                        <TextBlock
+                            Text="GRUPO LUIS FER"
+                            Foreground="#FECACA"
+                            FontSize="11"
+                            FontWeight="Bold"/>
+
+                        <TextBlock
+                            Text="Cancelación de ventas"
+                            Foreground="White"
+                            FontSize="28"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Text="Consulta ventas finalizadas y realiza cancelaciones administrativas."
+                            Foreground="#FEE2E2"
+                            FontSize="14"/>
+
+                        <StackPanel
+                            Orientation="Horizontal"
+                            Spacing="8"
+                            Margin="0,8,0,0">
+
+                            <Border
+                                Width="8"
+                                Height="8"
+                                CornerRadius="4"
+                                Background="#FCA5A5"
+                                VerticalAlignment="Center"/>
+
+                            <TextBlock
+                                Text="Operación protegida por autorización administrativa"
+                                Foreground="#FEE2E2"
+                                FontSize="11"
+                                VerticalAlignment="Center"/>
+
+                        </StackPanel>
+
+                    </StackPanel>
+
+
+                    <Border
+                        Grid.Column="1"
+                        Background="#991B1B"
+                        CornerRadius="14"
+                        Padding="20,14"
+                        VerticalAlignment="Center">
+
+                        <StackPanel
+                            Spacing="3">
+
+                            <TextBlock
+                                Text="SEGURIDAD"
+                                Foreground="#FECACA"
+                                FontSize="10"
+                                FontWeight="Bold"
+                                HorizontalAlignment="Center"/>
+
+                            <TextBlock
+                                Text="ADMIN"
+                                Foreground="White"
+                                FontSize="22"
+                                FontWeight="Bold"
+                                HorizontalAlignment="Center"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- AUTORIZACIÓN                                      -->
+            <!-- ================================================= -->
+
+            <Border
+                Background="White"
+                BorderBrush="#E1E8E3"
+                BorderThickness="1"
+                CornerRadius="16"
+                Padding="24">
+
+                <StackPanel
+                    Spacing="18">
+
+                    <Grid
+                        ColumnDefinitions="*,Auto">
+
+                        <StackPanel
+                            Spacing="4">
+
+                            <TextBlock
+                                Text="Autorización administrativa"
+                                Foreground="#21382A"
+                                FontSize="19"
+                                FontWeight="SemiBold"/>
+
+                            <TextBlock
+                                Text="Ingresa las credenciales de un administrador para acceder a las cancelaciones."
+                                Foreground="#718078"
+                                FontSize="12"/>
+
+                        </StackPanel>
+
+
+                        <Border
+                            Grid.Column="1"
+                            IsVisible="{Binding AdministradorAutorizado}"
+                            Background="#ECFDF3"
+                            BorderBrush="#BBF7D0"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12,7">
+
+                            <StackPanel
+                                Orientation="Horizontal"
+                                Spacing="7">
+
+                                <TextBlock
+                                    Text="✓"
+                                    Foreground="#15803D"
+                                    FontWeight="Bold"/>
+
+                                <TextBlock
+                                    Text="{Binding NombreAdministrador}"
+                                    Foreground="#166534"
+                                    FontWeight="SemiBold"/>
+
+                            </StackPanel>
+
+                        </Border>
+
+                    </Grid>
+
+
+                    <Grid
+                        ColumnDefinitions="*,*,Auto"
+                        ColumnSpacing="12">
+
+                        <!-- USUARIO -->
+
+                        <StackPanel
+                            Grid.Column="0"
+                            Spacing="6">
+
+                            <TextBlock
+                                Text="Usuario administrador"
+                                FontSize="11"
+                                Foreground="#53665B"
+                                FontWeight="SemiBold"/>
+
+                            <TextBox
+                                Text="{Binding UsuarioAdministrador}"
+                                Watermark="Usuario"
+                                Height="42"
+                                Padding="12,0"
+                                VerticalContentAlignment="Center"/>
+
+                        </StackPanel>
+
+
+                        <!-- PASSWORD -->
+
+                        <StackPanel
+                            Grid.Column="1"
+                            Spacing="6">
+
+                            <TextBlock
+                                Text="Contraseña"
+                                FontSize="11"
+                                Foreground="#53665B"
+                                FontWeight="SemiBold"/>
+
+                            <TextBox
+                                Text="{Binding PasswordAdministrador}"
+                                PasswordChar="●"
+                                Watermark="Contraseña"
+                                Height="42"
+                                Padding="12,0"
+                                VerticalContentAlignment="Center"/>
+
+                        </StackPanel>
+
+
+                        <!-- AUTORIZAR -->
+
+                        <Button
+                            Grid.Column="2"
+                            Command="{Binding AutorizarAdministradorCommand}"
+                            IsEnabled="{Binding !EstaAutorizando}"
+                            Height="42"
+                            MinWidth="150"
+                            Margin="0,22,0,0"
+                            Background="#7F1D1D"
+                            Foreground="White"
+                            BorderThickness="0"
+                            CornerRadius="9"
+                            Cursor="Hand">
+
+                            <TextBlock
+                                Text="Autorizar"
+                                FontWeight="SemiBold"/>
+
+                        </Button>
+
+                    </Grid>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- MENSAJES                                          -->
+            <!-- ================================================= -->
+
+            <Border
+                IsVisible="{Binding HayError}"
+                Background="#FEF2F2"
+                BorderBrush="#FECACA"
+                BorderThickness="1"
+                CornerRadius="10"
+                Padding="14">
+
+                <Grid
+                    ColumnDefinitions="Auto,*"
+                    ColumnSpacing="10">
+
+                    <TextBlock
+                        Text="!"
+                        Foreground="#B91C1C"
+                        FontWeight="Bold"
+                        FontSize="16"/>
+
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="{Binding MensajeError}"
+                        Foreground="#991B1B"
+                        FontSize="12"
+                        TextWrapping="Wrap"/>
+
+                </Grid>
+
+            </Border>
+
+
+            <Border
+                IsVisible="{Binding HayMensajeExito}"
+                Background="#F0FDF4"
+                BorderBrush="#BBF7D0"
+                BorderThickness="1"
+                CornerRadius="10"
+                Padding="14">
+
+                <Grid
+                    ColumnDefinitions="Auto,*"
+                    ColumnSpacing="10">
+
+                    <TextBlock
+                        Text="✓"
+                        Foreground="#15803D"
+                        FontWeight="Bold"
+                        FontSize="16"/>
+
+                    <TextBlock
+                        Grid.Column="1"
+                        Text="{Binding MensajeExito}"
+                        Foreground="#166534"
+                        FontSize="12"
+                        TextWrapping="Wrap"/>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- CONTENIDO PROTEGIDO                               -->
+            <!-- ================================================= -->
+
+            <StackPanel
+                IsVisible="{Binding AdministradorAutorizado}"
+                Spacing="20">
+
+
+                <!-- ================================================= -->
+                <!-- FILTROS                                            -->
+                <!-- ================================================= -->
+
+                <Border
+                    Background="White"
+                    BorderBrush="#E1E8E3"
+                    BorderThickness="1"
+                    CornerRadius="16"
+                    Padding="22">
+
+                    <StackPanel
+                        Spacing="16">
+
+                        <TextBlock
+                            Text="Buscar ventas"
+                            Foreground="#21382A"
+                            FontSize="17"
+                            FontWeight="SemiBold"/>
+
+
+                        <Grid
+                            ColumnDefinitions="250,*,170,115,115"
+                            ColumnSpacing="14">
+
+                            <!-- FECHA -->
+
+                            <StackPanel
+                                Grid.Column="0"
+                                Spacing="6">
+
+                                <TextBlock
+                                    Text="Fecha"
+                                    Foreground="#53665B"
+                                    FontSize="11"
+                                    FontWeight="SemiBold"/>
+
+                                <DatePicker
+                                    SelectedDate="{Binding FechaSeleccionada}"
+                                    Height="42"
+                                    MinWidth="240"
+                                    HorizontalAlignment="Stretch"/>
+
+                            </StackPanel>
+
+                            <!-- FOLIO -->
+
+
+                            <!-- FOLIO -->
+
+                            <StackPanel
+                                Grid.Column="1"
+                                Spacing="6">
+
+                                <TextBlock
+                                    Text="Folio"
+                                    Foreground="#53665B"
+                                    FontSize="11"
+                                    FontWeight="SemiBold"/>
+
+                                <TextBox
+                                    Text="{Binding FolioBusqueda}"
+                                    Watermark="Buscar por folio..."
+                                    Height="40"
+                                    Padding="12,0"
+                                    VerticalContentAlignment="Center"/>
+
+                            </StackPanel>
+
+
+                            <!-- ESTADO -->
+
+                            <StackPanel
+                                Grid.Column="2"
+                                Spacing="6">
+
+                                <TextBlock
+                                    Text="Estado"
+                                    Foreground="#53665B"
+                                    FontSize="11"
+                                    FontWeight="SemiBold"/>
+
+                                <ComboBox
+                                    x:Name="EstadoComboBox"
+                                    Height="40"
+                                    SelectedIndex="0"
+                                    SelectionChanged="EstadoComboBox_SelectionChanged">
+
+                                    <ComboBoxItem
+                                        Content="Todos"/>
+
+                                    <ComboBoxItem
+                                        Content="FINALIZADA"/>
+
+                                    <ComboBoxItem
+                                        Content="CANCELADA"/>
+
+                                </ComboBox>
+
+                            </StackPanel>
+
+
+                            <!-- BUSCAR -->
+
+                            <Button
+                                Grid.Column="3"
+                                Command="{Binding BuscarVentasCommand}"
+                                Height="40"
+                                MinWidth="105"
+                                Margin="0,22,0,0"
+                                Background="#08783D"
+                                Foreground="White"
+                                BorderThickness="0"
+                                CornerRadius="8"
+                                Cursor="Hand">
+
+                                <TextBlock
+                                    Text="Buscar"
+                                    FontWeight="SemiBold"/>
+
+                            </Button>
+
+
+                            <!-- LIMPIAR -->
+
+                            <Button
+                                Grid.Column="4"
+                                Command="{Binding LimpiarFiltrosCommand}"
+                                Height="40"
+                                MinWidth="105"
+                                Margin="0,22,0,0"
+                                Background="#F3F6F4"
+                                Foreground="#385044"
+                                BorderBrush="#DCE5DF"
+                                BorderThickness="1"
+                                CornerRadius="8"
+                                Cursor="Hand">
+
+                                <TextBlock
+                                    Text="Limpiar"
+                                    FontWeight="SemiBold"/>
+
+                            </Button>
+
+                        </Grid>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- ================================================= -->
+                <!-- PRINCIPAL                                         -->
+                <!-- ================================================= -->
+
+                <Grid
+                    ColumnDefinitions="1.05*,0.95*"
+                    ColumnSpacing="18">
+
+
+                    <!-- ================================================= -->
+                    <!-- LISTADO                                            -->
+                    <!-- ================================================= -->
+
+                    <Border
+                        Grid.Column="0"
+                        Background="White"
+                        BorderBrush="#E1E8E3"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="20">
+
+                        <StackPanel
+                            Spacing="14">
+
+                            <Grid
+                                ColumnDefinitions="*,Auto">
+
+                                <StackPanel
+                                    Spacing="3">
+
+                                    <TextBlock
+                                        Text="Ventas encontradas"
+                                        Foreground="#21382A"
+                                        FontSize="17"
+                                        FontWeight="SemiBold"/>
+
+                                    <TextBlock
+                                        Text="Selecciona una venta para revisar su detalle."
+                                        Foreground="#7B8B82"
+                                        FontSize="11"/>
+
+                                </StackPanel>
+
+
+                                <Border
+                                    Grid.Column="1"
+                                    Background="#F0F7F3"
+                                    CornerRadius="10"
+                                    Padding="12,5">
+
+                                    <TextBlock
+                                        Text="{Binding Ventas.Count}"
+                                        Foreground="#08783D"
+                                        FontWeight="Bold"/>
+
+                                </Border>
+
+                            </Grid>
+
+
+                            <!-- CARGANDO -->
+
+                            <ProgressBar
+                                IsVisible="{Binding EstaCargando}"
+                                IsIndeterminate="True"
+                                Height="3"/>
+
+
+                            <!-- LISTA -->
+
+                            <ItemsControl
+                                ItemsSource="{Binding Ventas}">
+
+                                <ItemsControl.ItemTemplate>
+
+                                    <DataTemplate x:DataType="models:VentaCancelacionItem">
+                                        
+                                        <Button
+                                            Command="{Binding #Root.((vm:CancelacionesViewModel)DataContext).VerDetalleCommand}"
+                                            CommandParameter="{Binding}"
+                                            HorizontalContentAlignment="Stretch"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Padding="0"
+                                            Margin="0,0,0,8"
+                                            Cursor="Hand">
+
+                                            <Border
+                                                Background="#FAFCFB"
+                                                BorderBrush="#E3EAE6"
+                                                BorderThickness="1"
+                                                CornerRadius="11"
+                                                Padding="14">
+
+                                                <Grid
+                                                    ColumnDefinitions="*,Auto"
+                                                    RowDefinitions="Auto,Auto"
+                                                    ColumnSpacing="12"
+                                                    RowSpacing="7">
+
+                                                    <WrapPanel
+                                                        Grid.Row="1"
+                                                        Grid.Column="0"
+                                                        Orientation="Horizontal"
+                                                        ItemSpacing="6">
+
+                                                        <TextBlock
+                                                            Text="{Binding Fecha}"
+                                                            Foreground="#7A8B81"
+                                                            FontSize="11"/>
+
+                                                        <TextBlock
+                                                            Text="·"
+                                                            Foreground="#B2BDB7"/>
+
+                                                        <TextBlock
+                                                            Text="{Binding Hora}"
+                                                            Foreground="#7A8B81"
+                                                            FontSize="11"/>
+
+                                                        <TextBlock
+                                                            Text="·"
+                                                            Foreground="#B2BDB7"/>
+
+                                                        <TextBlock
+                                                            Text="{Binding UsuarioRegistro}"
+                                                            Foreground="#7A8B81"
+                                                            FontSize="11"/>
+
+                                                    </WrapPanel>
+
+
+                                                    <TextBlock
+                                                        Grid.Row="0"
+                                                        Grid.Column="1"
+                                                        Text="{Binding TextoTotal}"
+                                                        Foreground="#08783D"
+                                                        FontSize="16"
+                                                        FontWeight="Bold"/>
+
+
+                                                    <StackPanel
+                                                        Grid.Row="1"
+                                                        Grid.Column="0"
+                                                        Orientation="Horizontal"
+                                                        Spacing="6">
+
+                                                        <TextBlock
+                                                            Text="{Binding Fecha}"
+                                                            Foreground="#7A8B81"
+                                                            FontSize="11"/>
+
+                                                        <TextBlock
+                                                            Text="·"
+                                                            Foreground="#B2BDB7"/>
+
+                                                        <TextBlock
+                                                            Text="{Binding Hora}"
+                                                            Foreground="#7A8B81"
+                                                            FontSize="11"/>
+
+                                                        <TextBlock
+                                                            Text="·"
+                                                            Foreground="#B2BDB7"/>
+
+                                                        <TextBlock
+                                                            Text="{Binding UsuarioRegistro}"
+                                                            Foreground="#7A8B81"
+                                                            FontSize="11"/>
+
+                                                    </StackPanel>
+
+
+                                                    <TextBlock
+                                                        Grid.Row="1"
+                                                        Grid.Column="1"
+                                                        Text="Ver detalle ›"
+                                                        Foreground="#08783D"
+                                                        FontSize="11"
+                                                        FontWeight="SemiBold"/>
+
+                                                </Grid>
+
+                                            </Border>
+
+                                        </Button>
+
+                                    </DataTemplate>
+
+                                </ItemsControl.ItemTemplate>
+
+                            </ItemsControl>
+
+                        </StackPanel>
+
+                    </Border>
+
+
+                    <!-- ================================================= -->
+                    <!-- DETALLE                                            -->
+                    <!-- ================================================= -->
+
+                    <Border
+                        Grid.Column="1"
+                        Background="White"
+                        BorderBrush="#E1E8E3"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="20">
+
+                        <Grid>
+
+
+                            <!-- SIN SELECCIÓN -->
+
+                            <StackPanel
+                                IsVisible="{Binding !HayVentaSeleccionada}"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Spacing="10"
+                                Margin="20">
+
+                                <Border
+                                    Width="56"
+                                    Height="56"
+                                    CornerRadius="28"
+                                    Background="#F0F5F2">
+
+                                    <TextBlock
+                                        Text="▤"
+                                        Foreground="#789084"
+                                        FontSize="25"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"/>
+
+                                </Border>
+
+                                <TextBlock
+                                    Text="Selecciona una venta"
+                                    Foreground="#31483B"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    HorizontalAlignment="Center"/>
+
+                                <TextBlock
+                                    Text="Aquí podrás revisar los productos antes de realizar la cancelación."
+                                    Foreground="#89968F"
+                                    FontSize="11"
+                                    TextWrapping="Wrap"
+                                    TextAlignment="Center"
+                                    MaxWidth="280"/>
+
+                            </StackPanel>
+
+
+                            <!-- CON DETALLE -->
+
+                            <StackPanel
+                                IsVisible="{Binding HayVentaSeleccionada}"
+                                Spacing="16">
+
+
+                                <!-- CABECERA DETALLE -->
+
+                                <Grid
+                                    ColumnDefinitions="*,Auto">
+
+                                    <StackPanel
+                                        Spacing="3">
+
+                                        <TextBlock
+                                            Text="Detalle de venta"
+                                            Foreground="#21382A"
+                                            FontSize="17"
+                                            FontWeight="SemiBold"/>
+
+                                        <TextBlock
+                                            Text="{Binding VentaDetalle.Folio}"
+                                            Foreground="#718078"
+                                            FontSize="12"/>
+
+                                    </StackPanel>
+
+
+                                    <Button
+                                        Grid.Column="1"
+                                        Command="{Binding CerrarDetalleCommand}"
+                                        Width="32"
+                                        Height="32"
+                                        Padding="0"
+                                        Background="#F4F6F5"
+                                        Foreground="#66776D"
+                                        BorderThickness="0"
+                                        CornerRadius="8"
+                                        Cursor="Hand">
+
+                                        <TextBlock
+                                            Text="×"
+                                            FontSize="18"/>
+
+                                    </Button>
+
+                                </Grid>
+
+
+                                <!-- TOTALES -->
+
+                                <Border
+                                    Background="#F7FAF8"
+                                    CornerRadius="10"
+                                    Padding="14">
+
+                                    <Grid
+                                        ColumnDefinitions="*,Auto">
+
+                                        <StackPanel
+                                            Spacing="3">
+
+                                            <TextBlock
+                                                Text="{Binding VentaDetalle.Estado}"
+                                                Foreground="#566A5E"
+                                                FontSize="10"
+                                                FontWeight="SemiBold"/>
+
+                                            <TextBlock
+                                                Text="Total de la venta"
+                                                Foreground="#7C8C83"
+                                                FontSize="11"/>
+
+                                        </StackPanel>
+
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            Text="{Binding VentaDetalle.TextoTotal}"
+                                            Foreground="#08783D"
+                                            FontSize="21"
+                                            FontWeight="Bold"
+                                            VerticalAlignment="Center"/>
+
+                                    </Grid>
+
+                                </Border>
+
+
+                                <!-- PRODUCTOS -->
+
+                                <TextBlock
+                                    Text="Productos"
+                                    Foreground="#31483B"
+                                    FontSize="12"
+                                    FontWeight="SemiBold"/>
+
+
+                                <ScrollViewer
+                                    MaxHeight="280"
+                                    VerticalScrollBarVisibility="Auto">
+
+                                    <ItemsControl
+                                        ItemsSource="{Binding Detalles}">
+
+                                        <ItemsControl.ItemTemplate>
+
+                                            <DataTemplate>
+
+                                                <Border
+                                                    BorderBrush="#EDF1EF"
+                                                    BorderThickness="0,0,0,1"
+                                                    Padding="0,9">
+
+                                                    <Grid
+                                                        ColumnDefinitions="*,Auto"
+                                                        RowDefinitions="Auto,Auto"
+                                                        ColumnSpacing="12">
+
+                                                        <TextBlock
+                                                            Grid.Row="0"
+                                                            Grid.Column="0"
+                                                            Text="{Binding NombreMostrar}"
+                                                            Foreground="#293E32"
+                                                            FontSize="12"
+                                                            FontWeight="SemiBold"
+                                                            TextWrapping="Wrap"/>
+
+                                                        <TextBlock
+                                                            Grid.Row="0"
+                                                            Grid.Column="1"
+                                                            Text="{Binding TextoTotal}"
+                                                            Foreground="#293E32"
+                                                            FontSize="12"
+                                                            FontWeight="SemiBold"/>
+
+                                                        <StackPanel
+                                                            Grid.Row="1"
+                                                            Grid.Column="0"
+                                                            Orientation="Horizontal"
+                                                            Spacing="5"
+                                                            Margin="0,3,0,0">
+
+                                                            <TextBlock
+                                                                Text="{Binding TextoCantidad}"
+                                                                Foreground="#819087"
+                                                                FontSize="10"/>
+
+                                                            <TextBlock
+                                                                Text="×"
+                                                                Foreground="#A7B2AC"
+                                                                FontSize="10"/>
+
+                                                            <TextBlock
+                                                                Text="{Binding TextoPrecio}"
+                                                                Foreground="#819087"
+                                                                FontSize="10"/>
+
+                                                        </StackPanel>
+
+                                                        <TextBlock
+                                                            Grid.Row="1"
+                                                            Grid.Column="1"
+                                                            Text="{Binding TipoPrecioAplicado}"
+                                                            Foreground="#819087"
+                                                            FontSize="9"
+                                                            HorizontalAlignment="Right"/>
+
+                                                    </Grid>
+
+                                                </Border>
+
+                                            </DataTemplate>
+
+                                        </ItemsControl.ItemTemplate>
+
+                                    </ItemsControl>
+
+                                </ScrollViewer>
+
+
+                                <!-- YA CANCELADA -->
+
+                                <Border
+                                    IsVisible="{Binding VentaSeleccionada.EstaCancelada}"
+                                    Background="#FEF2F2"
+                                    BorderBrush="#FECACA"
+                                    BorderThickness="1"
+                                    CornerRadius="10"
+                                    Padding="13">
+
+                                    <StackPanel
+                                        Spacing="5">
+
+                                        <TextBlock
+                                            Text="Venta cancelada"
+                                            Foreground="#991B1B"
+                                            FontWeight="Bold"
+                                            FontSize="12"/>
+
+                                        <TextBlock
+                                            Text="{Binding VentaDetalle.MotivoCancelacion}"
+                                            Foreground="#7F1D1D"
+                                            FontSize="11"
+                                            TextWrapping="Wrap"/>
+
+                                        <TextBlock
+                                            Text="{Binding VentaDetalle.UsuarioCancelacion, StringFormat='Autorizó: {0}'}"
+                                            Foreground="#A34A4A"
+                                            FontSize="10"/>
+
+                                    </StackPanel>
+
+                                </Border>
+
+
+                                <!-- CANCELAR -->
+
+                                <StackPanel
+                                    IsVisible="{Binding PuedeCancelarVenta}"
+                                    Spacing="8">
+
+                                    <TextBlock
+                                        Text="Motivo de cancelación"
+                                        Foreground="#53665B"
+                                        FontSize="11"
+                                        FontWeight="SemiBold"/>
+
+                                    <TextBox
+                                        Text="{Binding MotivoCancelacion}"
+                                        Watermark="Describe brevemente el motivo..."
+                                        AcceptsReturn="True"
+                                        TextWrapping="Wrap"
+                                        MinHeight="75"
+                                        MaxLength="500"
+                                        Padding="11"/>
+
+
+                                    <Button
+                                        Click="CancelarVenta_Click"
+                                        IsEnabled="{Binding PuedeEjecutarCancelacion}"
+                                        Height="44"
+                                        Background="#B91C1C"
+                                        Foreground="White"
+                                        BorderThickness="0"
+                                        CornerRadius="9"
+                                        Cursor="Hand"
+                                        HorizontalContentAlignment="Center">
+
+                                        <TextBlock
+                                            Text="Cancelar venta"
+                                            FontWeight="Bold"/>
+
+                                    </Button>
+
+
+                                    <TextBlock
+                                        Text="La venta conservará su historial y el inventario será restituido."
+                                        Foreground="#8A9890"
+                                        FontSize="9"
+                                        TextWrapping="Wrap"
+                                        TextAlignment="Center"/>
+
+                                </StackPanel>
+
+                            </StackPanel>
+
+                        </Grid>
+
+                    </Border>
+
+                </Grid>
+
+            </StackPanel>
+
+        </StackPanel>
+
+    </ScrollViewer>
+
+</UserControl>

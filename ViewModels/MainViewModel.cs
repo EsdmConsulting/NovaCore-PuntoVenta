@@ -1,8 +1,10 @@
 using System;
+using System.Threading.Tasks;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using NovaCoreESDM.ViewModels.Cancelaciones;
 using NovaCoreESDM.ViewModels.Cortes;
 using NovaCoreESDM.ViewModels.Credito;
 using NovaCoreESDM.ViewModels.Inicio;
@@ -23,6 +25,8 @@ public partial class MainViewModel : ViewModelBase
     public PagoCreditoViewModel PagoCreditoModulo { get; }
 
     public CortesViewModel CortesModulo { get; }
+
+    public CancelacionesViewModel CancelacionesModulo { get; }
 
 
     // =========================================================
@@ -60,6 +64,10 @@ public partial class MainViewModel : ViewModelBase
 
                 OnPropertyChanged(
                     nameof(EsCortes)
+                );
+
+                OnPropertyChanged(
+                    nameof(EsCancelaciones)
                 );
             }
         }
@@ -117,6 +125,10 @@ public partial class MainViewModel : ViewModelBase
         VistaActual is CortesViewModel;
 
 
+    public bool EsCancelaciones =>
+        VistaActual is CancelacionesViewModel;
+
+
     // =========================================================
     // CONSTRUCTOR
     // =========================================================
@@ -139,18 +151,22 @@ public partial class MainViewModel : ViewModelBase
             new CortesViewModel();
 
 
+        CancelacionesModulo =
+            new CancelacionesViewModel();
+
+
         // =====================================================
         // NAVEGACIÓN DESDE INICIO
         // =====================================================
 
         InicioModulo.IrANuevaVenta =
-            () => Navegar(
+            () => NavegarCommand.Execute(
                 "NuevaVenta"
             );
 
 
         InicioModulo.IrACortes =
-            () => Navegar(
+            () => NavegarCommand.Execute(
                 "Cortes"
             );
 
@@ -169,7 +185,7 @@ public partial class MainViewModel : ViewModelBase
     // =========================================================
 
     [RelayCommand]
-    private void Navegar(
+    private async Task NavegarAsync(
         string? seccion)
     {
         if (
@@ -179,6 +195,28 @@ public partial class MainViewModel : ViewModelBase
         )
         {
             return;
+        }
+
+
+        // =====================================================
+        // CERRAR AUTORIZACIÓN DE CANCELACIONES AL SALIR
+        // =====================================================
+        //
+        // Si actualmente estamos en el módulo de cancelaciones
+        // y el usuario navega hacia cualquier otro módulo,
+        // cerramos únicamente la autorización administrativa
+        // temporal de cancelaciones.
+        //
+        // La sesión principal del usuario/cajero permanece activa.
+        // =====================================================
+
+        if (
+            VistaActual is CancelacionesViewModel &&
+            seccion != "Cancelaciones"
+        )
+        {
+            await CancelacionesModulo
+                .CerrarAutorizacionAsync();
         }
 
 
@@ -252,6 +290,24 @@ public partial class MainViewModel : ViewModelBase
 
                 SubtituloPagina =
                     "Consulta aperturas, cierres y resultados de caja";
+
+                break;
+
+
+            // =================================================
+            // CANCELACIONES
+            // =================================================
+
+            case "Cancelaciones":
+
+                VistaActual =
+                    CancelacionesModulo;
+
+                TituloPagina =
+                    "Cancelar ventas";
+
+                SubtituloPagina =
+                    "Consulta y cancela ventas finalizadas con autorización administrativa";
 
                 break;
         }

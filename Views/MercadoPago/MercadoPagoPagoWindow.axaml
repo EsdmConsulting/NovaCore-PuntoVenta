@@ -1,0 +1,159 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="clr-namespace:NovaCoreESDM.Desktop.ViewModels.MercadoPago"
+    x:Class="NovaCoreESDM.Desktop.Views.MercadoPago.MercadoPagoPagoWindow"
+    x:DataType="vm:MercadoPagoPagoViewModel"
+    Width="480"
+    Height="500"
+    CanResize="False"
+    WindowStartupLocation="CenterOwner"
+    ShowInTaskbar="False"
+    Title="Mercado Pago">
+
+    <Border Padding="32">
+
+        <Grid
+            RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto"
+            RowSpacing="18">
+
+            <!-- TÍTULO -->
+
+            <TextBlock
+                Grid.Row="0"
+                Text="{Binding Titulo}"
+                FontSize="26"
+                FontWeight="SemiBold"
+                HorizontalAlignment="Center"
+                TextAlignment="Center" />
+
+
+            <!-- SPINNER -->
+
+            <ProgressBar
+                Grid.Row="1"
+                Width="260"
+                Height="8"
+                IsIndeterminate="{Binding EstaProcesando}"
+                IsVisible="{Binding EstaProcesando}"
+                HorizontalAlignment="Center" />
+
+
+            <!-- IMPORTE -->
+
+            <StackPanel
+                Grid.Row="2"
+                HorizontalAlignment="Center"
+                Spacing="4">
+
+                <TextBlock
+                    Text="Total a cobrar"
+                    FontSize="14"
+                    Opacity="0.65"
+                    HorizontalAlignment="Center" />
+
+                <TextBlock
+                    Text="{Binding Importe, StringFormat='{}{0:C2}'}"
+                    FontSize="38"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Center" />
+
+            </StackPanel>
+
+
+            <!-- ESTADO -->
+
+            <TextBlock
+                Grid.Row="3"
+                Text="{Binding MensajeEstado}"
+                FontSize="16"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                HorizontalAlignment="Stretch"
+                MinHeight="45" />
+
+
+            <!-- TERMINAL -->
+
+            <Border
+                Grid.Row="4"
+                Padding="12"
+                CornerRadius="8"
+                Background="#10000000">
+
+                <StackPanel
+                    HorizontalAlignment="Center"
+                    Spacing="3">
+
+                    <TextBlock
+                        Text="Terminal"
+                        FontSize="12"
+                        Opacity="0.60"
+                        HorizontalAlignment="Center" />
+
+                    <TextBlock
+                        Text="{Binding NombreTerminal}"
+                        FontSize="15"
+                        FontWeight="SemiBold"
+                        TextAlignment="Center"
+                        HorizontalAlignment="Center" />
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- ERROR / ADVERTENCIA -->
+
+            <Border
+                Grid.Row="5"
+                IsVisible="{Binding MostrarError}"
+                Padding="12"
+                CornerRadius="8"
+                VerticalAlignment="Top">
+
+                <TextBlock
+                    Text="{Binding MensajeError}"
+                    TextWrapping="Wrap"
+                    TextAlignment="Center"
+                    FontSize="13" />
+
+            </Border>
+
+
+            <!-- ACCIONES -->
+
+            <Grid Grid.Row="6">
+
+                <!-- CANCELAR OPERACIÓN ACTIVA -->
+
+                <Button
+                    Content="Cancelar"
+                    Command="{Binding CancelarCommand}"
+                    IsVisible="{Binding PuedeCancelar}"
+                    IsEnabled="{Binding PuedeCancelar}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Height="44"
+                    FontSize="15" />
+
+
+                <!-- CERRAR RESULTADO TERMINADO -->
+
+                <Button
+                    Content="Cerrar"
+                    Command="{Binding CerrarCommand}"
+                    IsVisible="{Binding PuedeCerrar}"
+                    IsEnabled="{Binding PuedeCerrar}"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    Height="44"
+                    FontSize="15" />
+
+            </Grid>
+
+        </Grid>
+
+    </Border>
+
+</Window>

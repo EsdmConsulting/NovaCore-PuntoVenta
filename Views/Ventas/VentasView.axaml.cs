@@ -15,6 +15,12 @@ using NovaCoreESDM.Services.Configuration;
 using NovaCoreESDM.ViewModels.Ventas;
 using Avalonia.VisualTree;
 
+using NovaCoreESDM.Desktop.Services.MercadoPago;
+using NovaCoreESDM.Desktop.Views.MercadoPago;
+
+using NovaCoreESDM.Desktop.Services.MercadoPago;
+using NovaCoreESDM.Desktop.Views.MercadoPago;
+
 namespace NovaCoreESDM.Views.Ventas;
 
 
@@ -24,6 +30,8 @@ public partial class VentasView : UserControl
     private readonly TerminalConfigurationService
         _terminalConfigurationService;
 
+    private readonly MercadoPagoService
+        _mercadoPagoService;
 
     private VentasViewModel?
         _viewModel;
@@ -40,6 +48,9 @@ public partial class VentasView : UserControl
 
         _terminalConfigurationService =
             new TerminalConfigurationService();
+        
+        _mercadoPagoService =
+            new MercadoPagoService();
 
 
         AttachedToVisualTree +=
@@ -50,6 +61,7 @@ public partial class VentasView : UserControl
             OnDetachedFromVisualTree;
     }
 
+    
 
     // =========================================================
     // ADJUNTAR VISTA
@@ -93,6 +105,10 @@ public partial class VentasView : UserControl
 
                 _viewModel.SolicitarConfirmacionVentaFinalizada -=
                     OnSolicitarConfirmacionVentaFinalizada;
+                
+                _viewModel.SolicitarCambioPrecio -=
+                    OnSolicitarCambioPrecio;
+                
             }
 
 
@@ -130,6 +146,9 @@ public partial class VentasView : UserControl
 
             _viewModel.SolicitarConfirmacionVentaFinalizada +=
                 OnSolicitarConfirmacionVentaFinalizada;
+            
+            _viewModel.SolicitarCambioPrecio +=
+                OnSolicitarCambioPrecio;
         }
 
 
@@ -283,6 +302,82 @@ public partial class VentasView : UserControl
              * regresamos al escáner.
              */
             EnfocarBuscadorProductos();
+        }
+    }
+    
+    // =========================================================
+    // CAMBIAR PRECIO
+    // =========================================================
+
+    private async void OnSolicitarCambioPrecio(
+        DetalleVenta detalle)
+    {
+        if (_viewModel is null)
+            return;
+
+        try
+        {
+            var window =
+                new SeleccionarPrecioWindow(
+                    detalle
+                );
+
+            var parentWindow =
+                TopLevel.GetTopLevel(this)
+                    as Window;
+
+            if (parentWindow is null)
+            {
+                _viewModel.MensajeError =
+                    "No fue posible abrir el selector de precio.";
+
+                return;
+            }
+
+            var resultado =
+                await window
+                    .ShowDialog<SeleccionPrecioResultado?>(
+                        parentWindow
+                    );
+
+            if (resultado is null)
+                return;
+
+
+            if (resultado.EsAutomatico)
+            {
+                await _viewModel
+                    .EstablecerPrecioAutomaticoAsync(
+                        detalle
+                    );
+
+                return;
+            }
+
+
+            if (
+                string.IsNullOrWhiteSpace(
+                    resultado.TipoPrecio
+                )
+            )
+            {
+                _viewModel.MensajeError =
+                    "No se seleccionó un tipo de precio válido.";
+
+                return;
+            }
+
+
+            await _viewModel
+                .EstablecerPrecioManualAsync(
+                    detalle,
+                    resultado.TipoPrecio
+                );
+        }
+        catch (Exception ex)
+        {
+            _viewModel.MensajeError =
+                $"No fue posible cambiar el precio: {ex.Message}";
         }
     }
 
@@ -512,6 +607,319 @@ public partial class VentasView : UserControl
 
                     return;
                 }
+                
+                
+                // =====================================================
+                // TARJETA / MERCADO PAGO
+                // =====================================================
+
+                if (
+                    ventana.MetodoSeleccionado ==
+                    "TARJETA"
+                )
+                {
+                    // =================================================
+                    // VALIDAR VENTA
+                    // =================================================
+
+                    if (_viewModel.IdVentaActual <= 0)
+                    {
+                        _viewModel.MensajeError =
+                            "No existe una venta activa para cobrar.";
+
+                        return;
+                    }
+
+
+                    try
+                    {
+                        // =================================================
+                        // 1. CONSULTAR TERMINALES MERCADO PAGO
+                        // =================================================
+                       
+                        Console.WriteLine("====================================");
+                        Console.WriteLine("MP: CONSULTANDO TERMINALES...");
+                        Console.WriteLine($"ID VENTA: {_viewModel.IdVentaActual}");
+                        Console.WriteLine("====================================");
+                        
+
+                        var terminales =
+                            await _mercadoPagoService
+                                .ObtenerTerminalesAsync(
+                                    _viewModel.IdVentaActual
+                                );
+                        
+                        Console.WriteLine("====================================");
+                        Console.WriteLine("MP: RESPUESTA DE TERMINALES RECIBIDA");
+                        Console.WriteLine($"RES: {terminales.Res}");
+                        Console.WriteLine($"MSG: {terminales.Msg}");
+                        Console.WriteLine(
+                            $"TERMINALES: {terminales.Data?.Terminales.Count ?? 0}"
+                        );
+                        Console.WriteLine("====================================");
+
+
+                        if (
+                            terminales.Data is null
+                            ||
+                            terminales.Data.Terminales.Count == 0
+                        )
+                        {
+                            _viewModel.MensajeError =
+                                "No existen terminales Mercado Pago disponibles.";
+
+                            continue;
+                        }
+
+
+                        // =================================================
+                        // 2. DETERMINAR TERMINAL
+                        // =================================================
+
+                        var terminalSeleccionada =
+                            terminales.Data.Terminales.Count == 1
+                                ? terminales.Data.Terminales[0]
+                                : null;
+
+
+                        // =================================================
+                        // 3. SI HAY VARIAS → MOSTRAR SELECTOR
+                        // =================================================
+
+                        if (terminalSeleccionada is null)
+                        {
+                            var selectorTerminal =
+                                new MercadoPagoTerminalWindow(
+                                    _viewModel.Total,
+                                    terminales
+                                );
+
+
+                            var terminalConfirmada =
+                                await selectorTerminal
+                                    .ShowDialog<bool>(
+                                        owner
+                                    );
+
+
+                            // Canceló selección de terminal.
+                            // Regresamos al selector Efectivo/Tarjeta/etc.
+                            if (!terminalConfirmada)
+                                continue;
+
+
+                            terminalSeleccionada =
+                                selectorTerminal
+                                    .TerminalSeleccionada;
+
+
+                            if (terminalSeleccionada is null)
+                            {
+                                _viewModel.MensajeError =
+                                    "No se seleccionó una terminal Mercado Pago.";
+
+                                continue;
+                            }
+                        }
+
+
+                        // =================================================
+                        // 4. ABRIR PROCESAMIENTO DE MERCADO PAGO
+                        // =================================================
+
+                        var pagoMercadoPago =
+                            new MercadoPagoPagoWindow(
+                                _viewModel.IdVentaActual,
+                                terminalSeleccionada.IdTpvBancaria,
+                                _viewModel.Total,
+                                terminalSeleccionada.NombreVisual
+                            );
+
+
+                        await pagoMercadoPago
+                            .ShowDialog(
+                                owner
+                            );
+
+
+                        // =================================================
+                        // 5. OBTENER RESULTADO
+                        // =================================================
+
+                        var resultadoMercadoPago =
+                            pagoMercadoPago.Resultado;
+
+
+                        if (resultadoMercadoPago is null)
+                        {
+                            /*
+                             * No tenemos confirmación de pago.
+                             *
+                             * MUY IMPORTANTE:
+                             *
+                             * No registramos ningún pago aquí.
+                             * No finalizamos la venta.
+                             * No volvemos a cobrar automáticamente.
+                             */
+
+                            _viewModel.MensajeError =
+                                "No fue posible confirmar el resultado del pago con Mercado Pago.";
+
+                            return;
+                        }
+
+
+                        // =================================================
+                        // 6. REQUIERE CONCILIACIÓN
+                        // =================================================
+
+                        if (resultadoMercadoPago.RequiereConciliacion)
+                        {
+                            /*
+                             * Puede existir un pago real en Mercado Pago
+                             * cuyo estado local todavía no conocemos.
+                             *
+                             * NO permitir un segundo cobro automático.
+                             */
+
+                            _viewModel.MensajeError =
+                                string.IsNullOrWhiteSpace(
+                                    resultadoMercadoPago.Mensaje
+                                )
+                                    ? "El estado del pago requiere verificación. No vuelva a cobrar la venta."
+                                    : resultadoMercadoPago.Mensaje;
+
+                            return;
+                        }
+
+
+                        // =================================================
+                        // 7. PAGO APROBADO Y REGISTRADO
+                        // =================================================
+
+                        if (
+                            resultadoMercadoPago.PagoRegistrado
+                            &&
+                            resultadoMercadoPago.PagoCompleto
+                        )
+                        {
+                            /*
+                             * IMPORTANTE:
+                             *
+                             * estado_orden.php YA insertó el pago en:
+                             *
+                             * tr_pos_ventas_pagos
+                             *
+                             * Por lo tanto NO llamamos:
+                             *
+                             * RegistrarPagoAsync()
+                             *
+                             * ni RegistrarPagoEfectivoAsync().
+                             *
+                             * Solamente finalizamos la venta.
+                             */
+
+                            var finalizada =
+                                await _viewModel
+                                    .FinalizarVentaAsync();
+
+
+                            if (!finalizada)
+                            {
+                                /*
+                                 * El dinero YA fue cobrado.
+                                 *
+                                 * Si falla la finalización:
+                                 *
+                                 * NO volver a cobrar.
+                                 *
+                                 * CargarVentaActualAsync() podrá recuperar
+                                 * posteriormente la venta pagada pendiente
+                                 * de finalizar.
+                                 */
+
+                                return;
+                            }
+
+
+                            // =================================================
+                            // VENTA TERMINADA
+                            // =================================================
+
+                            return;
+                        }
+
+
+                        // =================================================
+                        // 8. CANCELADO / RECHAZADO / EXPIRADO
+                        // =================================================
+
+                        if (
+                            resultadoMercadoPago.Cancelado
+                            ||
+                            resultadoMercadoPago.Rechazado
+                            ||
+                            resultadoMercadoPago.Expirado
+                        )
+                        {
+                            /*
+                             * No existe pago aplicado en NovaCore.
+                             *
+                             * La venta continúa BORRADOR.
+                             *
+                             * Regresamos al selector para permitir:
+                             *
+                             * - volver a intentar tarjeta;
+                             * - elegir efectivo;
+                             * - elegir crédito;
+                             * - etc.
+                             */
+
+                            _viewModel.MensajeError =
+                                resultadoMercadoPago.Mensaje;
+
+                            continue;
+                        }
+
+
+                        // =================================================
+                        // 9. ESTADO NO CONCLUYENTE
+                        // =================================================
+
+                        _viewModel.MensajeError =
+                            string.IsNullOrWhiteSpace(
+                                resultadoMercadoPago.Mensaje
+                            )
+                                ? "No fue posible determinar el estado final del pago."
+                                : resultadoMercadoPago.Mensaje;
+
+                        return;
+                    }
+                    catch (MercadoPagoException ex)
+                    {
+                        Console.WriteLine("====================================");
+                        Console.WriteLine("ERROR MERCADO PAGO");
+                        Console.WriteLine(ex.ToString());
+                        Console.WriteLine("====================================");
+                        
+                        _viewModel.MensajeError =
+                            ex.Message;
+
+                        continue;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("====================================");
+                        Console.WriteLine("ERROR GENERAL MERCADO PAGO");
+                        Console.WriteLine(ex.ToString());
+                        Console.WriteLine("====================================");
+                        
+                        _viewModel.MensajeError =
+                            $"No fue posible procesar el pago con Mercado Pago: {ex.Message}";
+
+                        return;
+                    }
+                }
 
 
                 // =====================================================
@@ -707,6 +1115,9 @@ public partial class VentasView : UserControl
 
             _viewModel.SolicitarConfirmacionVentaFinalizada -=
                 OnSolicitarConfirmacionVentaFinalizada;
+            
+            _viewModel.SolicitarCambioPrecio -=
+                OnSolicitarCambioPrecio;
         }
 
 

@@ -584,25 +584,30 @@ public async Task<ActualizarVentaResponse>
     }
     
     
-    // =========================================================
-// ACTUALIZAR CANTIDAD DE PRODUCTO
+// =========================================================
+// ACTUALIZAR DETALLE DE PRODUCTO
+// =========================================================
+//
+// Este método es el principal.
+//
+// Permite actualizar:
+//
+// - Cantidad
+// - Precio automático
+// - Tipo de precio manual
+// - Regresar a automático
+//
+// El backend es quien resuelve siempre el precio final.
 // =========================================================
 
 public async Task<ActualizarCantidadVentaResponse>
-    ActualizarCantidadProductoAsync(
+    ActualizarDetalleProductoAsync(
         int idVenta,
         int idDetalle,
-        decimal cantidadComercial)
+        ActualizarCantidadVentaRequest request)
 {
     try
     {
-        var request =
-            new ActualizarCantidadVentaRequest
-            {
-                CantidadComercial =
-                    cantidadComercial
-            };
-
         var response =
             await ApiClient.Http.PutAsJsonAsync(
                 $"api/pos/ventas/{idVenta}/productos/{idDetalle}",
@@ -617,7 +622,7 @@ public async Task<ActualizarCantidadVentaResponse>
             "====================================");
 
         Console.WriteLine(
-            "RESPUESTA API ACTUALIZAR CANTIDAD:");
+            "RESPUESTA API ACTUALIZAR DETALLE:");
 
         Console.WriteLine(
             $"HTTP STATUS: {(int)response.StatusCode} {response.StatusCode}");
@@ -634,13 +639,14 @@ public async Task<ActualizarCantidadVentaResponse>
                 contenido);
 
 
-        if (string.IsNullOrWhiteSpace(contenido))
+        if (string.IsNullOrWhiteSpace(
+                contenido))
         {
             return new ActualizarCantidadVentaResponse
             {
                 Res = 0,
                 Msg =
-                    "El servidor no devolvió información al actualizar la cantidad."
+                    "El servidor no devolvió información al actualizar el producto."
             };
         }
 
@@ -659,15 +665,185 @@ public async Task<ActualizarCantidadVentaResponse>
                        "El servidor devolvió una respuesta inválida."
                };
     }
+    catch (JsonException ex)
+    {
+        Console.WriteLine(
+            "====================================");
+
+        Console.WriteLine(
+            "ERROR JSON AL ACTUALIZAR DETALLE:");
+
+        Console.WriteLine(ex);
+
+        Console.WriteLine(
+            "====================================");
+
+
+        return new ActualizarCantidadVentaResponse
+        {
+            Res = 0,
+            Msg =
+                $"La respuesta al actualizar el producto no tiene un formato válido: {ex.Message}"
+        };
+    }
     catch (Exception ex)
+    {
+        Console.WriteLine(
+            "====================================");
+
+        Console.WriteLine(
+            "ERROR AL ACTUALIZAR DETALLE:");
+
+        Console.WriteLine(ex);
+
+        Console.WriteLine(
+            "====================================");
+
+
+        return new ActualizarCantidadVentaResponse
+        {
+            Res = 0,
+            Msg =
+                $"No fue posible actualizar el producto: {ex.Message}"
+        };
+    }
+}
+
+
+// =========================================================
+// ACTUALIZAR ÚNICAMENTE CANTIDAD
+// =========================================================
+//
+// Conservamos este método para no romper el código actual
+// del ViewModel.
+//
+// Internamente utiliza el método nuevo.
+// =========================================================
+
+public async Task<ActualizarCantidadVentaResponse>
+    ActualizarCantidadProductoAsync(
+        int idVenta,
+        int idDetalle,
+        decimal cantidadComercial)
+{
+    var request =
+        new ActualizarCantidadVentaRequest
+        {
+            CantidadComercial =
+                cantidadComercial,
+
+            /*
+             * No mandamos PrecioAutomatico.
+             *
+             * Al ir como null, el backend conserva la
+             * configuración actual de precio de la línea.
+             *
+             * Ejemplo:
+             *
+             * Si la línea está en automático:
+             *     seguirá automática.
+             *
+             * Si está forzada a MAYOREO:
+             *     seguirá forzada a MAYOREO.
+             */
+            PrecioAutomatico = null
+        };
+
+
+    return await ActualizarDetalleProductoAsync(
+        idVenta,
+        idDetalle,
+        request);
+}
+
+
+// =========================================================
+// ESTABLECER PRECIO MANUAL
+// =========================================================
+//
+// Ejemplo:
+//
+// cantidad = 3
+//
+// Cajero selecciona:
+// MAYOREO
+//
+// Se envía:
+//
+// precio_automatico = false
+// tipo_precio_maximo = MAYOREO
+//
+// El backend valida que MAYOREO realmente exista como
+// nivel disponible para esa presentación.
+// =========================================================
+
+public async Task<ActualizarCantidadVentaResponse>
+    EstablecerPrecioManualAsync(
+        int idVenta,
+        int idDetalle,
+        string tipoPrecio)
+{
+    if (string.IsNullOrWhiteSpace(
+            tipoPrecio))
     {
         return new ActualizarCantidadVentaResponse
         {
             Res = 0,
             Msg =
-                $"No fue posible actualizar la cantidad: {ex.Message}"
+                "Debe seleccionar un tipo de precio."
         };
     }
+
+
+    var request =
+        new ActualizarCantidadVentaRequest
+        {
+            PrecioAutomatico = false,
+
+            TipoPrecioMaximo =
+                tipoPrecio.Trim()
+        };
+
+
+    return await ActualizarDetalleProductoAsync(
+        idVenta,
+        idDetalle,
+        request);
+}
+
+
+// =========================================================
+// REGRESAR A PRECIO AUTOMÁTICO
+// =========================================================
+//
+// MUY IMPORTANTE:
+//
+// Aquí necesitamos mandar:
+//
+// precio_automatico = true
+// tipo_precio_maximo = null
+//
+// Ese null debe viajar en el JSON para quitar cualquier
+// precio manual o límite previamente guardado.
+// =========================================================
+
+public async Task<ActualizarCantidadVentaResponse>
+    EstablecerPrecioAutomaticoAsync(
+        int idVenta,
+        int idDetalle)
+{
+    var request =
+        new ActualizarCantidadVentaRequest
+        {
+            PrecioAutomatico = true,
+            TipoPrecioMaximo = null
+        };
+
+
+    return await ActualizarDetalleProductoAsync(
+        idVenta,
+        idDetalle,
+        request);
 }
 
 

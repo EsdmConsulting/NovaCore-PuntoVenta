@@ -61,6 +61,60 @@ public partial class CobroWindow : Window
 
         Close(true);
     }
+    
+    
+    // =========================================================
+// TARJETA / MERCADO PAGO
+// =========================================================
+
+    private void Tarjeta_Click(
+        object? sender,
+        RoutedEventArgs e)
+    {
+        MetodoSeleccionado =
+            "TARJETA";
+
+
+        Console.WriteLine(
+            "====================================");
+
+        Console.WriteLine(
+            "PAGO CON TARJETA SELECCIONADO");
+
+        Console.WriteLine(
+            $"TOTAL: ${TotalVenta:N2}");
+
+        Console.WriteLine(
+            "====================================");
+
+
+        // =====================================================
+        // REGRESAR A VENTASVIEW
+        // =====================================================
+        //
+        // IMPORTANTE:
+        //
+        // Aquí NO:
+        //
+        // - Creamos la orden Mercado Pago.
+        // - Registramos un pago.
+        // - Finalizamos la venta.
+        //
+        // Únicamente indicamos qué método seleccionó
+        // el cajero.
+        //
+        // VentasView será quien:
+        //
+        // 1. Consulte las terminales disponibles.
+        // 2. Permita seleccionar la Point.
+        // 3. Abra MercadoPagoPagoWindow.
+        // 4. Espere la confirmación real del pago.
+        // 5. Finalice la venta únicamente después
+        //    de que el backend confirme el pago.
+        // =====================================================
+
+        Close(true);
+    }
 
 
     // =========================================================

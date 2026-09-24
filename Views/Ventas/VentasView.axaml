@@ -556,10 +556,22 @@
                                                     Spacing="12"
                                                     Margin="0,7,0,0">
 
-                                            <TextBlock Text="{Binding Producto.Precio,
-                                                                      StringFormat='Precio: ${0:N2}'}"
-                                                       Foreground="#64748B"
-                                                       FontSize="9"/>
+                                                <TextBlock Text="{Binding PrecioUnitario,
+                                                           StringFormat='Precio: ${0:N2}'}"
+                                                           Foreground="#64748B"
+                                                           FontSize="9"/>
+                                                
+                                                <Border Background="#EEF4F8"
+                                                        CornerRadius="6"
+                                                        Padding="7,3"
+                                                        VerticalAlignment="Center">
+
+                                                        <TextBlock Text="{Binding TextoTipoPrecio}"
+                                                                   Foreground="#123B69"
+                                                                   FontSize="9"
+                                                                   FontWeight="SemiBold"/>
+
+                                                </Border>
 
                                             <TextBlock Text="{Binding Producto.FactorConversion,
                                                                       StringFormat='Factor: {0}'}"
@@ -581,8 +593,7 @@
 
                                         <Grid Grid.Row="2"
                                               Grid.ColumnSpan="2"
-                                              ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto"
-                                              ColumnSpacing="8"
+                                              ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto"                                              ColumnSpacing="8"
                                               Margin="0,13,0,0">
 
 
@@ -627,6 +638,16 @@
                                                     Command="{ReflectionBinding DataContext.EditarCantidadCommand,
                                                                                 ElementName=VentasRoot}"
                                                     CommandParameter="{Binding}"/>
+                                            
+                                            <!-- Precio -->
+
+                                            <Button Grid.Column="4"
+                                                    Classes="priceButton"
+                                                    Content="Precio"
+                                                    Command="{ReflectionBinding DataContext.CambiarPrecioCommand,
+                                                    ElementName=VentasRoot}"
+                                                    CommandParameter="{Binding}"
+                                                    IsEnabled="{Binding !EstaSincronizando}"/>
 
 
                                             <!-- Importe -->
@@ -807,6 +828,61 @@
 
             <Setter Property="BorderBrush"
                     Value="#123B69"/>
+
+        </Style>
+        
+        
+        
+        
+        <!-- ===================================================== -->
+        <!-- CAMBIAR PRECIO                                        -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Button.priceButton">
+
+                <Setter Property="Height"
+                        Value="31"/>
+
+                <Setter Property="Padding"
+                        Value="11,0"/>
+
+                <Setter Property="Background"
+                        Value="#EAF6EE"/>
+
+                <Setter Property="Foreground"
+                        Value="#16803B"/>
+
+                <Setter Property="BorderBrush"
+                        Value="#B7DEC3"/>
+
+                <Setter Property="BorderThickness"
+                        Value="1"/>
+
+                <Setter Property="CornerRadius"
+                        Value="8"/>
+
+                <Setter Property="FontSize"
+                        Value="10"/>
+
+                <Setter Property="FontWeight"
+                        Value="SemiBold"/>
+
+                <Setter Property="HorizontalContentAlignment"
+                        Value="Center"/>
+
+                <Setter Property="VerticalContentAlignment"
+                        Value="Center"/>
+
+        </Style>
+
+
+        <Style Selector="Button.priceButton:pointerover">
+
+                <Setter Property="Background"
+                        Value="#DDF3E4"/>
+
+                <Setter Property="BorderBrush"
+                        Value="#16A34A"/>
 
         </Style>
 

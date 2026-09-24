@@ -185,6 +185,33 @@
                             </Grid>
 
                         </Button>
+                        
+                        <!-- ================================================= -->
+                        <!-- CANCELAR VENTAS                                   -->
+                        <!-- ================================================= -->
+
+                        <Button Classes="menuItem"
+                                Classes.active="{Binding EsCancelaciones}"
+                                Command="{Binding NavegarCommand}"
+                                CommandParameter="Cancelaciones">
+
+                                <Grid ColumnDefinitions="30,*">
+
+                                        <TextBlock Text="×"
+                                                   FontSize="19"
+                                                   FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+
+                                        <TextBlock Grid.Column="1"
+                                                   Text="Cancelar ventas"
+                                                   Margin="10,0,0,0"
+                                                   VerticalAlignment="Center"/>
+
+                                </Grid>
+
+                        </Button>
+                        
 
                     </StackPanel>
 

@@ -105,6 +105,11 @@ public class VentaActualDetalle
     public string DescripcionSnapshot { get; set; }
         = string.Empty;
 
+
+    // =========================================================
+    // CANTIDAD
+    // =========================================================
+
     [JsonPropertyName("cantidad_comercial")]
     public decimal CantidadComercial { get; set; }
 
@@ -113,6 +118,11 @@ public class VentaActualDetalle
 
     [JsonPropertyName("cantidad_base")]
     public decimal CantidadBase { get; set; }
+
+
+    // =========================================================
+    // PRECIOS / TOTALES
+    // =========================================================
 
     [JsonPropertyName("precio_lista")]
     public decimal PrecioLista { get; set; }
@@ -138,9 +148,51 @@ public class VentaActualDetalle
     [JsonPropertyName("total_linea")]
     public decimal TotalLinea { get; set; }
 
+
+    // =========================================================
+    // ESTADO DEL PRECIO DE LA LÍNEA
+    // =========================================================
+    //
+    // Estos valores son MUY importantes al recuperar una
+    // venta BORRADOR.
+    //
+    // Ejemplo:
+    //
+    // precio_automatico = false
+    // tipo_precio_maximo = "MAYOREO"
+    // tipo_precio_aplicado = "MAYOREO"
+    //
+    // significa que el cajero había forzado MAYOREO.
+    //
+    // No debemos perder esa configuración al volver a
+    // abrir el POS.
+    // =========================================================
+
+    [JsonPropertyName("precio_automatico")]
+    public bool PrecioAutomatico { get; set; }
+
+    [JsonPropertyName("tipo_precio_maximo")]
+    public string? TipoPrecioMaximo { get; set; }
+
+    [JsonPropertyName("tipo_precio_aplicado")]
+    public string? TipoPrecioAplicado { get; set; }
+
+    [JsonPropertyName("id_precio_aplicado")]
+    public int? IdPrecioAplicado { get; set; }
+
+
+    // =========================================================
+    // ESTADO
+    // =========================================================
+
     [JsonPropertyName("estado")]
     public string Estado { get; set; }
         = string.Empty;
+
+
+    // =========================================================
+    // PRODUCTO
+    // =========================================================
 
     [JsonPropertyName("codigo")]
     public string Codigo { get; set; }

@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using NovaCoreESDM.Models.Clientes;
 using NovaCoreESDM.Services.Clientes;
 using NovaCoreESDM.Services.Credito;
+using NovaCoreESDM.Desktop.Services.MercadoPago;
 
 
 public partial class VentasViewModel : ViewModelBase
@@ -37,6 +38,8 @@ public partial class VentasViewModel : ViewModelBase
         _terminalConfigurationService;
 
     private readonly VentasService _ventasService;
+    
+    private readonly MercadoPagoService _mercadoPagoService;
     
     private readonly TicketVentaService
         _ticketVentaService =
@@ -235,6 +238,13 @@ public partial class VentasViewModel : ViewModelBase
         Task
     >? SolicitarConfirmacionVentaFinalizada;
     
+    // =========================================================
+    // SOLICITAR CAMBIO DE PRECIO
+    // =========================================================
+
+    public event Action<DetalleVenta>?
+        SolicitarCambioPrecio;
+    
     
     
     // =========================================================
@@ -251,6 +261,9 @@ public partial class VentasViewModel : ViewModelBase
 
         _ventasService =
             new VentasService();
+        
+        _mercadoPagoService =
+            new MercadoPagoService();
 
         _ticketVentaService =
             new TicketVentaService();
@@ -844,6 +857,51 @@ public async Task AgregarPresentacionAlCarritoAsync(
 
         nuevoDetalle.IdDetalle =
             resultadoDetalle.Data.IdDetalle;
+        
+        
+        // =====================================================
+// PRECIO CONFIRMADO POR BACKEND
+// =====================================================
+
+        nuevoDetalle.PrecioUnitario =
+            resultadoDetalle.Data.PrecioUnitario;
+
+
+        nuevoDetalle.PrecioAutomatico =
+            resultadoDetalle.Data.PrecioAutomatico;
+
+
+        nuevoDetalle.TipoPrecioMaximo =
+            resultadoDetalle.Data.TipoPrecioMaximo;
+
+
+        nuevoDetalle.TipoPrecioAplicado =
+            resultadoDetalle.Data.TipoPrecioAplicado;
+
+
+        nuevoDetalle.IdPrecioAplicado =
+            resultadoDetalle.Data.IdPrecioAplicado;
+
+
+        nuevoDetalle.IdReglaAplicada =
+            resultadoDetalle.Data.IdReglaAplicada;
+
+
+        nuevoDetalle.CantidadMinimaPrecio =
+            resultadoDetalle.Data.CantidadMinimaPrecio;
+
+
+        nuevoDetalle.TiposDisponibles =
+            resultadoDetalle.Data.TiposDisponibles
+            ?? new List<TipoPrecioDisponible>();
+
+
+        nuevoDetalle.NivelAutomaticoPorCantidad =
+            resultadoDetalle.Data.NivelAutomaticoPorCantidad;
+
+
+        nuevoDetalle.SiguienteNivel =
+            resultadoDetalle.Data.SiguienteNivel;
 
 
         // =====================================================
@@ -1203,51 +1261,37 @@ private async Task AgregarPresentacionEscaneadaAsync(
 
     if (detalleExistente is not null)
     {
+        /*
+         * No resolvemos ningún precio aquí.
+         *
+         * IncrementarCantidadAsync envía la nueva cantidad
+         * al backend y update_detalle.php decide:
+         *
+         * - El nivel correspondiente.
+         * - El precio unitario.
+         * - El siguiente nivel.
+         *
+         * respetando además si la línea está automática
+         * o tiene un precio manual.
+         */
+
         await IncrementarCantidadAsync(
             detalleExistente
         );
 
-        return;
-    }
-
-    if (
-        presentacion.Precios is null
-        ||
-        presentacion.Precios.Count == 0
-    )
-    {
-        MensajeError =
-            $"La presentación {presentacion.NombrePresentacion} no tiene precios configurados.";
 
         return;
     }
 
+
     // =====================================================
-    // 3. OBTENER PRECIO DE LA PRESENTACIÓN
+    // 3. VALIDAR PRESENTACIÓN
     // =====================================================
 
-    var precio =
-        presentacion.Precios
-            .Where(
-                p =>
-                    p.Estatus == 1
-                    &&
-                    string.Equals(
-                        p.TipoPrecio,
-                        "MENUDEO",
-                        StringComparison.OrdinalIgnoreCase
-                    )
-            )
-            .OrderByDescending(
-                p => p.FechaInicio
-            )
-            .FirstOrDefault();
-
-
-    if (precio is null)
+    if (presentacion.Id <= 0)
     {
         MensajeError =
-            $"La presentación {presentacion.NombrePresentacion} no tiene precio de menudeo configurado.";
+            "La presentación escaneada no es válida.";
 
         return;
     }
@@ -1256,6 +1300,39 @@ private async Task AgregarPresentacionEscaneadaAsync(
     // =====================================================
     // 4. CONVERTIR A PresentacionVentaItem
     // =====================================================
+
+    /*
+     * IMPORTANTE:
+     *
+     * Ya NO buscamos:
+     *
+     * MENUDEO
+     * MAYOREO
+     * DISTRIBUIDOR
+     * etc.
+     *
+     * Tampoco intentamos calcular cuál es el nivel base.
+     *
+     * Esa información pertenece a:
+     *
+     * tm_productos_reglas_precios
+     * +
+     * tm_productos_precios
+     *
+     * y la resuelve detalle.php.
+     *
+     *
+     * Precio = 0 aquí es únicamente un valor provisional.
+     *
+     * En cuanto detalle.php confirma la inserción,
+     * AgregarPresentacionAlCarritoAsync sustituye
+     * PrecioUnitario por el precio oficial devuelto
+     * por el backend.
+     *
+     * Si la presentación tiene una configuración inválida
+     * de precios, detalle.php rechazará la operación y
+     * mostrará el mensaje correspondiente.
+     */
 
     var presentacionVenta =
         new PresentacionVentaItem
@@ -1275,9 +1352,18 @@ private async Task AgregarPresentacionEscaneadaAsync(
             CodigoBarras =
                 presentacion.CodigoBarras,
 
+            /*
+             * Precio provisional.
+             *
+             * NO es el precio de venta definitivo.
+             */
             Precio =
-                precio.Precio,
+                0m,
 
+            /*
+             * Permitimos llegar al backend para que sea
+             * éste quien valide la configuración real.
+             */
             TienePrecio =
                 true
         };
@@ -1293,6 +1379,32 @@ private async Task AgregarPresentacionEscaneadaAsync(
     );
 }
 
+
+// =========================================================
+// CAMBIAR PRECIO
+// =========================================================
+
+[RelayCommand]
+private void CambiarPrecio(
+    DetalleVenta? detalle)
+{
+    if (detalle is null)
+        return;
+
+    if (detalle.EstaSincronizando)
+        return;
+
+    if (detalle.IdDetalle <= 0)
+    {
+        MensajeError =
+            "El producto todavía no está sincronizado.";
+
+        return;
+    }
+
+    SolicitarCambioPrecio?.Invoke(
+        detalle);
+}
 
 
 
@@ -1333,6 +1445,150 @@ private void EditarCantidad(
 
     SolicitarEditarCantidad?.Invoke(
         detalle);
+}
+
+
+
+
+// =========================================================
+// APLICAR RESPUESTA DEL BACKEND AL DETALLE
+// =========================================================
+//
+// Centralizamos aquí toda la información que devuelve
+// update_detalle.php.
+//
+// De esta forma:
+//
+// - Incrementar cantidad
+// - Disminuir cantidad
+// - Editar cantidad
+// - Precio manual
+// - Regresar a automático
+//
+// actualizan exactamente las mismas propiedades.
+//
+// El backend sigue siendo la autoridad del precio.
+// =========================================================
+
+private void AplicarActualizacionDetalle(
+    DetalleVenta detalle,
+    ActualizarCantidadVentaResponse resultado)
+{
+    if (detalle is null)
+        return;
+
+
+    // =====================================================
+    // DETALLE GUARDADO
+    // =====================================================
+
+    if (resultado.Data?.Detalle is not null)
+    {
+        var detalleBackend =
+            resultado.Data.Detalle;
+
+
+        detalle.Cantidad =
+            (int)detalleBackend.CantidadComercial;
+
+
+        detalle.PrecioUnitario =
+            detalleBackend.PrecioUnitario;
+
+
+        detalle.PrecioAutomatico =
+            detalleBackend.PrecioAutomatico;
+
+
+        detalle.TipoPrecioMaximo =
+            detalleBackend.TipoPrecioMaximo;
+
+
+        detalle.TipoPrecioAplicado =
+            detalleBackend.TipoPrecioAplicado;
+
+
+        detalle.IdPrecioAplicado =
+            detalleBackend.IdPrecioAplicado;
+    }
+
+
+    // =====================================================
+    // INFORMACIÓN COMPLETA DEL PRECIO
+    // =====================================================
+
+    if (resultado.Data?.Precio is not null)
+    {
+        var precio =
+            resultado.Data.Precio;
+
+
+        detalle.PrecioAutomatico =
+            precio.PrecioAutomatico;
+
+
+        detalle.TipoPrecioMaximo =
+            precio.TipoPrecioMaximo;
+
+
+        detalle.TipoPrecioAplicado =
+            precio.TipoPrecioAplicado;
+
+
+        detalle.IdPrecioAplicado =
+            precio.IdPrecioAplicado;
+
+
+        detalle.IdReglaAplicada =
+            precio.IdReglaAplicada;
+
+
+        detalle.CantidadMinimaPrecio =
+            precio.CantidadMinima;
+
+
+        detalle.PrecioUnitario =
+            precio.PrecioUnitario;
+
+
+        detalle.TiposDisponibles =
+            precio.TiposDisponibles
+            ?? new List<TipoPrecioDisponible>();
+
+
+        detalle.NivelAutomaticoPorCantidad =
+            precio.NivelAutomaticoPorCantidad;
+
+
+        detalle.SiguienteNivel =
+            precio.SiguienteNivel;
+    }
+
+
+    // =====================================================
+    // INVENTARIO
+    // =====================================================
+
+    if (resultado.Data?.Inventario is not null)
+    {
+        detalle.ExistenciaDisponible =
+            resultado.Data
+                .Inventario
+                .ExistenciaDisponible;
+
+
+        detalle.MaximoLinea =
+            resultado.Data
+                .Inventario
+                .MaximoLinea;
+    }
+
+
+    // =====================================================
+    // ACTUALIZAR TOTALES
+    // =====================================================
+
+    ActualizarTotales();
 }
 
 
@@ -1408,41 +1664,14 @@ private async Task IncrementarCantidadAsync(
 
         if (resultado.Res == 1)
         {
-            // =====================================================
-            // CANTIDAD CONFIRMADA POR BACKEND
-            // =====================================================
-
-            if (resultado.Data?.Detalle is not null)
-            {
-                detalle.Cantidad =
-                    (int)resultado.Data
-                        .Detalle
-                        .CantidadComercial;
-            }
-
-
-            // =====================================================
-            // INVENTARIO CONFIRMADO POR BACKEND
-            // =====================================================
-
-            if (resultado.Data?.Inventario is not null)
-            {
-                detalle.ExistenciaDisponible =
-                    resultado.Data
-                        .Inventario
-                        .ExistenciaDisponible;
-
-                detalle.MaximoLinea =
-                    resultado.Data
-                        .Inventario
-                        .MaximoLinea;
-            }
+            AplicarActualizacionDetalle(
+                detalle,
+                resultado);
 
 
             MensajeError =
                 string.Empty;
 
-            ActualizarTotales();
 
             return;
         }
@@ -1482,7 +1711,7 @@ private async Task IncrementarCantidadAsync(
     
     
     
-    [RelayCommand]
+[RelayCommand]
 public async Task CargarVentaActualAsync()
 {
     MensajeError = string.Empty;
@@ -1664,6 +1893,26 @@ public async Task CargarVentaActualAsync()
                 (int)detalle.CantidadComercial;
             
             
+            // =====================================================
+            // RECUPERAR ESTADO DEL PRECIO
+            // =====================================================
+
+            nuevoDetalle.PrecioUnitario =
+                detalle.PrecioUnitario;
+
+            nuevoDetalle.PrecioAutomatico =
+                detalle.PrecioAutomatico;
+
+            nuevoDetalle.TipoPrecioMaximo =
+                detalle.TipoPrecioMaximo;
+
+            nuevoDetalle.TipoPrecioAplicado =
+                detalle.TipoPrecioAplicado;
+
+            nuevoDetalle.IdPrecioAplicado =
+                detalle.IdPrecioAplicado;
+            
+            
             nuevoDetalle.ExistenciaDisponible =
                 detalle.ExistenciaDisponible;
 
@@ -1761,34 +2010,14 @@ public async Task ActualizarCantidadManualAsync(
 
         if (resultado.Res == 1)
         {
-            if (resultado.Data?.Detalle is not null)
-            {
-                detalle.Cantidad =
-                    (int)resultado.Data
-                        .Detalle
-                        .CantidadComercial;
-            }
-
-
-            if (resultado.Data?.Inventario is not null)
-            {
-                detalle.ExistenciaDisponible =
-                    resultado.Data
-                        .Inventario
-                        .ExistenciaDisponible;
-
-                detalle.MaximoLinea =
-                    resultado.Data
-                        .Inventario
-                        .MaximoLinea;
-            }
+            AplicarActualizacionDetalle(
+                detalle,
+                resultado);
 
 
             MensajeError =
                 string.Empty;
 
-
-            ActualizarTotales();
 
             return;
         }
@@ -2031,6 +2260,7 @@ public async Task<bool> FinalizarVentaCreditoAsync()
 
         return false;
     }
+    
 
 
     // =====================================================
@@ -2176,6 +2406,183 @@ public async Task<bool> FinalizarVentaCreditoAsync()
 
 
 // =========================================================
+// ESTABLECER PRECIO MANUAL
+// =========================================================
+
+public async Task<bool> EstablecerPrecioManualAsync(
+    DetalleVenta detalle,
+    string tipoPrecio)
+{
+    if (detalle is null)
+        return false;
+
+    if (IdVentaActual <= 0 ||
+        detalle.IdDetalle <= 0)
+    {
+        MensajeError =
+            "No existe una venta válida para modificar el precio.";
+
+        return false;
+    }
+
+    if (string.IsNullOrWhiteSpace(tipoPrecio))
+    {
+        MensajeError =
+            "Debe seleccionar un tipo de precio.";
+
+        return false;
+    }
+
+    if (detalle.EstaSincronizando)
+        return false;
+
+
+    MensajeError =
+        string.Empty;
+
+    detalle.EstaSincronizando =
+        true;
+
+    detalle.TieneErrorSincronizacion =
+        false;
+
+
+    try
+    {
+        var resultado =
+            await _ventasService
+                .EstablecerPrecioManualAsync(
+                    IdVentaActual,
+                    detalle.IdDetalle,
+                    tipoPrecio);
+
+
+        if (resultado.Res != 1)
+        {
+            detalle.TieneErrorSincronizacion =
+                true;
+
+            MensajeError =
+                string.IsNullOrWhiteSpace(resultado.Msg)
+                    ? "No fue posible cambiar el precio."
+                    : resultado.Msg;
+
+            return false;
+        }
+
+
+        AplicarActualizacionDetalle(
+            detalle,
+            resultado);
+
+
+        MensajeError =
+            string.Empty;
+
+        return true;
+    }
+    catch (Exception ex)
+    {
+        detalle.TieneErrorSincronizacion =
+            true;
+
+        MensajeError =
+            $"No fue posible cambiar el precio: {ex.Message}";
+
+        return false;
+    }
+    finally
+    {
+        detalle.EstaSincronizando =
+            false;
+    }
+}
+
+// =========================================================
+// ESTABLECER PRECIO AUTOMÁTICO
+// =========================================================
+
+public async Task<bool> EstablecerPrecioAutomaticoAsync(
+    DetalleVenta detalle)
+{
+    if (detalle is null)
+        return false;
+
+    if (IdVentaActual <= 0 ||
+        detalle.IdDetalle <= 0)
+    {
+        MensajeError =
+            "No existe una venta válida para modificar el precio.";
+
+        return false;
+    }
+
+    if (detalle.EstaSincronizando)
+        return false;
+
+
+    MensajeError =
+        string.Empty;
+
+    detalle.EstaSincronizando =
+        true;
+
+    detalle.TieneErrorSincronizacion =
+        false;
+
+
+    try
+    {
+        var resultado =
+            await _ventasService
+                .EstablecerPrecioAutomaticoAsync(
+                    IdVentaActual,
+                    detalle.IdDetalle);
+
+
+        if (resultado.Res != 1)
+        {
+            detalle.TieneErrorSincronizacion =
+                true;
+
+            MensajeError =
+                string.IsNullOrWhiteSpace(resultado.Msg)
+                    ? "No fue posible regresar al precio automático."
+                    : resultado.Msg;
+
+            return false;
+        }
+
+
+        AplicarActualizacionDetalle(
+            detalle,
+            resultado);
+
+
+        MensajeError =
+            string.Empty;
+
+        return true;
+    }
+    catch (Exception ex)
+    {
+        detalle.TieneErrorSincronizacion =
+            true;
+
+        MensajeError =
+            $"No fue posible regresar al precio automático: {ex.Message}";
+
+        return false;
+    }
+    finally
+    {
+        detalle.EstaSincronizando =
+            false;
+    }
+}
+
+
+// =========================================================
 // FINALIZAR VENTA
 // =========================================================
 
@@ -2221,7 +2628,7 @@ public async Task<bool> FinalizarVentaAsync()
                                 detalle.Cantidad,
 
                             PrecioUnitario =
-                                detalle.Producto.Precio,
+                                detalle.PrecioUnitario,
 
                             Importe =
                                 detalle.Importe
@@ -2931,41 +3338,14 @@ private async Task DisminuirCantidadAsync(
 
         if (resultado.Res == 1)
         {
-            // =====================================================
-            // CANTIDAD CONFIRMADA
-            // =====================================================
-
-            if (resultado.Data?.Detalle is not null)
-            {
-                detalle.Cantidad =
-                    (int)resultado.Data
-                        .Detalle
-                        .CantidadComercial;
-            }
-
-
-            // =====================================================
-            // INVENTARIO CONFIRMADO
-            // =====================================================
-
-            if (resultado.Data?.Inventario is not null)
-            {
-                detalle.ExistenciaDisponible =
-                    resultado.Data
-                        .Inventario
-                        .ExistenciaDisponible;
-
-                detalle.MaximoLinea =
-                    resultado.Data
-                        .Inventario
-                        .MaximoLinea;
-            }
+            AplicarActualizacionDetalle(
+                detalle,
+                resultado);
 
 
             MensajeError =
                 string.Empty;
 
-            ActualizarTotales();
 
             return;
         }
@@ -3156,9 +3536,78 @@ private async Task EliminarProductoAsync(
         }
 
 
-        // =====================================================
-        // BACKEND RECHAZÓ
-        // =====================================================
+// =====================================================
+// ¿REQUIERE CONCILIACIÓN CON MERCADO PAGO?
+// =====================================================
+
+if (
+    resultado.RequiereConciliacionMp &&
+    resultado.IdOperacionMp.HasValue &&
+    resultado.IdOperacionMp.Value > 0
+)
+{
+    var conciliacion =
+        await ConciliarOperacionMercadoPagoAsync(
+            resultado.IdOperacionMp.Value);
+
+
+    // =================================================
+    // TERMINÓ SIN PAGO
+    // =================================================
+
+    if (conciliacion.PuedeReintentarOperacion)
+    {
+        /*
+         * estado_orden.php ya confirmó que la operación
+         * terminó sin pago.
+         *
+         * Volvemos a ejecutar delete_detalle.php.
+         *
+         * El PHP nuevo podrá eliminar las operaciones MP
+         * seguras y después eliminar el producto.
+         */
+
+        var segundoIntento =
+            await _ventasService
+                .EliminarProductoAsync(
+                    idVenta,
+                    idDetalle);
+
+
+        if (segundoIntento.Res == 1)
+        {
+            MensajeError =
+                string.Empty;
+
+
+            if (
+                segundoIntento.Data?.VentaEliminada ==
+                true
+            )
+            {
+                IdVentaActual =
+                    0;
+
+                UuidVentaActual =
+                    string.Empty;
+
+                FolioVentaActual =
+                    string.Empty;
+
+                Carrito.Clear();
+
+                ActualizarTotales();
+            }
+
+
+            return;
+        }
+
+
+        /*
+         * Por seguridad NO hacemos un tercer intento
+         * automáticamente.
+         */
 
         RestaurarDetalleEnCarrito(
             detalle,
@@ -3167,9 +3616,59 @@ private async Task EliminarProductoAsync(
 
         MensajeError =
             string.IsNullOrWhiteSpace(
-                resultado.Msg)
-                ? "No fue posible eliminar el producto."
-                : resultado.Msg;
+                segundoIntento.Msg)
+                ? "No fue posible eliminar el producto después de conciliar Mercado Pago."
+                : segundoIntento.Msg;
+
+
+        return;
+    }
+
+
+    // =================================================
+    // ACREDITADO O TODAVÍA INCIERTO
+    // =================================================
+
+    RestaurarDetalleEnCarrito(
+        detalle,
+        indiceOriginal);
+
+
+    if (conciliacion.PagoRegistrado)
+    {
+        /*
+         * Recuperamos la venta desde backend.
+         *
+         * Esto es especialmente importante si
+         * estado_orden.php acaba de insertar el pago.
+         */
+
+        await CargarVentaActualAsync();
+    }
+
+
+    MensajeError =
+        conciliacion.Mensaje;
+
+
+    return;
+}
+
+
+// =====================================================
+// BACKEND RECHAZÓ POR OTRO MOTIVO
+// =====================================================
+
+RestaurarDetalleEnCarrito(
+    detalle,
+    indiceOriginal);
+
+
+MensajeError =
+    string.IsNullOrWhiteSpace(
+        resultado.Msg)
+        ? "No fue posible eliminar el producto."
+        : resultado.Msg;
     }
     catch (Exception ex)
     {
@@ -3303,7 +3802,108 @@ private async Task CancelarVentaAsync()
 
             return;
         }
+        
+        
+        // =====================================================
+        // ¿REQUIERE CONCILIACIÓN CON MERCADO PAGO?
+        // =====================================================
 
+        if (
+            resultado.RequiereConciliacionMp &&
+            resultado.IdOperacionMp.HasValue &&
+            resultado.IdOperacionMp.Value > 0
+        )
+        {
+            var conciliacion =
+                await ConciliarOperacionMercadoPagoAsync(
+                    resultado.IdOperacionMp.Value);
+
+
+            // =================================================
+            // TERMINÓ SIN PAGO → REINTENTAR CANCELACIÓN
+            // =================================================
+
+            if (conciliacion.PuedeReintentarOperacion)
+            {
+                var segundoIntento =
+                    await _ventasService
+                        .CancelarVentaAsync(
+                            idVenta);
+
+
+                if (segundoIntento.Res == 1)
+                {
+                    /*
+                     * La UI ya estaba limpia por tu operación
+                     * optimista.
+                     *
+                     * Confirmamos que tampoco quede referencia
+                     * a la venta anterior.
+                     */
+
+                    IdVentaActual =
+                        0;
+
+                    UuidVentaActual =
+                        string.Empty;
+
+                    FolioVentaActual =
+                        string.Empty;
+
+                    Carrito.Clear();
+
+                    ActualizarTotales();
+
+                    MensajeError =
+                        string.Empty;
+
+
+                    return;
+                }
+
+
+                // Segundo intento rechazado.
+                RestaurarCarritoCancelado(
+                    carritoAnterior,
+                    idVenta,
+                    uuidAnterior,
+                    folioAnterior);
+
+
+                MensajeError =
+                    string.IsNullOrWhiteSpace(
+                        segundoIntento.Msg)
+                        ? "No fue posible cancelar el carrito después de conciliar Mercado Pago."
+                        : segundoIntento.Msg;
+
+
+                return;
+            }
+
+
+            // =================================================
+            // ACREDITADO O ESTADO INCIERTO
+            // =================================================
+
+            RestaurarCarritoCancelado(
+                carritoAnterior,
+                idVenta,
+                uuidAnterior,
+                folioAnterior);
+
+
+            if (conciliacion.PagoRegistrado)
+            {
+                await CargarVentaActualAsync();
+            }
+
+
+            MensajeError =
+                conciliacion.Mensaje;
+
+
+            return;
+        }
 
         // =====================================================
         // BACKEND RECHAZÓ
@@ -3458,6 +4058,145 @@ private async Task CancelarVentaAsync()
             .Trim()
             .Substring(0, 1)
             .ToUpperInvariant();
+    }
+    
+    
+    // =========================================================
+// CONCILIAR OPERACIÓN MERCADO PAGO
+// =========================================================
+
+private async Task<ResultadoConciliacionMercadoPago>
+    ConciliarOperacionMercadoPagoAsync(
+        long idOperacionMp)
+{
+    if (idOperacionMp <= 0)
+    {
+        return new ResultadoConciliacionMercadoPago
+        {
+            PuedeReintentarOperacion = false,
+            PagoRegistrado = false,
+            Mensaje =
+                "La operación de Mercado Pago no es válida."
+        };
+    }
+
+
+    try
+    {
+        Console.WriteLine(
+            "====================================");
+
+        Console.WriteLine(
+            "CONCILIANDO OPERACIÓN MERCADO PAGO");
+
+        Console.WriteLine(
+            $"ID operación MP: {idOperacionMp}");
+
+        Console.WriteLine(
+            "====================================");
+
+
+        var resultado =
+            await _mercadoPagoService
+                .ObtenerEstadoOrdenAsync(
+                    idOperacionMp);
+
+
+        // =====================================================
+        // PAGO YA REGISTRADO EN NOVACORE
+        // =====================================================
+
+        if (
+            resultado.Data?.PagoRegistrado == true
+        )
+        {
+            return new ResultadoConciliacionMercadoPago
+            {
+                PuedeReintentarOperacion = false,
+                PagoRegistrado = true,
+                Mensaje =
+                    "El pago con Mercado Pago fue acreditado. " +
+                    "La venta ya no puede modificarse."
+            };
+        }
+
+
+        // =====================================================
+        // OPERACIÓN TERMINÓ SIN PAGO
+        // =====================================================
+
+        var status =
+            resultado.Data?.Status?
+                .Trim()
+                .ToUpperInvariant()
+            ?? string.Empty;
+
+
+        if (
+            status == "CANCELED" ||
+            status == "CANCELLED" ||
+            status == "EXPIRED" ||
+            status == "FAILED" ||
+            status == "REJECTED" ||
+            status == "CANCELADO" ||
+            status == "EXPIRADO" ||
+            status == "RECHAZADO"
+        )
+        {
+            return new ResultadoConciliacionMercadoPago
+            {
+                PuedeReintentarOperacion = true,
+                PagoRegistrado = false,
+                Mensaje =
+                    "La operación de Mercado Pago terminó sin pago."
+            };
+        }
+
+
+        // =====================================================
+        // TODAVÍA NO SABEMOS CON CERTEZA EL RESULTADO
+        // =====================================================
+
+        return new ResultadoConciliacionMercadoPago
+        {
+            PuedeReintentarOperacion = false,
+            PagoRegistrado = false,
+            Mensaje =
+                string.IsNullOrWhiteSpace(resultado.Msg)
+                    ? "La operación de Mercado Pago todavía está pendiente. No se modificó la venta."
+                    : resultado.Msg
+        };
+    }
+    catch (Exception ex)
+    {
+        /*
+         * MUY IMPORTANTE:
+         *
+         * Un error de red NO significa que el pago falló.
+         *
+         * Por eso nunca permitimos borrar/modificar
+         * la venta solamente porque esta consulta falló.
+         */
+
+        return new ResultadoConciliacionMercadoPago
+        {
+            PuedeReintentarOperacion = false,
+            PagoRegistrado = false,
+            Mensaje =
+                $"No fue posible confirmar el estado del pago con Mercado Pago: {ex.Message}"
+        };
+    }
+}
+
+
+    private sealed class ResultadoConciliacionMercadoPago
+    {
+        public bool PuedeReintentarOperacion { get; init; }
+
+        public bool PagoRegistrado { get; init; }
+
+        public string Mensaje { get; init; } =
+            string.Empty;
     }
      
     // =========================================================

@@ -1,0 +1,206 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:NovaCoreESDM.Views.Ventas"
+    x:Class="NovaCoreESDM.Views.Ventas.SeleccionarPrecioWindow"
+    Width="520"
+    Height="650"
+    MinWidth="480"
+    MinHeight="580"
+    WindowStartupLocation="CenterOwner"
+    CanResize="False"
+    Title="Seleccionar precio">
+
+    <Grid RowDefinitions="Auto,*,Auto"
+          Margin="24">
+
+        <!-- ENCABEZADO -->
+        <StackPanel Grid.Row="0"
+                    Spacing="6"
+                    Margin="0,0,0,18">
+
+            <TextBlock Text="Seleccionar precio"
+                       FontSize="22"
+                       FontWeight="Bold"/>
+
+            <TextBlock x:Name="TxtProducto"
+                       Text="Producto"
+                       FontSize="16"
+                       FontWeight="SemiBold"/>
+
+            <TextBlock x:Name="TxtPresentacion"
+                       Text="Presentación"
+                       FontSize="14"
+                       Opacity="0.75"/>
+
+            <TextBlock x:Name="TxtCantidad"
+                       Text="Cantidad actual: 0"
+                       FontSize="14"
+                       Opacity="0.75"/>
+
+        </StackPanel>
+
+
+        <!-- CONTENIDO -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto">
+
+            <StackPanel Spacing="12">
+
+                <!-- AUTOMÁTICO -->
+                <Border Padding="14"
+                        CornerRadius="10"
+                        BorderThickness="1">
+
+                    <Grid ColumnDefinitions="Auto,*"
+                          ColumnSpacing="12">
+
+                        <RadioButton x:Name="RbAutomatico"
+                                     Grid.Column="0"
+                                     VerticalAlignment="Center"
+                                     GroupName="TipoPrecio"/>
+
+                        <StackPanel Grid.Column="1"
+                                    Spacing="4">
+
+                            <TextBlock Text="Automático"
+                                       FontSize="16"
+                                       FontWeight="SemiBold"/>
+
+                            <TextBlock Text="El sistema seleccionará el precio según la cantidad."
+                                       FontSize="13"
+                                       TextWrapping="Wrap"
+                                       Opacity="0.75"/>
+
+                            <TextBlock x:Name="TxtAutomaticoActual"
+                                       Text=""
+                                       FontSize="13"
+                                       FontWeight="SemiBold"/>
+
+                        </StackPanel>
+
+                    </Grid>
+
+                </Border>
+
+
+                <!-- TÍTULO DE OPCIONES -->
+                <TextBlock Text="Precios disponibles"
+                           FontSize="15"
+                           FontWeight="SemiBold"
+                           Margin="0,8,0,0"/>
+
+
+                <!-- OPCIONES DINÁMICAS -->
+                <ItemsControl x:Name="ListaPrecios">
+
+                    <ItemsControl.ItemTemplate>
+
+                        <DataTemplate x:DataType="local:OpcionPrecioViewModel">
+                            
+                            <Border Padding="14"
+                                    Margin="0,0,0,8"
+                                    CornerRadius="10"
+                                    BorderThickness="1">
+
+                                <Grid ColumnDefinitions="Auto,*,Auto"
+                                      ColumnSpacing="12">
+
+                                    <RadioButton Grid.Column="0"
+                                                 VerticalAlignment="Center"
+                                                 GroupName="TipoPrecio"
+                                                 Tag="{Binding TipoPrecio}"
+                                                 IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
+                                    
+
+                                    <StackPanel Grid.Column="1"
+                                                Spacing="3">
+
+                                        <TextBlock Text="{Binding TipoPrecio}"
+                                                   FontSize="15"
+                                                   FontWeight="SemiBold"/>
+
+                                        <TextBlock Text="{Binding TextoCantidadMinima}"
+                                                   FontSize="12"
+                                                   Opacity="0.70"/>
+
+                                    </StackPanel>
+
+
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding TextoPrecio}"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               VerticalAlignment="Center"/>
+
+                                </Grid>
+
+                            </Border>
+
+                        </DataTemplate>
+
+                    </ItemsControl.ItemTemplate>
+
+                </ItemsControl>
+
+
+                <!-- SIGUIENTE NIVEL -->
+                <Border x:Name="PanelSiguienteNivel"
+                        IsVisible="False"
+                        Padding="12"
+                        Margin="0,8,0,0"
+                        CornerRadius="8"
+                        BorderThickness="1">
+
+                    <StackPanel Spacing="3">
+
+                        <TextBlock Text="Siguiente nivel"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"/>
+
+                        <TextBlock x:Name="TxtSiguienteNivel"
+                                   Text=""
+                                   FontSize="13"
+                                   TextWrapping="Wrap"/>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- ERROR -->
+                <TextBlock x:Name="TxtError"
+                           Text=""
+                           IsVisible="False"
+                           TextWrapping="Wrap"
+                           FontSize="13"
+                           Margin="0,10,0,0"/>
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+
+        <!-- BOTONES -->
+        <Grid Grid.Row="2"
+              ColumnDefinitions="*,Auto,Auto"
+              ColumnSpacing="10"
+              Margin="0,18,0,0">
+
+            <Button x:Name="BtnCancelar"
+                    Grid.Column="1"
+                    Content="Cancelar"
+                    MinWidth="110"
+                    Height="40"/>
+
+            <Button x:Name="BtnAplicar"
+                    Grid.Column="2"
+                    Content="Aplicar"
+                    MinWidth="110"
+                    Height="40"/>
+
+        </Grid>
+
+    </Grid>
+
+</Window>

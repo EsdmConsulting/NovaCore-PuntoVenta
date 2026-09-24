@@ -14,6 +14,9 @@
              xmlns:cortesViews="using:NovaCoreESDM.Views.Cortes"
              xmlns:cortesViewModels="using:NovaCoreESDM.ViewModels.Cortes"
 
+             xmlns:cancelacionesViews="using:NovaCoreESDM.Views.Cancelaciones"
+             xmlns:cancelacionesViewModels="using:NovaCoreESDM.ViewModels.Cancelaciones"
+
              x:Class="NovaCoreESDM.App"
              RequestedThemeVariant="Light">
 
@@ -37,6 +40,14 @@
 
         <DataTemplate DataType="cortesViewModels:CortesViewModel">
             <cortesViews:CortesView/>
+        </DataTemplate>
+
+        <!-- ================================================= -->
+        <!-- CANCELACIONES                                    -->
+        <!-- ================================================= -->
+
+        <DataTemplate DataType="cancelacionesViewModels:CancelacionesViewModel">
+            <cancelacionesViews:CancelacionesView/>
         </DataTemplate>
 
     </Application.DataTemplates>

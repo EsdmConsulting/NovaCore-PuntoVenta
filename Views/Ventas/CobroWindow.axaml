@@ -206,78 +206,90 @@
                 </Button>
 
 
-                <!-- ================================================= -->
-                <!-- TARJETA                                           -->
-                <!-- ================================================= -->
+        <!-- ================================================= -->
+        <!-- TARJETA / MERCADO PAGO                            -->
+        <!-- ================================================= -->
 
-                <Button Grid.Row="0"
-                        Grid.Column="1"
+        <Button Grid.Row="0"
+                Grid.Column="1"
 
-                        IsEnabled="False"
+                Click="Tarjeta_Click"
 
-                        Background="#FAFBFC"
-                        Foreground="#8B949E"
+                Background="#F4F8FF"
+                Foreground="#2563EB"
 
-                        BorderBrush="#D8DEE6"
-                        BorderThickness="1"
+                BorderBrush="#BFDBFE"
+                BorderThickness="1"
 
-                        CornerRadius="14"
+                CornerRadius="14"
 
-                        Padding="20"
+                Padding="20"
 
-                        HorizontalContentAlignment="Stretch"
-                        VerticalContentAlignment="Stretch">
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch">
 
-                    <Grid ColumnDefinitions="64,*,44"
-                          ColumnSpacing="14">
-
-
-                        <Border Grid.Column="0"
-                                Width="58"
-                                Height="58"
-                                Background="#EEF2F6"
-                                CornerRadius="12"
-                                VerticalAlignment="Center">
-
-                            <TextBlock Text="💳"
-                                       FontSize="27"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
-
-                        </Border>
+            <Grid ColumnDefinitions="64,*,44"
+                  ColumnSpacing="14">
 
 
-                        <StackPanel Grid.Column="1"
-                                    VerticalAlignment="Center"
-                                    Spacing="6">
+                <!-- ICONO -->
 
-                            <TextBlock Text="Tarjeta"
-                                       FontSize="18"
-                                       FontWeight="Bold"/>
+                <Border Grid.Column="0"
+                        Width="58"
+                        Height="58"
+                        Background="#DBEAFE"
+                        CornerRadius="12"
+                        VerticalAlignment="Center">
 
-                            <TextBlock Text="Disponible próximamente"
-                                       FontSize="11"/>
+                    <TextBlock Text="💳"
+                               FontSize="27"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
 
-                        </StackPanel>
+                </Border>
 
 
-                        <Border Grid.Column="2"
-                                Width="40"
-                                Height="40"
-                                CornerRadius="20"
-                                Background="#EEF2F6"
-                                VerticalAlignment="Center">
+                <!-- TEXTO -->
 
-                            <TextBlock Text="🔒"
-                                       FontSize="17"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="6">
 
-                        </Border>
+                    <TextBlock Text="Tarjeta"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               Foreground="#2563EB"/>
 
-                    </Grid>
+                    <TextBlock Text="Cobrar con terminal Mercado Pago"
+                               FontSize="11"
+                               Foreground="#5273A8"
+                               TextWrapping="Wrap"/>
 
-                </Button>
+                </StackPanel>
+
+
+                <!-- FLECHA -->
+
+                <Border Grid.Column="2"
+                        Width="40"
+                        Height="40"
+                        CornerRadius="20"
+                        Background="#DBEAFE"
+                        VerticalAlignment="Center">
+
+                    <TextBlock Text="›"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="#2563EB"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Margin="0,-3,0,0"/>
+
+                </Border>
+
+            </Grid>
+
+        </Button>
 
 
                 <!-- ================================================= -->
