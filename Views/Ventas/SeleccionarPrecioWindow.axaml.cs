@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 
 using NovaCoreESDM.Models;
-using NovaCoreESDM.Models.Precios;
 using NovaCoreESDM.Services.Precios;
 
 namespace NovaCoreESDM.Views.Ventas;
@@ -58,7 +57,7 @@ public partial class SeleccionarPrecioWindow : Window
 
 
     // =========================================================
-    // CARGAR CONFIGURACIÓN
+    // CARGAR PRECIOS
     // =========================================================
 
     private async Task CargarConfiguracionAsync()
@@ -86,11 +85,11 @@ public partial class SeleccionarPrecioWindow : Window
                 _detalle.Producto.NombrePresentacion;
 
             TxtCantidad.Text =
-                $"Cantidad actual: {_detalle.Cantidad}";
+                $"Cantidad actual: {_detalle.Cantidad:0.###}";
 
 
             // =================================================
-            // CONSULTAR BACKEND
+            // CONSULTAR PRECIOS DE LA PRESENTACIÓN
             // =================================================
 
             var resultado =
@@ -108,7 +107,7 @@ public partial class SeleccionarPrecioWindow : Window
             {
                 MostrarError(
                     string.IsNullOrWhiteSpace(resultado.Msg)
-                        ? "No fue posible obtener la configuración de precios."
+                        ? "No fue posible obtener los precios disponibles."
                         : resultado.Msg
                 );
 
@@ -148,7 +147,7 @@ public partial class SeleccionarPrecioWindow : Window
 
 
             // =================================================
-            // CREAR OPCIONES VISUALES
+            // CREAR OPCIONES DINÁMICAS
             // =================================================
 
             _opciones.Clear();
@@ -168,12 +167,7 @@ public partial class SeleccionarPrecioWindow : Window
                         Precio =
                             tipo.Precio,
 
-                        CantidadMinima =
-                            tipo.CantidadMinima,
-
                         IsSelected =
-                            !_detalle.PrecioAutomatico
-                            &&
                             string.Equals(
                                 _detalle.TipoPrecioAplicado,
                                 tipo.TipoPrecio,
@@ -188,57 +182,38 @@ public partial class SeleccionarPrecioWindow : Window
             }
 
 
+            // =================================================
+            // COMPATIBILIDAD CON VENTAS ANTIGUAS
+            // =================================================
+            //
+            // Si por alguna razón la línea no trae todavía
+            // TipoPrecioAplicado, intentamos seleccionar MENUDEO.
+            //
+            // Esto NO hace que el precio dependa de la cantidad.
+            // MENUDEO únicamente es el precio predeterminado.
+            // =================================================
+
+            if (!_opciones.Any(x => x.IsSelected))
+            {
+                var menudeo =
+                    _opciones.FirstOrDefault(
+                        x => string.Equals(
+                            x.TipoPrecio,
+                            "MENUDEO",
+                            StringComparison.OrdinalIgnoreCase
+                        )
+                    );
+
+                if (menudeo is not null)
+                {
+                    menudeo.IsSelected =
+                        true;
+                }
+            }
+
+
             ListaPrecios.ItemsSource =
                 _opciones;
-
-
-            // =================================================
-            // ESTADO AUTOMÁTICO
-            // =================================================
-
-            RbAutomatico.IsChecked =
-                _detalle.PrecioAutomatico;
-
-
-            if (
-                data.NivelAutomatico is not null
-            )
-            {
-                TxtAutomaticoActual.Text =
-                    $"Por cantidad aplicaría: " +
-                    $"{data.NivelAutomatico.TipoPrecio} · " +
-                    $"${data.NivelAutomatico.Precio:N2}";
-            }
-            else
-            {
-                TxtAutomaticoActual.Text =
-                    string.Empty;
-            }
-
-
-            // =================================================
-            // SIGUIENTE NIVEL
-            // =================================================
-
-            if (
-                data.SiguienteNivel is not null
-            )
-            {
-                PanelSiguienteNivel.IsVisible =
-                    true;
-
-                TxtSiguienteNivel.Text =
-                    $"{data.SiguienteNivel.Mensaje} · " +
-                    $"${data.SiguienteNivel.Precio:N2}";
-            }
-            else
-            {
-                PanelSiguienteNivel.IsVisible =
-                    false;
-
-                TxtSiguienteNivel.Text =
-                    string.Empty;
-            }
 
 
             BtnAplicar.IsEnabled =
@@ -261,34 +236,6 @@ public partial class SeleccionarPrecioWindow : Window
         object? sender,
         Avalonia.Interactivity.RoutedEventArgs e)
     {
-        // =====================================================
-        // AUTOMÁTICO
-        // =====================================================
-
-        if (
-            RbAutomatico.IsChecked ==
-            true
-        )
-        {
-            Close(
-                new SeleccionPrecioResultado
-                {
-                    EsAutomatico =
-                        true,
-
-                    TipoPrecio =
-                        null
-                }
-            );
-
-            return;
-        }
-
-
-        // =====================================================
-        // PRECIO MANUAL
-        // =====================================================
-
         var seleccion =
             _opciones
                 .FirstOrDefault(
@@ -306,12 +253,23 @@ public partial class SeleccionarPrecioWindow : Window
         }
 
 
+        if (
+            string.IsNullOrWhiteSpace(
+                seleccion.TipoPrecio
+            )
+        )
+        {
+            MostrarError(
+                "El tipo de precio seleccionado no es válido."
+            );
+
+            return;
+        }
+
+
         Close(
             new SeleccionPrecioResultado
             {
-                EsAutomatico =
-                    false,
-
                 TipoPrecio =
                     seleccion.TipoPrecio
             }
@@ -331,9 +289,6 @@ public partial class SeleccionarPrecioWindow : Window
 
         TxtError.IsVisible =
             true;
-
-        BtnAplicar.IsEnabled =
-            false;
     }
 }
 
@@ -358,13 +313,6 @@ public class OpcionPrecioViewModel
     }
 
 
-    public decimal CantidadMinima
-    {
-        get;
-        set;
-    }
-
-
     public bool IsSelected
     {
         get;
@@ -374,10 +322,6 @@ public class OpcionPrecioViewModel
 
     public string TextoPrecio =>
         $"${Precio:N2}";
-
-
-    public string TextoCantidadMinima =>
-        $"A partir de {CantidadMinima:N0}";
 }
 
 
@@ -387,13 +331,6 @@ public class OpcionPrecioViewModel
 
 public class SeleccionPrecioResultado
 {
-    public bool EsAutomatico
-    {
-        get;
-        set;
-    }
-
-
     public string? TipoPrecio
     {
         get;

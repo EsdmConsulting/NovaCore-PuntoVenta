@@ -83,8 +83,6 @@ public partial class VentasView : UserControl
 
             if (_viewModel is not null)
             {
-                _viewModel.SolicitarSeleccionPresentacion -=
-                    OnSolicitarSeleccionPresentacion;
 
 
                 _viewModel.SolicitarEditarCantidad -=
@@ -123,9 +121,6 @@ public partial class VentasView : UserControl
             // =================================================
             // VINCULAR EVENTOS
             // =================================================
-
-            _viewModel.SolicitarSeleccionPresentacion +=
-                OnSolicitarSeleccionPresentacion;
 
 
             _viewModel.SolicitarEditarCantidad +=
@@ -229,86 +224,6 @@ public partial class VentasView : UserControl
     // SELECCIONAR PRESENTACIÓN
     // =========================================================
 
-    private async void OnSolicitarSeleccionPresentacion(
-        ProductoCatalogo producto)
-    {
-        if (_viewModel is null)
-            return;
-
-
-        try
-        {
-            var configuracion =
-                await _terminalConfigurationService
-                    .ObtenerConfiguracionAsync();
-
-
-            if (configuracion is null)
-            {
-                _viewModel.MensajeError =
-                    "No existe una caja configurada para este equipo.";
-
-                return;
-            }
-
-
-            var owner =
-                TopLevel.GetTopLevel(this)
-                as Window;
-
-
-            if (owner is null)
-            {
-                _viewModel.MensajeError =
-                    "No fue posible abrir el selector de presentación.";
-
-                return;
-            }
-
-
-            var selector =
-                new SeleccionarPresentacionWindow(
-                    producto,
-                    configuracion.UnidadCodigo
-                );
-
-
-            var resultado =
-                await selector
-                    .ShowDialog<bool>(
-                        owner
-                    );
-
-
-            if (
-                !resultado ||
-                selector.PresentacionSeleccionada is null
-            )
-            {
-                return;
-            }
-
-
-            await _viewModel
-                .AgregarPresentacionAlCarritoAsync(
-                    producto,
-                    selector.PresentacionSeleccionada
-                );
-        }
-        finally
-        {
-            /*
-             * Tanto si agrega como si cancela,
-             * regresamos al escáner.
-             */
-            EnfocarBuscadorProductos();
-        }
-    }
-    
-    // =========================================================
-    // CAMBIAR PRECIO
-    // =========================================================
-
     private async void OnSolicitarCambioPrecio(
         DetalleVenta detalle)
     {
@@ -317,11 +232,6 @@ public partial class VentasView : UserControl
 
         try
         {
-            var window =
-                new SeleccionarPrecioWindow(
-                    detalle
-                );
-
             var parentWindow =
                 TopLevel.GetTopLevel(this)
                     as Window;
@@ -334,25 +244,22 @@ public partial class VentasView : UserControl
                 return;
             }
 
+
+            var window =
+                new SeleccionarPrecioWindow(
+                    detalle
+                );
+
+
             var resultado =
                 await window
                     .ShowDialog<SeleccionPrecioResultado?>(
                         parentWindow
                     );
 
+
             if (resultado is null)
                 return;
-
-
-            if (resultado.EsAutomatico)
-            {
-                await _viewModel
-                    .EstablecerPrecioAutomaticoAsync(
-                        detalle
-                    );
-
-                return;
-            }
 
 
             if (
@@ -389,53 +296,81 @@ public partial class VentasView : UserControl
     private async void OnSolicitarEditarCantidad(
         DetalleVenta detalle)
     {
-        if (_viewModel is null)
+        if (detalle is null)
+            return;
+
+        var owner =
+            TopLevel.GetTopLevel(this)
+                as Window;
+
+        if (owner is null)
             return;
 
 
-        try
+        // =========================================================
+        // VENTA POR PESO
+        // KG / GRA
+        // =========================================================
+
+        if (detalle.EsVentaPorPeso)
         {
-            var owner =
-                TopLevel.GetTopLevel(this)
-                as Window;
-
-
-            if (owner is null)
-            {
-                _viewModel.MensajeError =
-                    "No fue posible abrir el editor de cantidad.";
-
-                return;
-            }
-
-
-            var ventana =
-                new EditarCantidadWindow(
+            var ventanaPeso =
+                new EditarPesoWindow(
                     detalle.Cantidad
                 );
 
+            var resultadoPeso =
+                await ventanaPeso.ShowDialog<bool>(
+                    owner
+                );
 
-            var resultado =
-                await ventana
-                    .ShowDialog<bool>(
-                        owner
-                    );
-
-
-            if (!resultado)
+            if (!resultadoPeso)
                 return;
-
 
             await _viewModel
                 .ActualizarCantidadManualAsync(
                     detalle,
-                    ventana.CantidadSeleccionada
+                    ventanaPeso.PesoSeleccionado
                 );
+
+            return;
         }
-        finally
-        {
-            EnfocarBuscadorProductos();
-        }
+
+
+        // =========================================================
+        // VENTA POR UNIDADES
+        // PZA / CAJ / PQ / BT / ETC.
+        // =========================================================
+
+        /*
+         * EditarCantidadWindow sigue trabajando con int
+         * porque esta ventana representa unidades completas.
+         *
+         * Llegados a este punto sabemos que NO es KG ni GRA.
+         */
+        var cantidadActual =
+            decimal.ToInt32(
+                detalle.Cantidad
+            );
+
+        var ventanaCantidad =
+            new EditarCantidadWindow(
+                cantidadActual
+            );
+
+        var resultadoCantidad =
+            await ventanaCantidad.ShowDialog<bool>(
+                owner
+            );
+
+        if (!resultadoCantidad)
+            return;
+
+        await _viewModel
+            .ActualizarCantidadManualAsync(
+                detalle,
+                ventanaCantidad.CantidadSeleccionada
+            );
     }
     
 
@@ -1093,9 +1028,6 @@ public partial class VentasView : UserControl
     {
         if (_viewModel is not null)
         {
-            _viewModel.SolicitarSeleccionPresentacion -=
-                OnSolicitarSeleccionPresentacion;
-
 
             _viewModel.SolicitarEditarCantidad -=
                 OnSolicitarEditarCantidad;

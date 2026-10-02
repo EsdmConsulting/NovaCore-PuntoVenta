@@ -31,6 +31,9 @@ public class ProductoVentaAgregado
 
     [JsonPropertyName("presentacion")]
     public string? Presentacion { get; set; }
+    
+    [JsonPropertyName("unidad_medida")]
+    public string? UnidadMedida { get; set; }
 
 
     // =========================================================

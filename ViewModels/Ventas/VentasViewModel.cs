@@ -191,7 +191,7 @@ public partial class VentasViewModel : ViewModelBase
     public bool TieneProductosDisponibles =>
         Productos.Count > 0;
 
-    public int CantidadProductos =>
+    public decimal CantidadProductos =>
         Carrito.Sum(item => item.Cantidad);
 
     public decimal Subtotal =>
@@ -201,9 +201,9 @@ public partial class VentasViewModel : ViewModelBase
         Subtotal;
 
     public string TextoCantidadProductos =>
-        CantidadProductos == 1
+        CantidadProductos == 1m
             ? "1 producto"
-            : $"{CantidadProductos} productos";
+            : $"{CantidadProductos:0.###} productos";
 
 
 // =========================================================
@@ -702,6 +702,8 @@ public async Task AgregarPresentacionAlCarritoAsync(
         new DetalleVenta(
             producto);
 
+    nuevoDetalle.UnidadMedida =
+        presentacion.UnidadMedida;
 
     nuevoDetalle.EstaSincronizando =
         true;
@@ -784,7 +786,7 @@ public async Task AgregarPresentacionAlCarritoAsync(
                     producto.IdPresentacion,
 
                 CantidadComercial =
-                    1,
+                    1m,
 
                 FactorConversion =
                     producto.FactorConversion,
@@ -883,25 +885,9 @@ public async Task AgregarPresentacionAlCarritoAsync(
             resultadoDetalle.Data.IdPrecioAplicado;
 
 
-        nuevoDetalle.IdReglaAplicada =
-            resultadoDetalle.Data.IdReglaAplicada;
-
-
-        nuevoDetalle.CantidadMinimaPrecio =
-            resultadoDetalle.Data.CantidadMinimaPrecio;
-
-
         nuevoDetalle.TiposDisponibles =
             resultadoDetalle.Data.TiposDisponibles
             ?? new List<TipoPrecioDisponible>();
-
-
-        nuevoDetalle.NivelAutomaticoPorCantidad =
-            resultadoDetalle.Data.NivelAutomaticoPorCantidad;
-
-
-        nuevoDetalle.SiguienteNivel =
-            resultadoDetalle.Data.SiguienteNivel;
 
 
         // =====================================================
@@ -1489,7 +1475,7 @@ private void AplicarActualizacionDetalle(
 
 
         detalle.Cantidad =
-            (int)detalleBackend.CantidadComercial;
+            detalleBackend.CantidadComercial;
 
 
         detalle.PrecioUnitario =
@@ -1539,14 +1525,6 @@ private void AplicarActualizacionDetalle(
             precio.IdPrecioAplicado;
 
 
-        detalle.IdReglaAplicada =
-            precio.IdReglaAplicada;
-
-
-        detalle.CantidadMinimaPrecio =
-            precio.CantidadMinima;
-
-
         detalle.PrecioUnitario =
             precio.PrecioUnitario;
 
@@ -1554,14 +1532,7 @@ private void AplicarActualizacionDetalle(
         detalle.TiposDisponibles =
             precio.TiposDisponibles
             ?? new List<TipoPrecioDisponible>();
-
-
-        detalle.NivelAutomaticoPorCantidad =
-            precio.NivelAutomaticoPorCantidad;
-
-
-        detalle.SiguienteNivel =
-            precio.SiguienteNivel;
+        
     }
 
 
@@ -1889,8 +1860,11 @@ public async Task CargarVentaActualAsync()
                     detalle.IdDetalle
                 );
 
+            nuevoDetalle.UnidadMedida =
+                detalle.UnidadMedida;
+
             nuevoDetalle.Cantidad =
-                (int)detalle.CantidadComercial;
+                detalle.CantidadComercial;
             
             
             // =====================================================
@@ -1951,7 +1925,7 @@ public async Task CargarVentaActualAsync()
 
 public async Task ActualizarCantidadManualAsync(
     DetalleVenta detalle,
-    int cantidadNueva)
+    decimal cantidadNueva)
 {
     if (detalle is null)
         return;
