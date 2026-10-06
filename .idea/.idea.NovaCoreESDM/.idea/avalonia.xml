@@ -34,6 +34,7 @@
         <entry key="Views/Ventas/CobroWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/Ventas/CreditoVentaWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/Ventas/EditarCantidadWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
+        <entry key="Views/Ventas/EditarPesoWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/Ventas/EntregaTicketWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/Ventas/EnviarWhatsAppWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
         <entry key="Views/Ventas/PagoEfectivoWindow.axaml" value="NovaCoreESDM.Desktop.csproj" />
