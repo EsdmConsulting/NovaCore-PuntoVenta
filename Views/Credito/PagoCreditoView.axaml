@@ -12,40 +12,52 @@
 
              Background="#F3F6FA">
 
-    <Grid RowDefinitions="Auto,Auto,*"
-          Margin="26"
-          RowSpacing="18">
 
-        <!-- ================================================= -->
-        <!-- ENCABEZADO                                        -->
-        <!-- ================================================= -->
+    <!-- ========================================================= -->
+    <!-- CONTENEDOR PRINCIPAL                                      -->
+    <!-- ========================================================= -->
+
+    <Grid RowDefinitions="Auto,Auto,*"
+          Margin="18"
+          RowSpacing="14">
+
+
+        <!-- ===================================================== -->
+        <!-- ENCABEZADO                                            -->
+        <!-- ===================================================== -->
 
         <Grid Grid.Row="0"
               ColumnDefinitions="*,Auto">
 
-            <StackPanel Spacing="4">
+
+            <StackPanel Spacing="3">
 
                 <TextBlock Text="Pagar crédito"
-                           FontSize="30"
+                           FontSize="26"
                            FontWeight="Bold"
-                           Foreground="#0B3D6E"/>
+                           Foreground="#0B3D6E"
+                           TextWrapping="Wrap"/>
 
                 <TextBlock Text="Consulta saldos, documentos pendientes y registra abonos de crédito."
-                           FontSize="13"
-                           Foreground="#64748B"/>
+                           FontSize="12"
+                           Foreground="#64748B"
+                           TextWrapping="Wrap"/>
 
             </StackPanel>
+
+
+            <!-- ESTADO DEL MÓDULO -->
 
             <Border Grid.Column="1"
                     Background="#EFFAF2"
                     BorderBrush="#B8E8C3"
                     BorderThickness="1"
                     CornerRadius="10"
-                    Padding="14,8"
+                    Padding="12,7"
                     VerticalAlignment="Center">
 
                 <StackPanel Orientation="Horizontal"
-                            Spacing="8">
+                            Spacing="7">
 
                     <Border Width="8"
                             Height="8"
@@ -54,7 +66,7 @@
                             VerticalAlignment="Center"/>
 
                     <TextBlock Text="Módulo de crédito"
-                               FontSize="11"
+                               FontSize="10"
                                FontWeight="SemiBold"
                                Foreground="#16803B"
                                VerticalAlignment="Center"/>
@@ -66,68 +78,77 @@
         </Grid>
 
 
-        <!-- ================================================= -->
-        <!-- CLIENTE                                           -->
-        <!-- ================================================= -->
+        <!-- ===================================================== -->
+        <!-- CLIENTE                                               -->
+        <!-- ===================================================== -->
 
         <Border Grid.Row="1"
                 Background="White"
                 BorderBrush="#D7E0EB"
                 BorderThickness="1"
-                CornerRadius="15"
-                Padding="18">
+                CornerRadius="14"
+                Padding="14">
 
-            <Grid ColumnDefinitions="58,1.1*,1.4*,Auto"
-                  ColumnSpacing="16">
+            <Grid ColumnDefinitions="48,1.05*,1.4*,Auto"
+                  ColumnSpacing="12">
 
-                <!-- ICONO -->
+
+                <!-- ================================================= -->
+                <!-- ICONO                                             -->
+                <!-- ================================================= -->
 
                 <Border Grid.Column="0"
-                        Width="52"
-                        Height="52"
+                        Width="44"
+                        Height="44"
                         Background="#EEF2FF"
-                        CornerRadius="12"
+                        CornerRadius="11"
                         VerticalAlignment="Center">
 
                     <TextBlock Text="👤"
-                               FontSize="24"
+                               FontSize="21"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"/>
 
                 </Border>
 
 
-                <!-- CLIENTE SELECCIONADO -->
+                <!-- ================================================= -->
+                <!-- CLIENTE SELECCIONADO                              -->
+                <!-- ================================================= -->
 
                 <StackPanel Grid.Column="1"
-                            Spacing="4"
+                            Spacing="3"
                             VerticalAlignment="Center">
 
                     <TextBlock Text="Cliente seleccionado"
-                               FontSize="11"
+                               FontSize="10"
                                Foreground="#64748B"/>
 
                     <TextBlock Text="{Binding ClienteSeleccionado.Nombre}"
-                               FontSize="16"
+                               FontSize="14"
                                FontWeight="Bold"
-                               Foreground="#17365D"/>
+                               Foreground="#17365D"
+                               TextWrapping="Wrap"
+                               MaxLines="2"/>
 
-                    <StackPanel Orientation="Horizontal"
-                                Spacing="6">
+
+                    <WrapPanel Orientation="Horizontal">
 
                         <TextBlock Text="{Binding ClienteSeleccionado.Codigo}"
-                                   FontSize="10"
-                                   Foreground="#64748B"/>
+                                   FontSize="9"
+                                   Foreground="#64748B"
+                                   Margin="0,0,6,0"/>
 
                         <TextBlock Text="•"
-                                   FontSize="10"
-                                   Foreground="#94A3B8"/>
+                                   FontSize="9"
+                                   Foreground="#94A3B8"
+                                   Margin="0,0,6,0"/>
 
                         <TextBlock Text="{Binding ClienteSeleccionado.Rfc}"
-                                   FontSize="10"
+                                   FontSize="9"
                                    Foreground="#64748B"/>
 
-                    </StackPanel>
+                    </WrapPanel>
 
                 </StackPanel>
 
@@ -144,22 +165,22 @@
                                             Mode=TwoWay,
                                             UpdateSourceTrigger=PropertyChanged}"
 
-                             Height="44"
+                             Height="42"
 
                              Watermark="Buscar cliente por nombre..."
 
-                             Padding="14,0"
+                             Padding="13,0"
 
-                             FontSize="12"
+                             FontSize="11"
 
                              CornerRadius="9"
 
                              BorderBrush="#CBD5E1"/>
 
 
-                    <!-- ============================================= -->
-                    <!-- SUGERENCIAS                                   -->
-                    <!-- ============================================= -->
+                    <!-- ================================================= -->
+                    <!-- SUGERENCIAS                                       -->
+                    <!-- ================================================= -->
 
                     <Border Grid.Row="1"
                             IsVisible="{Binding MostrarSugerenciasClientes}"
@@ -173,11 +194,12 @@
 
                             Margin="0,5,0,0"
 
-                            MaxHeight="220"
+                            MaxHeight="210"
 
                             ZIndex="100">
 
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled">
 
                             <ItemsControl ItemsSource="{Binding ClientesEncontrados}">
 
@@ -192,9 +214,9 @@
 
                                                 CommandParameter="{Binding}"
 
-                                                Height="40"
+                                                MinHeight="38"
 
-                                                Padding="12,0"
+                                                Padding="11,0"
 
                                                 Background="White"
 
@@ -217,10 +239,13 @@
                 </Grid>
 
 
-                <!-- LIMPIAR CLIENTE -->
+                <!-- ================================================= -->
+                <!-- LIMPIAR CLIENTE                                   -->
+                <!-- ================================================= -->
 
                 <Button Grid.Column="3"
-                        Width="120"
+
+                        MinWidth="90"
                         Height="42"
 
                         Content="Limpiar"
@@ -236,6 +261,9 @@
 
                         CornerRadius="9"
 
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+
                         VerticalAlignment="Center"/>
 
             </Grid>
@@ -243,21 +271,23 @@
         </Border>
 
 
-        <!-- ================================================= -->
-        <!-- CONTENIDO                                         -->
-        <!-- ================================================= -->
+        <!-- ===================================================== -->
+        <!-- CONTENIDO                                             -->
+        <!-- ===================================================== -->
 
         <Grid Grid.Row="2"
-              ColumnDefinitions="1.55*,0.75*"
-              ColumnSpacing="18">
+              ColumnDefinitions="*,390"
+              ColumnSpacing="14">
+
 
             <!-- ================================================= -->
-            <!-- IZQUIERDA                                         -->
+            <!-- COLUMNA IZQUIERDA                                 -->
             <!-- ================================================= -->
 
             <Grid Grid.Column="0"
                   RowDefinitions="Auto,*"
-                  RowSpacing="16">
+                  RowSpacing="14">
+
 
                 <!-- ================================================= -->
                 <!-- RESUMEN                                           -->
@@ -265,117 +295,136 @@
 
                 <Grid Grid.Row="0"
                       ColumnDefinitions="*,*,*"
-                      ColumnSpacing="12">
+                      ColumnSpacing="10">
 
-                    <!-- SALDO PENDIENTE -->
+
+                    <!-- ================================================= -->
+                    <!-- SALDO PENDIENTE                                   -->
+                    <!-- ================================================= -->
 
                     <Border Grid.Column="0"
                             Background="#4B36DD"
-                            CornerRadius="14"
-                            Padding="18">
+                            CornerRadius="13"
+                            Padding="15">
 
-                        <StackPanel Spacing="7">
+                        <StackPanel Spacing="6">
 
                             <TextBlock Text="Saldo pendiente"
-                                       FontSize="11"
+                                       FontSize="10"
                                        FontWeight="SemiBold"
                                        Foreground="#E4E1FF"/>
+
 
                             <StackPanel Orientation="Horizontal"
                                         Spacing="2">
 
                                 <TextBlock Text="$"
-                                           FontSize="24"
+                                           FontSize="21"
                                            FontWeight="Bold"
                                            Foreground="White"/>
 
-                                <TextBlock Text="{Binding SaldoTotalTexto}"                                           FontSize="24"
+                                <TextBlock Text="{Binding SaldoTotalTexto}"
+                                           FontSize="21"
                                            FontWeight="Bold"
                                            Foreground="White"/>
 
                             </StackPanel>
 
+
                             <TextBlock Text="Deuda total actual"
-                                       FontSize="10"
-                                       Foreground="#CFCBFF"/>
+                                       FontSize="9"
+                                       Foreground="#CFCBFF"
+                                       TextWrapping="Wrap"/>
 
                         </StackPanel>
 
                     </Border>
 
 
-                    <!-- DISPONIBLE -->
+                    <!-- ================================================= -->
+                    <!-- DISPONIBLE                                        -->
+                    <!-- ================================================= -->
 
                     <Border Grid.Column="1"
                             Background="#EFFAF2"
                             BorderBrush="#B8E8C3"
                             BorderThickness="1"
-                            CornerRadius="14"
-                            Padding="18">
+                            CornerRadius="13"
+                            Padding="15">
 
-                        <StackPanel Spacing="7">
+                        <StackPanel Spacing="6">
 
                             <TextBlock Text="Crédito disponible"
-                                       FontSize="11"
+                                       FontSize="10"
                                        FontWeight="SemiBold"
                                        Foreground="#4F765C"/>
+
 
                             <StackPanel Orientation="Horizontal"
                                         Spacing="2">
 
                                 <TextBlock Text="$"
-                                           FontSize="23"
+                                           FontSize="21"
                                            FontWeight="Bold"
                                            Foreground="#16803B"/>
 
-                                <TextBlock Text="{Binding CreditoDisponibleTexto}"                                           FontSize="23"
+                                <TextBlock Text="{Binding CreditoDisponibleTexto}"
+                                           FontSize="21"
                                            FontWeight="Bold"
                                            Foreground="#16803B"/>
 
                             </StackPanel>
 
+
                             <TextBlock Text="Disponible para nuevas compras"
-                                       FontSize="10"
-                                       Foreground="#65846C"/>
+                                       FontSize="9"
+                                       Foreground="#65846C"
+                                       TextWrapping="Wrap"/>
 
                         </StackPanel>
 
                     </Border>
 
 
-                    <!-- VENCIDO -->
+                    <!-- ================================================= -->
+                    <!-- VENCIDO                                           -->
+                    <!-- ================================================= -->
 
                     <Border Grid.Column="2"
                             Background="#FFF7F7"
                             BorderBrush="#F4C7CB"
                             BorderThickness="1"
-                            CornerRadius="14"
-                            Padding="18">
+                            CornerRadius="13"
+                            Padding="15">
 
-                        <StackPanel Spacing="7">
+                        <StackPanel Spacing="6">
 
                             <TextBlock Text="Saldo vencido"
-                                       FontSize="11"
+                                       FontSize="10"
                                        FontWeight="SemiBold"
                                        Foreground="#8A4A50"/>
+
 
                             <StackPanel Orientation="Horizontal"
                                         Spacing="2">
 
                                 <TextBlock Text="$"
-                                           FontSize="23"
+                                           FontSize="21"
                                            FontWeight="Bold"
                                            Foreground="#C61F2B"/>
 
-                                <TextBlock Text="{Binding SaldoVencidoTexto}"                                           FontSize="23"
+                                <TextBlock Text="{Binding SaldoVencidoTexto}"
+                                           FontSize="21"
                                            FontWeight="Bold"
                                            Foreground="#C61F2B"/>
 
                             </StackPanel>
 
+
                             <TextBlock Text="Documentos fuera de plazo"
-                                       FontSize="10"
-                                       Foreground="#9A656A"/>
+                                       FontSize="9"
+                                       Foreground="#9A656A"
+                                       TextWrapping="Wrap"/>
 
                         </StackPanel>
 
@@ -392,44 +441,49 @@
                         Background="White"
                         BorderBrush="#D7E0EB"
                         BorderThickness="1"
-                        CornerRadius="15"
-                        Padding="18">
+                        CornerRadius="14"
+                        Padding="15">
 
                     <Grid RowDefinitions="Auto,Auto,*"
-                          RowSpacing="12">
+                          RowSpacing="10">
 
-                        <!-- ENCABEZADO -->
+
+                        <!-- ================================================= -->
+                        <!-- ENCABEZADO                                        -->
+                        <!-- ================================================= -->
 
                         <Grid Grid.Row="0"
                               ColumnDefinitions="*,Auto,Auto"
-                              ColumnSpacing="9">
+                              ColumnSpacing="8">
 
-                            <StackPanel Spacing="3">
+                            <StackPanel Spacing="2">
 
                                 <TextBlock Text="Documentos pendientes"
-                                           FontSize="17"
+                                           FontSize="16"
                                            FontWeight="Bold"
                                            Foreground="#17365D"/>
 
-                                <StackPanel Orientation="Horizontal"
-                                            Spacing="4">
+
+                                <WrapPanel Orientation="Horizontal">
 
                                     <TextBlock Text="{Binding DocumentosSeleccionados}"
-                                               FontSize="11"
+                                               FontSize="10"
                                                FontWeight="SemiBold"
-                                               Foreground="#4B36DD"/>
+                                               Foreground="#4B36DD"
+                                               Margin="0,0,4,0"/>
 
                                     <TextBlock Text="documento(s) seleccionado(s)"
-                                               FontSize="11"
+                                               FontSize="10"
                                                Foreground="#64748B"/>
 
-                                </StackPanel>
+                                </WrapPanel>
 
                             </StackPanel>
 
 
                             <Button Grid.Column="1"
-                                    Height="38"
+                                    Height="36"
+
                                     Content="Seleccionar todos"
 
                                     Command="{Binding SeleccionarTodosCommand}"
@@ -440,12 +494,14 @@
                                     BorderBrush="#CBD5E1"
                                     BorderThickness="1"
 
-                                    CornerRadius="9"
-                                    Padding="14,0"/>
+                                    CornerRadius="8"
+
+                                    Padding="12,0"/>
 
 
                             <Button Grid.Column="2"
-                                    Height="38"
+                                    Height="36"
+
                                     Content="Limpiar"
 
                                     Command="{Binding LimpiarSeleccionCommand}"
@@ -456,55 +512,62 @@
                                     BorderBrush="#CBD5E1"
                                     BorderThickness="1"
 
-                                    CornerRadius="9"
-                                    Padding="14,0"/>
+                                    CornerRadius="8"
+
+                                    Padding="12,0"/>
 
                         </Grid>
 
 
-                        <!-- COLUMNAS -->
+                        <!-- ================================================= -->
+                        <!-- CABECERA TABLA                                    -->
+                        <!-- ================================================= -->
 
                         <Border Grid.Row="1"
                                 Background="#F8FAFC"
                                 CornerRadius="8"
-                                Padding="12,8">
+                                Padding="10,7">
 
-                            <Grid ColumnDefinitions="34,1.5*,0.85*,0.8*,0.9*"
-                                  ColumnSpacing="12">
+                            <Grid ColumnDefinitions="30,1.45*,0.8*,0.72*,1*"
+                                  ColumnSpacing="9">
 
                                 <TextBlock Grid.Column="1"
                                            Text="Documento"
-                                           FontSize="10"
+                                           FontSize="9"
                                            FontWeight="SemiBold"
                                            Foreground="#64748B"/>
 
                                 <TextBlock Grid.Column="2"
                                            Text="Saldo"
-                                           FontSize="10"
+                                           FontSize="9"
                                            FontWeight="SemiBold"
                                            Foreground="#64748B"/>
 
                                 <TextBlock Grid.Column="3"
                                            Text="Estado"
-                                           FontSize="10"
+                                           FontSize="9"
                                            FontWeight="SemiBold"
                                            Foreground="#64748B"/>
 
                                 <TextBlock Grid.Column="4"
                                            Text="Monto a aplicar"
-                                           FontSize="10"
+                                           FontSize="9"
                                            FontWeight="SemiBold"
-                                           Foreground="#64748B"/>
+                                           Foreground="#64748B"
+                                           TextWrapping="Wrap"/>
 
                             </Grid>
 
                         </Border>
 
 
-                        <!-- LISTADO -->
+                        <!-- ================================================= -->
+                        <!-- LISTADO                                           -->
+                        <!-- ================================================= -->
 
                         <ScrollViewer Grid.Row="2"
-                                      VerticalScrollBarVisibility="Auto">
+                                      VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled">
 
                             <ItemsControl ItemsSource="{Binding DocumentosPendientes}">
 
@@ -512,17 +575,20 @@
 
                                     <DataTemplate x:DataType="vm:DocumentoPagoCreditoItem">
 
-                                        <Border Margin="0,0,0,9"
-                                                Padding="12"
+                                        <Border Margin="0,0,0,8"
+                                                Padding="10"
                                                 Background="#FBFCFE"
                                                 BorderBrush="#E2E8F0"
                                                 BorderThickness="1"
-                                                CornerRadius="11">
+                                                CornerRadius="10">
 
-                                            <Grid ColumnDefinitions="34,1.5*,0.85*,0.8*,0.9*"
-                                                  ColumnSpacing="12">
+                                            <Grid ColumnDefinitions="30,1.45*,0.8*,0.72*,1*"
+                                                  ColumnSpacing="9">
 
-                                                <!-- CHECK -->
+
+                                                <!-- ================================================= -->
+                                                <!-- CHECK                                             -->
+                                                <!-- ================================================= -->
 
                                                 <CheckBox Grid.Column="0"
                                                           IsChecked="{Binding Seleccionado}"
@@ -530,42 +596,50 @@
                                                           HorizontalAlignment="Center"/>
 
 
-                                                <!-- DOCUMENTO -->
+                                                <!-- ================================================= -->
+                                                <!-- DOCUMENTO                                         -->
+                                                <!-- ================================================= -->
 
                                                 <StackPanel Grid.Column="1"
-                                                            Spacing="3"
+                                                            Spacing="2"
                                                             VerticalAlignment="Center">
 
                                                     <TextBlock Text="{Binding Folio}"
-                                                               FontSize="12"
+                                                               FontSize="11"
                                                                FontWeight="Bold"
-                                                               Foreground="#17365D"/>
+                                                               Foreground="#17365D"
+                                                               TextTrimming="CharacterEllipsis"/>
 
-                                                    <StackPanel Orientation="Horizontal"
-                                                                Spacing="4">
+
+                                                    <WrapPanel Orientation="Horizontal">
 
                                                         <TextBlock Text="{Binding TipoDocumento}"
-                                                                   FontSize="9"
-                                                                   Foreground="#64748B"/>
+                                                                   FontSize="8"
+                                                                   Foreground="#64748B"
+                                                                   Margin="0,0,4,0"/>
 
                                                         <TextBlock Text="•"
-                                                                   FontSize="9"
-                                                                   Foreground="#94A3B8"/>
+                                                                   FontSize="8"
+                                                                   Foreground="#94A3B8"
+                                                                   Margin="0,0,4,0"/>
 
                                                         <TextBlock Text="Vence:"
-                                                                   FontSize="9"
-                                                                   Foreground="#64748B"/>
+                                                                   FontSize="8"
+                                                                   Foreground="#64748B"
+                                                                   Margin="0,0,3,0"/>
 
                                                         <TextBlock Text="{Binding FechaVencimiento}"
-                                                                   FontSize="9"
+                                                                   FontSize="8"
                                                                    Foreground="#64748B"/>
 
-                                                    </StackPanel>
+                                                    </WrapPanel>
 
                                                 </StackPanel>
 
 
-                                                <!-- SALDO -->
+                                                <!-- ================================================= -->
+                                                <!-- SALDO                                             -->
+                                                <!-- ================================================= -->
 
                                                 <StackPanel Grid.Column="2"
                                                             Orientation="Horizontal"
@@ -573,54 +647,62 @@
                                                             VerticalAlignment="Center">
 
                                                     <TextBlock Text="$"
-                                                               FontSize="12"
+                                                               FontSize="11"
                                                                FontWeight="Bold"
                                                                Foreground="#17253B"/>
 
-                                                    <TextBlock Text="{Binding SaldoTexto}"                                                               FontSize="12"
+                                                    <TextBlock Text="{Binding SaldoTexto}"
+                                                               FontSize="11"
                                                                FontWeight="Bold"
                                                                Foreground="#17253B"/>
 
                                                 </StackPanel>
 
 
-                                                <!-- ESTADO -->
+                                                <!-- ================================================= -->
+                                                <!-- ESTADO                                            -->
+                                                <!-- ================================================= -->
 
                                                 <Border Grid.Column="3"
                                                         Background="#F1F5F9"
                                                         CornerRadius="7"
-                                                        Padding="8,5"
+                                                        Padding="7,4"
                                                         HorizontalAlignment="Left"
                                                         VerticalAlignment="Center">
 
                                                     <TextBlock Text="{Binding EstadoTexto}"
-                                                               FontSize="10"
+                                                               FontSize="9"
                                                                FontWeight="SemiBold"
                                                                Foreground="#475569"/>
 
                                                 </Border>
 
 
-                                                <!-- MONTO -->
+                                                <!-- ================================================= -->
+                                                <!-- MONTO                                             -->
+                                                <!-- ================================================= -->
 
                                                 <Grid Grid.Column="4"
                                                       ColumnDefinitions="Auto,*"
                                                       VerticalAlignment="Center">
 
                                                     <TextBlock Text="$"
-                                                               Margin="8,0,0,0"
-                                                               FontSize="12"
+                                                               Margin="5,0,0,0"
+                                                               FontSize="11"
                                                                Foreground="#475569"
                                                                VerticalAlignment="Center"/>
 
                                                     <TextBox Grid.Column="1"
+
                                                              Text="{Binding MontoAplicarTexto,
-                                                            Mode=TwoWay,
-                                                            UpdateSourceTrigger=PropertyChanged}"
+                                                                            Mode=TwoWay,
+                                                                            UpdateSourceTrigger=PropertyChanged}"
 
                                                              LostFocus="MontoAplicarTextBox_LostFocus"
 
-                                                             Height="38"
+                                                             Height="36"
+
+                                                             FontSize="10"
 
                                                              HorizontalContentAlignment="Right"
                                                              VerticalContentAlignment="Center"
@@ -628,9 +710,9 @@
                                                              BorderBrush="#CBD5E1"
                                                              BorderThickness="1"
 
-                                                             CornerRadius="8"
+                                                             CornerRadius="7"
 
-                                                             Padding="8,0"/>
+                                                             Padding="7,0"/>
 
                                                 </Grid>
 
@@ -654,33 +736,45 @@
 
 
             <!-- ================================================= -->
-            <!-- DERECHA - REGISTRAR PAGO                          -->
+            <!-- COLUMNA DERECHA                                   -->
+            <!-- REGISTRAR PAGO                                    -->
             <!-- ================================================= -->
 
             <Border Grid.Column="1"
                     Background="White"
                     BorderBrush="#D7E0EB"
                     BorderThickness="1"
-                    CornerRadius="15"
-                    Padding="18">
+                    CornerRadius="14"
+                    Padding="16">
+
+                <!--
+                    Auto = título
+                    Auto = total
+                    Auto = forma
+                    Auto = referencia
+                    Auto = info
+                    *    = mensajes / espacio flexible
+                    Auto = botones SIEMPRE visibles
+                -->
 
                 <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto"
-                      RowSpacing="12">
+                      RowSpacing="10">
+
 
                     <!-- ================================================= -->
                     <!-- TÍTULO                                            -->
                     <!-- ================================================= -->
 
                     <StackPanel Grid.Row="0"
-                                Spacing="3">
+                                Spacing="2">
 
                         <TextBlock Text="Registrar pago"
-                                   FontSize="19"
+                                   FontSize="18"
                                    FontWeight="Bold"
                                    Foreground="#17365D"/>
 
                         <TextBlock Text="Selecciona los documentos y define cómo se aplicará el abono."
-                                   FontSize="10"
+                                   FontSize="9"
                                    Foreground="#64748B"
                                    TextWrapping="Wrap"/>
 
@@ -695,13 +789,13 @@
                             Background="#F6F4FF"
                             BorderBrush="#D7D0FF"
                             BorderThickness="1"
-                            CornerRadius="12"
-                            Padding="14">
+                            CornerRadius="11"
+                            Padding="12">
 
-                        <StackPanel Spacing="4">
+                        <StackPanel Spacing="3">
 
                             <TextBlock Text="Total seleccionado"
-                                       FontSize="10"
+                                       FontSize="9"
                                        FontWeight="SemiBold"
                                        Foreground="#7065B5"/>
 
@@ -710,30 +804,31 @@
                                         Spacing="2">
 
                                 <TextBlock Text="$"
-                                           FontSize="25"
+                                           FontSize="22"
                                            FontWeight="Bold"
                                            Foreground="#4938D6"/>
 
-                                <TextBlock Text="{Binding TotalSeleccionadoTexto}"                                           FontSize="25"
+                                <TextBlock Text="{Binding TotalSeleccionadoTexto}"
+                                           FontSize="22"
                                            FontWeight="Bold"
                                            Foreground="#4938D6"/>
 
                             </StackPanel>
 
 
-                            <StackPanel Orientation="Horizontal"
-                                        Spacing="4">
+                            <WrapPanel Orientation="Horizontal">
 
                                 <TextBlock Text="{Binding DocumentosSeleccionados}"
-                                           FontSize="9"
+                                           FontSize="8"
                                            FontWeight="SemiBold"
-                                           Foreground="#7065B5"/>
+                                           Foreground="#7065B5"
+                                           Margin="0,0,4,0"/>
 
                                 <TextBlock Text="documento(s) seleccionado(s)"
-                                           FontSize="9"
+                                           FontSize="8"
                                            Foreground="#7065B5"/>
 
-                            </StackPanel>
+                            </WrapPanel>
 
                         </StackPanel>
 
@@ -741,14 +836,14 @@
 
 
                     <!-- ================================================= -->
-                    <!-- FORMA DE PAGO                                    -->
+                    <!-- FORMA DE PAGO                                     -->
                     <!-- ================================================= -->
 
                     <StackPanel Grid.Row="2"
-                                Spacing="5">
+                                Spacing="4">
 
                         <TextBlock Text="Forma de pago"
-                                   FontSize="11"
+                                   FontSize="10"
                                    FontWeight="SemiBold"
                                    Foreground="#334155"/>
 
@@ -756,57 +851,60 @@
                                   SelectedItem="{Binding FormaPagoSeleccionada}"
                                   Height="40"
                                   HorizontalAlignment="Stretch"
-                                  Padding="11,0"/>
+                                  Padding="10,0"/>
 
                     </StackPanel>
 
 
                     <!-- ================================================= -->
-                    <!-- REFERENCIA                                       -->
+                    <!-- REFERENCIA                                        -->
                     <!-- ================================================= -->
 
                     <StackPanel Grid.Row="3"
-                                Spacing="5">
+                                Spacing="4">
 
                         <TextBlock Text="Referencia"
-                                   FontSize="11"
+                                   FontSize="10"
                                    FontWeight="SemiBold"
                                    Foreground="#334155"/>
 
                         <TextBox Text="{Binding Referencia}"
                                  Height="40"
                                  Watermark="Opcional"
+
                                  BorderBrush="#CBD5E1"
                                  BorderThickness="1"
-                                 CornerRadius="9"
-                                 Padding="11,0"/>
+
+                                 CornerRadius="8"
+
+                                 Padding="10,0"/>
 
                     </StackPanel>
 
 
                     <!-- ================================================= -->
-                    <!-- INFORMACIÓN                                      -->
+                    <!-- INFORMACIÓN                                       -->
                     <!-- ================================================= -->
 
                     <Border Grid.Row="4"
                             Background="#F8FAFC"
                             BorderBrush="#E2E8F0"
                             BorderThickness="1"
-                            CornerRadius="10"
-                            Padding="10">
+                            CornerRadius="9"
+                            Padding="9">
 
-                        <Grid ColumnDefinitions="26,*"
-                              ColumnSpacing="9">
+                        <Grid ColumnDefinitions="24,*"
+                              ColumnSpacing="8">
 
                             <Border Grid.Column="0"
-                                    Width="25"
-                                    Height="25"
-                                    CornerRadius="7"
+                                    Width="23"
+                                    Height="23"
+                                    CornerRadius="6"
                                     Background="#EEF2FF"
                                     VerticalAlignment="Top">
 
                                 <TextBlock Text="i"
-                                           FontSize="11"
+                                           FontSize="10"
                                            FontWeight="Bold"
                                            Foreground="#4B36DD"
                                            HorizontalAlignment="Center"
@@ -817,7 +915,7 @@
 
                             <TextBlock Grid.Column="1"
                                        Text="Puedes pagar un documento completo, realizar un abono parcial, seleccionar varios documentos o liquidar todo el crédito."
-                                       FontSize="9"
+                                       FontSize="8"
                                        Foreground="#64748B"
                                        TextWrapping="Wrap"
                                        VerticalAlignment="Center"/>
@@ -832,20 +930,20 @@
                     <!-- ================================================= -->
 
                     <Grid Grid.Row="5"
-                          MinHeight="10">
+                          MinHeight="8">
 
                         <StackPanel VerticalAlignment="Bottom"
-                                    Spacing="4">
+                                    Spacing="3">
 
                             <TextBlock Text="{Binding MensajeError}"
                                        Foreground="#C61F2B"
-                                       FontSize="10"
+                                       FontSize="9"
                                        FontWeight="SemiBold"
                                        TextWrapping="Wrap"/>
 
                             <TextBlock Text="{Binding MensajeExito}"
                                        Foreground="#16803B"
-                                       FontSize="10"
+                                       FontSize="9"
                                        FontWeight="SemiBold"
                                        TextWrapping="Wrap"/>
 
@@ -855,59 +953,78 @@
 
 
                     <!-- ================================================= -->
-                    <!-- BOTONES                                          -->
+                    <!-- BOTONES                                           -->
                     <!-- ================================================= -->
 
                     <Grid Grid.Row="6"
-                          ColumnDefinitions="1.3*,0.85*"
-                          ColumnSpacing="8"
-                          Margin="0,0,0,4">
+                          ColumnDefinitions="*,*"
+                          ColumnSpacing="8">
 
-                        <!-- PAGAR SELECCIONADOS -->
+
+                        <!-- ================================================= -->
+                        <!-- PAGAR SELECCIONADOS                               -->
+                        <!-- ================================================= -->
 
                         <Button Grid.Column="0"
-                                Height="46"
+                                Height="48"
+
                                 Command="{Binding PagarSeleccionadosCommand}"
+
                                 Background="#4B36DD"
                                 Foreground="White"
+
                                 BorderThickness="0"
+
                                 CornerRadius="10"
+
+                                HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Center"
                                 VerticalContentAlignment="Center">
 
                             <StackPanel Orientation="Horizontal"
-                                        Spacing="6"
+                                        Spacing="5"
                                         HorizontalAlignment="Center">
 
                                 <TextBlock Text="✓"
-                                           FontSize="13"
+                                           FontSize="12"
                                            FontWeight="Bold"/>
 
                                 <TextBlock Text="Pagar seleccionados"
-                                           FontSize="11"
-                                           FontWeight="Bold"/>
+                                           FontSize="10"
+                                           FontWeight="Bold"
+                                           TextWrapping="Wrap"/>
 
                             </StackPanel>
 
                         </Button>
 
 
-                        <!-- LIQUIDAR TODO -->
+                        <!-- ================================================= -->
+                        <!-- LIQUIDAR TODO                                     -->
+                        <!-- ================================================= -->
 
                         <Button Grid.Column="1"
-                                Height="46"
+                                Height="48"
+
                                 Command="{Binding PagarTodoCommand}"
+
                                 Background="#EFFAF2"
                                 Foreground="#16803B"
+
                                 BorderBrush="#B8E8C3"
                                 BorderThickness="1"
+
                                 CornerRadius="10"
+
+                                HorizontalAlignment="Stretch"
                                 HorizontalContentAlignment="Center"
                                 VerticalContentAlignment="Center">
 
                             <TextBlock Text="Liquidar todo"
-                                       FontSize="11"
-                                       FontWeight="SemiBold"/>
+                                       FontSize="10"
+                                       FontWeight="SemiBold"
+                                       TextWrapping="Wrap"
+                                       TextAlignment="Center"/>
 
                         </Button>
 

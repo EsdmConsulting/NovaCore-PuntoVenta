@@ -3,23 +3,42 @@
 
         x:Class="NovaCoreESDM.Views.Ventas.CobroWindow"
 
-        Width="860"
-        Height="720"
+        Title="Cobrar venta"
 
-        CanResize="False"
+        Icon="/Assets/Brand/esdm-app-icon.ico"
+
+        Width="820"
+        Height="640"
+
+        MinWidth="640"
+        MinHeight="520"
+
+        CanResize="True"
+
         WindowStartupLocation="CenterOwner"
 
-        Title="Cobrar venta"
         Background="#F3F6FA">
 
 
-    <Border Margin="14"
-            Padding="32"
+    <!-- ========================================================= -->
+    <!-- CONTENEDOR GENERAL                                        -->
+    <!-- ========================================================= -->
+
+    <Border Margin="12"
+            Padding="26"
             Background="White"
             CornerRadius="18">
 
-        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto"
-              RowSpacing="22">
+        <!--
+            Auto = encabezado
+            Auto = total
+            Auto = título métodos
+            *    = métodos de pago -> zona flexible / scroll
+            Auto = pie -> SIEMPRE visible
+        -->
+
+        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto"
+              RowSpacing="18">
 
 
             <!-- ================================================= -->
@@ -27,16 +46,18 @@
             <!-- ================================================= -->
 
             <StackPanel Grid.Row="0"
-                        Spacing="5">
+                        Spacing="4">
 
                 <TextBlock Text="Cobrar venta"
-                           FontSize="34"
+                           FontSize="30"
                            FontWeight="Bold"
-                           Foreground="#0B3D6E"/>
+                           Foreground="#0B3D6E"
+                           TextWrapping="Wrap"/>
 
                 <TextBlock Text="Selecciona el método con el que se realizará el cobro"
-                           FontSize="14"
-                           Foreground="#5F7591"/>
+                           FontSize="13"
+                           Foreground="#5F7591"
+                           TextWrapping="Wrap"/>
 
             </StackPanel>
 
@@ -48,49 +69,57 @@
             <Border Grid.Row="1"
                     Background="#4B36DD"
                     CornerRadius="15"
-                    Padding="24">
+                    Padding="20">
 
-                <Grid ColumnDefinitions="72,*,Auto"
-                      ColumnSpacing="18">
+                <Grid ColumnDefinitions="58,*,Auto"
+                      ColumnSpacing="16">
 
+
+                    <!-- ICONO -->
 
                     <Border Grid.Column="0"
-                            Width="62"
-                            Height="62"
+                            Width="54"
+                            Height="54"
                             Background="#25FFFFFF"
-                            CornerRadius="14"
+                            CornerRadius="13"
                             VerticalAlignment="Center">
 
                         <TextBlock Text="🛒"
-                                   FontSize="30"
+                                   FontSize="26"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"/>
 
                     </Border>
 
 
+                    <!-- INFORMACIÓN -->
+
                     <StackPanel Grid.Column="1"
                                 VerticalAlignment="Center"
-                                Spacing="4">
+                                Spacing="3">
 
                         <TextBlock Text="Total a pagar"
-                                   FontSize="14"
+                                   FontSize="13"
                                    FontWeight="SemiBold"
                                    Foreground="#E8E7FF"/>
 
                         <TextBlock Text="Importe total de la venta actual"
-                                   FontSize="11"
-                                   Foreground="#CFCBFF"/>
+                                   FontSize="10"
+                                   Foreground="#CFCBFF"
+                                   TextWrapping="Wrap"/>
 
                     </StackPanel>
 
 
+                    <!-- TOTAL -->
+
                     <TextBlock Grid.Column="2"
                                x:Name="TextoTotal"
-                               FontSize="38"
+                               FontSize="34"
                                FontWeight="Bold"
                                Foreground="White"
-                               VerticalAlignment="Center"/>
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Right"/>
 
                 </Grid>
 
@@ -110,7 +139,7 @@
                            Foreground="#17365D"/>
 
                 <TextBlock Text="Selecciona una opción para continuar"
-                           FontSize="12"
+                           FontSize="11"
                            Foreground="#64748B"/>
 
             </StackPanel>
@@ -120,332 +149,343 @@
             <!-- MÉTODOS DE PAGO                                   -->
             <!-- ================================================= -->
 
-            <Grid Grid.Row="3"
-                  RowDefinitions="150,150"
-                  ColumnDefinitions="*,*"
-                  RowSpacing="18"
-                  ColumnSpacing="18">
+            <ScrollViewer Grid.Row="3"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
 
+                <Grid RowDefinitions="Auto,Auto"
+                      ColumnDefinitions="*,*"
+                      RowSpacing="14"
+                      ColumnSpacing="14"
+                      Margin="0,2,0,2">
 
-                <!-- ================================================= -->
-                <!-- EFECTIVO                                          -->
-                <!-- ================================================= -->
 
-                <Button Grid.Row="0"
-                        Grid.Column="0"
+                    <!-- ================================================= -->
+                    <!-- EFECTIVO                                          -->
+                    <!-- ================================================= -->
 
-                        Click="Efectivo_Click"
+                    <Button Grid.Row="0"
+                            Grid.Column="0"
 
-                        Background="#F3FBF5"
-                        Foreground="#16803B"
+                            Click="Efectivo_Click"
 
-                        BorderBrush="#A9E3BA"
-                        BorderThickness="1"
+                            MinHeight="108"
 
-                        CornerRadius="14"
+                            Background="#F3FBF5"
+                            Foreground="#16803B"
 
-                        Padding="20"
+                            BorderBrush="#A9E3BA"
+                            BorderThickness="1"
 
-                        HorizontalContentAlignment="Stretch"
-                        VerticalContentAlignment="Stretch">
+                            CornerRadius="14"
 
-                    <Grid ColumnDefinitions="64,*,44"
-                          ColumnSpacing="14">
+                            Padding="16"
 
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch">
 
-                        <Border Grid.Column="0"
-                                Width="58"
-                                Height="58"
-                                Background="#DDF5E5"
-                                CornerRadius="12"
-                                VerticalAlignment="Center">
+                        <Grid ColumnDefinitions="52,*,38"
+                              ColumnSpacing="12">
 
-                            <TextBlock Text="💵"
-                                       FontSize="27"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
 
-                        </Border>
+                            <Border Grid.Column="0"
+                                    Width="48"
+                                    Height="48"
+                                    Background="#DDF5E5"
+                                    CornerRadius="11"
+                                    VerticalAlignment="Center">
 
+                                <TextBlock Text="💵"
+                                           FontSize="23"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
 
-                        <StackPanel Grid.Column="1"
-                                    VerticalAlignment="Center"
-                                    Spacing="6">
+                            </Border>
 
-                            <TextBlock Text="Efectivo"
-                                       FontSize="18"
-                                       FontWeight="Bold"
-                                       Foreground="#16803B"/>
 
-                            <TextBlock Text="Cobro directo en caja"
-                                       FontSize="11"
-                                       Foreground="#4F765C"/>
+                            <StackPanel Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Spacing="4">
 
-                        </StackPanel>
+                                <TextBlock Text="Efectivo"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           Foreground="#16803B"/>
 
+                                <TextBlock Text="Cobro directo en caja"
+                                           FontSize="10"
+                                           Foreground="#4F765C"
+                                           TextWrapping="Wrap"/>
 
-                        <Border Grid.Column="2"
-                                Width="40"
-                                Height="40"
-                                CornerRadius="20"
-                                Background="#DDF5E5"
-                                VerticalAlignment="Center">
+                            </StackPanel>
 
-                            <TextBlock Text="›"
-                                       FontSize="28"
-                                       FontWeight="Bold"
-                                       Foreground="#16803B"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       Margin="0,-3,0,0"/>
 
-                        </Border>
+                            <Border Grid.Column="2"
+                                    Width="36"
+                                    Height="36"
+                                    CornerRadius="18"
+                                    Background="#DDF5E5"
+                                    VerticalAlignment="Center">
 
-                    </Grid>
+                                <TextBlock Text="›"
+                                           FontSize="25"
+                                           FontWeight="Bold"
+                                           Foreground="#16803B"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Margin="0,-3,0,0"/>
 
-                </Button>
+                            </Border>
 
+                        </Grid>
 
-        <!-- ================================================= -->
-        <!-- TARJETA / MERCADO PAGO                            -->
-        <!-- ================================================= -->
+                    </Button>
 
-        <Button Grid.Row="0"
-                Grid.Column="1"
 
-                Click="Tarjeta_Click"
+                    <!-- ================================================= -->
+                    <!-- TARJETA / MERCADO PAGO                            -->
+                    <!-- ================================================= -->
 
-                Background="#F4F8FF"
-                Foreground="#2563EB"
+                    <Button Grid.Row="0"
+                            Grid.Column="1"
 
-                BorderBrush="#BFDBFE"
-                BorderThickness="1"
+                            Click="Tarjeta_Click"
 
-                CornerRadius="14"
+                            MinHeight="108"
 
-                Padding="20"
+                            Background="#F4F8FF"
+                            Foreground="#2563EB"
 
-                HorizontalContentAlignment="Stretch"
-                VerticalContentAlignment="Stretch">
+                            BorderBrush="#BFDBFE"
+                            BorderThickness="1"
 
-            <Grid ColumnDefinitions="64,*,44"
-                  ColumnSpacing="14">
+                            CornerRadius="14"
 
+                            Padding="16"
 
-                <!-- ICONO -->
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch">
 
-                <Border Grid.Column="0"
-                        Width="58"
-                        Height="58"
-                        Background="#DBEAFE"
-                        CornerRadius="12"
-                        VerticalAlignment="Center">
+                        <Grid ColumnDefinitions="52,*,38"
+                              ColumnSpacing="12">
 
-                    <TextBlock Text="💳"
-                               FontSize="27"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
 
-                </Border>
+                            <Border Grid.Column="0"
+                                    Width="48"
+                                    Height="48"
+                                    Background="#DBEAFE"
+                                    CornerRadius="11"
+                                    VerticalAlignment="Center">
 
+                                <TextBlock Text="💳"
+                                           FontSize="23"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
 
-                <!-- TEXTO -->
+                            </Border>
 
-                <StackPanel Grid.Column="1"
-                            VerticalAlignment="Center"
-                            Spacing="6">
 
-                    <TextBlock Text="Tarjeta"
-                               FontSize="18"
-                               FontWeight="Bold"
-                               Foreground="#2563EB"/>
+                            <StackPanel Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Spacing="4">
 
-                    <TextBlock Text="Cobrar con terminal Mercado Pago"
-                               FontSize="11"
-                               Foreground="#5273A8"
-                               TextWrapping="Wrap"/>
+                                <TextBlock Text="Tarjeta"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           Foreground="#2563EB"/>
 
-                </StackPanel>
+                                <TextBlock Text="Cobrar con terminal Mercado Pago"
+                                           FontSize="10"
+                                           Foreground="#5273A8"
+                                           TextWrapping="Wrap"/>
 
+                            </StackPanel>
 
-                <!-- FLECHA -->
 
-                <Border Grid.Column="2"
-                        Width="40"
-                        Height="40"
-                        CornerRadius="20"
-                        Background="#DBEAFE"
-                        VerticalAlignment="Center">
+                            <Border Grid.Column="2"
+                                    Width="36"
+                                    Height="36"
+                                    CornerRadius="18"
+                                    Background="#DBEAFE"
+                                    VerticalAlignment="Center">
 
-                    <TextBlock Text="›"
-                               FontSize="28"
-                               FontWeight="Bold"
-                               Foreground="#2563EB"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               Margin="0,-3,0,0"/>
+                                <TextBlock Text="›"
+                                           FontSize="25"
+                                           FontWeight="Bold"
+                                           Foreground="#2563EB"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Margin="0,-3,0,0"/>
 
-                </Border>
+                            </Border>
 
-            </Grid>
+                        </Grid>
 
-        </Button>
+                    </Button>
 
 
-                <!-- ================================================= -->
-                <!-- TRANSFERENCIA                                     -->
-                <!-- ================================================= -->
+                    <!-- ================================================= -->
+                    <!-- TRANSFERENCIA                                     -->
+                    <!-- ================================================= -->
 
-                <Button Grid.Row="1"
-                        Grid.Column="0"
+                    <Button Grid.Row="1"
+                            Grid.Column="0"
 
-                        IsEnabled="False"
+                            IsEnabled="False"
 
-                        Background="#FAFBFC"
-                        Foreground="#8B949E"
+                            MinHeight="108"
 
-                        BorderBrush="#D8DEE6"
-                        BorderThickness="1"
+                            Background="#FAFBFC"
+                            Foreground="#8B949E"
 
-                        CornerRadius="14"
+                            BorderBrush="#D8DEE6"
+                            BorderThickness="1"
 
-                        Padding="20"
+                            CornerRadius="14"
 
-                        HorizontalContentAlignment="Stretch"
-                        VerticalContentAlignment="Stretch">
+                            Padding="16"
 
-                    <Grid ColumnDefinitions="64,*,44"
-                          ColumnSpacing="14">
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch">
 
+                        <Grid ColumnDefinitions="52,*,38"
+                              ColumnSpacing="12">
 
-                        <Border Grid.Column="0"
-                                Width="58"
-                                Height="58"
-                                Background="#EEF2F6"
-                                CornerRadius="12"
-                                VerticalAlignment="Center">
 
-                            <TextBlock Text="🏦"
-                                       FontSize="27"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+                            <Border Grid.Column="0"
+                                    Width="48"
+                                    Height="48"
+                                    Background="#EEF2F6"
+                                    CornerRadius="11"
+                                    VerticalAlignment="Center">
 
-                        </Border>
+                                <TextBlock Text="🏦"
+                                           FontSize="23"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
 
+                            </Border>
 
-                        <StackPanel Grid.Column="1"
-                                    VerticalAlignment="Center"
-                                    Spacing="6">
 
-                            <TextBlock Text="Transferencia"
-                                       FontSize="18"
-                                       FontWeight="Bold"/>
+                            <StackPanel Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Spacing="4">
 
-                            <TextBlock Text="Disponible próximamente"
-                                       FontSize="11"/>
+                                <TextBlock Text="Transferencia"
+                                           FontSize="16"
+                                           FontWeight="Bold"/>
 
-                        </StackPanel>
+                                <TextBlock Text="Disponible próximamente"
+                                           FontSize="10"
+                                           TextWrapping="Wrap"/>
 
+                            </StackPanel>
 
-                        <Border Grid.Column="2"
-                                Width="40"
-                                Height="40"
-                                CornerRadius="20"
-                                Background="#EEF2F6"
-                                VerticalAlignment="Center">
 
-                            <TextBlock Text="🔒"
-                                       FontSize="17"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
+                            <Border Grid.Column="2"
+                                    Width="36"
+                                    Height="36"
+                                    CornerRadius="18"
+                                    Background="#EEF2F6"
+                                    VerticalAlignment="Center">
 
-                        </Border>
+                                <TextBlock Text="🔒"
+                                           FontSize="15"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
 
-                    </Grid>
+                            </Border>
 
-                </Button>
+                        </Grid>
 
+                    </Button>
 
-                <!-- ================================================= -->
-                <!-- CRÉDITO                                           -->
-                <!-- ================================================= -->
 
-                <Button Grid.Row="1"
-                        Grid.Column="1"
+                    <!-- ================================================= -->
+                    <!-- CRÉDITO                                           -->
+                    <!-- ================================================= -->
 
-                        Click="Credito_Click"
+                    <Button Grid.Row="1"
+                            Grid.Column="1"
 
-                        Background="#F8F6FF"
-                        Foreground="#4938D6"
+                            Click="Credito_Click"
 
-                        BorderBrush="#CFC7FF"
-                        BorderThickness="1"
+                            MinHeight="108"
 
-                        CornerRadius="14"
+                            Background="#F8F6FF"
+                            Foreground="#4938D6"
 
-                        Padding="20"
+                            BorderBrush="#CFC7FF"
+                            BorderThickness="1"
 
-                        HorizontalContentAlignment="Stretch"
-                        VerticalContentAlignment="Stretch">
+                            CornerRadius="14"
 
-                    <Grid ColumnDefinitions="64,*,44"
-                          ColumnSpacing="14">
+                            Padding="16"
 
+                            HorizontalContentAlignment="Stretch"
+                            VerticalContentAlignment="Stretch">
 
-                        <Border Grid.Column="0"
-                                Width="58"
-                                Height="58"
-                                Background="#EBE7FF"
-                                CornerRadius="12"
-                                VerticalAlignment="Center">
+                        <Grid ColumnDefinitions="52,*,38"
+                              ColumnSpacing="12">
 
-                            <TextBlock Text="📋"
-                                       FontSize="27"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
 
-                        </Border>
+                            <Border Grid.Column="0"
+                                    Width="48"
+                                    Height="48"
+                                    Background="#EBE7FF"
+                                    CornerRadius="11"
+                                    VerticalAlignment="Center">
 
+                                <TextBlock Text="📋"
+                                           FontSize="23"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
 
-                        <StackPanel Grid.Column="1"
-                                    VerticalAlignment="Center"
-                                    Spacing="6">
+                            </Border>
 
-                            <TextBlock Text="Pagar con crédito"
-                                       FontSize="18"
-                                       FontWeight="Bold"
-                                       Foreground="#4938D6"/>
 
-                            <TextBlock Text="Usar línea de crédito del cliente"
-                                       FontSize="11"
-                                       Foreground="#7065B5"
-                                       TextWrapping="Wrap"/>
+                            <StackPanel Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Spacing="4">
 
-                        </StackPanel>
+                                <TextBlock Text="Pagar con crédito"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           Foreground="#4938D6"
+                                           TextWrapping="Wrap"/>
 
+                                <TextBlock Text="Usar línea de crédito del cliente"
+                                           FontSize="10"
+                                           Foreground="#7065B5"
+                                           TextWrapping="Wrap"/>
 
-                        <Border Grid.Column="2"
-                                Width="40"
-                                Height="40"
-                                CornerRadius="20"
-                                Background="#EBE7FF"
-                                VerticalAlignment="Center">
+                            </StackPanel>
 
-                            <TextBlock Text="›"
-                                       FontSize="28"
-                                       FontWeight="Bold"
-                                       Foreground="#4938D6"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       Margin="0,-3,0,0"/>
 
-                        </Border>
+                            <Border Grid.Column="2"
+                                    Width="36"
+                                    Height="36"
+                                    CornerRadius="18"
+                                    Background="#EBE7FF"
+                                    VerticalAlignment="Center">
 
-                    </Grid>
+                                <TextBlock Text="›"
+                                           FontSize="25"
+                                           FontWeight="Bold"
+                                           Foreground="#4938D6"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Margin="0,-3,0,0"/>
 
-                </Button>
+                            </Border>
 
-            </Grid>
+                        </Grid>
+
+                    </Button>
+
+                </Grid>
+
+            </ScrollViewer>
 
 
             <!-- ================================================= -->
@@ -453,15 +493,18 @@
             <!-- ================================================= -->
 
             <Grid Grid.Row="4"
-                  ColumnDefinitions="0.8*,1.2*"
-                  ColumnSpacing="18"
-                  Margin="0,-20,0,0">
+                  ColumnDefinitions="Auto,*"
+                  ColumnSpacing="14">
 
 
-                <!-- CERRAR -->
+                <!-- ================================================= -->
+                <!-- CERRAR                                            -->
+                <!-- ================================================= -->
 
                 <Button Grid.Column="0"
-                        Height="52"
+                        Height="48"
+
+                        MinWidth="135"
 
                         Content="✕   Cerrar"
 
@@ -475,42 +518,47 @@
 
                         CornerRadius="10"
 
-                        FontSize="14"
+                        FontSize="13"
                         FontWeight="SemiBold"
 
                         HorizontalContentAlignment="Center"
                         VerticalContentAlignment="Center"/>
 
 
-                <!-- ESTADO -->
+                <!-- ================================================= -->
+                <!-- ESTADO                                            -->
+                <!-- ================================================= -->
 
                 <Border Grid.Column="1"
-                        Height="52"
+                        Height="48"
 
                         Background="#F2FBF4"
                         BorderBrush="#B8E8C3"
                         BorderThickness="1"
 
                         CornerRadius="10"
-                        Padding="16,8">
+                        Padding="14,7">
 
-                    <StackPanel Orientation="Horizontal"
-                                Spacing="10"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center">
+                    <Grid ColumnDefinitions="Auto,*"
+                          ColumnSpacing="9"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center">
 
                         <Border Width="9"
                                 Height="9"
                                 CornerRadius="5"
-                                Background="#16A34A"/>
+                                Background="#16A34A"
+                                VerticalAlignment="Center"/>
 
-                        <TextBlock Text="Sistema listo para cobrar"
-                                   FontSize="12"
+                        <TextBlock Grid.Column="1"
+                                   Text="Sistema listo para cobrar"
+                                   FontSize="11"
                                    FontWeight="SemiBold"
                                    Foreground="#16803B"
-                                   VerticalAlignment="Center"/>
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap"/>
 
-                    </StackPanel>
+                    </Grid>
 
                 </Border>
 

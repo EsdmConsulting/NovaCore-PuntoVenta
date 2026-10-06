@@ -10,8 +10,8 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto"
                   HorizontalScrollBarVisibility="Disabled">
 
-        <StackPanel Margin="28"
-                    Spacing="20">
+        <StackPanel Margin="22"
+                    Spacing="18">
 
 
             <!-- ================================================= -->
@@ -20,7 +20,7 @@
 
             <Border Background="#08783D"
                     CornerRadius="18"
-                    Padding="28">
+                    Padding="26">
 
                 <Grid ColumnDefinitions="*,Auto"
                       ColumnSpacing="24">
@@ -39,18 +39,20 @@
                         <TextBlock Text="Bienvenido al Punto de Venta"
                                    Foreground="White"
                                    FontSize="27"
-                                   FontWeight="SemiBold"/>
+                                   FontWeight="SemiBold"
+                                   TextWrapping="Wrap"/>
 
                         <TextBlock Text="Administra tus ventas y operaciones desde un solo lugar."
                                    Foreground="#D8F3E2"
-                                   FontSize="13"/>
+                                   FontSize="13"
+                                   TextWrapping="Wrap"/>
 
 
                         <!-- ESTADO -->
 
-                        <StackPanel Orientation="Horizontal"
-                                    Spacing="8"
-                                    Margin="0,12,0,0">
+                        <Grid ColumnDefinitions="Auto,*"
+                              ColumnSpacing="8"
+                              Margin="0,12,0,0">
 
                             <Border Width="9"
                                     Height="9"
@@ -58,19 +60,22 @@
                                     Background="#22C55E"
                                     VerticalAlignment="Center"/>
 
-                            <TextBlock Text="Sistema listo para operar"
+                            <TextBlock Grid.Column="1"
+                                       Text="Sistema listo para operar"
                                        Foreground="#E6F8ED"
                                        FontSize="11"
-                                       VerticalAlignment="Center"/>
+                                       VerticalAlignment="Center"
+                                       TextWrapping="Wrap"/>
 
-                        </StackPanel>
+                        </Grid>
 
                     </StackPanel>
 
 
                     <!-- LOGO -->
 
-                    <Border Grid.Column="1"
+                    <Border x:Name="WelcomeLogo"
+                            Grid.Column="1"
                             Width="150"
                             Height="105"
                             CornerRadius="16"
@@ -92,15 +97,20 @@
             <!-- INDICADORES                                       -->
             <!-- ================================================= -->
 
-            <Grid ColumnDefinitions="*,*,*,*"
-                  ColumnSpacing="15">
+            <Grid x:Name="IndicadoresGrid"
+                  ColumnDefinitions="*,*,*,*"
+                  RowDefinitions="Auto"
+                  ColumnSpacing="15"
+                  RowSpacing="15">
 
 
                 <!-- ================================================= -->
                 <!-- VENTAS                                            -->
                 <!-- ================================================= -->
 
-                <Border Grid.Column="0"
+                <Border x:Name="VentasCard"
+                        Grid.Column="0"
+                        Grid.Row="0"
                         Classes="dashboardCard">
 
                     <StackPanel Spacing="8">
@@ -132,7 +142,8 @@
                                    Classes="cardValue"/>
 
                         <TextBlock Text="Total vendido durante el turno"
-                                   Classes="cardDetail"/>
+                                   Classes="cardDetail"
+                                   TextWrapping="Wrap"/>
 
                     </StackPanel>
 
@@ -143,7 +154,9 @@
                 <!-- TICKETS                                           -->
                 <!-- ================================================= -->
 
-                <Border Grid.Column="1"
+                <Border x:Name="TicketsCard"
+                        Grid.Column="1"
+                        Grid.Row="0"
                         Classes="dashboardCard">
 
                     <StackPanel Spacing="8">
@@ -175,7 +188,8 @@
                                    Classes="cardValue"/>
 
                         <TextBlock Text="Operaciones realizadas"
-                                   Classes="cardDetail"/>
+                                   Classes="cardDetail"
+                                   TextWrapping="Wrap"/>
 
                     </StackPanel>
 
@@ -186,7 +200,9 @@
                 <!-- EFECTIVO                                          -->
                 <!-- ================================================= -->
 
-                <Border Grid.Column="2"
+                <Border x:Name="EfectivoCard"
+                        Grid.Column="2"
+                        Grid.Row="0"
                         Classes="dashboardCard">
 
                     <StackPanel Spacing="8">
@@ -218,7 +234,8 @@
                                    Classes="cardValue"/>
 
                         <TextBlock Text="Pagos recibidos en efectivo"
-                                   Classes="cardDetail"/>
+                                   Classes="cardDetail"
+                                   TextWrapping="Wrap"/>
 
                     </StackPanel>
 
@@ -229,7 +246,9 @@
                 <!-- TARJETA                                           -->
                 <!-- ================================================= -->
 
-                <Border Grid.Column="3"
+                <Border x:Name="TarjetaCard"
+                        Grid.Column="3"
+                        Grid.Row="0"
                         Classes="dashboardCard">
 
                     <StackPanel Spacing="8">
@@ -260,7 +279,8 @@
                                    Classes="cardValue"/>
 
                         <TextBlock Text="Pagos realizados con tarjeta"
-                                   Classes="cardDetail"/>
+                                   Classes="cardDetail"
+                                   TextWrapping="Wrap"/>
 
                     </StackPanel>
 
@@ -273,15 +293,20 @@
             <!-- PARTE INFERIOR                                    -->
             <!-- ================================================= -->
 
-            <Grid ColumnDefinitions="1.2*,0.8*"
-                  ColumnSpacing="18">
+            <Grid x:Name="SeccionesGrid"
+                  ColumnDefinitions="1.2*,0.8*"
+                  RowDefinitions="Auto"
+                  ColumnSpacing="18"
+                  RowSpacing="18">
 
 
                 <!-- ================================================= -->
                 <!-- ACTIVIDAD DEL TURNO                               -->
                 <!-- ================================================= -->
 
-                <Border Grid.Column="0"
+                <Border x:Name="ActividadCard"
+                        Grid.Column="0"
+                        Grid.Row="0"
                         Classes="sectionCard">
 
                     <StackPanel Spacing="17">
@@ -316,156 +341,153 @@
                         </Grid>
 
 
-                    <!-- ===================================================== -->
-                    <!-- LISTA DE ACTIVIDAD DEL TURNO                          -->
-                    <!-- ===================================================== -->
+                        <!-- ================================================= -->
+                        <!-- LISTA DE ACTIVIDAD                                -->
+                        <!-- ================================================= -->
 
-                    <Border Background="#F8FAF9"
-                            BorderBrush="#EDF1EE"
-                            BorderThickness="1"
-                            CornerRadius="12"
-                            Padding="10">
+                        <Border Background="#F8FAF9"
+                                BorderBrush="#EDF1EE"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="10">
 
-                        <Grid>
-
-                            <!-- ================================================= -->
-                            <!-- LISTA REAL                                        -->
-                            <!-- ================================================= -->
-
-                            <ItemsControl ItemsSource="{Binding ActividadTurno}"
-                                          IsVisible="{Binding TieneActividad}">
-
-                                <ItemsControl.ItemTemplate>
-
-                                    <DataTemplate>
-
-                                        <Border Background="White"
-                                                BorderBrush="#E8EEEA"
-                                                BorderThickness="0,0,0,1"
-                                                Padding="10,9">
-
-                                            <Grid ColumnDefinitions="Auto,*,Auto"
-                                                  ColumnSpacing="12">
+                            <Grid>
 
 
-                                                <!-- ===================================== -->
-                                                <!-- ICONO                                -->
-                                                <!-- ===================================== -->
+                                <!-- LISTA REAL -->
 
-                                                <Border Width="38"
-                                                        Height="38"
-                                                        CornerRadius="10"
-                                                        Background="#EAF7EF"
-                                                        VerticalAlignment="Center">
+                                <ItemsControl ItemsSource="{Binding ActividadTurno}"
+                                              IsVisible="{Binding TieneActividad}">
 
-                                                    <TextBlock Text="▥"
-                                                               Foreground="#08783D"
-                                                               FontSize="16"
-                                                               HorizontalAlignment="Center"
-                                                               VerticalAlignment="Center"/>
+                                    <ItemsControl.ItemTemplate>
 
-                                                </Border>
+                                        <DataTemplate>
 
+                                            <Border Background="White"
+                                                    BorderBrush="#E8EEEA"
+                                                    BorderThickness="0,0,0,1"
+                                                    Padding="10,9">
 
-                                                <!-- ===================================== -->
-                                                <!-- INFORMACIÓN                          -->
-                                                <!-- ===================================== -->
-
-                                                <StackPanel Grid.Column="1"
-                                                            VerticalAlignment="Center"
-                                                            Spacing="2">
-
-                                                    <TextBlock Text="{Binding Titulo}"
-                                                               Foreground="#33443A"
-                                                               FontWeight="SemiBold"
-                                                               FontSize="11"/>
-
-                                                    <TextBlock Text="{Binding Descripcion}"
-                                                               Foreground="#87958C"
-                                                               FontSize="9"
-                                                               TextTrimming="CharacterEllipsis"/>
-
-                                                    <TextBlock Text="{Binding Referencia}"
-                                                               Foreground="#A0AAA4"
-                                                               FontSize="8"/>
-
-                                                </StackPanel>
+                                                <Grid ColumnDefinitions="Auto,*,Auto"
+                                                      ColumnSpacing="12">
 
 
-                                                <!-- ===================================== -->
-                                                <!-- IMPORTE                              -->
-                                                <!-- ===================================== -->
+                                                    <!-- ICONO -->
 
-                                                <StackPanel Grid.Column="2"
-                                                            HorizontalAlignment="Right"
-                                                            VerticalAlignment="Center"
-                                                            Spacing="2">
+                                                    <Border Width="38"
+                                                            Height="38"
+                                                            CornerRadius="10"
+                                                            Background="#EAF7EF"
+                                                            VerticalAlignment="Center">
 
-                                                    <TextBlock Text="{Binding Importe, StringFormat='{}{0:C2}'}"
-                                                               Foreground="#21382A"
-                                                               FontWeight="SemiBold"
-                                                               FontSize="11"
-                                                               HorizontalAlignment="Right"/>
+                                                        <TextBlock Text="▥"
+                                                                   Foreground="#08783D"
+                                                                   FontSize="16"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center"/>
 
-                                                    <TextBlock Text="{Binding Fecha}"
-                                                               Foreground="#94A39A"
-                                                               FontSize="8"
-                                                               HorizontalAlignment="Right"/>
-
-                                                </StackPanel>
-
-                                            </Grid>
-
-                                        </Border>
-
-                                    </DataTemplate>
-
-                                </ItemsControl.ItemTemplate>
-
-                            </ItemsControl>
+                                                    </Border>
 
 
-                            <!-- ================================================= -->
-                            <!-- ESTADO VACÍO                                      -->
-                            <!-- ================================================= -->
+                                                    <!-- INFORMACIÓN -->
 
-                            <StackPanel HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        Spacing="9"
-                                        Margin="0,28"
-                                        IsVisible="{Binding NoTieneActividad}">
+                                                    <StackPanel Grid.Column="1"
+                                                                VerticalAlignment="Center"
+                                                                Spacing="2">
 
-                                <Border Width="64"
-                                        Height="64"
-                                        CornerRadius="20"
-                                        Background="#EAF7EF">
+                                                        <TextBlock Text="{Binding Titulo}"
+                                                                   Foreground="#33443A"
+                                                                   FontWeight="SemiBold"
+                                                                   FontSize="11"
+                                                                   TextTrimming="CharacterEllipsis"/>
 
-                                    <TextBlock Text="▥"
-                                               Foreground="#7CB88B"
-                                               FontSize="29"
+                                                        <TextBlock Text="{Binding Descripcion}"
+                                                                   Foreground="#87958C"
+                                                                   FontSize="9"
+                                                                   TextTrimming="CharacterEllipsis"/>
+
+                                                        <TextBlock Text="{Binding Referencia}"
+                                                                   Foreground="#A0AAA4"
+                                                                   FontSize="8"
+                                                                   TextTrimming="CharacterEllipsis"/>
+
+                                                    </StackPanel>
+
+
+                                                    <!-- IMPORTE -->
+
+                                                    <StackPanel Grid.Column="2"
+                                                                HorizontalAlignment="Right"
+                                                                VerticalAlignment="Center"
+                                                                Spacing="2">
+
+                                                        <TextBlock Text="{Binding Importe, StringFormat='{}{0:C2}'}"
+                                                                   Foreground="#21382A"
+                                                                   FontWeight="SemiBold"
+                                                                   FontSize="11"
+                                                                   HorizontalAlignment="Right"/>
+
+                                                        <TextBlock Text="{Binding Fecha}"
+                                                                   Foreground="#94A39A"
+                                                                   FontSize="8"
+                                                                   HorizontalAlignment="Right"/>
+
+                                                    </StackPanel>
+
+                                                </Grid>
+
+                                            </Border>
+
+                                        </DataTemplate>
+
+                                    </ItemsControl.ItemTemplate>
+
+                                </ItemsControl>
+
+
+                                <!-- ESTADO VACÍO -->
+
+                                <StackPanel HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Spacing="9"
+                                            Margin="0,28"
+                                            IsVisible="{Binding NoTieneActividad}">
+
+                                    <Border Width="64"
+                                            Height="64"
+                                            CornerRadius="20"
+                                            Background="#EAF7EF">
+
+                                        <TextBlock Text="▥"
+                                                   Foreground="#7CB88B"
+                                                   FontSize="29"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+
+                                    </Border>
+
+
+                                    <TextBlock Text="Todavía no hay movimientos para mostrar"
+                                               Foreground="#44534A"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"
                                                HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"/>
-
-                                </Border>
-
-
-                                <TextBlock Text="Todavía no hay movimientos para mostrar"
-                                           Foreground="#44534A"
-                                           FontSize="13"
-                                           FontWeight="SemiBold"
-                                           HorizontalAlignment="Center"/>
+                                               TextAlignment="Center"
+                                               TextWrapping="Wrap"/>
 
 
-                                <TextBlock Text="La actividad aparecerá cuando realices operaciones."
-                                           Foreground="#94A39A"
-                                           FontSize="10"
-                                           HorizontalAlignment="Center"/>
+                                    <TextBlock Text="La actividad aparecerá cuando realices operaciones."
+                                               Foreground="#94A39A"
+                                               FontSize="10"
+                                               HorizontalAlignment="Center"
+                                               TextAlignment="Center"
+                                               TextWrapping="Wrap"/>
 
-                            </StackPanel>
+                                </StackPanel>
 
-                        </Grid>
+                            </Grid>
 
-                    </Border>
+                        </Border>
 
                     </StackPanel>
 
@@ -476,7 +498,9 @@
                 <!-- ACCESOS RÁPIDOS                                   -->
                 <!-- ================================================= -->
 
-                <Border Grid.Column="1"
+                <Border x:Name="AccesosCard"
+                        Grid.Column="1"
+                        Grid.Row="0"
                         Classes="sectionCard">
 
                     <StackPanel Spacing="12">
@@ -499,9 +523,8 @@
 
                         <Button Classes="quickAction"
                                 Command="{Binding NuevaVentaCommand}">
-                            
-                            <Grid ColumnDefinitions="40,*">
 
+                            <Grid ColumnDefinitions="40,*">
 
                                 <Border Width="34"
                                         Height="34"
@@ -529,7 +552,8 @@
 
                                     <TextBlock Text="Registrar una nueva operación"
                                                Foreground="#94A39A"
-                                               FontSize="9"/>
+                                               FontSize="9"
+                                               TextWrapping="Wrap"/>
 
                                 </StackPanel>
 
@@ -542,9 +566,9 @@
 
                         <Button Classes="quickAction"
                                 Command="{Binding ConsultarCortesCommand}">
-                            
+
                             <Grid ColumnDefinitions="40,*">
-                                
+
                                 <Border Width="34"
                                         Height="34"
                                         CornerRadius="10"
@@ -570,7 +594,8 @@
 
                                     <TextBlock Text="Revisar aperturas y cierres"
                                                Foreground="#94A39A"
-                                               FontSize="9"/>
+                                               FontSize="9"
+                                               TextWrapping="Wrap"/>
 
                                 </StackPanel>
 

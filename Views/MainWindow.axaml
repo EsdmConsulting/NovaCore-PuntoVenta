@@ -11,8 +11,8 @@
         Width="1380"
         Height="820"
 
-        MinWidth="1100"
-        MinHeight="680"
+        MinWidth="1000"
+        MinHeight="650"
 
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
@@ -20,7 +20,19 @@
         Background="#F6F8F7">
 
 
-    <Grid ColumnDefinitions="220,*">
+    <!-- ========================================================= -->
+    <!-- LAYOUT PRINCIPAL                                          -->
+    <!-- ========================================================= -->
+
+    <Grid x:Name="MainLayout">
+
+        <Grid.ColumnDefinitions>
+
+            <ColumnDefinition Width="220"/>
+
+            <ColumnDefinition Width="*"/>
+
+        </Grid.ColumnDefinitions>
 
 
         <!-- ===================================================== -->
@@ -36,43 +48,111 @@
 
 
                 <!-- ================================================= -->
-                <!-- IDENTIDAD                                          -->
+                <!-- IDENTIDAD                                         -->
                 <!-- ================================================= -->
 
-                <StackPanel Grid.Row="0"
-                            Margin="16,18,16,14"
-                            Spacing="9">
+                <Grid Grid.Row="0"
+                      Margin="8,14,8,10"
+                      RowDefinitions="Auto,Auto">
 
-                    <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
-                           Width="154"
-                           Height="90"
-                           Stretch="Uniform"
-                           HorizontalAlignment="Center"/>
 
-                    <TextBlock Text="PUNTO DE VENTA"
-                               Foreground="#08783D"
-                               FontSize="12"
-                               FontWeight="Bold"
+                    <!-- ================================================= -->
+                    <!-- BOTÓN COLAPSAR                                    -->
+                    <!-- ================================================= -->
+
+                    <Button x:Name="ToggleSidebarButton"
+                            Grid.Row="0"
+                            Width="38"
+                            Height="38"
+                            HorizontalAlignment="Right"
+                            Margin="0,0,2,8"
+
+                            Click="ToggleSidebar_Click"
+
+                            Background="#F1F7F3"
+                            Foreground="#08783D"
+
+                            BorderThickness="0"
+                            CornerRadius="9"
+
+                            HorizontalContentAlignment="Center"
+                            VerticalContentAlignment="Center"
+
+                            FontSize="18"
+                            FontWeight="SemiBold"
+
+                            Content="‹"/>
+
+
+                    <!-- ================================================= -->
+                    <!-- IDENTIDAD EXPANDIDA                               -->
+                    <!-- ================================================= -->
+
+                    <StackPanel x:Name="IdentidadExpandida"
+                                Grid.Row="1"
+                                Spacing="8">
+
+                        <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                               Width="154"
+                               Height="90"
+                               Stretch="Uniform"
                                HorizontalAlignment="Center"/>
 
-                    <Border Height="1"
-                            Margin="6,7,6,0"
-                            Background="#E4EAE6"/>
+                        <TextBlock Text="PUNTO DE VENTA"
+                                   Foreground="#08783D"
+                                   FontSize="12"
+                                   FontWeight="Bold"
+                                   HorizontalAlignment="Center"/>
 
-                </StackPanel>
+                        <Border Height="1"
+                                Margin="6,7,6,0"
+                                Background="#E4EAE6"/>
+
+                    </StackPanel>
+
+
+                    <!-- ================================================= -->
+                    <!-- IDENTIDAD COLAPSADA                               -->
+                    <!-- ================================================= -->
+
+                    <StackPanel x:Name="IdentidadColapsada"
+                                Grid.Row="1"
+                                IsVisible="False"
+                                Spacing="7">
+
+                        <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                               Width="48"
+                               Height="48"
+                               Stretch="Uniform"
+                               HorizontalAlignment="Center"/>
+
+                        <Border Height="1"
+                                Margin="5,4,5,0"
+                                Background="#E4EAE6"/>
+
+                    </StackPanel>
+
+                </Grid>
 
 
                 <!-- ================================================= -->
-                <!-- NAVEGACIÓN                                         -->
+                <!-- NAVEGACIÓN                                       -->
                 <!-- ================================================= -->
 
                 <ScrollViewer Grid.Row="1"
-                              VerticalScrollBarVisibility="Auto">
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
 
                     <StackPanel Margin="12,8"
                                 Spacing="6">
 
-                        <TextBlock Text="OPERACIÓN"
+
+                        <!-- ================================================= -->
+                        <!-- TÍTULO OPERACIÓN                                  -->
+                        <!-- ================================================= -->
+
+                        <TextBlock x:Name="OperacionTextBlock"
+                                   Text="OPERACIÓN"
                                    Foreground="#94A39A"
                                    FontSize="9"
                                    FontWeight="SemiBold"
@@ -85,8 +165,11 @@
 
                         <Button Classes="newSaleButton"
                                 Classes.active="{Binding EsNuevaVenta}"
+
                                 Command="{Binding NavegarCommand}"
-                                CommandParameter="NuevaVenta">
+                                CommandParameter="NuevaVenta"
+
+                                Click="NuevaVenta_Click">
 
                             <Grid ColumnDefinitions="30,*">
 
@@ -96,7 +179,8 @@
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"/>
 
-                                <TextBlock Grid.Column="1"
+                                <TextBlock x:Name="NuevaVentaText"
+                                           Grid.Column="1"
                                            Text="Nueva venta"
                                            Margin="10,0,0,0"
                                            VerticalAlignment="Center"
@@ -123,7 +207,8 @@
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"/>
 
-                                <TextBlock Grid.Column="1"
+                                <TextBlock x:Name="ResumenText"
+                                           Grid.Column="1"
                                            Text="Resumen"
                                            Margin="10,0,0,0"
                                            VerticalAlignment="Center"/>
@@ -150,7 +235,8 @@
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"/>
 
-                                <TextBlock Grid.Column="1"
+                                <TextBlock x:Name="PagarCreditoText"
+                                           Grid.Column="1"
                                            Text="Pagar crédito"
                                            Margin="10,0,0,0"
                                            VerticalAlignment="Center"
@@ -177,7 +263,8 @@
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center"/>
 
-                                <TextBlock Grid.Column="1"
+                                <TextBlock x:Name="CortesText"
+                                           Grid.Column="1"
                                            Text="Cortes y reportes"
                                            Margin="10,0,0,0"
                                            VerticalAlignment="Center"/>
@@ -185,7 +272,8 @@
                             </Grid>
 
                         </Button>
-                        
+
+
                         <!-- ================================================= -->
                         <!-- CANCELAR VENTAS                                   -->
                         <!-- ================================================= -->
@@ -195,23 +283,23 @@
                                 Command="{Binding NavegarCommand}"
                                 CommandParameter="Cancelaciones">
 
-                                <Grid ColumnDefinitions="30,*">
+                            <Grid ColumnDefinitions="30,*">
 
-                                        <TextBlock Text="×"
-                                                   FontSize="19"
-                                                   FontWeight="SemiBold"
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"/>
+                                <TextBlock Text="×"
+                                           FontSize="19"
+                                           FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
 
-                                        <TextBlock Grid.Column="1"
-                                                   Text="Cancelar ventas"
-                                                   Margin="10,0,0,0"
-                                                   VerticalAlignment="Center"/>
+                                <TextBlock x:Name="CancelarVentasText"
+                                           Grid.Column="1"
+                                           Text="Cancelar ventas"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
 
-                                </Grid>
+                            </Grid>
 
                         </Button>
-                        
 
                     </StackPanel>
 
@@ -219,15 +307,12 @@
 
 
                 <!-- ================================================= -->
-                <!-- PARTE INFERIOR DEL MENÚ                            -->
+                <!-- PARTE INFERIOR DEL MENÚ                          -->
                 <!-- ================================================= -->
 
                 <StackPanel Grid.Row="2"
                             Margin="12,0,12,14"
                             Spacing="8">
-
-
-                    <!-- SEPARADOR -->
 
                     <Border Height="1"
                             Margin="8,0,8,4"
@@ -241,23 +326,24 @@
                     <Button Classes="logoutButton"
                             Click="CerrarSesion_Click">
 
-                            <Grid ColumnDefinitions="28,*"
-                                  ColumnSpacing="8">
+                        <Grid ColumnDefinitions="28,*"
+                              ColumnSpacing="8">
 
-                                    <TextBlock Text="↪"
-                                               Foreground="White"
-                                               FontSize="18"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"/>
+                            <TextBlock Text="↪"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
 
-                                    <TextBlock Grid.Column="1"
-                                               Text="Cerrar sesión"
-                                               Foreground="White"
-                                               FontSize="11"
-                                               FontWeight="SemiBold"
-                                               VerticalAlignment="Center"/>
+                            <TextBlock x:Name="CerrarSesionText"
+                                       Grid.Column="1"
+                                       Text="Cerrar sesión"
+                                       Foreground="White"
+                                       FontSize="11"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
 
-                            </Grid>
+                        </Grid>
 
                     </Button>
 
@@ -285,12 +371,12 @@
                     BorderBrush="#E4EAE6"
                     BorderThickness="0,0,0,1">
 
-                <Grid Margin="26,0"
+                <Grid Margin="24,0"
                       ColumnDefinitions="*,Auto">
 
 
                     <!-- ================================================= -->
-                    <!-- TITULO                                             -->
+                    <!-- TÍTULO                                             -->
                     <!-- ================================================= -->
 
                     <StackPanel VerticalAlignment="Center"
@@ -299,14 +385,17 @@
                         <TextBlock Text="{Binding TituloPagina}"
                                    Foreground="#21382A"
                                    FontSize="21"
-                                   FontWeight="SemiBold"/>
+                                   FontWeight="SemiBold"
+                                   TextWrapping="NoWrap"
+                                   TextTrimming="CharacterEllipsis"/>
 
                         <StackPanel Orientation="Horizontal"
                                     Spacing="7">
 
                             <TextBlock Text="{Binding SubtituloPagina}"
                                        Foreground="#718078"
-                                       FontSize="11"/>
+                                       FontSize="11"
+                                       TextTrimming="CharacterEllipsis"/>
 
                             <TextBlock Text="•"
                                        Foreground="#CBD5CE"
@@ -327,11 +416,13 @@
 
                     <StackPanel Grid.Column="1"
                                 Orientation="Horizontal"
-                                Spacing="18"
+                                Spacing="16"
                                 VerticalAlignment="Center">
 
 
-                        <!-- SUCURSAL -->
+                        <!-- ================================================= -->
+                        <!-- SUCURSAL                                          -->
+                        <!-- ================================================= -->
 
                         <StackPanel VerticalAlignment="Center"
                                     Spacing="1">
@@ -355,7 +446,9 @@
                                 Background="#E4EAE6"/>
 
 
-                        <!-- USUARIO -->
+                        <!-- ================================================= -->
+                        <!-- USUARIO                                           -->
+                        <!-- ================================================= -->
 
                         <StackPanel VerticalAlignment="Center"
                                     Spacing="1">
@@ -374,7 +467,9 @@
                         </StackPanel>
 
 
-                        <!-- AVATAR -->
+                        <!-- ================================================= -->
+                        <!-- AVATAR                                            -->
+                        <!-- ================================================= -->
 
                         <Border Width="40"
                                 Height="40"
@@ -420,6 +515,26 @@
     <!-- ========================================================= -->
 
     <Window.Styles>
+
+
+        <!-- ===================================================== -->
+        <!-- BOTÓN COLAPSAR                                       -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Button#ToggleSidebarButton:pointerover">
+
+            <Setter Property="Background"
+                    Value="#E5F3EA"/>
+
+        </Style>
+
+
+        <Style Selector="Button#ToggleSidebarButton:pressed">
+
+            <Setter Property="Background"
+                    Value="#D5EBDD"/>
+
+        </Style>
 
 
         <!-- ===================================================== -->
@@ -522,8 +637,6 @@
         </Style>
 
 
-        <!-- Hover -->
-
         <Style Selector="Button.menuItem:pointerover">
 
             <Setter Property="Background"
@@ -535,8 +648,6 @@
         </Style>
 
 
-        <!-- Presionado -->
-
         <Style Selector="Button.menuItem:pressed">
 
             <Setter Property="Background"
@@ -544,8 +655,6 @@
 
         </Style>
 
-
-        <!-- Activo -->
 
         <Style Selector="Button.menuItem.active">
 
@@ -567,51 +676,51 @@
 
         <Style Selector="Button.logoutButton">
 
-                <Setter Property="Height"
-                        Value="44"/>
+            <Setter Property="Height"
+                    Value="44"/>
 
-                <Setter Property="Padding"
-                        Value="12,0"/>
+            <Setter Property="Padding"
+                    Value="12,0"/>
 
-                <Setter Property="HorizontalAlignment"
-                        Value="Stretch"/>
+            <Setter Property="HorizontalAlignment"
+                    Value="Stretch"/>
 
-                <Setter Property="HorizontalContentAlignment"
-                        Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment"
+                    Value="Stretch"/>
 
-                <Setter Property="VerticalContentAlignment"
-                        Value="Center"/>
+            <Setter Property="VerticalContentAlignment"
+                    Value="Center"/>
 
-                <Setter Property="Background"
-                        Value="#C61F2B"/>
+            <Setter Property="Background"
+                    Value="#C61F2B"/>
 
-                <Setter Property="Foreground"
-                        Value="White"/>
+            <Setter Property="Foreground"
+                    Value="White"/>
 
-                <Setter Property="BorderThickness"
-                        Value="0"/>
+            <Setter Property="BorderThickness"
+                    Value="0"/>
 
-                <Setter Property="CornerRadius"
-                        Value="10"/>
+            <Setter Property="CornerRadius"
+                    Value="10"/>
 
-                <Setter Property="FontSize"
-                        Value="11"/>
+            <Setter Property="FontSize"
+                    Value="11"/>
 
         </Style>
 
 
         <Style Selector="Button.logoutButton:pointerover">
 
-                <Setter Property="Background"
-                        Value="#A91D26"/>
+            <Setter Property="Background"
+                    Value="#A91D26"/>
 
         </Style>
 
 
         <Style Selector="Button.logoutButton:pressed">
 
-                <Setter Property="Background"
-                        Value="#8F1720"/>
+            <Setter Property="Background"
+                    Value="#8F1720"/>
 
         </Style>
 

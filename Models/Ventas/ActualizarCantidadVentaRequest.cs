@@ -210,7 +210,7 @@ public class PrecioCantidadActualizado
     public int? IdReglaAplicada { get; set; }
 
     [JsonPropertyName("cantidad_minima")]
-    public decimal CantidadMinima { get; set; }
+    public decimal? CantidadMinima { get; set; }
 
     [JsonPropertyName("precio_unitario")]
     public decimal PrecioUnitario { get; set; }

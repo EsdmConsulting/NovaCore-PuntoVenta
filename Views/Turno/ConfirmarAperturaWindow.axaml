@@ -7,20 +7,30 @@
 
         Icon="/Assets/Brand/esdm-app-icon.ico"
 
-        Width="460"
-        Height="330"
+        Width="520"
+        Height="390"
 
-        CanResize="False"
+        MinWidth="420"
+        MinHeight="340"
+
+        CanResize="True"
         WindowStartupLocation="CenterOwner"
 
         Background="#F6F8F7">
 
-    <Border Background="White"
-            CornerRadius="16"
-            Margin="14"
-            Padding="30">
 
-        <Grid RowDefinitions="Auto,*,Auto">
+    <!-- ========================================================= -->
+    <!-- CONTENEDOR GENERAL                                        -->
+    <!-- ========================================================= -->
+
+    <Border Background="White"
+            CornerRadius="18"
+            Margin="14"
+            Padding="28">
+
+
+        <Grid RowDefinitions="Auto,*,Auto"
+              RowSpacing="18">
 
 
             <!-- ================================================= -->
@@ -28,7 +38,8 @@
             <!-- ================================================= -->
 
             <StackPanel Grid.Row="0"
-                        Spacing="9">
+                        Spacing="10">
+
 
                 <Border Width="54"
                         Height="54"
@@ -50,7 +61,8 @@
                            Foreground="#21382A"
                            FontSize="22"
                            FontWeight="SemiBold"
-                           Margin="0,8,0,0"/>
+                           TextWrapping="Wrap"
+                           Margin="0,6,0,0"/>
 
             </StackPanel>
 
@@ -61,7 +73,8 @@
 
             <StackPanel Grid.Row="1"
                         VerticalAlignment="Center"
-                        Spacing="7">
+                        Spacing="8">
+
 
                 <TextBlock Text="¿Estás seguro de iniciar tu turno con un fondo inicial de:"
                            Foreground="#718078"
@@ -73,13 +86,15 @@
                            Text="$0.00"
                            Foreground="#08783D"
                            FontSize="30"
-                           FontWeight="Bold"/>
+                           FontWeight="Bold"
+                           TextWrapping="Wrap"/>
 
 
                 <TextBlock Text="Una vez confirmado, comenzarás las operaciones de caja."
                            Foreground="#94A39A"
                            FontSize="11"
-                           TextWrapping="Wrap"/>
+                           TextWrapping="Wrap"
+                           LineHeight="17"/>
 
             </StackPanel>
 
@@ -96,25 +111,43 @@
                 <Button Grid.Column="0"
                         Content="Cancelar"
                         Click="Cancelar_Click"
-                        Height="46"
+
+                        MinWidth="130"
+                        Height="48"
+
                         Background="White"
                         Foreground="#B51F2A"
+
                         BorderBrush="#F0B5BA"
                         BorderThickness="1"
+
                         CornerRadius="9"
+
                         HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+
+                        FontSize="14"
                         FontWeight="SemiBold"/>
 
 
                 <Button Grid.Column="1"
                         Content="Sí, iniciar turno"
                         Click="Confirmar_Click"
-                        Height="46"
+
+                        MinWidth="150"
+                        Height="48"
+
                         Background="#16A34A"
                         Foreground="White"
+
                         BorderThickness="0"
+
                         CornerRadius="9"
+
                         HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+
+                        FontSize="14"
                         FontWeight="SemiBold"/>
 
             </Grid>

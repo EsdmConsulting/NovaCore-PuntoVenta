@@ -15,8 +15,47 @@ namespace NovaCoreESDM.Views;
 public partial class MainWindow
     : Window
 {
+    // ============================================================
+    // CONTROLES DEL SIDEBAR
+    // ============================================================
+
+    private Grid _mainLayout = null!;
+
+    private Button _toggleSidebarButton = null!;
+
+    private StackPanel _identidadExpandida = null!;
+    private StackPanel _identidadColapsada = null!;
+
+    private TextBlock _operacionTextBlock = null!;
+
+    private TextBlock _nuevaVentaText = null!;
+    private TextBlock _resumenText = null!;
+    private TextBlock _pagarCreditoText = null!;
+    private TextBlock _cortesText = null!;
+    private TextBlock _cancelarVentasText = null!;
+    private TextBlock _cerrarSesionText = null!;
+
+
+    // ============================================================
+    // ESTADO
+    // ============================================================
+
     private bool
         _cerrandoSesion;
+
+    private bool
+        _sidebarColapsado;
+
+
+    // ============================================================
+    // TAMAÑOS
+    // ============================================================
+
+    private const double SidebarExpandido =
+        220;
+
+    private const double SidebarColapsado =
+        72;
 
 
     // ============================================================
@@ -26,6 +65,264 @@ public partial class MainWindow
     public MainWindow()
     {
         InitializeComponent();
+
+
+        // ========================================================
+        // OBTENER CONTROLES DEL XAML
+        // ========================================================
+
+        _mainLayout =
+            this.FindControl<Grid>(
+                "MainLayout")
+            ?? throw new InvalidOperationException(
+                "No se encontró MainLayout.");
+
+
+        _toggleSidebarButton =
+            this.FindControl<Button>(
+                "ToggleSidebarButton")
+            ?? throw new InvalidOperationException(
+                "No se encontró ToggleSidebarButton.");
+
+
+        _identidadExpandida =
+            this.FindControl<StackPanel>(
+                "IdentidadExpandida")
+            ?? throw new InvalidOperationException(
+                "No se encontró IdentidadExpandida.");
+
+
+        _identidadColapsada =
+            this.FindControl<StackPanel>(
+                "IdentidadColapsada")
+            ?? throw new InvalidOperationException(
+                "No se encontró IdentidadColapsada.");
+
+
+        _operacionTextBlock =
+            this.FindControl<TextBlock>(
+                "OperacionTextBlock")
+            ?? throw new InvalidOperationException(
+                "No se encontró OperacionTextBlock.");
+
+
+        _nuevaVentaText =
+            this.FindControl<TextBlock>(
+                "NuevaVentaText")
+            ?? throw new InvalidOperationException(
+                "No se encontró NuevaVentaText.");
+
+
+        _resumenText =
+            this.FindControl<TextBlock>(
+                "ResumenText")
+            ?? throw new InvalidOperationException(
+                "No se encontró ResumenText.");
+
+
+        _pagarCreditoText =
+            this.FindControl<TextBlock>(
+                "PagarCreditoText")
+            ?? throw new InvalidOperationException(
+                "No se encontró PagarCreditoText.");
+
+
+        _cortesText =
+            this.FindControl<TextBlock>(
+                "CortesText")
+            ?? throw new InvalidOperationException(
+                "No se encontró CortesText.");
+
+
+        _cancelarVentasText =
+            this.FindControl<TextBlock>(
+                "CancelarVentasText")
+            ?? throw new InvalidOperationException(
+                "No se encontró CancelarVentasText.");
+
+
+        _cerrarSesionText =
+            this.FindControl<TextBlock>(
+                "CerrarSesionText")
+            ?? throw new InvalidOperationException(
+                "No se encontró CerrarSesionText.");
+
+
+        // ========================================================
+        // ESTADO INICIAL
+        // ========================================================
+
+        _sidebarColapsado =
+            false;
+
+        ActualizarSidebar();
+    }
+
+
+    // ============================================================
+    // COLAPSAR / EXPANDIR MENÚ
+    // ============================================================
+
+    private void ToggleSidebar_Click(
+        object? sender,
+        RoutedEventArgs e)
+    {
+        _sidebarColapsado =
+            !_sidebarColapsado;
+
+        ActualizarSidebar();
+    }
+
+
+    // ============================================================
+    // NUEVA VENTA
+    // ============================================================
+    //
+    // El Command sigue haciendo la navegación.
+    //
+    // Este evento solamente colapsa el sidebar para darle
+    // más espacio al área de productos.
+    // ============================================================
+
+    private void NuevaVenta_Click(
+        object? sender,
+        RoutedEventArgs e)
+    {
+        if (_sidebarColapsado)
+        {
+            return;
+        }
+
+
+        _sidebarColapsado =
+            true;
+
+        ActualizarSidebar();
+    }
+
+
+    // ============================================================
+    // ACTUALIZAR SIDEBAR
+    // ============================================================
+
+    private void ActualizarSidebar()
+    {
+        if (_sidebarColapsado)
+        {
+            // ====================================================
+            // MENÚ COLAPSADO
+            // ====================================================
+
+            _mainLayout
+                .ColumnDefinitions[0]
+                .Width =
+                new GridLength(
+                    SidebarColapsado);
+
+
+            _toggleSidebarButton.Content =
+                "›";
+
+
+            // ====================================================
+            // LOGO / IDENTIDAD
+            // ====================================================
+
+            _identidadExpandida.IsVisible =
+                false;
+
+            _identidadColapsada.IsVisible =
+                true;
+
+
+            // ====================================================
+            // TÍTULOS
+            // ====================================================
+
+            _operacionTextBlock.IsVisible =
+                false;
+
+
+            // ====================================================
+            // TEXTOS DE MENÚ
+            // ====================================================
+
+            _nuevaVentaText.IsVisible =
+                false;
+
+            _resumenText.IsVisible =
+                false;
+
+            _pagarCreditoText.IsVisible =
+                false;
+
+            _cortesText.IsVisible =
+                false;
+
+            _cancelarVentasText.IsVisible =
+                false;
+
+            _cerrarSesionText.IsVisible =
+                false;
+        }
+        else
+        {
+            // ====================================================
+            // MENÚ EXPANDIDO
+            // ====================================================
+
+            _mainLayout
+                .ColumnDefinitions[0]
+                .Width =
+                new GridLength(
+                    SidebarExpandido);
+
+
+            _toggleSidebarButton.Content =
+                "‹";
+
+
+            // ====================================================
+            // LOGO / IDENTIDAD
+            // ====================================================
+
+            _identidadExpandida.IsVisible =
+                true;
+
+            _identidadColapsada.IsVisible =
+                false;
+
+
+            // ====================================================
+            // TÍTULOS
+            // ====================================================
+
+            _operacionTextBlock.IsVisible =
+                true;
+
+
+            // ====================================================
+            // TEXTOS DE MENÚ
+            // ====================================================
+
+            _nuevaVentaText.IsVisible =
+                true;
+
+            _resumenText.IsVisible =
+                true;
+
+            _pagarCreditoText.IsVisible =
+                true;
+
+            _cortesText.IsVisible =
+                true;
+
+            _cancelarVentasText.IsVisible =
+                true;
+
+            _cerrarSesionText.IsVisible =
+                true;
+        }
     }
 
 
@@ -140,7 +437,7 @@ public partial class MainWindow
                 true;
 
 
-            /*
+            /**
              * MUY IMPORTANTE:
              *
              * Cerrar sesión NO significa cerrar turno.
@@ -193,7 +490,7 @@ public partial class MainWindow
                 .Show();
 
 
-            /*
+            /**
              * Primero mostramos Login y DESPUÉS cerramos
              * MainWindow.
              *

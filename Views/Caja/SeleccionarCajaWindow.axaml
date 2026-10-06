@@ -20,7 +20,11 @@
         Background="#F6F8F7">
 
 
-    <Grid ColumnDefinitions="390,*">
+    <!-- ========================================================= -->
+    <!-- LAYOUT PRINCIPAL                                          -->
+    <!-- ========================================================= -->
+
+    <Grid ColumnDefinitions="360,*">
 
 
         <!-- ===================================================== -->
@@ -55,7 +59,11 @@
                          Opacity="0.10"/>
 
 
-                <Grid Margin="45"
+                <!-- ================================================= -->
+                <!-- CONTENIDO DEL PANEL                               -->
+                <!-- ================================================= -->
+
+                <Grid Margin="38"
                       RowDefinitions="Auto,*,Auto">
 
 
@@ -170,7 +178,7 @@
         <!-- ===================================================== -->
 
         <Grid Grid.Column="1"
-              Margin="52"
+              Margin="40,42"
               RowDefinitions="Auto,*,Auto">
 
 
@@ -186,12 +194,14 @@
                 <TextBlock Text="Selecciona una caja"
                            Foreground="#21382A"
                            FontSize="28"
-                           FontWeight="SemiBold"/>
+                           FontWeight="SemiBold"
+                           TextWrapping="Wrap"/>
 
 
                 <TextBlock Text="Elige la caja asignada físicamente a este equipo."
                            Foreground="#718078"
-                           FontSize="13"/>
+                           FontSize="13"
+                           TextWrapping="Wrap"/>
 
             </StackPanel>
 
@@ -202,7 +212,8 @@
 
             <Grid Grid.Row="1">
 
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
 
                     <ListBox ItemsSource="{Binding Cajas}"
                              SelectedItem="{Binding CajaSeleccionada}"
@@ -259,18 +270,24 @@
                                             <TextBlock Text="{Binding Nombre}"
                                                        Foreground="#21382A"
                                                        FontSize="15"
-                                                       FontWeight="SemiBold"/>
+                                                       FontWeight="SemiBold"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="CharacterEllipsis"/>
 
 
                                             <TextBlock Text="{Binding Codigo}"
                                                        Foreground="#08783D"
                                                        FontSize="11"
-                                                       FontWeight="SemiBold"/>
+                                                       FontWeight="SemiBold"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="CharacterEllipsis"/>
 
 
                                             <TextBlock Text="{Binding UnidadNombre}"
                                                        Foreground="#718078"
-                                                       FontSize="11"/>
+                                                       FontSize="11"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="CharacterEllipsis"/>
 
                                         </StackPanel>
 

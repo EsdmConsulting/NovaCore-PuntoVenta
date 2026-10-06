@@ -73,6 +73,20 @@ public partial class VentasView : UserControl
     {
         if (DataContext is not VentasViewModel viewModel)
             return;
+        
+        
+        // =========================================================
+        // PREPARAR PANTALLA PARA NUEVA OPERACIÓN
+        // =========================================================
+
+        viewModel.TextoBusqueda =
+            string.Empty;
+
+        viewModel.TextoBusquedaCliente =
+            string.Empty;
+
+        viewModel.MensajeError =
+            string.Empty;
 
 
         if (_viewModel != viewModel)
@@ -83,30 +97,26 @@ public partial class VentasView : UserControl
 
             if (_viewModel is not null)
             {
-
+                _viewModel.SolicitarSeleccionPresentacion -=
+                    OnSolicitarSeleccionPresentacion;
 
                 _viewModel.SolicitarEditarCantidad -=
                     OnSolicitarEditarCantidad;
 
-
                 _viewModel.SolicitarCobro -=
                     OnSolicitarCobro;
-
 
                 _viewModel.SolicitarEntregaTicket -=
                     OnSolicitarEntregaTicket;
 
-
                 _viewModel.SolicitarTelefonoWhatsApp -=
                     OnSolicitarTelefonoWhatsApp;
 
-
                 _viewModel.SolicitarConfirmacionVentaFinalizada -=
                     OnSolicitarConfirmacionVentaFinalizada;
-                
+
                 _viewModel.SolicitarCambioPrecio -=
                     OnSolicitarCambioPrecio;
-                
             }
 
 
@@ -118,30 +128,28 @@ public partial class VentasView : UserControl
                 viewModel;
 
 
-            // =================================================
-            // VINCULAR EVENTOS
-            // =================================================
+// =================================================
+// VINCULAR EVENTOS
+// =================================================
 
+            _viewModel.SolicitarSeleccionPresentacion +=
+                OnSolicitarSeleccionPresentacion;
 
             _viewModel.SolicitarEditarCantidad +=
                 OnSolicitarEditarCantidad;
 
-
             _viewModel.SolicitarCobro +=
                 OnSolicitarCobro;
-
 
             _viewModel.SolicitarEntregaTicket +=
                 OnSolicitarEntregaTicket;
 
-
             _viewModel.SolicitarTelefonoWhatsApp +=
                 OnSolicitarTelefonoWhatsApp;
 
-
             _viewModel.SolicitarConfirmacionVentaFinalizada +=
                 OnSolicitarConfirmacionVentaFinalizada;
-            
+
             _viewModel.SolicitarCambioPrecio +=
                 OnSolicitarCambioPrecio;
         }
@@ -165,9 +173,6 @@ public partial class VentasView : UserControl
 
         await viewModel
             .CargarVentaActualAsync();
-        
-        EnfocarBuscadorProductos();
-
         // =====================================================
         // DEJAR ESCÁNER LISTO
         // =====================================================
@@ -206,17 +211,107 @@ public partial class VentasView : UserControl
                 .ProcesarCodigoEscaneadoAsync(
                     codigo
                 );
-
-            BuscadorProductosTextBox.Text =
-                string.Empty;
         }
         catch (Exception ex)
         {
             _viewModel.MensajeError =
                 $"No fue posible procesar el código: {ex.Message}";
         }
+        finally
+        {
+            // =====================================================
+            // LIMPIAR BÚSQUEDA
+            // =====================================================
+
+            _viewModel.TextoBusqueda =
+                string.Empty;
+
+            BuscadorProductosTextBox.Text =
+                string.Empty;
+
+
+            // =====================================================
+            // DEJAR ESCÁNER LISTO PARA EL SIGUIENTE PRODUCTO
+            // =====================================================
+
+            EnfocarBuscadorProductos();
+        }
 
         // NO reenfocar por ahora
+    }
+    
+    
+    // =========================================================
+// SELECCIONAR PRESENTACIÓN
+// =========================================================
+
+    private async void OnSolicitarSeleccionPresentacion(
+        ProductoCatalogo producto)
+    {
+        if (_viewModel is null)
+            return;
+
+        try
+        {
+            var parentWindow =
+                TopLevel.GetTopLevel(this)
+                    as Window;
+
+            if (parentWindow is null)
+            {
+                _viewModel.MensajeError =
+                    "No fue posible abrir el selector de presentación.";
+
+                return;
+            }
+
+
+            var configuracion =
+                await _terminalConfigurationService
+                    .ObtenerConfiguracionAsync();
+
+            if (configuracion is null)
+            {
+                _viewModel.MensajeError =
+                    "No existe una caja configurada para este equipo.";
+
+                return;
+            }
+
+
+            var selector =
+                new SeleccionarPresentacionWindow(
+                    producto,
+                    configuracion.UnidadCodigo
+                );
+
+
+            var resultado =
+                await selector
+                    .ShowDialog<bool>(
+                        parentWindow
+                    );
+
+
+            if (!resultado)
+                return;
+
+
+            if (selector.PresentacionSeleccionada is null)
+                return;
+
+
+            await _viewModel
+                .AgregarPresentacionAlCarritoAsync(
+                    producto,
+                    selector.PresentacionSeleccionada
+                );
+        }
+        catch (Exception ex)
+        {
+            _viewModel.MensajeError =
+                $"No fue posible seleccionar la presentación: {ex.Message}";
+        }
     }
 
 
@@ -1003,18 +1098,15 @@ public partial class VentasView : UserControl
                 if (BuscadorProductosTextBox is null)
                     return;
 
-
                 if (!BuscadorProductosTextBox.IsAttachedToVisualTree())
                     return;
 
-
                 BuscadorProductosTextBox.Focus();
 
-
-                BuscadorProductosTextBox.CaretIndex =
-                    BuscadorProductosTextBox.Text?.Length
-                    ?? 0;
-            });
+                BuscadorProductosTextBox.SelectAll();
+            },
+            DispatcherPriority.Background
+        );
     }
 
 
@@ -1028,9 +1120,13 @@ public partial class VentasView : UserControl
     {
         if (_viewModel is not null)
         {
+            
+            _viewModel.SolicitarSeleccionPresentacion -=
+                OnSolicitarSeleccionPresentacion;
+
 
             _viewModel.SolicitarEditarCantidad -=
-                OnSolicitarEditarCantidad;
+                OnSolicitarEditarCantidad; 
 
 
             _viewModel.SolicitarCobro -=

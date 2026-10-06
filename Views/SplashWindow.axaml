@@ -14,11 +14,6 @@
         <!-- Fondo principal -->
         <Border Background="#F8FAFC"/>
 
-        <!-- Franja superior azul -->
-        <Border Height="12"
-                VerticalAlignment="Top"
-                Background="#123B69"/>
-
         <!-- Acento verde inferior izquierdo -->
         <Ellipse Width="460"
                  Height="460"

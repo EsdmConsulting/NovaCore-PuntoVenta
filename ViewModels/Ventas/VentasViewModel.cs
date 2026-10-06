@@ -308,7 +308,8 @@ public async Task CargarProductosAsync()
 
         var resultado =
             await _productosService
-                .ObtenerCatalogoAsync();
+                .ObtenerCatalogoAsync(
+                    configuracion.IdUnidadOperativa);
 
         Productos.Clear();
 
@@ -336,14 +337,6 @@ public async Task CargarProductosAsync()
                 .Where(p =>
                     p.AplicaVenta &&
                     p.Estatus != 3)
-                .Where(p =>
-                    p.Disponibilidad.Any(d =>
-                        d.UnidadCodigo.Equals(
-                            configuracion.UnidadCodigo,
-                            StringComparison.OrdinalIgnoreCase)
-                        &&
-                        d.Estatus != 3
-                    ))
                 .OrderBy(p =>
                     p.NombreComercial);
 

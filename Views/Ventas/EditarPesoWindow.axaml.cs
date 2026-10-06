@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
@@ -18,7 +18,7 @@ public partial class EditarPesoWindow : Window
         PesoSeleccionado = pesoActual;
 
         TextoPesoActual.Text =
-            $"Peso actual: {pesoActual:0.###}";
+            $"Peso actual: {pesoActual:0.###} K";
 
         PesoTextBox.Text =
             pesoActual.ToString(

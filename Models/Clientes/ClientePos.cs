@@ -20,19 +20,16 @@ public class ClientePos
         string.Empty;
 
     [JsonPropertyName("dias_de_credito")]
-    public int DiasCredito { get; set; }
+    public int? DiasCredito { get; set; }
 
     [JsonPropertyName("forma_pago")]
-    public string FormaPago { get; set; } =
-        string.Empty;
+    public string? FormaPago { get; set; }
 
     [JsonPropertyName("metodo_pago")]
-    public string MetodoPago { get; set; } =
-        string.Empty;
+    public string? MetodoPago { get; set; }
 
     [JsonPropertyName("condiciones_de_pago")]
-    public string CondicionesPago { get; set; } =
-        string.Empty;
+    public string? CondicionesPago { get; set; }
 
     [JsonPropertyName("estatus")]
     public int Estatus { get; set; }

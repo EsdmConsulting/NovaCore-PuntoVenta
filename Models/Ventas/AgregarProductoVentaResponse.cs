@@ -31,7 +31,7 @@ public class ProductoVentaAgregado
 
     [JsonPropertyName("presentacion")]
     public string? Presentacion { get; set; }
-    
+
     [JsonPropertyName("unidad_medida")]
     public string? UnidadMedida { get; set; }
 
@@ -51,15 +51,29 @@ public class ProductoVentaAgregado
 
 
     // =========================================================
-    // PRECIO APLICADO
+    // PRECIO
     // =========================================================
 
     [JsonPropertyName("precio_unitario")]
     public decimal PrecioUnitario { get; set; }
 
+    /*
+     * Se mantiene por compatibilidad con el backend actual.
+     *
+     * Ya NO significa que la cantidad determine el precio.
+     *
+     * Al agregar una línea nueva:
+     * precio_automatico = true
+     * significa precio normal/default = MENUDEO.
+     */
     [JsonPropertyName("precio_automatico")]
     public bool PrecioAutomatico { get; set; }
 
+    /*
+     * Se mantiene temporalmente por compatibilidad.
+     *
+     * Ya NO representa un límite de precio por cantidad.
+     */
     [JsonPropertyName("tipo_precio_maximo")]
     public string? TipoPrecioMaximo { get; set; }
 
@@ -69,22 +83,61 @@ public class ProductoVentaAgregado
     [JsonPropertyName("id_precio_aplicado")]
     public int? IdPrecioAplicado { get; set; }
 
+
+    // =========================================================
+    // CAMPOS LEGACY DE REGLAS
+    // =========================================================
+    //
+    // Se conservan únicamente mientras PHP todavía los devuelve.
+    //
+    // Con la nueva lógica normalmente vienen:
+    //
+    // id_regla_aplicada = null
+    // cantidad_minima_precio = null
+    // usa_reglas_precio = false
+    //
+    // =========================================================
+
     [JsonPropertyName("id_regla_aplicada")]
     public int? IdReglaAplicada { get; set; }
 
     [JsonPropertyName("cantidad_minima_precio")]
-    public decimal CantidadMinimaPrecio { get; set; }
+    public decimal? CantidadMinimaPrecio { get; set; }
 
     [JsonPropertyName("usa_reglas_precio")]
     public bool UsaReglasPrecio { get; set; }
 
 
     // =========================================================
-    // NIVELES DE PRECIO DISPONIBLES
+    // TIPOS DE PRECIO DISPONIBLES
+    // =========================================================
+    //
+    // Ya NO representan niveles por cantidad.
+    //
+    // Son simplemente los precios configurados para la
+    // presentación:
+    //
+    // MENUDEO
+    // MAYOREO
+    // DISTRIBUIDOR
+    // ESPECIAL
+    // etc.
+    //
     // =========================================================
 
     [JsonPropertyName("tipos_disponibles")]
-    public List<TipoPrecioDisponible> TiposDisponibles { get; set; } = new();
+    public List<TipoPrecioDisponible> TiposDisponibles { get; set; }
+        = new();
+
+
+    // =========================================================
+    // CAMPOS LEGACY
+    // =========================================================
+    //
+    // Ya no se utilizan para cambiar precio por cantidad.
+    // PHP actualmente devuelve null.
+    //
+    // =========================================================
 
     [JsonPropertyName("nivel_automatico_por_cantidad")]
     public TipoPrecioDisponible? NivelAutomaticoPorCantidad { get; set; }
@@ -126,32 +179,46 @@ public class ProductoVentaAgregado
 // TIPO DE PRECIO DISPONIBLE
 // =============================================================
 //
-// Representa uno de los niveles que el backend permite
-// utilizar para la presentación.
+// Representa un precio configurado para la presentación.
+//
+// IMPORTANTE:
+//
+// La cantidad NO determina cuál se utiliza.
 //
 // Ejemplo:
 //
-// MENUDEO
-// cantidad_minima = 1
-// precio = 21
+// MENUDEO      $400
+// MAYOREO      $380
+// DISTRIBUIDOR $360
 //
-// MAYOREO
-// cantidad_minima = 6
-// precio = 18
+// Una línea nueva inicia en MENUDEO.
 //
-// Los nombres NO están hardcodeados.
+// Los demás pueden seleccionarse manualmente mediante el flujo
+// autorizado.
+//
 // =============================================================
 
 public class TipoPrecioDisponible
 {
+    /*
+     * Legacy.
+     *
+     * Ya no existe necesariamente una regla asociada.
+     * Lo hacemos nullable por compatibilidad.
+     */
     [JsonPropertyName("id_regla")]
-    public int IdRegla { get; set; }
+    public int? IdRegla { get; set; }
 
     [JsonPropertyName("tipo_precio")]
     public string? TipoPrecio { get; set; }
 
+    /*
+     * Legacy.
+     *
+     * Ya no existe una cantidad mínima para obtener este precio.
+     */
     [JsonPropertyName("cantidad_minima")]
-    public decimal CantidadMinima { get; set; }
+    public decimal? CantidadMinima { get; set; }
 
     [JsonPropertyName("id_precio")]
     public int IdPrecio { get; set; }
@@ -165,15 +232,12 @@ public class TipoPrecioDisponible
 // SIGUIENTE NIVEL DE PRECIO
 // =============================================================
 //
-// Ejemplo:
+// Estructura legacy.
 //
-// {
-//     "tipo_precio": "MAYOREO",
-//     "cantidad_minima": 6,
-//     "faltan": 2,
-//     "precio": 18,
-//     "mensaje": "Faltan 2 para MAYOREO"
-// }
+// Ya no se utiliza para decidir precios por cantidad.
+// Se mantiene temporalmente porque algunos contratos actuales
+// todavía incluyen "siguiente_nivel": null.
+//
 // =============================================================
 
 public class SiguienteNivelPrecio
@@ -182,13 +246,13 @@ public class SiguienteNivelPrecio
     public string? TipoPrecio { get; set; }
 
     [JsonPropertyName("cantidad_minima")]
-    public decimal CantidadMinima { get; set; }
+    public decimal? CantidadMinima { get; set; }
 
     [JsonPropertyName("faltan")]
-    public decimal Faltan { get; set; }
+    public decimal? Faltan { get; set; }
 
     [JsonPropertyName("precio")]
-    public decimal Precio { get; set; }
+    public decimal? Precio { get; set; }
 
     [JsonPropertyName("mensaje")]
     public string? Mensaje { get; set; }

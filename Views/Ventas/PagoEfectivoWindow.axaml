@@ -3,38 +3,60 @@
 
         x:Class="NovaCoreESDM.Views.Ventas.PagoEfectivoWindow"
 
-        Width="720"
-        Height="650"
+        Title="Pago en efectivo"
 
-        CanResize="False"
+        Icon="/Assets/Brand/esdm-app-icon.ico"
+
+        Width="700"
+        Height="610"
+
+        MinWidth="560"
+        MinHeight="500"
+
+        CanResize="True"
+
         WindowStartupLocation="CenterOwner"
 
-        Title="Pago en efectivo"
         Background="#F3F6FA">
 
-    <Border Margin="14"
-            Padding="30"
+
+    <!-- ========================================================= -->
+    <!-- CONTENEDOR GENERAL                                        -->
+    <!-- ========================================================= -->
+
+    <Border Margin="12"
+            Padding="26"
             Background="White"
             CornerRadius="18">
 
-        <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto"
-              RowSpacing="20">
+        <!--
+            Auto = encabezado
+            Auto = total
+            *    = contenido central flexible
+            Auto = botones siempre visibles
+        -->
+
+        <Grid RowDefinitions="Auto,Auto,*,Auto"
+              RowSpacing="18">
+
 
             <!-- ================================================= -->
             <!-- ENCABEZADO                                        -->
             <!-- ================================================= -->
 
             <StackPanel Grid.Row="0"
-                        Spacing="5">
+                        Spacing="4">
 
                 <TextBlock Text="Pago en efectivo"
-                           FontSize="34"
+                           FontSize="30"
                            FontWeight="Bold"
-                           Foreground="#0B3D6E"/>
+                           Foreground="#0B3D6E"
+                           TextWrapping="Wrap"/>
 
                 <TextBlock Text="Captura el efectivo recibido para calcular el cambio"
-                           FontSize="14"
-                           Foreground="#5F7591"/>
+                           FontSize="13"
+                           Foreground="#5F7591"
+                           TextWrapping="Wrap"/>
 
             </StackPanel>
 
@@ -46,24 +68,30 @@
             <Border Grid.Row="1"
                     Background="#4B36DD"
                     CornerRadius="15"
-                    Padding="22">
+                    Padding="20">
 
-                <Grid ColumnDefinitions="70,*,Auto"
+                <Grid ColumnDefinitions="58,*,Auto"
                       ColumnSpacing="16">
 
+
+                    <!-- ICONO -->
+
                     <Border Grid.Column="0"
-                            Width="60"
-                            Height="60"
+                            Width="54"
+                            Height="54"
                             Background="#25FFFFFF"
                             CornerRadius="13"
                             VerticalAlignment="Center">
 
                         <TextBlock Text="🛒"
-                                   FontSize="29"
+                                   FontSize="26"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"/>
 
                     </Border>
+
+
+                    <!-- INFORMACIÓN -->
 
                     <StackPanel Grid.Column="1"
                                 VerticalAlignment="Center"
@@ -75,17 +103,22 @@
                                    Foreground="#E8E7FF"/>
 
                         <TextBlock Text="Importe total de la venta actual"
-                                   FontSize="11"
-                                   Foreground="#CFCBFF"/>
+                                   FontSize="10"
+                                   Foreground="#CFCBFF"
+                                   TextWrapping="Wrap"/>
 
                     </StackPanel>
+
+
+                    <!-- TOTAL -->
 
                     <TextBlock Grid.Column="2"
                                x:Name="TextoTotal"
-                               FontSize="36"
+                               FontSize="34"
                                FontWeight="Bold"
                                Foreground="White"
-                               VerticalAlignment="Center"/>
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Right"/>
 
                 </Grid>
 
@@ -93,173 +126,236 @@
 
 
             <!-- ================================================= -->
-            <!-- EFECTIVO RECIBIDO                                 -->
+            <!-- CONTENIDO CENTRAL                                 -->
             <!-- ================================================= -->
 
-            <Border Grid.Row="2"
-                    Background="#FFFFFF"
-                    BorderBrush="#D7E0EB"
-                    BorderThickness="1"
-                    CornerRadius="14"
-                    Padding="20">
+            <ScrollViewer Grid.Row="2"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
 
-                <Grid ColumnDefinitions="58,*"
-                      ColumnSpacing="16">
+                <StackPanel Spacing="16"
+                            Margin="0,2,0,2">
 
-                    <Border Grid.Column="0"
-                            Width="52"
-                            Height="52"
-                            Background="#E7F8EC"
-                            CornerRadius="12"
-                            VerticalAlignment="Center">
 
-                        <TextBlock Text="💵"
-                                   FontSize="26"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
+                    <!-- ================================================= -->
+                    <!-- EFECTIVO RECIBIDO                                 -->
+                    <!-- ================================================= -->
+
+                    <Border Background="White"
+                            BorderBrush="#D7E0EB"
+                            BorderThickness="1"
+                            CornerRadius="14"
+                            Padding="18">
+
+                        <Grid ColumnDefinitions="52,*"
+                              ColumnSpacing="14">
+
+
+                            <!-- ICONO -->
+
+                            <Border Grid.Column="0"
+                                    Width="48"
+                                    Height="48"
+                                    Background="#E7F8EC"
+                                    CornerRadius="12"
+                                    VerticalAlignment="Center">
+
+                                <TextBlock Text="💵"
+                                           FontSize="23"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                            </Border>
+
+
+                            <!-- CAMPO -->
+
+                            <StackPanel Grid.Column="1"
+                                        Spacing="7">
+
+                                <TextBlock Text="Efectivo recibido"
+                                           Foreground="#17365D"
+                                           FontSize="14"
+                                           FontWeight="Bold"/>
+
+                                <TextBox x:Name="CantidadRecibidaTextBox"
+                                         Height="54"
+                                         FontSize="22"
+
+                                         HorizontalContentAlignment="Right"
+                                         VerticalContentAlignment="Center"
+
+                                         TextChanged="CantidadRecibida_TextChanged"
+
+                                         Watermark="$0.00"
+
+                                         BorderBrush="#BFD0E3"
+                                         BorderThickness="1"
+
+                                         CornerRadius="10"
+
+                                         Padding="14,0"/>
+
+                            </StackPanel>
+
+                        </Grid>
 
                     </Border>
 
-                    <StackPanel Grid.Column="1"
-                                Spacing="8">
 
-                        <TextBlock Text="Efectivo recibido"
-                                   Foreground="#17365D"
-                                   FontSize="14"
-                                   FontWeight="Bold"/>
+                    <!-- ================================================= -->
+                    <!-- CAMBIO                                            -->
+                    <!-- ================================================= -->
 
-                        <TextBox x:Name="CantidadRecibidaTextBox"
-                                 Height="58"
-                                 FontSize="24"
-                                 HorizontalContentAlignment="Right"
-                                 VerticalContentAlignment="Center"
-                                 TextChanged="CantidadRecibida_TextChanged"
-                                 Watermark="$0.00"
-                                 BorderBrush="#BFD0E3"
-                                 BorderThickness="1"
-                                 CornerRadius="10"
-                                 Padding="14,0"/>
+                    <Border Background="#EFFAF2"
+                            BorderBrush="#B8E8C3"
+                            BorderThickness="1"
+                            CornerRadius="14"
+                            Padding="18">
 
-                    </StackPanel>
-
-                </Grid>
-
-            </Border>
+                        <Grid ColumnDefinitions="52,*,Auto"
+                              ColumnSpacing="14">
 
 
-            <!-- ================================================= -->
-            <!-- CAMBIO                                            -->
-            <!-- ================================================= -->
+                            <!-- ICONO -->
 
-            <Border Grid.Row="3"
-                    Background="#EFFAF2"
-                    BorderBrush="#B8E8C3"
-                    BorderThickness="1"
-                    CornerRadius="14"
-                    Padding="20">
+                            <Border Grid.Column="0"
+                                    Width="48"
+                                    Height="48"
+                                    Background="#DDF5E5"
+                                    CornerRadius="12"
+                                    VerticalAlignment="Center">
 
-                <Grid ColumnDefinitions="58,*,Auto"
-                      ColumnSpacing="16">
+                                <TextBlock Text="↩"
+                                           FontSize="24"
+                                           FontWeight="Bold"
+                                           Foreground="#16803B"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
 
-                    <Border Grid.Column="0"
-                            Width="52"
-                            Height="52"
-                            Background="#DDF5E5"
-                            CornerRadius="12"
-                            VerticalAlignment="Center">
+                            </Border>
 
-                        <TextBlock Text="↩"
-                                   FontSize="27"
-                                   FontWeight="Bold"
-                                   Foreground="#16803B"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
+
+                            <!-- INFORMACIÓN -->
+
+                            <StackPanel Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Spacing="3">
+
+                                <TextBlock Text="Cambio"
+                                           FontSize="14"
+                                           FontWeight="Bold"
+                                           Foreground="#16803B"/>
+
+                                <TextBlock Text="Cantidad que debe devolverse al cliente"
+                                           FontSize="10"
+                                           Foreground="#4F765C"
+                                           TextWrapping="Wrap"/>
+
+                            </StackPanel>
+
+
+                            <!-- CAMBIO -->
+
+                            <TextBlock Grid.Column="2"
+                                       x:Name="TextoCambio"
+                                       Text="$0.00"
+                                       Foreground="#16803B"
+                                       FontSize="28"
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Right"/>
+
+                        </Grid>
 
                     </Border>
 
-                    <StackPanel Grid.Column="1"
-                                VerticalAlignment="Center"
-                                Spacing="3">
 
-                        <TextBlock Text="Cambio"
-                                   FontSize="14"
-                                   FontWeight="Bold"
-                                   Foreground="#16803B"/>
+                    <!-- ================================================= -->
+                    <!-- MENSAJE                                           -->
+                    <!-- ================================================= -->
 
-                        <TextBlock Text="Cantidad que debe devolverse al cliente"
+                    <Border Background="#FFF7F7"
+                            BorderBrush="#F4C7CB"
+                            BorderThickness="1"
+                            CornerRadius="10"
+                            Padding="12"
+                            IsVisible="{Binding #TextoMensaje.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+
+                        <TextBlock x:Name="TextoMensaje"
+                                   Foreground="#C61F2B"
                                    FontSize="11"
-                                   Foreground="#4F765C"/>
+                                   TextWrapping="Wrap"/>
 
-                    </StackPanel>
+                    </Border>
 
-                    <TextBlock Grid.Column="2"
-                               x:Name="TextoCambio"
-                               Text="$0.00"
-                               Foreground="#16803B"
-                               FontSize="30"
-                               FontWeight="Bold"
-                               VerticalAlignment="Center"/>
+                </StackPanel>
 
-                </Grid>
-
-            </Border>
-
-
-            <!-- ================================================= -->
-            <!-- MENSAJE                                           -->
-            <!-- ================================================= -->
-
-            <Border Grid.Row="4"
-                    Background="#FFF7F7"
-                    BorderBrush="#F4C7CB"
-                    BorderThickness="1"
-                    CornerRadius="10"
-                    Padding="12"
-                    IsVisible="{Binding #TextoMensaje.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
-
-                <TextBlock x:Name="TextoMensaje"
-                           Foreground="#C61F2B"
-                           FontSize="11"
-                           TextWrapping="Wrap"/>
-
-            </Border>
+            </ScrollViewer>
 
 
             <!-- ================================================= -->
             <!-- BOTONES                                           -->
             <!-- ================================================= -->
 
-            <Grid Grid.Row="5"
+            <Grid Grid.Row="3"
                   ColumnDefinitions="*,*"
-                  ColumnSpacing="16"
-                  Margin="0,4,0,0">
+                  ColumnSpacing="12">
+
+
+                <!-- ================================================= -->
+                <!-- CANCELAR                                          -->
+                <!-- ================================================= -->
 
                 <Button Grid.Column="0"
                         Height="52"
+
                         Content="✕   Cancelar"
+
                         Click="Cancelar_Click"
+
                         Background="White"
                         Foreground="#C61F2B"
+
                         BorderBrush="#F3A7AD"
                         BorderThickness="1"
+
                         CornerRadius="10"
-                        FontSize="14"
+
+                        FontSize="13"
                         FontWeight="SemiBold"
+
+                        HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
                         VerticalContentAlignment="Center"/>
 
+
+                <!-- ================================================= -->
+                <!-- CONFIRMAR                                         -->
+                <!-- ================================================= -->
+
                 <Button Grid.Column="1"
                         x:Name="ConfirmarButton"
+
                         Height="52"
+
                         Content="✓   Confirmar pago"
+
                         Click="Confirmar_Click"
+
                         Background="#16A34A"
                         Foreground="White"
+
                         BorderThickness="0"
+
                         CornerRadius="10"
-                        FontSize="14"
+
+                        FontSize="13"
                         FontWeight="Bold"
+
                         IsEnabled="False"
+
+                        HorizontalAlignment="Stretch"
                         HorizontalContentAlignment="Center"
                         VerticalContentAlignment="Center"/>
 

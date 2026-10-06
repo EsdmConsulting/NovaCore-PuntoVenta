@@ -29,6 +29,12 @@ public class TerminalConfigurationService
                 _directorioConfiguracion,
                 "terminal-config.json"
             );
+        
+        Console.WriteLine("====================================");
+        Console.WriteLine("RUTA CONFIG POS:");
+        Console.WriteLine(_archivoConfiguracion);
+        Console.WriteLine("====================================");
+        
     }
 
     public bool ExisteConfiguracion()

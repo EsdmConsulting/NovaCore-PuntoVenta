@@ -32,11 +32,6 @@
                  Margin="0,0,-350,-360"
                  Fill="#C61F2B"/>
 
-        <!-- Franja superior azul -->
-        <Border Height="10"
-                VerticalAlignment="Top"
-                Background="#123B69"/>
-
         <!-- Contenedor -->
         <Border Width="510"
                 Padding="48"
