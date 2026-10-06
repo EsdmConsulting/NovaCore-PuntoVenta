@@ -48,4 +48,10 @@ public class Caja
 
     [JsonPropertyName("estatus")]
     public int Estatus { get; set; }
+
+    [JsonPropertyName("en_uso")]
+    public bool EnUso { get; set; }
+    
+    [JsonIgnore]
+    public bool EstaDisponible => !EnUso;
 }

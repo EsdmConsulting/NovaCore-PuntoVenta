@@ -124,7 +124,9 @@
                                    TextWrapping="Wrap"/>
 
 
-                        <!-- AVISO -->
+                        <!-- ============================================= -->
+                        <!-- AVISO DE CONFIGURACIÓN                        -->
+                        <!-- ============================================= -->
 
                         <Border Background="#18FFFFFF"
                                 CornerRadius="12"
@@ -144,6 +146,37 @@
 
                                 <TextBlock Grid.Column="1"
                                            Text="Esta configuración se guardará en este equipo."
+                                           Foreground="White"
+                                           FontSize="11"
+                                           TextWrapping="Wrap"
+                                           VerticalAlignment="Center"/>
+
+                            </Grid>
+
+                        </Border>
+
+
+                        <!-- ============================================= -->
+                        <!-- AVISO DE CAJAS EN USO                         -->
+                        <!-- ============================================= -->
+
+                        <Border Background="#18FFFFFF"
+                                CornerRadius="12"
+                                Padding="15">
+
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="10">
+
+
+                                <Border Width="9"
+                                        Height="9"
+                                        CornerRadius="5"
+                                        Background="#F87171"
+                                        VerticalAlignment="Center"/>
+
+
+                                <TextBlock Grid.Column="1"
+                                           Text="Las cajas marcadas como EN USO pertenecen a otra terminal y no pueden seleccionarse."
                                            Foreground="White"
                                            FontSize="11"
                                            TextWrapping="Wrap"
@@ -198,7 +231,7 @@
                            TextWrapping="Wrap"/>
 
 
-                <TextBlock Text="Elige la caja asignada físicamente a este equipo."
+                <TextBlock Text="Elige una caja disponible para asignarla físicamente a este equipo."
                            Foreground="#718078"
                            FontSize="13"
                            TextWrapping="Wrap"/>
@@ -212,8 +245,10 @@
 
             <Grid Grid.Row="1">
 
+
                 <ScrollViewer VerticalScrollBarVisibility="Auto"
                               HorizontalScrollBarVisibility="Disabled">
+
 
                     <ListBox ItemsSource="{Binding Cajas}"
                              SelectedItem="{Binding CajaSeleccionada}"
@@ -225,7 +260,7 @@
 
 
                             <!-- ========================================= -->
-                            <!-- MODELO REAL DEL BACKEND                   -->
+                            <!-- MODELO CAJA                              -->
                             <!-- ========================================= -->
 
                             <DataTemplate x:DataType="models:Caja">
@@ -242,20 +277,45 @@
                                         <!-- ICONO                             -->
                                         <!-- ================================= -->
 
-                                        <Border Width="48"
-                                                Height="48"
-                                                CornerRadius="14"
-                                                Background="#EAF7EF"
-                                                VerticalAlignment="Center">
+                                        <Grid Width="48"
+                                              Height="48"
+                                              VerticalAlignment="Center">
 
 
-                                            <TextBlock Text="▣"
-                                                       Foreground="#08783D"
-                                                       FontSize="22"
-                                                       HorizontalAlignment="Center"
-                                                       VerticalAlignment="Center"/>
+                                            <!-- DISPONIBLE -->
 
-                                        </Border>
+                                            <Border Width="48"
+                                                    Height="48"
+                                                    CornerRadius="14"
+                                                    Background="#EAF7EF"
+                                                    IsVisible="{Binding EstaDisponible}">
+
+                                                <TextBlock Text="▣"
+                                                           Foreground="#08783D"
+                                                           FontSize="22"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+
+                                            </Border>
+
+
+                                            <!-- EN USO -->
+
+                                            <Border Width="48"
+                                                    Height="48"
+                                                    CornerRadius="14"
+                                                    Background="#FEECEC"
+                                                    IsVisible="{Binding EnUso}">
+
+                                                <TextBlock Text="▣"
+                                                           Foreground="#B91C1C"
+                                                           FontSize="22"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+
+                                            </Border>
+
+                                        </Grid>
 
 
                                         <!-- ================================= -->
@@ -275,12 +335,30 @@
                                                        TextTrimming="CharacterEllipsis"/>
 
 
+                                            <!-- ============================= -->
+                                            <!-- CÓDIGO DISPONIBLE              -->
+                                            <!-- ============================= -->
+
                                             <TextBlock Text="{Binding Codigo}"
                                                        Foreground="#08783D"
                                                        FontSize="11"
                                                        FontWeight="SemiBold"
                                                        TextWrapping="NoWrap"
-                                                       TextTrimming="CharacterEllipsis"/>
+                                                       TextTrimming="CharacterEllipsis"
+                                                       IsVisible="{Binding EstaDisponible}"/>
+
+
+                                            <!-- ============================= -->
+                                            <!-- CÓDIGO EN USO                  -->
+                                            <!-- ============================= -->
+
+                                            <TextBlock Text="{Binding Codigo}"
+                                                       Foreground="#B91C1C"
+                                                       FontSize="11"
+                                                       FontWeight="SemiBold"
+                                                       TextWrapping="NoWrap"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       IsVisible="{Binding EnUso}"/>
 
 
                                             <TextBlock Text="{Binding UnidadNombre}"
@@ -293,36 +371,115 @@
 
 
                                         <!-- ================================= -->
-                                        <!-- TERMINAL                          -->
+                                        <!-- ESTADO + TERMINAL                  -->
                                         <!-- ================================= -->
 
-                                        <Border Grid.Column="2"
-                                                Background="#F8FAF9"
-                                                BorderBrush="#E4EAE6"
-                                                BorderThickness="1"
-                                                CornerRadius="9"
-                                                Padding="10,6"
-                                                VerticalAlignment="Center">
+                                        <StackPanel Grid.Column="2"
+                                                    Spacing="7"
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Right">
 
 
-                                            <StackPanel Spacing="2">
+                                            <!-- ============================= -->
+                                            <!-- DISPONIBLE                    -->
+                                            <!-- ============================= -->
+
+                                            <Border Background="#EAF7EF"
+                                                    BorderBrush="#C8E9D3"
+                                                    BorderThickness="1"
+                                                    CornerRadius="7"
+                                                    Padding="9,4"
+                                                    HorizontalAlignment="Right"
+                                                    IsVisible="{Binding EstaDisponible}">
+
+                                                <StackPanel Orientation="Horizontal"
+                                                            Spacing="5">
 
 
-                                                <TextBlock Text="Terminal"
-                                                           Foreground="#94A39A"
-                                                           FontSize="9"
-                                                           HorizontalAlignment="Center"/>
+                                                    <Border Width="6"
+                                                            Height="6"
+                                                            CornerRadius="3"
+                                                            Background="#16A34A"
+                                                            VerticalAlignment="Center"/>
 
 
-                                                <TextBlock Text="{Binding NumeroTerminal}"
-                                                           Foreground="#44534A"
-                                                           FontSize="11"
-                                                           FontWeight="SemiBold"
-                                                           HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="DISPONIBLE"
+                                                               Foreground="#08783D"
+                                                               FontSize="9"
+                                                               FontWeight="Bold"
+                                                               VerticalAlignment="Center"/>
 
-                                            </StackPanel>
+                                                </StackPanel>
 
-                                        </Border>
+                                            </Border>
+
+
+                                            <!-- ============================= -->
+                                            <!-- EN USO                        -->
+                                            <!-- ============================= -->
+
+                                            <Border Background="#FEECEC"
+                                                    BorderBrush="#F3C1C1"
+                                                    BorderThickness="1"
+                                                    CornerRadius="7"
+                                                    Padding="9,4"
+                                                    HorizontalAlignment="Right"
+                                                    IsVisible="{Binding EnUso}">
+
+                                                <StackPanel Orientation="Horizontal"
+                                                            Spacing="5">
+
+
+                                                    <Border Width="6"
+                                                            Height="6"
+                                                            CornerRadius="3"
+                                                            Background="#DC2626"
+                                                            VerticalAlignment="Center"/>
+
+
+                                                    <TextBlock Text="EN USO"
+                                                               Foreground="#B91C1C"
+                                                               FontSize="9"
+                                                               FontWeight="Bold"
+                                                               VerticalAlignment="Center"/>
+
+                                                </StackPanel>
+
+                                            </Border>
+
+
+                                            <!-- ============================= -->
+                                            <!-- TERMINAL                      -->
+                                            <!-- ============================= -->
+
+                                            <Border Background="#F8FAF9"
+                                                    BorderBrush="#E4EAE6"
+                                                    BorderThickness="1"
+                                                    CornerRadius="9"
+                                                    Padding="10,6"
+                                                    VerticalAlignment="Center">
+
+
+                                                <StackPanel Spacing="2">
+
+
+                                                    <TextBlock Text="Terminal"
+                                                               Foreground="#94A39A"
+                                                               FontSize="9"
+                                                               HorizontalAlignment="Center"/>
+
+
+                                                    <TextBlock Text="{Binding NumeroTerminal}"
+                                                               Foreground="#44534A"
+                                                               FontSize="11"
+                                                               FontWeight="SemiBold"
+                                                               HorizontalAlignment="Center"/>
+
+                                                </StackPanel>
+
+                                            </Border>
+
+                                        </StackPanel>
 
                                     </Grid>
 
@@ -348,7 +505,9 @@
                         Margin="0,20,0,0">
 
 
-                <!-- ERROR -->
+                <!-- ================================================= -->
+                <!-- ERROR                                             -->
+                <!-- ================================================= -->
 
                 <TextBlock Text="{Binding MensajeError}"
                            Foreground="#B51F2A"
@@ -357,7 +516,9 @@
                            MinHeight="18"/>
 
 
-                <!-- CONTINUAR -->
+                <!-- ================================================= -->
+                <!-- CONTINUAR                                         -->
+                <!-- ================================================= -->
 
                 <Button Content="Guardar caja y continuar"
                         Command="{Binding ConfirmarCajaCommand}"
@@ -418,7 +579,7 @@
 
 
         <!-- ===================================================== -->
-        <!-- LISTBOX                                               -->
+        <!-- LISTBOX                                              -->
         <!-- ===================================================== -->
 
         <Style Selector="ListBoxItem">
@@ -454,7 +615,7 @@
 
 
         <!-- ===================================================== -->
-        <!-- CAJA SELECCIONADA                                     -->
+        <!-- CAJA SELECCIONADA                                    -->
         <!-- ===================================================== -->
 
         <Style Selector="ListBoxItem:selected Border.cajaCard">
