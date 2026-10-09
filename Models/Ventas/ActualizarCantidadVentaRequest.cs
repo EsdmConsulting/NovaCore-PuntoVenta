@@ -15,8 +15,7 @@ public class ActualizarCantidadVentaRequest
     // ---------------------------------------------------------
     //
     // Nullable porque update_detalle.php permite cambiar
-    // únicamente la configuración de precio sin modificar
-    // la cantidad.
+    // únicamente el tipo de precio sin modificar la cantidad.
     //
     // Si es null, no se envía.
     // ---------------------------------------------------------
@@ -27,12 +26,43 @@ public class ActualizarCantidadVentaRequest
 
 
     // ---------------------------------------------------------
+    // TIPO DE PRECIO
+    // ---------------------------------------------------------
+    //
+    // Este es el campo ACTUAL utilizado por update_detalle.php
+    // para cambiar manualmente el precio de una línea.
+    //
+    // Ejemplos:
+    //
+    // tipo_precio = "MENUDEO"
+    // tipo_precio = "MAYOREO"
+    // tipo_precio = "BODEGAS"
+    // tipo_precio = "DISTRIBUIDOR"
+    // tipo_precio = "ESPECIAL"
+    //
+    // El nombre es dinámico. El backend valida que exista
+    // un precio vigente para la presentación.
+    //
+    // Si es null, no se envía y el backend conserva
+    // el tipo de precio que actualmente tiene la línea.
+    // ---------------------------------------------------------
+
+    [JsonPropertyName("tipo_precio")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? TipoPrecio { get; set; }
+
+
+    // ---------------------------------------------------------
     // PRECIO AUTOMÁTICO
     // ---------------------------------------------------------
     //
-    // null  = conservar configuración actual
-    // true  = precio automático
-    // false = precio manual
+    // Se conserva temporalmente por compatibilidad con código
+    // anterior del POS.
+    //
+    // El nuevo flujo de selección manual NO debe utilizar esta
+    // propiedad para indicar qué precio quiere aplicar.
+    //
+    // Si es null, no se envía.
     // ---------------------------------------------------------
 
     [JsonPropertyName("precio_automatico")]
@@ -41,24 +71,21 @@ public class ActualizarCantidadVentaRequest
 
 
     // ---------------------------------------------------------
-    // TIPO DE PRECIO
+    // TIPO DE PRECIO MÁXIMO
     // ---------------------------------------------------------
     //
-    // Automático completo:
+    // Se conserva temporalmente por compatibilidad.
     //
-    // precio_automatico = true
-    // tipo_precio_maximo = null
+    // El backend actual calcula este valor a partir del
+    // tipo_precio seleccionado.
     //
-    //
-    // Manual:
-    //
-    // precio_automatico = false
-    // tipo_precio_maximo = "MAYOREO"
-    //
+    // No debe utilizarse para seleccionar MAYOREO,
+    // BODEGAS, DISTRIBUIDOR, etc.
     //
     // IMPORTANTE:
-    // NO ignoramos null aquí porque necesitamos poder mandar
-    // explícitamente null para regresar a automático completo.
+    // No ignoramos null para conservar compatibilidad con
+    // código anterior que pudiera necesitar enviarlo
+    // explícitamente.
     // ---------------------------------------------------------
 
     [JsonPropertyName("tipo_precio_maximo")]
@@ -220,17 +247,7 @@ public class PrecioCantidadActualizado
 
 
     // ---------------------------------------------------------
-    // TODOS LOS NIVELES DISPONIBLES
-    // ---------------------------------------------------------
-    //
-    // Estas clases ya existen en:
-    //
-    // AgregarProductoVentaResponse.cs
-    //
-    // TipoPrecioDisponible
-    // SiguienteNivelPrecio
-    //
-    // No las volvemos a declarar.
+    // TODOS LOS TIPOS DISPONIBLES
     // ---------------------------------------------------------
 
     [JsonPropertyName("tipos_disponibles")]

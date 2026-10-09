@@ -226,6 +226,43 @@ public partial class SeleccionarPrecioWindow : Window
             );
         }
     }
+    
+    
+    // =========================================================
+// SELECCIONAR PRECIO
+// =========================================================
+
+    private void PrecioRadioButton_Click(
+        object? sender,
+        Avalonia.Interactivity.RoutedEventArgs e)
+    {
+        if (sender is not RadioButton radioButton)
+        {
+            return;
+        }
+
+        var tipoPrecio =
+            radioButton.Tag?.ToString();
+
+        if (string.IsNullOrWhiteSpace(tipoPrecio))
+        {
+            return;
+        }
+
+        foreach (var opcion in _opciones)
+        {
+            opcion.IsSelected =
+                string.Equals(
+                    opcion.TipoPrecio,
+                    tipoPrecio,
+                    StringComparison.OrdinalIgnoreCase
+                );
+        }
+
+        Console.WriteLine(
+            $"PRECIO SELECCIONADO: {tipoPrecio}"
+        );
+    }
 
 
     // =========================================================

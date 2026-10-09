@@ -99,7 +99,8 @@
                                         VerticalAlignment="Center"
                                         GroupName="TipoPrecio"
                                         Tag="{Binding TipoPrecio}"
-                                        IsChecked="{Binding IsSelected, Mode=TwoWay}"/>
+                                        IsChecked="{Binding IsSelected}"
+                                        Click="PrecioRadioButton_Click"/>
 
                                     <StackPanel
                                         Grid.Column="1"

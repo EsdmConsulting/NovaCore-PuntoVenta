@@ -761,20 +761,22 @@ public async Task<ActualizarCantidadVentaResponse>
 // ESTABLECER PRECIO MANUAL
 // =========================================================
 //
-// Ejemplo:
+// El backend actual recibe directamente:
 //
-// cantidad = 3
+// tipo_precio = "MAYOREO"
+// tipo_precio = "BODEGAS"
+// tipo_precio = "DISTRIBUIDOR"
+// etc.
 //
-// Cajero selecciona:
-// MAYOREO
+// El backend valida que el tipo exista como precio vigente
+// para la presentación y resuelve:
 //
-// Se envía:
+// - precio_unitario
+// - precio_automatico
+// - tipo_precio_maximo
+// - tipo_precio_aplicado
+// - id_precio_aplicado
 //
-// precio_automatico = false
-// tipo_precio_maximo = MAYOREO
-//
-// El backend valida que MAYOREO realmente exista como
-// nivel disponible para esa presentación.
 // =========================================================
 
 public async Task<ActualizarCantidadVentaResponse>
@@ -798,9 +800,7 @@ public async Task<ActualizarCantidadVentaResponse>
     var request =
         new ActualizarCantidadVentaRequest
         {
-            PrecioAutomatico = false,
-
-            TipoPrecioMaximo =
+            TipoPrecio =
                 tipoPrecio.Trim()
         };
 

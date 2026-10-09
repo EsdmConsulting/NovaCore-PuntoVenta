@@ -1,0 +1,321 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Ventas.PagoTransferenciaWindow"
+
+        Title="Pago por transferencia"
+
+        Icon="/Assets/Brand/esdm-app-icon.ico"
+
+        Width="600"
+        Height="650"
+
+        MinWidth="540"
+        MinHeight="580"
+
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+
+        Background="#F3F6FA">
+
+
+    <Border Margin="12"
+            Padding="26"
+            Background="White"
+            CornerRadius="18">
+
+        <Grid RowDefinitions="Auto,Auto,*,Auto"
+              RowSpacing="18">
+
+
+            <!-- ================================================= -->
+            <!-- ENCABEZADO                                        -->
+            <!-- ================================================= -->
+
+            <StackPanel Grid.Row="0"
+                        Spacing="4">
+
+                <TextBlock Text="Transferencia bancaria"
+                           FontSize="27"
+                           FontWeight="Bold"
+                           Foreground="#0F766E"/>
+
+                <TextBlock Text="Realiza la transferencia y verifica que el pago haya sido recibido"
+                           FontSize="12"
+                           Foreground="#64748B"
+                           TextWrapping="Wrap"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- TOTAL                                             -->
+            <!-- ================================================= -->
+
+            <Border Grid.Row="1"
+                    Background="#0F766E"
+                    CornerRadius="15"
+                    Padding="20">
+
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="16">
+
+                    <Border Width="52"
+                            Height="52"
+                            Background="#25FFFFFF"
+                            CornerRadius="12"
+                            VerticalAlignment="Center">
+
+                        <TextBlock Text="🏦"
+                                   FontSize="24"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+
+                    </Border>
+
+
+                    <StackPanel Grid.Column="1"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                Spacing="2">
+
+                        <TextBlock Text="Total a transferir"
+                                   FontSize="12"
+                                   Foreground="#CCFBF1"
+                                   HorizontalAlignment="Right"/>
+
+                        <TextBlock x:Name="TextoTotal"
+                                   Text="$0.00"
+                                   FontSize="31"
+                                   FontWeight="Bold"
+                                   Foreground="White"
+                                   HorizontalAlignment="Right"/>
+
+                    </StackPanel>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- CONTENIDO                                         -->
+            <!-- ================================================= -->
+
+            <ScrollViewer Grid.Row="2"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+
+                <StackPanel Spacing="14">
+
+
+                    <!-- DATOS BANCARIOS -->
+
+                    <Border Background="#F0FDFA"
+                            BorderBrush="#99F6E4"
+                            BorderThickness="1"
+                            CornerRadius="13"
+                            Padding="18">
+
+                        <StackPanel Spacing="14">
+
+                            <TextBlock Text="Datos para transferencia"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       Foreground="#0F766E"/>
+
+
+                            <Grid RowDefinitions="Auto,Auto,Auto"
+                                  ColumnDefinitions="125,*"
+                                  RowSpacing="12"
+                                  ColumnSpacing="12">
+
+                                <!-- BANCO -->
+
+                                <TextBlock Grid.Row="0"
+                                           Grid.Column="0"
+                                           Text="Banco"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Foreground="#64748B"/>
+
+                                <TextBlock Grid.Row="0"
+                                           Grid.Column="1"
+                                           Text="BBVA"
+                                           FontSize="13"
+                                           FontWeight="Bold"
+                                           Foreground="#17365D"/>
+
+
+                                <!-- BENEFICIARIO -->
+
+                                <TextBlock Grid.Row="1"
+                                           Grid.Column="0"
+                                           Text="Beneficiario"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Foreground="#64748B"/>
+
+                                <TextBlock Grid.Row="1"
+                                           Grid.Column="1"
+                                           Text="GRUPO LUIS FER"
+                                           FontSize="13"
+                                           FontWeight="Bold"
+                                           Foreground="#17365D"
+                                           TextWrapping="Wrap"/>
+
+
+                                <!-- CLABE -->
+
+                                <TextBlock Grid.Row="2"
+                                           Grid.Column="0"
+                                           Text="CLABE"
+                                           FontSize="12"
+                                           FontWeight="SemiBold"
+                                           Foreground="#64748B"/>
+
+                                <TextBlock Grid.Row="2"
+                                           Grid.Column="1"
+                                           Text="012345678901234567"
+                                           FontSize="15"
+                                           FontWeight="Bold"
+                                           Foreground="#17365D"
+                                           TextWrapping="Wrap"/>
+
+                            </Grid>
+
+                        </StackPanel>
+
+                    </Border>
+
+
+                    <!-- ADVERTENCIA -->
+
+                    <Border Background="#FFFBEB"
+                            BorderBrush="#FDE68A"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="15">
+
+                        <Grid ColumnDefinitions="Auto,*"
+                              ColumnSpacing="11">
+
+                            <TextBlock Text="⚠"
+                                       FontSize="21"
+                                       VerticalAlignment="Top"/>
+
+                            <StackPanel Grid.Column="1"
+                                        Spacing="4">
+
+                                <TextBlock Text="Verifica el pago antes de continuar"
+                                           FontSize="13"
+                                           FontWeight="Bold"
+                                           Foreground="#92400E"/>
+
+                                <TextBlock Text="Confirma únicamente cuando hayas comprobado que la transferencia fue recibida correctamente."
+                                           FontSize="11"
+                                           Foreground="#A16207"
+                                           TextWrapping="Wrap"/>
+
+                            </StackPanel>
+
+                        </Grid>
+
+                    </Border>
+
+
+                    <!-- MENSAJE / LOADING -->
+
+                    <Border x:Name="ProcesandoPanel"
+                            IsVisible="False"
+                            Background="#EFF6FF"
+                            BorderBrush="#BFDBFE"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="14">
+
+                        <StackPanel Spacing="9">
+
+                            <TextBlock x:Name="TextoProcesando"
+                                       Text="Registrando transferencia..."
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Foreground="#1D4ED8"
+                                       HorizontalAlignment="Center"/>
+
+                            <ProgressBar IsIndeterminate="True"
+                                         Height="5"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+
+                    <!-- ERROR -->
+
+                    <TextBlock x:Name="TextoMensaje"
+                               Text=""
+                               FontSize="11"
+                               Foreground="#DC2626"
+                               FontWeight="SemiBold"
+                               TextWrapping="Wrap"
+                               HorizontalAlignment="Center"/>
+
+                </StackPanel>
+
+            </ScrollViewer>
+
+
+            <!-- ================================================= -->
+            <!-- ACCIONES                                          -->
+            <!-- ================================================= -->
+
+            <Grid Grid.Row="3"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="12">
+
+                <Button x:Name="CancelarButton"
+                        Grid.Column="0"
+                        Height="50"
+
+                        Content="Regresar"
+
+                        Click="Cancelar_Click"
+
+                        Background="White"
+                        Foreground="#53657D"
+
+                        BorderBrush="#BCC8D6"
+                        BorderThickness="1"
+
+                        CornerRadius="10"
+
+                        FontSize="13"
+                        FontWeight="SemiBold"/>
+
+
+                <Button x:Name="ConfirmarButton"
+                        Grid.Column="1"
+                        Height="50"
+
+                        Content="✓  Confirmar transferencia"
+
+                        Click="Confirmar_Click"
+
+                        Background="#0F766E"
+                        Foreground="White"
+
+                        BorderThickness="0"
+
+                        CornerRadius="10"
+
+                        FontSize="13"
+                        FontWeight="Bold"/>
+
+            </Grid>
+
+        </Grid>
+
+    </Border>
+
+</Window>

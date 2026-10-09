@@ -583,6 +583,89 @@ public partial class VentasView : UserControl
 
                     return;
                 }
+                
+                
+                // =====================================================
+                // TRANSFERENCIA
+                // =====================================================
+
+                if (
+                    ventana.MetodoSeleccionado ==
+                    "TRANSFERENCIA"
+                )
+                {
+                    // =================================================
+                    // VALIDAR VENTA
+                    // =================================================
+
+                    if (_viewModel.IdVentaActual <= 0)
+                    {
+                        _viewModel.MensajeError =
+                            "No existe una venta activa para cobrar.";
+
+                        return;
+                    }
+
+
+                    // =================================================
+                    // MOSTRAR DATOS PARA TRANSFERENCIA
+                    // =================================================
+
+                    var pagoTransferencia =
+                        new PagoTransferenciaWindow(
+                            _viewModel.Total
+                        );
+
+
+                    var transferenciaConfirmada =
+                        await pagoTransferencia
+                            .ShowDialog<bool>(
+                                owner
+                            );
+
+
+                    // =================================================
+                    // CANCELÓ / REGRESÓ
+                    // =================================================
+                    //
+                    // Volvemos al selector de método de pago.
+                    // La venta continúa exactamente como estaba.
+                    // =================================================
+
+                    if (!transferenciaConfirmada)
+                        continue;
+
+// =================================================
+// REGISTRAR TRANSFERENCIA
+// =================================================
+
+                    var pagoRegistrado =
+                        await _viewModel
+                            .RegistrarPagoTransferenciaAsync(
+                                _viewModel.Total
+                            );
+
+
+                    if (!pagoRegistrado)
+                    {
+                        /*
+                         * El ViewModel ya dejó el motivo en MensajeError.
+                         *
+                         * IMPORTANTE:
+                         * No intentamos registrar automáticamente
+                         * una segunda transferencia.
+                         */
+
+                        return;
+                    }
+
+
+            // =================================================
+            // PAGO TERMINADO
+            // =================================================
+
+                    return;
+                }
 
 
                 // =====================================================
@@ -950,17 +1033,7 @@ public partial class VentasView : UserControl
                         return;
                     }
                 }
-
-
-                // =====================================================
-                // OTROS MÉTODOS
-                // =====================================================
-                //
-                // Tarjeta y transferencia se agregarán después.
-                //
-                // Si por alguna razón llega un método todavía no
-                // implementado, volvemos a mostrar el selector.
-                // =====================================================
+                
             }
         }
         finally

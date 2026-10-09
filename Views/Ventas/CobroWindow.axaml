@@ -324,81 +324,91 @@
                     </Button>
 
 
-                    <!-- ================================================= -->
-                    <!-- TRANSFERENCIA                                     -->
-                    <!-- ================================================= -->
+                        <!-- ================================================= -->
+                        <!-- TRANSFERENCIA                                     -->
+                        <!-- ================================================= -->
 
-                    <Button Grid.Row="1"
-                            Grid.Column="0"
+                        <Button Grid.Row="1"
+                                Grid.Column="0"
 
-                            IsEnabled="False"
+                                Click="Transferencia_Click"
 
-                            MinHeight="108"
+                                MinHeight="108"
 
-                            Background="#FAFBFC"
-                            Foreground="#8B949E"
+                                Background="#F0FDFA"
+                                Foreground="#0F766E"
 
-                            BorderBrush="#D8DEE6"
-                            BorderThickness="1"
+                                BorderBrush="#99F6E4"
+                                BorderThickness="1"
 
-                            CornerRadius="14"
+                                CornerRadius="14"
 
-                            Padding="16"
+                                Padding="16"
 
-                            HorizontalContentAlignment="Stretch"
-                            VerticalContentAlignment="Stretch">
+                                HorizontalContentAlignment="Stretch"
+                                VerticalContentAlignment="Stretch">
 
-                        <Grid ColumnDefinitions="52,*,38"
-                              ColumnSpacing="12">
+                            <Grid ColumnDefinitions="52,*,38"
+                                  ColumnSpacing="12">
 
+                                <!-- ICONO -->
 
-                            <Border Grid.Column="0"
-                                    Width="48"
-                                    Height="48"
-                                    Background="#EEF2F6"
-                                    CornerRadius="11"
-                                    VerticalAlignment="Center">
+                                <Border Grid.Column="0"
+                                        Width="48"
+                                        Height="48"
+                                        Background="#CCFBF1"
+                                        CornerRadius="11"
+                                        VerticalAlignment="Center">
 
-                                <TextBlock Text="🏦"
-                                           FontSize="23"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
+                                    <TextBlock Text="🏦"
+                                               FontSize="23"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
 
-                            </Border>
-
-
-                            <StackPanel Grid.Column="1"
-                                        VerticalAlignment="Center"
-                                        Spacing="4">
-
-                                <TextBlock Text="Transferencia"
-                                           FontSize="16"
-                                           FontWeight="Bold"/>
-
-                                <TextBlock Text="Disponible próximamente"
-                                           FontSize="10"
-                                           TextWrapping="Wrap"/>
-
-                            </StackPanel>
+                                </Border>
 
 
-                            <Border Grid.Column="2"
-                                    Width="36"
-                                    Height="36"
-                                    CornerRadius="18"
-                                    Background="#EEF2F6"
-                                    VerticalAlignment="Center">
+                                <!-- INFORMACIÓN -->
 
-                                <TextBlock Text="🔒"
-                                           FontSize="15"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="1"
+                                            VerticalAlignment="Center"
+                                            Spacing="4">
 
-                            </Border>
+                                    <TextBlock Text="Transferencia"
+                                               FontSize="16"
+                                               FontWeight="Bold"
+                                               Foreground="#0F766E"/>
 
-                        </Grid>
+                                    <TextBlock Text="Pago mediante transferencia bancaria"
+                                               FontSize="10"
+                                               Foreground="#477C77"
+                                               TextWrapping="Wrap"/>
 
-                    </Button>
+                                </StackPanel>
+
+
+                                <!-- FLECHA -->
+
+                                <Border Grid.Column="2"
+                                        Width="36"
+                                        Height="36"
+                                        CornerRadius="18"
+                                        Background="#CCFBF1"
+                                        VerticalAlignment="Center">
+
+                                    <TextBlock Text="›"
+                                               FontSize="25"
+                                               FontWeight="Bold"
+                                               Foreground="#0F766E"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Margin="0,-3,0,0"/>
+
+                                </Border>
+
+                            </Grid>
+
+                        </Button>
 
 
                     <!-- ================================================= -->

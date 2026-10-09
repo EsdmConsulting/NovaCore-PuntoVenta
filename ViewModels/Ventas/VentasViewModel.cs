@@ -2211,6 +2211,164 @@ public async Task<bool> RegistrarPagoEfectivoAsync(
 
 
 // =========================================================
+// REGISTRO DE PAGO POR TRANSFERENCIA
+// =========================================================
+
+public async Task<bool> RegistrarPagoTransferenciaAsync(
+    decimal importeAplicado)
+{
+    if (IdVentaActual <= 0)
+    {
+        MensajeError =
+            "No existe una venta activa.";
+
+        return false;
+    }
+
+
+    if (importeAplicado <= 0)
+    {
+        MensajeError =
+            "El importe del pago no es válido.";
+
+        return false;
+    }
+
+
+    if (EstaProcesandoVenta)
+        return false;
+
+
+    EstaProcesandoVenta =
+        true;
+
+    MensajeError =
+        string.Empty;
+
+
+    try
+    {
+        // =====================================================
+        // CREAR PAGO
+        // =====================================================
+
+        var request =
+            new RegistrarPagoRequest
+            {
+                IdFormaPago =
+                    FormasPagoPos.Transferencia,
+
+                IdBanco =
+                    null,
+
+                IdTpvBancaria =
+                    null,
+
+                Importe =
+                    importeAplicado,
+
+                Referencia =
+                    string.Empty,
+
+                Autorizacion =
+                    string.Empty
+            };
+
+
+        // =====================================================
+        // REGISTRAR PAGO EN BACKEND
+        // =====================================================
+
+        var resultado =
+            await _ventasService
+                .RegistrarPagoAsync(
+                    IdVentaActual,
+                    request
+                );
+
+
+        // =====================================================
+        // VALIDAR RESPUESTA
+        // =====================================================
+
+        if (
+            resultado.Res != 1 ||
+            resultado.Data is null
+        )
+        {
+            MensajeError =
+                string.IsNullOrWhiteSpace(
+                    resultado.Msg
+                )
+                    ? "No fue posible registrar la transferencia."
+                    : resultado.Msg;
+
+            return false;
+        }
+
+
+        // =====================================================
+        // VALIDAR QUE LA VENTA QUEDE COMPLETAMENTE PAGADA
+        // =====================================================
+
+        if (!resultado.Data.PagoCompleto)
+        {
+            MensajeError =
+                $"La transferencia fue registrada, pero aún queda un saldo de ${resultado.Data.Saldo:N2}.";
+
+            return false;
+        }
+
+
+        // =====================================================
+        // PAGO COMPLETO → FINALIZAR VENTA
+        // =====================================================
+
+        var finalizada =
+            await FinalizarVentaAsync();
+
+
+        if (!finalizada)
+        {
+            /*
+             * IMPORTANTE:
+             *
+             * El pago YA quedó registrado.
+             *
+             * Si la finalización falla, NO debemos registrar
+             * nuevamente la transferencia automáticamente.
+             *
+             * La venta podrá recuperarse posteriormente.
+             */
+
+            return false;
+        }
+
+
+        // =====================================================
+        // VENTA TERMINADA
+        // =====================================================
+
+        return true;
+    }
+    catch (Exception ex)
+    {
+        MensajeError =
+            $"No fue posible registrar la transferencia: {ex.Message}";
+
+        return false;
+    }
+    finally
+    {
+        EstaProcesandoVenta =
+            false;
+    }
+}
+
+
+
+
+// =========================================================
 // FINALIZAR VENTA A CRÉDITO
 // =========================================================
 

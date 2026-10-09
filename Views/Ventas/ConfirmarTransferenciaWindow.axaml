@@ -1,0 +1,173 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Ventas.ConfirmarTransferenciaWindow"
+
+        Title="Confirmar transferencia"
+
+        Icon="/Assets/Brand/esdm-app-icon.ico"
+
+        Width="520"
+        Height="500"
+
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+
+        Background="#F3F6FA">
+
+
+    <Border Margin="12"
+            Padding="28"
+            Background="White"
+            CornerRadius="18">
+
+        <StackPanel Spacing="22">
+
+
+            <!-- ================================================= -->
+            <!-- ENCABEZADO                                        -->
+            <!-- ================================================= -->
+
+            <StackPanel Spacing="7"
+                        HorizontalAlignment="Center">
+
+                <Border Width="58"
+                        Height="58"
+                        Background="#FEF3C7"
+                        CornerRadius="29"
+                        HorizontalAlignment="Center">
+
+                    <TextBlock Text="⚠"
+                               FontSize="28"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+
+                </Border>
+
+
+                <TextBlock Text="Confirmar transferencia"
+                           FontSize="23"
+                           FontWeight="Bold"
+                           Foreground="#17365D"
+                           HorizontalAlignment="Center"/>
+
+
+                <TextBlock Text="Verifica el pago antes de continuar"
+                           FontSize="12"
+                           Foreground="#64748B"
+                           HorizontalAlignment="Center"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- IMPORTE                                           -->
+            <!-- ================================================= -->
+
+            <Border Background="#F0FDFA"
+                    BorderBrush="#99F6E4"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="16">
+
+                <StackPanel Spacing="5">
+
+                    <TextBlock Text="Importe recibido"
+                               FontSize="11"
+                               Foreground="#64748B"
+                               HorizontalAlignment="Center"/>
+
+                    <TextBlock x:Name="TextoTotal"
+                               Text="$0.00"
+                               FontSize="30"
+                               FontWeight="Bold"
+                               Foreground="#0F766E"
+                               HorizontalAlignment="Center"/>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- ADVERTENCIA                                       -->
+            <!-- ================================================= -->
+
+            <StackPanel Spacing="10">
+
+                <TextBlock Text="Confirma únicamente si verificaste que esta transferencia aparece reflejada en la cuenta bancaria."
+                           FontSize="12"
+                           Foreground="#475569"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Stretch"/>
+
+
+                <TextBlock Text="Una vez confirmado, el pago será registrado en el sistema."
+                           FontSize="11"
+                           FontWeight="SemiBold"
+                           Foreground="#B45309"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Stretch"/>
+
+            </StackPanel>
+
+
+            <!-- ================================================= -->
+            <!-- BOTONES                                           -->
+            <!-- ================================================= -->
+
+            <Grid ColumnDefinitions="*,*"
+                  ColumnSpacing="12"
+                  Margin="0,4,0,0">
+
+                <Button Grid.Column="0"
+                        Height="50"
+
+                        Content="No, regresar"
+
+                        Click="Cancelar_Click"
+
+                        Background="White"
+                        Foreground="#53657D"
+
+                        BorderBrush="#BCC8D6"
+                        BorderThickness="1"
+
+                        CornerRadius="10"
+
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+
+                        FontSize="13"
+                        FontWeight="SemiBold"/>
+
+
+                <Button Grid.Column="1"
+                        Height="50"
+
+                        Content="✓  Sí, ya verifiqué"
+
+                        Click="Confirmar_Click"
+
+                        Background="#0F766E"
+                        Foreground="White"
+
+                        BorderThickness="0"
+
+                        CornerRadius="10"
+
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+
+                        FontSize="13"
+                        FontWeight="Bold"/>
+
+            </Grid>
+
+        </StackPanel>
+
+    </Border>
+
+</Window>

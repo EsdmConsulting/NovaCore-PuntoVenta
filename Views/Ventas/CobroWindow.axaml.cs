@@ -62,6 +62,20 @@ public partial class CobroWindow : Window
         Close(true);
     }
     
+    // =========================================================
+    // TRANSFERENCIA
+    // =========================================================
+    
+        private void Transferencia_Click(
+        object? sender,
+        RoutedEventArgs e)
+    {
+        MetodoSeleccionado =
+            "TRANSFERENCIA";
+
+        Close(true);
+    }
+    
     
     // =========================================================
 // TARJETA / MERCADO PAGO
