@@ -1,6 +1,9 @@
 using System;
 using System.Threading.Tasks;
 
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
@@ -24,9 +27,11 @@ using NovaCoreESDM.Desktop.Views.MercadoPago;
 namespace NovaCoreESDM.Views.Ventas;
 
 
-
 public partial class VentasView : UserControl
 {
+    
+    public ICommand EnfocarControlCommand { get; }
+    
     private readonly TerminalConfigurationService
         _terminalConfigurationService;
 
@@ -39,24 +44,22 @@ public partial class VentasView : UserControl
 
     private bool
         _productosCargados;
+    
+    private Window? _parentWindow;
 
 
     public VentasView()
     {
         AvaloniaXamlLoader.Load(this);
-
+        
 
         _terminalConfigurationService =
             new TerminalConfigurationService();
-        
         _mercadoPagoService =
             new MercadoPagoService();
 
-
         AttachedToVisualTree +=
             OnAttachedToVisualTree;
-
-
         DetachedFromVisualTree +=
             OnDetachedFromVisualTree;
     }
@@ -71,6 +74,13 @@ public partial class VentasView : UserControl
         object? sender,
         Avalonia.VisualTreeAttachmentEventArgs e)
     {
+        
+        _parentWindow = TopLevel.GetTopLevel(this) as Window;
+                if (_parentWindow != null)
+                {
+                    _parentWindow.KeyDown += ParentWindow_KeyDown;
+                }
+        
         if (DataContext is not VentasViewModel viewModel)
             return;
         
@@ -1191,6 +1201,13 @@ public partial class VentasView : UserControl
         object? sender,
         Avalonia.VisualTreeAttachmentEventArgs e)
     {
+        
+        if (_parentWindow != null)
+        {
+            _parentWindow.KeyDown -= ParentWindow_KeyDown;
+            _parentWindow = null;
+        }
+        
         if (_viewModel is not null)
         {
             
@@ -1225,4 +1242,93 @@ public partial class VentasView : UserControl
         _viewModel =
             null;
     }
+    
+    private void ParentWindow_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F9)
+            {
+                e.Handled = true;
+                var buscadorCliente = this.FindControl<TextBox>("BuscadorClienteTextBox");
+                
+                if (buscadorCliente != null)
+                {
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        buscadorCliente.Focus();
+                        buscadorCliente.SelectAll();
+                    }, DispatcherPriority.Input);
+                }
+            }
+            
+             else if (e.Key == Key.F10)
+             {
+                 e.Handled = true;
+                 var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+                            
+                 if (buscadorProductos != null)
+                 {
+                     Dispatcher.UIThread.Post(() =>
+                     {
+                         buscadorProductos.Focus();
+                         buscadorProductos.SelectAll();
+                     }, DispatcherPriority.Input);
+                 }
+             }
+            
+            
+        }
+        
+private void BuscadorClienteTextBox_KeyDown(object? sender, KeyEventArgs e)
+{
+    var listBox = this.FindControl<ListBox>("SugerenciasClientesListBox");
+
+    // Si la lista no existe o está vacía/oculta, ignoramos las teclas especiales
+    if (listBox == null || !listBox.IsVisible || listBox.ItemCount == 0)
+        return;
+
+    // FLECHA ABAJO
+    if (e.Key == Key.Down)
+    {
+        e.Handled = true; // Evita que el cursor del texto se mueva
+        if (listBox.SelectedIndex < listBox.ItemCount - 1)
+        {
+            listBox.SelectedIndex++;
+        }
+    }
+    // FLECHA ARRIBA
+    else if (e.Key == Key.Up)
+    {
+        e.Handled = true;
+        if (listBox.SelectedIndex > 0)
+        {
+            listBox.SelectedIndex--;
+        }
+    }
+
+    else if (e.Key == Key.Enter)
+    {
+        if (listBox.SelectedItem != null)
+        {
+            e.Handled = true;
+            
+            if (DataContext is VentasViewModel viewModel)
+            {
+                viewModel.SeleccionarClienteCommand.Execute(listBox.SelectedItem);
+
+                var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+                if (buscadorProductos != null)
+                {
+                    Dispatcher.UIThread.Post(() => 
+                    {
+                        buscadorProductos.Focus();
+                        buscadorProductos.SelectAll();
+                    }, DispatcherPriority.Input);
+                }
+            }
+        }
+    }
+}
+    
+
+    
 }

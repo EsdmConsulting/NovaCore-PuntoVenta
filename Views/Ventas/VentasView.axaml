@@ -7,9 +7,9 @@
              x:Class="NovaCoreESDM.Views.Ventas.VentasView"
              x:DataType="vm:VentasViewModel"
              x:Name="VentasRoot"
-
+             
              Background="#F5F7FA">
-
+        
 
     <!-- ========================================================= -->
     <!-- ESTRUCTURA PRINCIPAL                                      -->
@@ -75,61 +75,55 @@
                     <Grid Grid.Column="1"
                           RowDefinitions="Auto,Auto">
 
-                        <TextBox Grid.Row="0"
-                                 Text="{Binding TextoBusquedaCliente,
-                                                Mode=TwoWay,
-                                                UpdateSourceTrigger=PropertyChanged}"
-                                 Height="44"
-                                 Watermark="Buscar cliente por nombre..."
-                                 Padding="14,0"
-                                 FontSize="12"
-                                 CornerRadius="9"
-                                 BorderBrush="#CBD5E1"/>
+                            <TextBox Grid.Row="0"
+                                     x:Name="BuscadorClienteTextBox"
+                                     Text="{Binding TextoBusquedaCliente, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Height="44"
+                                     Watermark="Buscar cliente por nombre..."
+                                     Padding="14,0"
+                                     FontSize="12"
+                                     CornerRadius="9"
+                                     BorderBrush="#CBD5E1"
+                                     KeyDown="BuscadorClienteTextBox_KeyDown"/>
 
 
-                        <!-- ================================================= -->
-                        <!-- SUGERENCIAS                                       -->
-                        <!-- ================================================= -->
-
-                        <Border Grid.Row="1"
-                                IsVisible="{Binding MostrarSugerenciasClientes}"
-                                Background="White"
-                                BorderBrush="#CBD5E1"
-                                BorderThickness="1"
-                                CornerRadius="9"
-                                Margin="0,5,0,0"
-                                MaxHeight="220"
-                                ZIndex="100">
-
-                            <ScrollViewer VerticalScrollBarVisibility="Auto"
-                                          HorizontalScrollBarVisibility="Disabled">
-
-                                <ItemsControl ItemsSource="{Binding ClientesEncontrados}">
-
-                                    <ItemsControl.ItemTemplate>
-
-                                        <DataTemplate>
-
-                                            <Button Content="{Binding Nombre}"
-                                                    Command="{ReflectionBinding DataContext.SeleccionarClienteCommand,
-                                                                                ElementName=VentasRoot}"
-                                                    CommandParameter="{Binding}"
-                                                    Height="40"
-                                                    Padding="12,0"
-                                                    Background="White"
+                     <!-- ================================================= -->
+                     <!-- SUGERENCIAS                                       -->
+                     <!-- ================================================= -->
+                     
+                     <Border Grid.Row="1"
+                             IsVisible="{Binding MostrarSugerenciasClientes}"
+                             Background="White"
+                             BorderBrush="#CBD5E1"
+                             BorderThickness="1"
+                             CornerRadius="9"
+                             Margin="0,5,0,0"
+                             MaxHeight="220"
+                             ZIndex="100">
+                     
+                         <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                       HorizontalScrollBarVisibility="Disabled">
+                     
+                             <ListBox x:Name="SugerenciasClientesListBox"
+                                      ItemsSource="{Binding ClientesEncontrados}"
+                                      Background="Transparent"
+                                      BorderThickness="0"
+                                      SelectionMode="Single">
+                     
+                                 <ListBox.ItemTemplate>
+                                     <DataTemplate>
+                                         <TextBlock Text="{Binding Nombre}"
                                                     Foreground="#334155"
-                                                    BorderThickness="0"
-                                                    HorizontalContentAlignment="Left"/>
-
-                                        </DataTemplate>
-
-                                    </ItemsControl.ItemTemplate>
-
-                                </ItemsControl>
-
-                            </ScrollViewer>
-
-                        </Border>
+                                                    Padding="12,8"
+                                                    VerticalAlignment="Center"/>
+                                     </DataTemplate>
+                                 </ListBox.ItemTemplate>
+                     
+                             </ListBox>
+                     
+                         </ScrollViewer>
+                     
+                     </Border>
 
                     </Grid>
 
