@@ -143,10 +143,12 @@ public partial class CancelacionesViewModel : ViewModelBase
         VentaDetalle is not null;
 
 
-    public bool PuedeEjecutarCancelacion =>
+   public bool PuedeEjecutarCancelacion =>
         VentaDetalle is not null &&
         PuedeCancelarVenta &&
-        !EstaCancelando;
+        !EstaCancelando &&
+        !string.IsNullOrWhiteSpace(MotivoCancelacion) &&
+        MotivoCancelacion.Trim().Length >= 15;
 
 
     // =========================================================
@@ -869,4 +871,10 @@ public partial class CancelacionesViewModel : ViewModelBase
         OnPropertyChanged(
             nameof(PuedeEjecutarCancelacion));
     }
+
+    partial void OnMotivoCancelacionChanged(string value)
+    {
+        OnPropertyChanged(nameof(PuedeEjecutarCancelacion));
+    }
+
 }

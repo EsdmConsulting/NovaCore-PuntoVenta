@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
@@ -39,6 +40,30 @@ public partial class PagoEfectivoWindow : Window
         object? sender,
         TextChangedEventArgs e)
     {
+
+        if (sender is TextBox textBox)
+        {
+            var textoOriginal = textBox.Text ?? string.Empty;
+
+            var textoLimpio = Regex.Replace(textoOriginal, "[^0-9.]", "");
+
+            // 2. Controlar que no haya múltiples puntos
+            int primerPunto = textoLimpio.IndexOf('.');
+            if (primerPunto >= 0)
+            {
+                textoLimpio = textoLimpio.Substring(0, primerPunto + 1) + 
+                              textoLimpio.Substring(primerPunto + 1).Replace(".", "");
+            }
+
+            if (textoOriginal != textoLimpio)
+            {
+                var posicionCursor = textBox.CaretIndex;
+                textBox.Text = textoLimpio;
+                textBox.CaretIndex = Math.Max(0, posicionCursor - (textoOriginal.Length - textoLimpio.Length));
+                return; 
+            }
+        }
+
         TextoMensaje.Text =
             string.Empty;
 

@@ -1243,59 +1243,103 @@ public partial class VentasView : UserControl
             null;
     }
     
-    private void ParentWindow_KeyDown(object? sender, KeyEventArgs e)
+   private void ParentWindow_KeyDown(object? sender, KeyEventArgs e)
+{
+    // =================================================
+    // F9 - ENFOCAR BUSCADOR DE CLIENTES
+    // =================================================
+    if (e.Key == Key.F9)
+    {
+        e.Handled = true;
+        var buscadorCliente = this.FindControl<TextBox>("BuscadorClienteTextBox");
+        
+        if (buscadorCliente != null)
         {
-            if (e.Key == Key.F9)
+            Dispatcher.UIThread.Post(() =>
             {
-                e.Handled = true;
-                var buscadorCliente = this.FindControl<TextBox>("BuscadorClienteTextBox");
-                
-                if (buscadorCliente != null)
+                buscadorCliente.Focus();
+                buscadorCliente.SelectAll();
+            }, DispatcherPriority.Input);
+        }
+    }
+
+    // =================================================
+    // F10 - COBRAR VENTA
+    // =================================================
+    else if (e.Key == Key.F10)
+    {
+        e.Handled = true;
+        if (DataContext is VentasViewModel viewModel)
+        {
+            // Ejecutamos el comando de cobro si está habilitado (es decir, si hay productos)
+            if (viewModel.CobrarCommand.CanExecute(null))
+            {
+                viewModel.CobrarCommand.Execute(null);
+            }
+        }
+    }
+    
+    // =================================================
+    // F11 - ENFOCAR BUSCADOR DE PRODUCTOS
+    // =================================================
+    else if (e.Key == Key.F11)
+    {
+        e.Handled = true;
+        var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+                   
+        if (buscadorProductos != null)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                buscadorProductos.Focus();
+                buscadorProductos.SelectAll();
+            }, DispatcherPriority.Input);
+        }
+    }
+    
+    
+    // =================================================
+    // F12 - ELIMINAR ÚLTIMO REGISTRO
+    // =================================================
+    else if (e.Key == Key.F8)
+    {
+        e.Handled = true;
+        if (DataContext is VentasViewModel viewModel)
+        {
+            // Obtenemos el último producto que ingresó al carrito
+            var ultimoProducto = System.Linq.Enumerable.LastOrDefault(viewModel.Carrito);
+            
+            if (ultimoProducto != null && viewModel.EliminarProductoCommand.CanExecute(ultimoProducto))
+            {
+                // Evitamos que intente eliminar si aún se está comunicando con el servidor
+                if (!ultimoProducto.EstaSincronizando)
                 {
-                    Dispatcher.UIThread.Post(() =>
-                    {
-                        buscadorCliente.Focus();
-                        buscadorCliente.SelectAll();
-                    }, DispatcherPriority.Input);
+                    viewModel.EliminarProductoCommand.Execute(ultimoProducto);
+                }
+                else
+                {
+                    viewModel.MensajeError = "El último producto aún se está registrando, espera un momento.";
                 }
             }
-            
-             else if (e.Key == Key.F10)
-             {
-                 e.Handled = true;
-                 var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
-                            
-                 if (buscadorProductos != null)
-                 {
-                     Dispatcher.UIThread.Post(() =>
-                     {
-                         buscadorProductos.Focus();
-                         buscadorProductos.SelectAll();
-                     }, DispatcherPriority.Input);
-                 }
-             }
-            
-            
         }
+    }
+}
         
 private void BuscadorClienteTextBox_KeyDown(object? sender, KeyEventArgs e)
 {
     var listBox = this.FindControl<ListBox>("SugerenciasClientesListBox");
 
-    // Si la lista no existe o está vacía/oculta, ignoramos las teclas especiales
     if (listBox == null || !listBox.IsVisible || listBox.ItemCount == 0)
         return;
 
-    // FLECHA ABAJO
     if (e.Key == Key.Down)
     {
-        e.Handled = true; // Evita que el cursor del texto se mueva
+        e.Handled = true;
         if (listBox.SelectedIndex < listBox.ItemCount - 1)
         {
             listBox.SelectedIndex++;
         }
     }
-    // FLECHA ARRIBA
     else if (e.Key == Key.Up)
     {
         e.Handled = true;

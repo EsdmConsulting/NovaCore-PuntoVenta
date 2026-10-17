@@ -117,6 +117,14 @@ public partial class CancelacionesView
             return;
         }
 
+        var motivo = ViewModel.MotivoCancelacion?.Trim() ?? string.Empty;
+
+
+        if (motivo.Length < 15)
+        {
+            ViewModel.MensajeError = "El motivo de cancelación debe ser claro y contener al menos 25 caracteres.";
+            return;
+        }
 
         if (string.IsNullOrWhiteSpace(
                 ViewModel.MotivoCancelacion))

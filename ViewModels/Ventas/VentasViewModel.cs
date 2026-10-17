@@ -625,8 +625,9 @@ public async Task AgregarPresentacionAlCarritoAsync(
      */
     if (detalleExistente is not null)
     {
-        MensajeError =
-            "Esta presentación ya se encuentra en el carrito.";
+        /* MensajeError =
+            "Esta presentación ya se encuentra en el carrito."; */
+            _ = IncrementarCantidadAsync(detalleExistente);
 
         return;
     }
