@@ -960,14 +960,14 @@
                                         FontSize="11"
                                         FontWeight="SemiBold"/>
 
-                                    <TextBox
-                                        Text="{Binding MotivoCancelacion}"
-                                        Watermark="Describe brevemente el motivo..."
-                                        AcceptsReturn="True"
-                                        TextWrapping="Wrap"
-                                        MinHeight="75"
-                                        MaxLength="500"
-                                        Padding="11"/>
+                                   <TextBox
+                                    Text="{Binding MotivoCancelacion, UpdateSourceTrigger=PropertyChanged}"
+                                    Watermark="Describe brevemente el motivo..."
+                                    AcceptsReturn="True"
+                                    TextWrapping="Wrap"
+                                    MinHeight="75"
+                                    MaxLength="35"
+                                    Padding="11"/>
 
 
                                     <Button

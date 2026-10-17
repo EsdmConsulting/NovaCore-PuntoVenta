@@ -120,7 +120,7 @@ public partial class CancelacionesView
         var motivo = ViewModel.MotivoCancelacion?.Trim() ?? string.Empty;
 
 
-        if (motivo.Length < 15)
+        if (motivo.Length < 25)
         {
             ViewModel.MensajeError = "El motivo de cancelación debe ser claro y contener al menos 25 caracteres.";
             return;
