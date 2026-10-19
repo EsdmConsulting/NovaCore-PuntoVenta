@@ -22,8 +22,6 @@ using Avalonia.VisualTree;
 using NovaCoreESDM.Desktop.Services.MercadoPago;
 using NovaCoreESDM.Desktop.Views.MercadoPago;
 
-using NovaCoreESDM.Desktop.Services.MercadoPago;
-using NovaCoreESDM.Desktop.Views.MercadoPago;
 
 namespace NovaCoreESDM.Views.Ventas;
 
@@ -197,10 +195,20 @@ public partial class VentasView : UserControl
 // ESCÁNER / ENTER
 // =========================================================
 
-    private async void BuscadorProductosTextBox_KeyDown(
-        object? sender,
-        KeyEventArgs e)
+    private async void BuscadorProductosTextBox_KeyDown(object? sender, KeyEventArgs e)
     {
+        if (e.Key == Key.Down || e.Key == Key.Right)
+        {
+            var listBox = this.FindControl<ListBox>("CatalogoProductosListBox");
+            if (listBox != null && listBox.IsVisible && listBox.ItemCount > 0)
+            {
+                e.Handled = true;
+                listBox.Focus();
+                if (listBox.SelectedIndex < 0) listBox.SelectedIndex = 0;
+            }
+            return;
+        }
+
         if (e.Key != Key.Enter)
             return;
 
@@ -254,8 +262,8 @@ public partial class VentasView : UserControl
     
     
     // =========================================================
-// SELECCIONAR PRESENTACIÓN
-// =========================================================
+    // SELECCIONAR PRESENTACIÓN
+    // =========================================================
 
     private async void OnSolicitarSeleccionPresentacion(
         ProductoCatalogo producto)
@@ -1248,10 +1256,28 @@ public partial class VentasView : UserControl
     
    private void ParentWindow_KeyDown(object? sender, KeyEventArgs e)
 {
+
+    // =================================================
+    // F5 - CONSULTAR PRODUCTO SELECCIONADO
+    // =================================================
+    if (e.Key == Key.F5)
+    {
+        e.Handled = true;
+        var listBox = this.FindControl<ListBox>("CatalogoProductosListBox");
+        
+        if (listBox != null && listBox.SelectedItem != null)
+        {
+            if (DataContext is VentasViewModel viewModel)
+            {
+                viewModel.SeleccionarProductoCommand.Execute(listBox.SelectedItem);
+            }
+        }
+    }
+
     // =================================================
     // F9 - ENFOCAR BUSCADOR DE CLIENTES
     // =================================================
-    if (e.Key == Key.F9)
+    else if (e.Key == Key.F9)
     {
         e.Handled = true;
         var buscadorCliente = this.FindControl<TextBox>("BuscadorClienteTextBox");
@@ -1376,6 +1402,51 @@ private void BuscadorClienteTextBox_KeyDown(object? sender, KeyEventArgs e)
         }
     }
 }
+
+private void CatalogoProductosListBox_KeyDown(object? sender, KeyEventArgs e)
+    {
+        var listBox = sender as ListBox;
+        if (listBox == null) return;
+
+        // F5 o Enter abren la presentación del producto seleccionado
+        if (e.Key == Key.F5 || e.Key == Key.Enter)
+        {
+            if (listBox.SelectedItem != null)
+            {
+                e.Handled = true;
+                
+                if (DataContext is VentasViewModel viewModel)
+                {
+                    viewModel.SeleccionarProductoCommand.Execute(listBox.SelectedItem);
+
+                    var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+                    if (buscadorProductos != null)
+                    {
+                        Dispatcher.UIThread.Post(() => 
+                        {
+                            buscadorProductos.Focus();
+                            buscadorProductos.SelectAll();
+                        }, DispatcherPriority.Input);
+                    }
+                }
+            }
+        }
+
+        else if ((e.Key == Key.Up || e.Key == Key.Left) && listBox.SelectedIndex == 0)
+        {
+            e.Handled = true;
+            var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+            if (buscadorProductos != null)
+            {
+                Dispatcher.UIThread.Post(() => 
+                {
+                    buscadorProductos.Focus();
+                    buscadorProductos.CaretIndex = buscadorProductos.Text?.Length ?? 0;
+                }, DispatcherPriority.Input);
+            }
+        }
+    }
+
     
 
     
