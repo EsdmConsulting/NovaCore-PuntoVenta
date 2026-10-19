@@ -192,18 +192,31 @@
                                 Foreground="#53665B"
                                 FontWeight="SemiBold"/>
 
-                            <TextBox
+                           <!--  <TextBox
                                 Text="{Binding UsuarioAdministrador}"
                                 Watermark="Usuario"
                                 Height="42"
                                 Padding="12,0"
-                                VerticalContentAlignment="Center"/>
+                                VerticalContentAlignment="Center"/> -->
 
+                                <ComboBox
+                                    ItemsSource="{Binding ListaAdministradores}"
+                                    SelectedItem="{Binding AdministradorSeleccionado}"
+                                    Height="42"
+                                    PlaceholderText="Selecciona un administrador"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Center">
+
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Nombre}" />
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
                         </StackPanel>
 
 
                         <!-- PASSWORD -->
-
                         <StackPanel
                             Grid.Column="1"
                             Spacing="6">
@@ -935,13 +948,13 @@
                                         <TextBlock
                                             Text="{Binding VentaDetalle.MotivoCancelacion}"
                                             Foreground="#7F1D1D"
-                                            FontSize="11"
+                                            FontSize="12"
                                             TextWrapping="Wrap"/>
 
                                         <TextBlock
                                             Text="{Binding VentaDetalle.UsuarioCancelacion, StringFormat='Autorizó: {0}'}"
                                             Foreground="#A34A4A"
-                                            FontSize="10"/>
+                                            FontSize="12"/>
 
                                     </StackPanel>
 
@@ -960,14 +973,23 @@
                                         FontSize="11"
                                         FontWeight="SemiBold"/>
 
-                                   <TextBox
-                                    Text="{Binding MotivoCancelacion, UpdateSourceTrigger=PropertyChanged}"
-                                    Watermark="Describe brevemente el motivo..."
-                                    AcceptsReturn="True"
-                                    TextWrapping="Wrap"
-                                    MinHeight="75"
-                                    MaxLength="35"
-                                    Padding="11"/>
+                                    <StackPanel Spacing="6">
+                                        <TextBox
+                                            Text="{Binding MotivoCancelacion, UpdateSourceTrigger=PropertyChanged}"
+                                            Watermark="Describe brevemente el motivo..."
+                                            AcceptsReturn="True"
+                                            TextWrapping="Wrap"
+                                            MinHeight="75"
+                                            MaxLength="35"
+                                            Padding="11"/>
+
+                                        <TextBlock
+                                            Text="{Binding ContadorRestanteTexto}"
+                                            Foreground="#8A9890"
+                                            FontSize="10"
+                                            FontWeight="SemiBold"
+                                            HorizontalAlignment="Right"/>
+                                    </StackPanel>
 
 
                                     <Button

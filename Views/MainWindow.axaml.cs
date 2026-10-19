@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 
 using Avalonia;
+using Avalonia.Input;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
@@ -65,6 +66,18 @@ public partial class MainWindow
     public MainWindow()
     {
         InitializeComponent();
+
+        // ========================================================
+        // OBTENER CONTROLES DEL XAML
+        // ========================================================
+        _mainLayout = this.FindControl<Grid>("MainLayout")
+            ?? throw new InvalidOperationException("No se encontró MainLayout.");
+
+        _toggleSidebarButton =
+            this.FindControl<Button>(
+                "ToggleSidebarButton")
+            ?? throw new InvalidOperationException(
+                "No se encontró ToggleSidebarButton.");
 
 
         // ========================================================
@@ -530,4 +543,19 @@ public partial class MainWindow
                 "====================================");
         }
     }
+
+
+
+protected override void OnKeyDown(Avalonia.Input.KeyEventArgs e)
+{
+    if (e.Key == Avalonia.Input.Key.F12)
+    {
+        e.Handled = true;
+        return; 
+    }
+
+    base.OnKeyDown(e);
+}
+
+
 }

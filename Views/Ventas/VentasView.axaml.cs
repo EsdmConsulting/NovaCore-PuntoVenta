@@ -8,6 +8,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using Avalonia.Interactivity;
 
 using NovaCoreESDM.Models;
 using NovaCoreESDM.Models.Productos;
@@ -78,7 +79,8 @@ public partial class VentasView : UserControl
         _parentWindow = TopLevel.GetTopLevel(this) as Window;
                 if (_parentWindow != null)
                 {
-                    _parentWindow.KeyDown += ParentWindow_KeyDown;
+                    //_parentWindow.KeyDown += ParentWindow_KeyDown;
+                    _parentWindow.AddHandler(InputElement.KeyDownEvent, ParentWindow_KeyDown, RoutingStrategies.Tunnel);
                 }
         
         if (DataContext is not VentasViewModel viewModel)
@@ -1204,7 +1206,8 @@ public partial class VentasView : UserControl
         
         if (_parentWindow != null)
         {
-            _parentWindow.KeyDown -= ParentWindow_KeyDown;
+            //_parentWindow.KeyDown -= ParentWindow_KeyDown;
+            _parentWindow.RemoveHandler(InputElement.KeyDownEvent, ParentWindow_KeyDown);
             _parentWindow = null;
         }
         
@@ -1271,7 +1274,6 @@ public partial class VentasView : UserControl
         e.Handled = true;
         if (DataContext is VentasViewModel viewModel)
         {
-            // Ejecutamos el comando de cobro si está habilitado (es decir, si hay productos)
             if (viewModel.CobrarCommand.CanExecute(null))
             {
                 viewModel.CobrarCommand.Execute(null);
@@ -1301,17 +1303,15 @@ public partial class VentasView : UserControl
     // =================================================
     // F12 - ELIMINAR ÚLTIMO REGISTRO
     // =================================================
-    else if (e.Key == Key.F8)
+    else if (e.Key == Key.F12)
     {
         e.Handled = true;
         if (DataContext is VentasViewModel viewModel)
         {
-            // Obtenemos el último producto que ingresó al carrito
             var ultimoProducto = System.Linq.Enumerable.LastOrDefault(viewModel.Carrito);
             
             if (ultimoProducto != null && viewModel.EliminarProductoCommand.CanExecute(ultimoProducto))
             {
-                // Evitamos que intente eliminar si aún se está comunicando con el servidor
                 if (!ultimoProducto.EstaSincronizando)
                 {
                     viewModel.EliminarProductoCommand.Execute(ultimoProducto);
@@ -1323,6 +1323,10 @@ public partial class VentasView : UserControl
             }
         }
     }
+
+
+
+
 }
         
 private void BuscadorClienteTextBox_KeyDown(object? sender, KeyEventArgs e)

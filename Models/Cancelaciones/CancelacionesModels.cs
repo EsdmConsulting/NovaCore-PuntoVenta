@@ -4,6 +4,31 @@ using System.Text.Json.Serialization;
 
 namespace NovaCoreESDM.Models.Cancelaciones;
 
+// ============================================================
+// LISTAR ADMINISTRADOR
+// GET /api/consulta/consultar_administradores
+// ============================================================
+
+public class AdministradoresListResponse
+{
+    [JsonPropertyName("res")]
+    public int Res { get; set; }
+
+    [JsonPropertyName("msg")]
+    public string? Msg { get; set; }
+
+    [JsonPropertyName("data")]
+    public List<AdministradorItem> Data { get; set; } = new();
+}
+
+public class AdministradorItem
+{
+    [JsonPropertyName("usuario")]
+    public string? Usuario { get; set; }
+
+    [JsonPropertyName("nombre")]
+    public string? Nombre { get; set; }
+}
 
 // ============================================================
 // AUTORIZAR ADMINISTRADOR
