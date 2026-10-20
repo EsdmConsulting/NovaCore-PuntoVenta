@@ -1,6 +1,8 @@
 using System;
+using Avalonia;
 
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 
 using NovaCoreESDM.Models.Session;
@@ -97,10 +99,13 @@ public partial class LoginWindow : Window
                 var seleccionarCajaWindow =
                     new SeleccionarCajaWindow();
 
+              if (Application.Current?.ApplicationLifetime
+                    is IClassicDesktopStyleApplicationLifetime desktopLifetime)
+                {
+                    desktopLifetime.MainWindow = seleccionarCajaWindow;
+                }
 
                 seleccionarCajaWindow.Show();
-
-
                 Close();
 
                 return;
@@ -314,9 +319,13 @@ public partial class LoginWindow : Window
                     };
 
 
+              if (Application.Current?.ApplicationLifetime
+                        is IClassicDesktopStyleApplicationLifetime desktopLifetime)
+                    {
+                        desktopLifetime.MainWindow = mainWindow;
+                    }
+
                 mainWindow.Show();
-
-
                 Close();
 
                 return;
@@ -372,10 +381,13 @@ public partial class LoginWindow : Window
             var aperturaTurnoWindow =
                 new AperturaTurnoWindow();
 
+            if (Application.Current?.ApplicationLifetime
+                is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.MainWindow = aperturaTurnoWindow;
+            }
 
             aperturaTurnoWindow.Show();
-
-
             Close();
         }
         catch (Exception ex)

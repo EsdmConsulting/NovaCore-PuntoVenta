@@ -1,5 +1,7 @@
 using System;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using NovaCoreESDM.Models.Configuration;
 using NovaCoreESDM.Services.Configuration;
@@ -86,8 +88,13 @@ public partial class SeleccionarCajaWindow : Window
         var aperturaTurnoWindow =
             new AperturaTurnoWindow();
 
-        aperturaTurnoWindow.Show();
+        if (Application.Current?.ApplicationLifetime
+            is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.MainWindow = aperturaTurnoWindow;
+        }
 
+        aperturaTurnoWindow.Show();
         Close();
     }
 

@@ -8,6 +8,10 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
 
 using NovaCoreESDM.Models.Session;
+using NovaCoreESDM.Services.Configuration;
+using NovaCoreESDM.Services.Cajas;
+using NovaCoreESDM.Services.Cancelaciones;
+using NovaCoreESDM.Views.Caja;
 using NovaCoreESDM.ViewModels;
 using NovaCoreESDM.Views.Sesion;
 
@@ -34,6 +38,7 @@ public partial class MainWindow
     private TextBlock _pagarCreditoText = null!;
     private TextBlock _cortesText = null!;
     private TextBlock _cancelarVentasText = null!;
+    private TextBlock _cambiarCajaText = null!;
     private TextBlock _cerrarSesionText = null!;
 
 
@@ -153,6 +158,12 @@ public partial class MainWindow
             ?? throw new InvalidOperationException(
                 "No se encontró CancelarVentasText.");
 
+        _cambiarCajaText =
+            this.FindControl<TextBlock>(
+                "CambiarCajaText")
+            ?? throw new InvalidOperationException(
+                "No se encontró CambiarCajaText.");
+
 
         _cerrarSesionText =
             this.FindControl<TextBlock>(
@@ -232,10 +243,8 @@ public partial class MainWindow
                 new GridLength(
                     SidebarColapsado);
 
-
             _toggleSidebarButton.Content =
                 "›";
-
 
             // ====================================================
             // LOGO / IDENTIDAD
@@ -247,14 +256,12 @@ public partial class MainWindow
             _identidadColapsada.IsVisible =
                 true;
 
-
             // ====================================================
             // TÍTULOS
             // ====================================================
 
             _operacionTextBlock.IsVisible =
                 false;
-
 
             // ====================================================
             // TEXTOS DE MENÚ
@@ -274,6 +281,9 @@ public partial class MainWindow
 
             _cancelarVentasText.IsVisible =
                 false;
+
+            _cambiarCajaText.IsVisible =      
+                false;                          
 
             _cerrarSesionText.IsVisible =
                 false;
@@ -290,10 +300,8 @@ public partial class MainWindow
                 new GridLength(
                     SidebarExpandido);
 
-
             _toggleSidebarButton.Content =
                 "‹";
-
 
             // ====================================================
             // LOGO / IDENTIDAD
@@ -305,14 +313,12 @@ public partial class MainWindow
             _identidadColapsada.IsVisible =
                 false;
 
-
             // ====================================================
             // TÍTULOS
             // ====================================================
 
             _operacionTextBlock.IsVisible =
                 true;
-
 
             // ====================================================
             // TEXTOS DE MENÚ
@@ -333,9 +339,163 @@ public partial class MainWindow
             _cancelarVentasText.IsVisible =
                 true;
 
+            _cambiarCajaText.IsVisible =       
+                true;                           
+
             _cerrarSesionText.IsVisible =
                 true;
         }
+    }
+
+    // ============================================================
+    // CAMBIAR CAJA
+    // ============================================================
+
+    private bool _cambiandoCaja;
+
+    private async void CambiarCaja_Click(
+        object? sender,
+        RoutedEventArgs e)
+    {
+        if (_cambiandoCaja)
+            return;
+
+        _cambiandoCaja = true;
+
+        try
+        {
+            var configuracionService =
+                new TerminalConfigurationService();
+
+            var configuracion =
+                await configuracionService.ObtenerConfiguracionAsync();
+
+            if (configuracion is null)
+            {
+                Console.WriteLine(
+                    "No existe configuración de caja para cambiar.");
+                return;
+            }
+
+            // ========================================================
+            // 1. SOLICITAR AUTORIZACIÓN ADMINISTRATIVA
+            // ========================================================
+            // Reutilizamos el mismo listado y endpoint de autorización
+            // que utiliza el módulo de cancelación de ventas.
+            var ventanaAutorizacion =
+                new CambiarCajaAutorizacionWindow();
+
+            var autorizado = await ventanaAutorizacion
+                .ShowDialog<bool>(this);
+
+            if (!autorizado)
+                return;
+
+            var cancelacionesService =
+                new CancelacionesService();
+
+            try
+            {
+                // ====================================================
+                // 2. LIBERAR LA CAJA ACTUAL EN EL SERVIDOR
+                // ====================================================
+                var cajasService = new CajasService();
+                var resultado = await cajasService.LiberarCajaAsync(
+                    configuracion.IdCaja);
+
+                if (!resultado.Exito)
+                {
+                    Console.WriteLine(resultado.Mensaje);
+                    await MostrarAvisoAsync(resultado.Mensaje);
+                    return;
+                }
+
+                // Eliminar el JSON únicamente después de que el servidor
+                // confirme la liberación de la caja.
+                configuracionService.EliminarConfiguracion();
+
+                // Limpiar el contexto operativo en memoria, pero conservar
+                // al usuario autenticado para que no tenga que iniciar sesión
+                // otra vez al seleccionar la nueva caja.
+                PosSession.LimpiarContextoCaja();
+            }
+            finally
+            {
+                // La autorización de cancelaciones es temporal. La cerramos
+                // después de comprobar las credenciales y ejecutar el cambio.
+                await cancelacionesService.CerrarAutorizacionAsync();
+            }
+
+            var selector = new SeleccionarCajaWindow();
+
+            // Evita que cerrar MainWindow termine la aplicación.
+            if (Application.Current?.ApplicationLifetime
+                is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.MainWindow = selector;
+            }
+
+            selector.Show();
+            Close();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                $"ERROR AL CAMBIAR CAJA: {ex}");
+
+            try
+            {
+                await MostrarAvisoAsync(
+                    "Ocurrió un error al cambiar la caja. " +
+                    "Consulta la terminal para ver los detalles.\n\n" +
+                    ex.Message);
+            }
+            catch (Exception dialogEx)
+            {
+                Console.WriteLine(
+                    $"ERROR MOSTRANDO AVISO DE CAMBIO DE CAJA: {dialogEx}");
+            }
+        }
+        finally
+        {
+            _cambiandoCaja = false;
+        }
+    }
+
+    private async Task MostrarAvisoAsync(string mensaje)
+    {
+        var dialogo = new Window
+        {
+            Title = "Cambiar caja",
+            Width = 440,
+            SizeToContent = SizeToContent.Height,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            CanResize = false,
+            Content = new StackPanel
+            {
+                Margin = new Thickness(24),
+                Spacing = 18,
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text = mensaje,
+                        TextWrapping = Avalonia.Media.TextWrapping.Wrap
+                    },
+                    new Button
+                    {
+                        Content = "Aceptar",
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
+                        MinWidth = 100
+                    }
+                }
+            }
+        };
+
+        if (dialogo.Content is StackPanel panel && panel.Children[1] is Button boton)
+            boton.Click += (_, _) => dialogo.Close();
+
+        await dialogo.ShowDialog(this);
     }
 
 

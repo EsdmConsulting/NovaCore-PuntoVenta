@@ -783,7 +783,8 @@ public async Task<ActualizarCantidadVentaResponse>
     EstablecerPrecioManualAsync(
         int idVenta,
         int idDetalle,
-        string tipoPrecio)
+        string tipoPrecio,
+        decimal? precioPersonalizado = null)
 {
     if (string.IsNullOrWhiteSpace(
             tipoPrecio))
@@ -797,11 +798,11 @@ public async Task<ActualizarCantidadVentaResponse>
     }
 
 
-    var request =
+   var request =
         new ActualizarCantidadVentaRequest
         {
-            TipoPrecio =
-                tipoPrecio.Trim()
+            TipoPrecio = tipoPrecio.Trim(),
+            PrecioUnitario = precioPersonalizado
         };
 
 

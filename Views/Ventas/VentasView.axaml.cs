@@ -390,10 +390,11 @@ public partial class VentasView : UserControl
             }
 
 
-            await _viewModel
+           await _viewModel
                 .EstablecerPrecioManualAsync(
                     detalle,
-                    resultado.TipoPrecio
+                    resultado.TipoPrecio,
+                    resultado.PrecioPersonalizado 
                 );
         }
         catch (Exception ex)

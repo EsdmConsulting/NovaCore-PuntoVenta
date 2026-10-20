@@ -2537,7 +2537,9 @@ public async Task<bool> FinalizarVentaCreditoAsync()
 
 public async Task<bool> EstablecerPrecioManualAsync(
     DetalleVenta detalle,
-    string tipoPrecio)
+    string tipoPrecio,
+    decimal? precioPersonalizado = null
+    )
 {
     if (detalle is null)
         return false;
@@ -2580,7 +2582,8 @@ public async Task<bool> EstablecerPrecioManualAsync(
                 .EstablecerPrecioManualAsync(
                     IdVentaActual,
                     detalle.IdDetalle,
-                    tipoPrecio);
+                    tipoPrecio,
+                    precioPersonalizado);
 
 
         if (resultado.Res != 1)

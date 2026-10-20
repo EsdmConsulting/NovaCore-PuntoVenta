@@ -225,6 +225,91 @@ public class CajasService
 
 
     // =====================================================
+    // LIBERAR CAJA
+    // =====================================================
+    // Backend esperado: GET /api/pos/cajas/{id}/liberar
+    // Debe actualizar en_uso = FALSE para la caja indicada.
+    // =====================================================
+    
+    public async Task<(bool Exito, string Mensaje)> LiberarCajaAsync(
+        int idCaja)
+    {
+        if (idCaja <= 0)
+            return (false, "El ID de la caja no es válido.");
+
+        try
+        {
+            var endpoint = $"api/pos/cajas/liberar/{idCaja}";
+
+            using var response = await ApiClient.Http.PostAsync(
+                endpoint,
+                content: null);
+
+            var contenido = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine("====================================");
+            Console.WriteLine("RESPUESTA API LIBERAR CAJA:");
+            Console.WriteLine(contenido);
+            Console.WriteLine($"HTTP: {(int)response.StatusCode}");
+            Console.WriteLine("====================================");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return (false,
+                    $"La API no pudo liberar la caja (HTTP {(int)response.StatusCode}).");
+            }
+
+            if (string.IsNullOrWhiteSpace(contenido))
+            {
+                return (false,
+                    "El servidor no devolvió una respuesta válida.");
+            }
+
+            contenido = LimpiarRespuestaPhp(contenido);
+
+            using var documento = JsonDocument.Parse(contenido);
+            var raiz = documento.RootElement;
+
+            var res = raiz.TryGetProperty("res", out var propiedadRes)
+                && propiedadRes.ValueKind == JsonValueKind.Number
+                && propiedadRes.GetInt32() == 1;
+
+            var mensaje = raiz.TryGetProperty("msg", out var propiedadMsg)
+                && propiedadMsg.ValueKind == JsonValueKind.String
+                    ? propiedadMsg.GetString()
+                    : null;
+
+            if (!res)
+            {
+                return (false,
+                    mensaje ?? "El servidor no pudo liberar la caja.");
+            }
+
+            return (true,
+                mensaje ?? "La caja se liberó correctamente.");
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine("ERROR INTERPRETANDO RESPUESTA DE LIBERACIÓN:");
+            Console.WriteLine(ex);
+
+            return (false,
+                "La API devolvió una respuesta JSON inválida.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("ERROR LIBERANDO CAJA:");
+            Console.WriteLine(ex);
+
+            return (false,
+                $"No fue posible liberar la caja: {ex.Message}");
+        }
+    }
+
+
+
+
+    // =====================================================
     // LIMPIAR RESPUESTA PHP
     // =====================================================
     //

@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="clr-namespace:NovaCoreESDM.Models.Cancelaciones"
+        x:Class="NovaCoreESDM.Views.Caja.CambiarCajaAutorizacionWindow"
+        Title="Autorización para cambiar caja"
+        Width="520"
+        SizeToContent="Height"
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+        Background="#F6F8F7">
+
+    <Border Padding="28" Background="White" CornerRadius="14" Margin="14">
+        <StackPanel Spacing="14">
+            <TextBlock Text="Autorizar cambio de caja" FontSize="22" FontWeight="Bold" Foreground="#123D2B"/>
+            <TextBlock Text="Selecciona un administrador e ingresa su contraseña para continuar." TextWrapping="Wrap" Foreground="#53665B"/>
+
+            <TextBlock Text="Administrador" FontWeight="SemiBold" Foreground="#385044"/>
+            <ComboBox x:Name="AdministradorComboBox" Height="42" PlaceholderText="Selecciona un administrador">
+               <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="models:AdministradorItem">
+                        <TextBlock Text="{Binding Nombre}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <TextBlock Text="Contraseña" FontWeight="SemiBold" Foreground="#385044"/>
+            <TextBox x:Name="PasswordTextBox" PasswordChar="●" Watermark="Contraseña" Height="42" Padding="12,0" VerticalContentAlignment="Center"/>
+
+            <TextBlock x:Name="MensajeTextBlock" TextWrapping="Wrap" Foreground="#B91C1C" IsVisible="False"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,8,0,0">
+                <Button x:Name="CancelarButton" Content="Cancelar" MinWidth="100" Height="40" Click="Cancelar_Click"/>
+                <Button x:Name="AutorizarButton" Content="Validar y continuar" MinWidth="150" Height="40" Background="#08783D" Foreground="White" Click="Autorizar_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</Window>
