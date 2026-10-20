@@ -7,8 +7,12 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
+using CommunityToolkit.Mvvm.ComponentModel;
+
 using NovaCoreESDM.Models;
 using NovaCoreESDM.Services.Precios;
+
+
 
 namespace NovaCoreESDM.Views.Ventas;
 
@@ -154,8 +158,6 @@ public partial class SeleccionarPrecioWindow : Window
         }
     }
 
-    // Permite únicamente dígitos y un punto decimal. También limpia caracteres
-    // no numéricos si se pega texto en el campo.
     private void TxtPrecioOtro_TextChanged(object? sender, TextChangedEventArgs e)
     {
         if (_normalizandoPrecio || TxtPrecioOtro.Text is null)
@@ -200,31 +202,23 @@ private void OnAplicarClick(object? sender, RoutedEventArgs e)
         if (ChkOtro.IsChecked == true)
         {
             var textoPrecio = TxtPrecioOtro.Text?.Trim();
-            decimal? precioFinal = null;
 
-            // Si el campo NO está vacío, validamos que sea un número correcto.
-            // Si está vacío, simplemente pasará como null para dejar el campo abierto.
-            if (!string.IsNullOrWhiteSpace(textoPrecio))
+            if (!decimal.TryParse(
+                    textoPrecio,
+                    NumberStyles.AllowDecimalPoint,
+                    CultureInfo.InvariantCulture,
+                    out var precioOtro) ||
+                precioOtro <= 0)
             {
-                if (!decimal.TryParse(
-                        textoPrecio,
-                        NumberStyles.AllowDecimalPoint,
-                        CultureInfo.InvariantCulture,
-                        out var precioOtro) ||
-                    precioOtro <= 0)
-                {
-                    MostrarError("Ingresa un precio numérico mayor que cero. Puedes usar decimales.");
-                    TxtPrecioOtro.Focus();
-                    return;
-                }
-                
-                precioFinal = precioOtro;
+                MostrarError("Ingresa un precio especial mayor que cero.");
+                TxtPrecioOtro.Focus();
+                return;
             }
 
             Close(new SeleccionPrecioResultado
             {
                 TipoPrecio = "ESPECIAL",
-                PrecioPersonalizado = precioFinal
+                PrecioPersonalizado = precioOtro
             });
             return;
         }
@@ -257,11 +251,15 @@ private void OnAplicarClick(object? sender, RoutedEventArgs e)
     }
 }
 
-public class OpcionPrecioViewModel
+
+public partial class OpcionPrecioViewModel : ObservableObject
 {
     public string TipoPrecio { get; set; } = string.Empty;
     public decimal Precio { get; set; }
-    public bool IsSelected { get; set; }
+
+    [ObservableProperty]
+    private bool _isSelected;
+
     public string TextoPrecio => $"${Precio:N2}";
 }
 
