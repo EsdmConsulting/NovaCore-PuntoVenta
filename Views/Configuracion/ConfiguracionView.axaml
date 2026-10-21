@@ -308,7 +308,7 @@
             <!-- FORMATO DEL TICKET                                -->
             <!-- ================================================= -->
 
-            <Border
+           <!--  <Border
                 Background="White"
                 BorderBrush="#E1E8E3"
                 BorderThickness="1"
@@ -377,7 +377,7 @@
 
                 </StackPanel>
 
-            </Border>
+            </Border> -->
 
         </StackPanel>
 

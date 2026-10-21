@@ -35,7 +35,7 @@ public partial class MainWindow
 
     private TextBlock _nuevaVentaText = null!;
     private TextBlock _resumenText = null!;
-    private TextBlock _pagarCreditoText = null!;
+    /* private TextBlock _pagarCreditoText = null!; */
     private TextBlock _cortesText = null!;
     private TextBlock _cancelarVentasText = null!;
     private TextBlock _reimpresionText = null!;
@@ -140,11 +140,11 @@ public partial class MainWindow
                 "No se encontró ResumenText.");
 
 
-        _pagarCreditoText =
+       /*  _pagarCreditoText =
             this.FindControl<TextBlock>(
                 "PagarCreditoText")
             ?? throw new InvalidOperationException(
-                "No se encontró PagarCreditoText.");
+                "No se encontró PagarCreditoText."); */
 
 
         _cortesText =
@@ -308,8 +308,8 @@ public partial class MainWindow
             _resumenText.IsVisible =
                 false;
 
-            _pagarCreditoText.IsVisible =
-                false;
+            /* _pagarCreditoText.IsVisible =
+                false; */
 
             _cortesText.IsVisible =
                 false;
@@ -371,8 +371,8 @@ public partial class MainWindow
             _resumenText.IsVisible =
                 true;
 
-            _pagarCreditoText.IsVisible =
-                true;
+          /*   _pagarCreditoText.IsVisible =
+                true; */
 
             _cortesText.IsVisible =
                 true;
