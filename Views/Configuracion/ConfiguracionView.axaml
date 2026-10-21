@@ -1,0 +1,386 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:NovaCoreESDM.ViewModels.Configuracion"
+
+    x:Class="NovaCoreESDM.Views.Configuracion.ConfiguracionView"
+    x:DataType="vm:ConfiguracionViewModel"
+
+    Background="#F5F7F6">
+
+    <ScrollViewer
+        VerticalScrollBarVisibility="Auto"
+        HorizontalScrollBarVisibility="Disabled">
+
+        <StackPanel
+            Margin="28"
+            Spacing="20">
+
+            <!-- ================================================= -->
+            <!-- HERO                                              -->
+            <!-- ================================================= -->
+
+            <Border
+                Background="#123D2B"
+                CornerRadius="20"
+                Padding="30">
+
+                <StackPanel
+                    Spacing="7">
+
+                    <TextBlock
+                        Text="GRUPO LUIS FER"
+                        Foreground="#A7D8BC"
+                        FontSize="11"
+                        FontWeight="Bold"/>
+
+                    <TextBlock
+                        Text="Configuración del equipo"
+                        Foreground="White"
+                        FontSize="28"
+                        FontWeight="SemiBold"/>
+
+                    <TextBlock
+                        Text="Impresora de tickets y formato de impresión de este punto de venta."
+                        Foreground="#D6EBDD"
+                        FontSize="14"/>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- MENSAJES                                          -->
+            <!-- ================================================= -->
+
+            <Border
+                IsVisible="{Binding HayError}"
+                Background="#FEF2F2"
+                BorderBrush="#FECACA"
+                BorderThickness="1"
+                CornerRadius="12"
+                Padding="16,12">
+
+                <TextBlock
+                    Text="{Binding MensajeError}"
+                    Foreground="#B91C1C"
+                    TextWrapping="Wrap"/>
+
+            </Border>
+
+            <Border
+                IsVisible="{Binding HayExito}"
+                Background="#F0FDF4"
+                BorderBrush="#BBF7D0"
+                BorderThickness="1"
+                CornerRadius="12"
+                Padding="16,12">
+
+                <TextBlock
+                    Text="{Binding MensajeExito}"
+                    Foreground="#166534"
+                    TextWrapping="Wrap"/>
+
+            </Border>
+
+            <ProgressBar
+                IsVisible="{Binding EstaOcupado}"
+                IsIndeterminate="True"
+                Height="3"/>
+
+
+            <!-- ================================================= -->
+            <!-- IMPRESORA                                         -->
+            <!-- ================================================= -->
+
+            <Border
+                Background="White"
+                BorderBrush="#E1E8E3"
+                BorderThickness="1"
+                CornerRadius="16"
+                Padding="24">
+
+                <StackPanel
+                    Spacing="18">
+
+                    <StackPanel
+                        Spacing="4">
+
+                        <TextBlock
+                            Text="Impresora de tickets"
+                            Foreground="#21382A"
+                            FontSize="19"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Text="Cada punto de venta tiene su propia impresora. Una vez fijada, se usa para tickets, pruebas y apertura del cajón hasta que se quite."
+                            Foreground="#7B8B82"
+                            FontSize="12"
+                            TextWrapping="Wrap"/>
+
+                    </StackPanel>
+
+
+                    <!-- ===== CON IMPRESORA FIJA ===== -->
+
+                    <StackPanel
+                        IsVisible="{Binding HayImpresoraConfigurada}"
+                        Spacing="16">
+
+                        <Border
+                            Background="#F0F7F3"
+                            BorderBrush="#CFE6D8"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="18">
+
+                            <StackPanel
+                                Spacing="4">
+
+                                <TextBlock
+                                    Text="IMPRESORA FIJA"
+                                    Foreground="#08783D"
+                                    FontSize="10"
+                                    FontWeight="Bold"/>
+
+                                <TextBlock
+                                    Text="{Binding ImpresoraConfigurada}"
+                                    Foreground="#21382A"
+                                    FontSize="20"
+                                    FontWeight="SemiBold"
+                                    TextWrapping="Wrap"/>
+
+                                <TextBlock
+                                    Text="{Binding EstadoImpresora}"
+                                    Foreground="#53665B"
+                                    FontSize="12"
+                                    TextWrapping="Wrap"/>
+
+                            </StackPanel>
+
+                        </Border>
+
+                        <WrapPanel
+                            Orientation="Horizontal">
+
+                            <Button
+                                Command="{Binding ImprimirPruebaCommand}"
+                                Height="40"
+                                Padding="18,0"
+                                Margin="0,0,10,10"
+                                Background="#08783D"
+                                Foreground="White"
+                                BorderThickness="0"
+                                CornerRadius="8"
+                                Cursor="Hand">
+
+                                <TextBlock
+                                    Text="Imprimir prueba"
+                                    FontWeight="SemiBold"/>
+
+                            </Button>
+
+                            <Button
+                                Command="{Binding AbrirCajonCommand}"
+                                Height="40"
+                                Padding="18,0"
+                                Margin="0,0,10,10"
+                                Background="#EEF3F0"
+                                Foreground="#385044"
+                                BorderThickness="0"
+                                CornerRadius="8"
+                                Cursor="Hand">
+
+                                <TextBlock
+                                    Text="Probar cajón"
+                                    FontWeight="SemiBold"/>
+
+                            </Button>
+
+                            <Button
+                                Command="{Binding QuitarImpresoraCommand}"
+                                Height="40"
+                                Padding="18,0"
+                                Margin="0,0,10,10"
+                                Background="#FEF2F2"
+                                Foreground="#B91C1C"
+                                BorderThickness="0"
+                                CornerRadius="8"
+                                Cursor="Hand">
+
+                                <TextBlock
+                                    Text="Quitar impresora"
+                                    FontWeight="SemiBold"/>
+
+                            </Button>
+
+                        </WrapPanel>
+
+                    </StackPanel>
+
+
+                    <!-- ===== SIN IMPRESORA: ELEGIR UNA ===== -->
+
+                    <StackPanel
+                        IsVisible="{Binding NoHayImpresoraConfigurada}"
+                        Spacing="14">
+
+                        <Border
+                            Background="#FFFBEB"
+                            BorderBrush="#FDE68A"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="16,12">
+
+                            <TextBlock
+                                Text="Este equipo todavía no tiene impresora. Elige una de la lista y presiona «Fijar impresora»."
+                                Foreground="#92400E"
+                                TextWrapping="Wrap"/>
+
+                        </Border>
+
+                        <StackPanel
+                            Spacing="6">
+
+                            <TextBlock
+                                Text="Impresoras instaladas en Windows"
+                                Foreground="#53665B"
+                                FontSize="11"
+                                FontWeight="SemiBold"/>
+
+                            <ComboBox
+                                ItemsSource="{Binding ImpresorasDisponibles}"
+                                SelectedItem="{Binding ImpresoraSeleccionada, Mode=TwoWay}"
+                                PlaceholderText="Selecciona una impresora"
+                                HorizontalAlignment="Stretch"
+                                Height="42"/>
+
+                        </StackPanel>
+
+                        <WrapPanel
+                            Orientation="Horizontal">
+
+                            <Button
+                                Command="{Binding GuardarImpresoraCommand}"
+                                Height="40"
+                                Padding="18,0"
+                                Margin="0,0,10,10"
+                                Background="#08783D"
+                                Foreground="White"
+                                BorderThickness="0"
+                                CornerRadius="8"
+                                Cursor="Hand">
+
+                                <TextBlock
+                                    Text="Fijar impresora"
+                                    FontWeight="SemiBold"/>
+
+                            </Button>
+
+                            <Button
+                                Command="{Binding LeerImpresorasCommand}"
+                                Height="40"
+                                Padding="18,0"
+                                Margin="0,0,10,10"
+                                Background="#EEF3F0"
+                                Foreground="#385044"
+                                BorderThickness="0"
+                                CornerRadius="8"
+                                Cursor="Hand">
+
+                                <TextBlock
+                                    Text="Volver a leer impresoras"
+                                    FontWeight="SemiBold"/>
+
+                            </Button>
+
+                        </WrapPanel>
+
+                    </StackPanel>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- FORMATO DEL TICKET                                -->
+            <!-- ================================================= -->
+
+            <Border
+                Background="White"
+                BorderBrush="#E1E8E3"
+                BorderThickness="1"
+                CornerRadius="16"
+                Padding="24">
+
+                <StackPanel
+                    Spacing="14">
+
+                    <StackPanel
+                        Spacing="4">
+
+                        <TextBlock
+                            Text="Formato del ticket"
+                            Foreground="#21382A"
+                            FontSize="19"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Text="Imprime un ticket con datos de ejemplo para revisar el diseño. Para cambiar encabezado, mensaje final, ancho, QR, etc., edita el archivo de abajo con el Bloc de notas y vuelve a imprimir (no hay que reiniciar)."
+                            Foreground="#7B8B82"
+                            FontSize="12"
+                            TextWrapping="Wrap"/>
+
+                    </StackPanel>
+
+                    <Button
+                        Command="{Binding ImprimirMuestraCommand}"
+                        IsEnabled="{Binding HayImpresoraConfigurada}"
+                        Height="40"
+                        Padding="18,0"
+                        HorizontalAlignment="Left"
+                        Background="#08783D"
+                        Foreground="White"
+                        BorderThickness="0"
+                        CornerRadius="8"
+                        Cursor="Hand">
+
+                        <TextBlock
+                            Text="Imprimir ticket de muestra"
+                            FontWeight="SemiBold"/>
+
+                    </Button>
+
+                    <StackPanel
+                        Spacing="6">
+
+                        <TextBlock
+                            Text="Archivo del formato (editable)"
+                            Foreground="#53665B"
+                            FontSize="11"
+                            FontWeight="SemiBold"/>
+
+                        <TextBox
+                            Text="{Binding RutaFormatoTicket, Mode=OneWay}"
+                            IsReadOnly="True"
+                            Height="40"
+                            VerticalContentAlignment="Center"/>
+
+                        <TextBlock
+                            Text="Se crea solo la primera vez que se imprime un ticket."
+                            Foreground="#7B8B82"
+                            FontSize="11"/>
+
+                    </StackPanel>
+
+                </StackPanel>
+
+            </Border>
+
+        </StackPanel>
+
+    </ScrollViewer>
+
+</UserControl>

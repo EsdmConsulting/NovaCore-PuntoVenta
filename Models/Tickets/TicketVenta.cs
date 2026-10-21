@@ -81,6 +81,88 @@ public class TicketVenta
 
     public string ContenidoQr { get; set; } =
         string.Empty;
+
+
+    // =========================================================
+    // PAGO (cuando no se conoce el desglose por forma de pago)
+    // =========================================================
+
+    public decimal Pagado { get; set; }
+
+
+    // =========================================================
+    // REIMPRESIÓN
+    // =========================================================
+
+    public bool EsReimpresion { get; set; }
+
+    // Administrador que autorizó la reimpresión
+    public string ReimpresoPor { get; set; } =
+        string.Empty;
+
+    public DateTime? FechaReimpresion { get; set; }
+
+
+    // =========================================================
+    // QR POR DEFECTO
+    // =========================================================
+
+    public const string UrlPlataforma =
+        "https://plataformaluisfer.com/Plataforma_LuisFer/auth/login";
+
+
+    // =========================================================
+    // TICKET DE MUESTRA (para probar y diseñar el formato)
+    // =========================================================
+
+    public static TicketVenta CrearMuestra() =>
+        new()
+        {
+            UnidadOperativa = "SUCURSAL DE PRUEBA",
+            FolioTicket = "PV-000-X-00000000",
+            Fecha = DateTime.Now,
+            Caja = "CAJA-PRUEBA",
+            Cajero = "CAJERO DE PRUEBA",
+
+            Productos = new List<TicketVentaDetalle>
+            {
+                new()
+                {
+                    Producto = "REFRESCO COLA 600 ML",
+                    Presentacion = "Pieza",
+                    Cantidad = 2,
+                    PrecioUnitario = 25m,
+                    Importe = 50m
+                },
+                new()
+                {
+                    Producto = "BOTANA SABOR QUESO",
+                    Presentacion = "Bolsa 150 g",
+                    Cantidad = 1,
+                    PrecioUnitario = 30m,
+                    Importe = 30m
+                },
+                new()
+                {
+                    Producto = "JAMON DE PAVO",
+                    Presentacion = "Kilo",
+                    Cantidad = 0.5m,
+                    PrecioUnitario = 40m,
+                    Importe = 20m
+                }
+            },
+
+            Subtotal = 100m,
+            Iva = 16m,
+            Total = 116m,
+
+            FormaPago = "Efectivo",
+            Efectivo = 116m,
+            Recibido = 200m,
+            Cambio = 84m,
+
+            ContenidoQr = UrlPlataforma
+        };
 }
 
 

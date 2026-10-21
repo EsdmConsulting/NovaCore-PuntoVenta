@@ -38,6 +38,8 @@ public partial class MainWindow
     private TextBlock _pagarCreditoText = null!;
     private TextBlock _cortesText = null!;
     private TextBlock _cancelarVentasText = null!;
+    private TextBlock _reimpresionText = null!;
+    private TextBlock _configuracionText = null!;
     private TextBlock _cambiarCajaText = null!;
     private TextBlock _cerrarSesionText = null!;
 
@@ -158,6 +160,20 @@ public partial class MainWindow
             ?? throw new InvalidOperationException(
                 "No se encontró CancelarVentasText.");
 
+
+        _reimpresionText =
+            this.FindControl<TextBlock>(
+                "ReimpresionText")
+            ?? throw new InvalidOperationException(
+                "No se encontró ReimpresionText.");
+
+
+        _configuracionText =
+            this.FindControl<TextBlock>(
+                "ConfiguracionText")
+            ?? throw new InvalidOperationException(
+                "No se encontró ConfiguracionText.");
+
         _cambiarCajaText =
             this.FindControl<TextBlock>(
                 "CambiarCajaText")
@@ -180,6 +196,25 @@ public partial class MainWindow
             false;
 
         ActualizarSidebar();
+
+
+        // ========================================================
+        // VENTANA DE AUTORIZACIÓN DE ADMINISTRADOR
+        // ========================================================
+        //
+        // El DataContext (MainViewModel) se asigna después de crear
+        // la ventana, por eso se escucha el evento.
+        // ========================================================
+
+        DataContextChanged +=
+            (_, _) =>
+            {
+                if (DataContext is MainViewModel viewModel)
+                {
+                    viewModel.SolicitarAutorizacionAdministradorAsync =
+                        MostrarAutorizacionAdministradorAsync;
+                }
+            };
     }
 
 
@@ -282,6 +317,12 @@ public partial class MainWindow
             _cancelarVentasText.IsVisible =
                 false;
 
+            _reimpresionText.IsVisible =
+                false;
+
+            _configuracionText.IsVisible =
+                false;
+
             _cambiarCajaText.IsVisible =      
                 false;                          
 
@@ -337,6 +378,12 @@ public partial class MainWindow
                 true;
 
             _cancelarVentasText.IsVisible =
+                true;
+
+            _reimpresionText.IsVisible =
+                true;
+
+            _configuracionText.IsVisible =
                 true;
 
             _cambiarCajaText.IsVisible =       
@@ -461,6 +508,24 @@ public partial class MainWindow
             _cambiandoCaja = false;
         }
     }
+
+    // ============================================================
+    // AUTORIZACIÓN DE ADMINISTRADOR (reimpresión, configuración)
+    // ============================================================
+
+    private async Task<string?> MostrarAutorizacionAdministradorAsync(
+        string titulo,
+        string descripcion)
+    {
+        var ventana =
+            new AutorizacionAdministradorWindow(
+                titulo,
+                descripcion);
+
+        return await ventana
+            .ShowDialog<string?>(this);
+    }
+
 
     private async Task MostrarAvisoAsync(string mensaje)
     {

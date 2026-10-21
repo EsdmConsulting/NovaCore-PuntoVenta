@@ -1,0 +1,456 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:NovaCoreESDM.ViewModels.Reimpresion"
+    xmlns:models="clr-namespace:NovaCoreESDM.Models.Cancelaciones"
+
+    x:Class="NovaCoreESDM.Views.Reimpresion.ReimpresionView"
+    x:DataType="vm:ReimpresionViewModel"
+    x:Name="Root"
+
+    Background="#F5F7F6">
+
+    <ScrollViewer
+        VerticalScrollBarVisibility="Auto"
+        HorizontalScrollBarVisibility="Disabled">
+
+        <StackPanel
+            Margin="28"
+            Spacing="20">
+
+            <!-- ================================================= -->
+            <!-- HERO                                              -->
+            <!-- ================================================= -->
+
+            <Border
+                Background="#123D2B"
+                CornerRadius="20"
+                Padding="30">
+
+                <Grid
+                    ColumnDefinitions="*,Auto"
+                    ColumnSpacing="24">
+
+                    <StackPanel
+                        Spacing="7"
+                        VerticalAlignment="Center">
+
+                        <TextBlock
+                            Text="GRUPO LUIS FER"
+                            Foreground="#A7D8BC"
+                            FontSize="11"
+                            FontWeight="Bold"/>
+
+                        <TextBlock
+                            Text="Reimpresión de tickets"
+                            Foreground="White"
+                            FontSize="28"
+                            FontWeight="SemiBold"/>
+
+                        <TextBlock
+                            Text="Busca una venta finalizada y vuelve a imprimir su ticket."
+                            Foreground="#D6EBDD"
+                            FontSize="14"/>
+
+                        <StackPanel
+                            Orientation="Horizontal"
+                            Spacing="8"
+                            Margin="0,8,0,0">
+
+                            <Border
+                                Width="8"
+                                Height="8"
+                                CornerRadius="4"
+                                Background="#4ADE80"
+                                VerticalAlignment="Center"/>
+
+                            <TextBlock
+                                Text="Autorizado por:"
+                                Foreground="#D6EBDD"
+                                FontSize="11"
+                                VerticalAlignment="Center"/>
+
+                            <TextBlock
+                                Text="{Binding AdministradorAutorizado}"
+                                Foreground="White"
+                                FontSize="11"
+                                FontWeight="Bold"
+                                VerticalAlignment="Center"/>
+
+                        </StackPanel>
+
+                    </StackPanel>
+
+                    <Button
+                        Grid.Column="1"
+                        Command="{Binding CerrarAccesoCommand}"
+                        Height="42"
+                        Padding="18,0"
+                        Background="#1C5A40"
+                        Foreground="White"
+                        BorderThickness="0"
+                        CornerRadius="10"
+                        VerticalAlignment="Center"
+                        Cursor="Hand">
+
+                        <TextBlock
+                            Text="Cerrar acceso de administrador"
+                            FontWeight="SemiBold"/>
+
+                    </Button>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- FILTROS                                           -->
+            <!-- ================================================= -->
+
+            <Border
+                Background="White"
+                BorderBrush="#E1E8E3"
+                BorderThickness="1"
+                CornerRadius="16"
+                Padding="22">
+
+                <StackPanel
+                    Spacing="16">
+
+                    <TextBlock
+                        Text="Buscar tickets"
+                        Foreground="#21382A"
+                        FontSize="17"
+                        FontWeight="SemiBold"/>
+
+                    <Grid
+                        ColumnDefinitions="*,*,1.4*,Auto,Auto"
+                        ColumnSpacing="14">
+
+                        <StackPanel
+                            Grid.Column="0"
+                            Spacing="6">
+
+                            <TextBlock
+                                Text="Desde"
+                                Foreground="#53665B"
+                                FontSize="11"
+                                FontWeight="SemiBold"/>
+
+                            <DatePicker
+                                SelectedDate="{Binding FechaDesde}"
+                                Height="42"
+                                HorizontalAlignment="Stretch"/>
+
+                        </StackPanel>
+
+                        <StackPanel
+                            Grid.Column="1"
+                            Spacing="6">
+
+                            <TextBlock
+                                Text="Hasta"
+                                Foreground="#53665B"
+                                FontSize="11"
+                                FontWeight="SemiBold"/>
+
+                            <DatePicker
+                                SelectedDate="{Binding FechaHasta}"
+                                Height="42"
+                                HorizontalAlignment="Stretch"/>
+
+                        </StackPanel>
+
+                        <StackPanel
+                            Grid.Column="2"
+                            Spacing="6">
+
+                            <TextBlock
+                                Text="Folio del ticket"
+                                Foreground="#53665B"
+                                FontSize="11"
+                                FontWeight="SemiBold"/>
+
+                            <TextBox
+                                Text="{Binding FolioBusqueda}"
+                                Watermark="Ej. PV-001-B-00000001"
+                                Height="40"
+                                Padding="12,0"
+                                VerticalContentAlignment="Center"/>
+
+                        </StackPanel>
+
+                        <Button
+                            Grid.Column="3"
+                            Command="{Binding BuscarCommand}"
+                            Height="40"
+                            MinWidth="105"
+                            Margin="0,22,0,0"
+                            Background="#08783D"
+                            Foreground="White"
+                            BorderThickness="0"
+                            CornerRadius="8"
+                            Cursor="Hand">
+
+                            <TextBlock
+                                Text="Buscar"
+                                FontWeight="SemiBold"/>
+
+                        </Button>
+
+                        <Button
+                            Grid.Column="4"
+                            Command="{Binding LimpiarFiltrosCommand}"
+                            Height="40"
+                            MinWidth="105"
+                            Margin="0,22,0,0"
+                            Background="#EEF3F0"
+                            Foreground="#385044"
+                            BorderThickness="0"
+                            CornerRadius="8"
+                            Cursor="Hand">
+
+                            <TextBlock
+                                Text="Hoy"
+                                FontWeight="SemiBold"/>
+
+                        </Button>
+
+                    </Grid>
+
+                    <TextBlock
+                        Text="Puedes buscar por un solo día (Desde = Hasta) o por un rango de hasta 31 días."
+                        Foreground="#7B8B82"
+                        FontSize="11"/>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- MENSAJES                                          -->
+            <!-- ================================================= -->
+
+            <Border
+                IsVisible="{Binding HayError}"
+                Background="#FEF2F2"
+                BorderBrush="#FECACA"
+                BorderThickness="1"
+                CornerRadius="12"
+                Padding="16,12">
+
+                <TextBlock
+                    Text="{Binding MensajeError}"
+                    Foreground="#B91C1C"
+                    TextWrapping="Wrap"/>
+
+            </Border>
+
+            <Border
+                IsVisible="{Binding HayExito}"
+                Background="#F0FDF4"
+                BorderBrush="#BBF7D0"
+                BorderThickness="1"
+                CornerRadius="12"
+                Padding="16,12">
+
+                <TextBlock
+                    Text="{Binding MensajeExito}"
+                    Foreground="#166534"
+                    TextWrapping="Wrap"/>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- LISTADO                                           -->
+            <!-- ================================================= -->
+
+            <Border
+                Background="White"
+                BorderBrush="#E1E8E3"
+                BorderThickness="1"
+                CornerRadius="16"
+                Padding="20">
+
+                <StackPanel
+                    Spacing="14">
+
+                    <Grid
+                        ColumnDefinitions="*,Auto">
+
+                        <StackPanel
+                            Spacing="3">
+
+                            <TextBlock
+                                Text="Tickets encontrados"
+                                Foreground="#21382A"
+                                FontSize="17"
+                                FontWeight="SemiBold"/>
+
+                            <TextBlock
+                                Text="Las ventas canceladas se muestran pero no se pueden reimprimir."
+                                Foreground="#7B8B82"
+                                FontSize="11"/>
+
+                        </StackPanel>
+
+                        <Border
+                            Grid.Column="1"
+                            Background="#F0F7F3"
+                            CornerRadius="10"
+                            Padding="12,5">
+
+                            <TextBlock
+                                Text="{Binding Ventas.Count}"
+                                Foreground="#08783D"
+                                FontWeight="Bold"/>
+
+                        </Border>
+
+                    </Grid>
+
+                    <ProgressBar
+                        IsVisible="{Binding EstaCargando}"
+                        IsIndeterminate="True"
+                        Height="3"/>
+
+                    <ProgressBar
+                        IsVisible="{Binding EstaImprimiendo}"
+                        IsIndeterminate="True"
+                        Height="3"
+                        Foreground="#D97706"/>
+
+                    <TextBlock
+                        IsVisible="{Binding SinResultados}"
+                        Text="No se encontraron tickets con esos filtros."
+                        Foreground="#7B8B82"
+                        HorizontalAlignment="Center"
+                        Margin="0,20"/>
+
+                    <ItemsControl
+                        ItemsSource="{Binding Ventas}">
+
+                        <ItemsControl.ItemTemplate>
+
+                            <DataTemplate x:DataType="models:VentaCancelacionItem">
+
+                                <Border
+                                    Background="#FAFCFB"
+                                    BorderBrush="#E3EAE6"
+                                    BorderThickness="1"
+                                    CornerRadius="11"
+                                    Padding="14"
+                                    Margin="0,0,0,8">
+
+                                    <Grid
+                                        ColumnDefinitions="*,Auto,Auto,Auto"
+                                        ColumnSpacing="16">
+
+                                        <StackPanel
+                                            Grid.Column="0"
+                                            Spacing="5"
+                                            VerticalAlignment="Center">
+
+                                            <TextBlock
+                                                Text="{Binding FolioMostrar}"
+                                                Foreground="#21382A"
+                                                FontSize="14"
+                                                FontWeight="SemiBold"/>
+
+                                            <WrapPanel
+                                                Orientation="Horizontal">
+
+                                                <TextBlock
+                                                    Text="{Binding Fecha}"
+                                                    Foreground="#7A8B81"
+                                                    FontSize="11"/>
+
+                                                <TextBlock
+                                                    Text="  ·  "
+                                                    Foreground="#B2BDB7"
+                                                    FontSize="11"/>
+
+                                                <TextBlock
+                                                    Text="{Binding Hora}"
+                                                    Foreground="#7A8B81"
+                                                    FontSize="11"/>
+
+                                                <TextBlock
+                                                    Text="  ·  "
+                                                    Foreground="#B2BDB7"
+                                                    FontSize="11"/>
+
+                                                <TextBlock
+                                                    Text="{Binding UsuarioRegistro}"
+                                                    Foreground="#7A8B81"
+                                                    FontSize="11"/>
+
+                                            </WrapPanel>
+
+                                        </StackPanel>
+
+                                        <Border
+                                            Grid.Column="1"
+                                            Background="#F0F7F3"
+                                            CornerRadius="8"
+                                            Padding="10,4"
+                                            VerticalAlignment="Center">
+
+                                            <TextBlock
+                                                Text="{Binding TextoEstado}"
+                                                Foreground="#385044"
+                                                FontSize="10"
+                                                FontWeight="Bold"/>
+
+                                        </Border>
+
+                                        <TextBlock
+                                            Grid.Column="2"
+                                            Text="{Binding TextoTotal}"
+                                            Foreground="#08783D"
+                                            FontSize="16"
+                                            FontWeight="Bold"
+                                            VerticalAlignment="Center"/>
+
+                                        <Button
+                                            Grid.Column="3"
+                                            Command="{Binding #Root.((vm:ReimpresionViewModel)DataContext).ReimprimirCommand}"
+                                            CommandParameter="{Binding}"
+                                            IsEnabled="{Binding PuedeReimprimir}"
+                                            Height="38"
+                                            MinWidth="120"
+                                            Background="#08783D"
+                                            Foreground="White"
+                                            BorderThickness="0"
+                                            CornerRadius="8"
+                                            VerticalAlignment="Center"
+                                            Cursor="Hand">
+
+                                            <TextBlock
+                                                Text="Reimprimir"
+                                                FontWeight="SemiBold"/>
+
+                                        </Button>
+
+                                    </Grid>
+
+                                </Border>
+
+                            </DataTemplate>
+
+                        </ItemsControl.ItemTemplate>
+
+                    </ItemsControl>
+
+                </StackPanel>
+
+            </Border>
+
+        </StackPanel>
+
+    </ScrollViewer>
+
+</UserControl>

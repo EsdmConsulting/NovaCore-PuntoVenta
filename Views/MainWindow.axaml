@@ -301,6 +301,60 @@
 
                         </Button>
 
+
+                        <!-- ================================================= -->
+                        <!-- REIMPRESIÓN DE TICKETS                            -->
+                        <!-- ================================================= -->
+
+                        <Button Classes="menuItem"
+                                Classes.active="{Binding EsReimpresion}"
+                                Command="{Binding NavegarCommand}"
+                                CommandParameter="Reimpresion">
+
+                            <Grid ColumnDefinitions="30,*">
+
+                                <TextBlock Text="▤"
+                                           FontSize="17"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock x:Name="ReimpresionText"
+                                           Grid.Column="1"
+                                           Text="Reimpresión"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+
+                            </Grid>
+
+                        </Button>
+
+
+                        <!-- ================================================= -->
+                        <!-- CONFIGURACIÓN                                     -->
+                        <!-- ================================================= -->
+
+                        <Button Classes="menuItem"
+                                Classes.active="{Binding EsConfiguracion}"
+                                Command="{Binding NavegarCommand}"
+                                CommandParameter="Configuracion">
+
+                            <Grid ColumnDefinitions="30,*">
+
+                                <TextBlock Text="⚙"
+                                           FontSize="17"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+
+                                <TextBlock x:Name="ConfiguracionText"
+                                           Grid.Column="1"
+                                           Text="Configuración"
+                                           Margin="10,0,0,0"
+                                           VerticalAlignment="Center"/>
+
+                            </Grid>
+
+                        </Button>
+
                     </StackPanel>
 
                 </ScrollViewer>

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using NovaCoreESDM.Services.Configuration;
 
 namespace NovaCoreESDM.Services.Printing;
 
@@ -13,8 +14,21 @@ public class WindowsRawPrinterService
     // CONFIGURACIÓN
     // =========================================================
 
-    private const string NombreImpresora =
-        "POS-grupoluisfer";
+    // La impresora YA NO está fija en el código.
+    // Se lee de printer-config.json (pantalla Configuración > Impresora).
+    private readonly PrinterConfigurationService
+        _configuracionImpresora = new();
+
+    private string ObtenerNombreImpresoraConfigurada()
+    {
+        var nombre =
+            _configuracionImpresora.ObtenerNombreImpresora();
+
+        if (string.IsNullOrWhiteSpace(nombre))
+            throw new ImpresoraNoConfiguradaException();
+
+        return nombre;
+    }
 
 
     // =========================================================
@@ -123,8 +137,7 @@ public class WindowsRawPrinterService
     {
         return Task.Run(
             () =>
-                ImprimirRaw(
-                    NombreImpresora,
+                ImprimirRaw( ObtenerNombreImpresoraConfigurada(),
                     contenido,
                     nombreDocumento
                 )
@@ -143,11 +156,9 @@ public class WindowsRawPrinterService
         return Task.Run(
             () =>
             {
-                var contenido =
-                    ConstruirPrueba();
+                var contenido = ConstruirPrueba( ObtenerNombreImpresoraConfigurada());
 
-                return ImprimirRaw(
-                    NombreImpresora,
+                return ImprimirRaw( ObtenerNombreImpresoraConfigurada(),
                     contenido,
                     "NovaCore - Prueba ESC/POS"
                 );
@@ -195,8 +206,7 @@ public class WindowsRawPrinterService
                     };
 
 
-                return ImprimirRaw(
-                    NombreImpresora,
+                return ImprimirRaw( ObtenerNombreImpresoraConfigurada(),
                     comandoAbrirCajon,
                     "Grupo Luis Fer - Abrir cajon"
                 );
@@ -208,7 +218,7 @@ public class WindowsRawPrinterService
     // CONSTRUIR TICKET DE PRUEBA
     // =========================================================
 
-    private static byte[] ConstruirPrueba()
+    private static byte[] ConstruirPrueba(string nombreImpresora)
     {
         var bytes =
             new List<byte>();
@@ -274,17 +284,15 @@ public class WindowsRawPrinterService
 
         bytes.AddRange(
             Encoding.ASCII.GetBytes(
-                "\nPOS-grupoluisfer\n"));
+                $"\n{nombreImpresora}\n"));
+
+
+        
 
 
         bytes.AddRange(
             Encoding.ASCII.GetBytes(
-                "Impresora POS-8360-L\n"));
-
-
-        bytes.AddRange(
-            Encoding.ASCII.GetBytes(
-                "80 mm - USB\n\n"));
+                "\n"));
 
 
         // =====================================================
@@ -545,5 +553,20 @@ public class WindowsRawPrinterService
                     hPrinter);
             }
         }
+    }
+}
+
+
+// =============================================================
+// SE LANZA CUANDO NO HAY IMPRESORA FIJA EN ESTE EQUIPO
+// =============================================================
+
+public class ImpresoraNoConfiguradaException : Exception
+{
+    public ImpresoraNoConfiguradaException()
+        : base(
+            "No hay una impresora configurada en este equipo. " +
+            "Ve a Configuración > Impresora y selecciona una.")
+    {
     }
 }

@@ -4,7 +4,9 @@ using System.Globalization;
 using System.Text;
 using System.Threading.Tasks;
 using Avalonia.Platform;
+using NovaCoreESDM.Models.Configuration;
 using NovaCoreESDM.Models.Tickets;
+using NovaCoreESDM.Services.Configuration;
 using SkiaSharp;
 
 namespace NovaCoreESDM.Services.Printing;
@@ -12,105 +14,133 @@ namespace NovaCoreESDM.Services.Printing;
 public class TicketVentaService
 {
     private readonly WindowsRawPrinterService
-        _printerService;
+        _printerService = new();
 
-    public TicketVentaService()
-    {
-        _printerService =
-            new WindowsRawPrinterService();
-    }
+    private readonly TicketFormatConfigurationService
+        _formatoService = new();
+
+
+    // =========================================================
+    // IMPRIMIR UN TICKET (venta nueva o reimpresión)
+    // =========================================================
 
     public async Task<bool> ImprimirAsync(
         TicketVenta ticket)
     {
+        var formato =
+            _formatoService.Obtener();
+
         var contenido =
-            ConstruirTicket(ticket);
+            ConstruirTicket(ticket, formato);
+
+        var nombreDocumento =
+            ticket.EsReimpresion
+                ? $"Reimpresion {ticket.FolioTicket}"
+                : $"Ticket {ticket.FolioTicket}";
 
         return await _printerService
             .ImprimirAsync(
                 contenido,
-                $"Ticket {ticket.FolioTicket}"
+                nombreDocumento
             );
     }
 
 
-    private static byte[] ConstruirTicket(
-        TicketVenta ticket)
-    {
-        var bytes =
-            new List<byte>();
+    // =========================================================
+    // TICKET DE MUESTRA (para probar el formato sin hacer una venta)
+    // =========================================================
 
-        // Inicializar
-        bytes.AddRange(
-            new byte[]
-            {
-                0x1B,
-                0x40
-            });
-        
+    public Task<bool> ImprimirMuestraAsync() =>
+        ImprimirAsync(TicketVenta.CrearMuestra());
+
+
+    // =========================================================
+    // CONSTRUIR EL TICKET
+    // =========================================================
+
+    private static byte[] ConstruirTicket(
+        TicketVenta ticket,
+        TicketFormatConfiguration formato)
+    {
+        var bytes = new List<byte>();
+        var ancho = formato.AnchoCaracteres;
+
+        // Inicializar impresora
+        bytes.AddRange(new byte[] { 0x1B, 0x40 });
+
+
         // =====================================================
         // LOGO
         // =====================================================
 
-        Centrar(bytes);
+        if (formato.MostrarLogo)
+        {
+            Centrar(bytes);
+            AgregarLogo(bytes);
+            AgregarTexto(bytes, "\n");
+        }
 
-        AgregarLogo(
-            bytes
-        );
-
-        AgregarTexto(
-            bytes,
-            "\n"
-        );
 
         // =====================================================
         // ENCABEZADO
         // =====================================================
 
         Centrar(bytes);
-
         Negrita(bytes, true);
 
-        AgregarTexto(
-            bytes,
-            "GRUPO LUISFER\n");
-
-        AgregarTexto(
-            bytes,
-            "ESDM\n");
+        foreach (var linea in formato.Encabezado)
+            AgregarTexto(bytes, linea + "\n");
 
         Negrita(bytes, false);
 
-        AgregarTexto(
-            bytes,
-            $"{ticket.UnidadOperativa}\n\n");
+        if (formato.MostrarUnidadOperativa &&
+            !string.IsNullOrWhiteSpace(ticket.UnidadOperativa))
+        {
+            AgregarTexto(bytes, ticket.UnidadOperativa + "\n");
+        }
+
+        AgregarTexto(bytes, "\n");
 
 
         // =====================================================
-        // DATOS DE VENTA
+        // AVISO DE REIMPRESIÓN
+        // =====================================================
+
+        if (ticket.EsReimpresion)
+        {
+            Negrita(bytes, true);
+            AgregarTexto(bytes, "*** REIMPRESION ***\n");
+            Negrita(bytes, false);
+
+            var fechaReimpresion =
+                ticket.FechaReimpresion ?? DateTime.Now;
+
+            AgregarTexto(
+                bytes,
+                $"Reimpreso: {fechaReimpresion:dd/MM/yyyy HH:mm}\n");
+
+            if (!string.IsNullOrWhiteSpace(ticket.ReimpresoPor))
+                AgregarTexto(bytes, $"Autorizo: {ticket.ReimpresoPor}\n");
+
+            AgregarTexto(bytes, "\n");
+        }
+
+
+        // =====================================================
+        // DATOS DE LA VENTA
         // =====================================================
 
         Izquierda(bytes);
+        Separador(bytes, ancho);
 
-        Separador(bytes);
+        AgregarTexto(bytes, $"Ticket: {ticket.FolioTicket}\n");
+        AgregarTexto(bytes, $"Fecha: {ticket.Fecha:dd/MM/yyyy HH:mm}\n");
+        AgregarTexto(bytes, $"Caja: {ticket.Caja}\n");
 
-        AgregarTexto(
-            bytes,
-            $"Ticket: {ticket.FolioTicket}\n");
+        if (formato.MostrarCajero)
+            AgregarTexto(bytes, $"Cajero: {ticket.Cajero}\n");
 
-        AgregarTexto(
-            bytes,
-            $"Fecha: {ticket.Fecha:dd/MM/yyyy HH:mm}\n");
-
-        AgregarTexto(
-            bytes,
-            $"Caja: {ticket.Caja}\n");
-
-        AgregarTexto(
-            bytes,
-            $"Cajero: {ticket.Cajero}\n");
-
-        Separador(bytes);
+        Separador(bytes, ancho);
 
 
         // =====================================================
@@ -118,56 +148,33 @@ public class TicketVentaService
         // =====================================================
 
         Negrita(bytes, true);
-
-        AgregarTexto(
-            bytes,
-            "PRODUCTOS\n");
-
+        AgregarTexto(bytes, "PRODUCTOS\n");
         Negrita(bytes, false);
-
-        AgregarTexto(
-            bytes,
-            "\n");
-
+        AgregarTexto(bytes, "\n");
 
         foreach (var producto in ticket.Productos)
         {
-            AgregarTexto(
-                bytes,
-                $"{producto.Producto}\n");
+            AgregarTexto(bytes, $"{producto.Producto}\n");
 
-            if (
-                !string.IsNullOrWhiteSpace(
-                    producto.Presentacion)
-            )
-            {
-                AgregarTexto(
-                    bytes,
-                    $"{producto.Presentacion}\n");
-            }
-
+            if (!string.IsNullOrWhiteSpace(producto.Presentacion))
+                AgregarTexto(bytes, $"{producto.Presentacion}\n");
 
             var cantidad =
                 producto.Cantidad.ToString(
                     "0.##",
                     CultureInfo.InvariantCulture);
 
-
             var izquierda =
                 $"{cantidad} x ${producto.PrecioUnitario:N2}";
-
 
             AgregarTexto(
                 bytes,
                 AlinearDosColumnas(
                     izquierda,
-                    $"${producto.Importe:N2}"
-                )
-            );
+                    $"${producto.Importe:N2}",
+                    ancho));
 
-            AgregarTexto(
-                bytes,
-                "\n");
+            AgregarTexto(bytes, "\n");
         }
 
 
@@ -175,48 +182,35 @@ public class TicketVentaService
         // TOTALES
         // =====================================================
 
-        Separador(bytes);
+        Separador(bytes, ancho);
 
         AgregarTexto(
             bytes,
-            AlinearDosColumnas(
-                "SUBTOTAL:",
-                $"${ticket.Subtotal:N2}"
-            )
-        );
+            AlinearDosColumnas("SUBTOTAL:", $"${ticket.Subtotal:N2}", ancho));
 
-        AgregarTexto(
-            bytes,
-            AlinearDosColumnas(
-                "IVA:",
-                $"${ticket.Iva:N2}"
-            )
-        );
-
-        if (ticket.Ieps > 0)
+        if (formato.MostrarImpuestos)
         {
             AgregarTexto(
                 bytes,
-                AlinearDosColumnas(
-                    "IEPS:",
-                    $"${ticket.Ieps:N2}"
-                )
-            );
+                AlinearDosColumnas("IVA:", $"${ticket.Iva:N2}", ancho));
+
+            if (ticket.Ieps > 0)
+            {
+                AgregarTexto(
+                    bytes,
+                    AlinearDosColumnas("IEPS:", $"${ticket.Ieps:N2}", ancho));
+            }
         }
 
         Negrita(bytes, true);
 
         AgregarTexto(
             bytes,
-            AlinearDosColumnas(
-                "TOTAL:",
-                $"${ticket.Total:N2}"
-            )
-        );
+            AlinearDosColumnas("TOTAL:", $"${ticket.Total:N2}", ancho));
 
         Negrita(bytes, false);
 
-        SeparadorDoble(bytes);
+        SeparadorDoble(bytes, ancho);
 
 
         // =====================================================
@@ -224,70 +218,53 @@ public class TicketVentaService
         // =====================================================
 
         Negrita(bytes, true);
-
-        AgregarTexto(
-            bytes,
-            "FORMA DE PAGO\n");
-
+        AgregarTexto(bytes, "FORMA DE PAGO\n");
         Negrita(bytes, false);
 
+        var hayDesglose =
+            ticket.Efectivo > 0 ||
+            ticket.Tarjeta > 0 ||
+            ticket.Transferencia > 0;
 
         if (ticket.Efectivo > 0)
         {
             AgregarTexto(
                 bytes,
-                AlinearDosColumnas(
-                    "Efectivo:",
-                    $"${ticket.Efectivo:N2}"
-                )
-            );
+                AlinearDosColumnas("Efectivo:", $"${ticket.Efectivo:N2}", ancho));
         }
-
 
         if (ticket.Tarjeta > 0)
         {
             AgregarTexto(
                 bytes,
-                AlinearDosColumnas(
-                    "Tarjeta:",
-                    $"${ticket.Tarjeta:N2}"
-                )
-            );
+                AlinearDosColumnas("Tarjeta:", $"${ticket.Tarjeta:N2}", ancho));
         }
-
 
         if (ticket.Transferencia > 0)
         {
             AgregarTexto(
                 bytes,
-                AlinearDosColumnas(
-                    "Transferencia:",
-                    $"${ticket.Transferencia:N2}"
-                )
-            );
+                AlinearDosColumnas("Transferencia:", $"${ticket.Transferencia:N2}", ancho));
         }
 
-
-        if (
-            ticket.Recibido > 0 &&
-            ticket.Efectivo > 0
-        )
+        // Reimpresiones: si el servidor no entrega el desglose,
+        // se imprime solo el monto pagado.
+        if (!hayDesglose && ticket.Pagado > 0)
         {
             AgregarTexto(
                 bytes,
-                AlinearDosColumnas(
-                    "Recibido:",
-                    $"${ticket.Recibido:N2}"
-                )
-            );
+                AlinearDosColumnas("Pagado:", $"${ticket.Pagado:N2}", ancho));
+        }
+
+        if (ticket.Recibido > 0 && ticket.Efectivo > 0)
+        {
+            AgregarTexto(
+                bytes,
+                AlinearDosColumnas("Recibido:", $"${ticket.Recibido:N2}", ancho));
 
             AgregarTexto(
                 bytes,
-                AlinearDosColumnas(
-                    "Cambio:",
-                    $"${ticket.Cambio:N2}"
-                )
-            );
+                AlinearDosColumnas("Cambio:", $"${ticket.Cambio:N2}", ancho));
         }
 
 
@@ -295,67 +272,52 @@ public class TicketVentaService
         // PIE
         // =====================================================
 
-        Separador(bytes);
-
+        Separador(bytes, ancho);
         Centrar(bytes);
+        AgregarTexto(bytes, "\n");
 
-        AgregarTexto(
-            bytes,
-            "\n");
-
-        Negrita(bytes, true);
-
-        AgregarTexto(
-            bytes,
-            "GRACIAS POR SU COMPRA\n");
-
-        Negrita(bytes, false);
-
-        AgregarTexto(
-            bytes,
-            "\n");
-
-        AgregarTexto(
-            bytes,
-            $"Ticket:\n{ticket.FolioTicket}\n\n");
-
-
-        // =========================================================
-        // QR
-        // =========================================================
-
-        if (!string.IsNullOrWhiteSpace(ticket.ContenidoQr))
+        if (!string.IsNullOrWhiteSpace(formato.MensajeFinal))
         {
-            AgregarTexto(
-                bytes,
-                "Escanea para ingresar a Plataforma LuisFer y Facturar\n\n"
-            );
+            Negrita(bytes, true);
+            AgregarTexto(bytes, formato.MensajeFinal + "\n");
+            Negrita(bytes, false);
+            AgregarTexto(bytes, "\n");
+        }
 
-            AgregarQr(
-                bytes,
-                ticket.ContenidoQr
-            );
+        foreach (var linea in formato.Pie)
+            AgregarTexto(bytes, linea + "\n");
 
-            AgregarTexto(
-                bytes,
-                "\n\n"
-            );
+        AgregarTexto(bytes, $"Ticket:\n{ticket.FolioTicket}\n\n");
+
+
+        // =====================================================
+        // QR
+        // =====================================================
+
+        if (formato.MostrarQr &&
+            !string.IsNullOrWhiteSpace(ticket.ContenidoQr))
+        {
+            if (!string.IsNullOrWhiteSpace(formato.TextoQr))
+                AgregarTexto(bytes, formato.TextoQr + "\n\n");
+
+            AgregarQr(bytes, ticket.ContenidoQr);
+
+
+           /*  if (!string.IsNullOrWhiteSpace(formato.TextoAviso))
+                AgregarTexto(bytes, formato.TextoAviso + "\n\n"); */
+
+            AgregarTexto(bytes, "\n\n");
         }
 
 
         AgregarTexto(
             bytes,
-            "\n\n\n");
+            new string('\n', Math.Max(0, formato.LineasEnBlancoAlFinal)));
 
 
-        // Corte
-        bytes.AddRange(
-            new byte[]
-            {
-                0x1D,
-                0x56,
-                0x01
-            });
+        // Corte parcial
+        if (formato.CortarPapel)
+            bytes.AddRange(new byte[] { 0x1D, 0x56, 0x01 });
 
 
         return bytes.ToArray();
@@ -366,105 +328,112 @@ public class TicketVentaService
     // HELPERS
     // =========================================================
 
+    /// <summary>
+    /// La impresora recibe ASCII. Quitamos los acentos (á -> a)
+    /// para que no salgan signos "?" en el ticket.
+    /// </summary>
+    private static string Sanitizar(string texto)
+    {
+        if (string.IsNullOrEmpty(texto))
+            return string.Empty;
+
+        var descompuesto =
+            texto.Normalize(NormalizationForm.FormD);
+
+        var sb =
+            new StringBuilder(descompuesto.Length);
+
+        foreach (var c in descompuesto)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(c)
+                == UnicodeCategory.NonSpacingMark)
+            {
+                continue;
+            }
+
+            sb.Append(c);
+        }
+
+        return sb.ToString().Normalize(NormalizationForm.FormC);
+    }
+
+
     private static void AgregarTexto(
         List<byte> bytes,
         string texto)
     {
         bytes.AddRange(
             Encoding.ASCII.GetBytes(
-                texto));
+                Sanitizar(texto)));
     }
 
 
-    private static void Centrar(
-        List<byte> bytes)
+    private static void Centrar(List<byte> bytes)
     {
-        bytes.AddRange(
-            new byte[]
-            {
-                0x1B,
-                0x61,
-                0x01
-            });
+        bytes.AddRange(new byte[] { 0x1B, 0x61, 0x01 });
     }
 
 
-    private static void Izquierda(
-        List<byte> bytes)
+    private static void Izquierda(List<byte> bytes)
     {
-        bytes.AddRange(
-            new byte[]
-            {
-                0x1B,
-                0x61,
-                0x00
-            });
+        bytes.AddRange(new byte[] { 0x1B, 0x61, 0x00 });
     }
 
 
-    private static void Negrita(
-        List<byte> bytes,
-        bool activa)
+    private static void Negrita(List<byte> bytes, bool activa)
     {
         bytes.AddRange(
             new byte[]
             {
                 0x1B,
                 0x45,
-                activa
-                    ? (byte)0x01
-                    : (byte)0x00
+                activa ? (byte)0x01 : (byte)0x00
             });
     }
 
 
-    private static void Separador(
-        List<byte> bytes)
+    private static void Separador(List<byte> bytes, int ancho)
     {
-        AgregarTexto(
-            bytes,
-            "------------------------------------------\n");
+        AgregarTexto(bytes, new string('-', ancho) + "\n");
     }
 
 
-    private static void SeparadorDoble(
-        List<byte> bytes)
+    private static void SeparadorDoble(List<byte> bytes, int ancho)
     {
-        AgregarTexto(
-            bytes,
-            "==========================================\n");
+        AgregarTexto(bytes, new string('=', ancho) + "\n");
     }
 
 
     private static string AlinearDosColumnas(
         string izquierda,
-        string derecha)
+        string derecha,
+        int ancho)
     {
-        const int ancho =
-            42;
+        izquierda = Sanitizar(izquierda);
+        derecha = Sanitizar(derecha);
 
         var espacios =
-            ancho
-            - izquierda.Length
-            - derecha.Length;
+            ancho - izquierda.Length - derecha.Length;
 
         if (espacios < 1)
         {
-            espacios =
-                1;
+            // Si no cabe, recortamos el texto de la izquierda.
+            var maximo =
+                Math.Max(0, ancho - derecha.Length - 1);
+
+            if (izquierda.Length > maximo)
+                izquierda = izquierda.Substring(0, maximo);
+
+            espacios = 1;
         }
 
         return izquierda
-               + new string(
-                   ' ',
-                   espacios)
+               + new string(' ', espacios)
                + derecha
                + "\n";
     }
-    
-    
-    
-    
+
+
     private static void AgregarQr(
         List<byte> bytes,
         string contenido)
