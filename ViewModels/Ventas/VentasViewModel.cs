@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -684,7 +684,10 @@ public async Task AgregarPresentacionAlCarritoAsync(
                 "#EFF6FF",
 
             ColorHex =
-                "#2563EB"
+                "#2563EB",
+
+            ImagenBitmap =
+                productoCatalogo.ImagenBitmap
         };
 
 
@@ -973,6 +976,14 @@ private async Task CargarImagenesProductosAsync()
 
             producto.ImagenBitmap =
                 bitmap;
+
+            foreach (var item in Carrito)
+            {
+                if (item.Producto.Id == producto.Id)
+                {
+                    item.Producto.ImagenBitmap = bitmap;
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -1801,6 +1812,10 @@ public async Task CargarVentaActualAsync()
 
         foreach (var detalle in resultado.Data.Detalles)
         {
+            var catalogo =
+                _productosCatalogoCompleto.Find(p => p.Id == detalle.IdProducto)
+                ?? System.Linq.Enumerable.FirstOrDefault(Productos, p => p.Id == detalle.IdProducto);
+
             var producto =
                 new Producto
                 {
@@ -1845,7 +1860,10 @@ public async Task CargarVentaActualAsync()
                         "#EFF6FF",
 
                     ColorHex =
-                        "#2563EB"
+                        "#2563EB",
+
+                    ImagenBitmap =
+                        catalogo?.ImagenBitmap
                 };
 
             var nuevoDetalle =

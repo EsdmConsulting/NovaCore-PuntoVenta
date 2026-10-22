@@ -1,6 +1,9 @@
+using Avalonia.Media.Imaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace NovaCoreESDM.Models;
 
-public class Producto
+public partial class Producto : ObservableObject
 {
     public int Id { get; set; }
 
@@ -36,4 +39,23 @@ public class Producto
 
     public string ColorHex { get; set; } =
         "#2563EB";
+
+    [ObservableProperty]
+    private Bitmap? _imagenBitmap;
+
+    public bool TieneImagenCargada =>
+        ImagenBitmap is not null;
+
+    public bool MostrarPlaceholderImagen =>
+        ImagenBitmap is null;
+
+    partial void OnImagenBitmapChanged(
+        Bitmap? value)
+    {
+        OnPropertyChanged(
+            nameof(TieneImagenCargada));
+
+        OnPropertyChanged(
+            nameof(MostrarPlaceholderImagen));
+    }
 }

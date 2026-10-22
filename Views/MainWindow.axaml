@@ -90,13 +90,20 @@
 
                     <StackPanel x:Name="IdentidadExpandida"
                                 Grid.Row="1"
-                                Spacing="8">
+                                Spacing="8"
+                                IsVisible="False"
+                                Opacity="0"
+                                Height="0"
+                                Width="0"
+                                IsHitTestVisible="False"
+                                Margin="0">
+                                
 
-                        <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                         <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
                                Width="154"
                                Height="90"
                                Stretch="Uniform"
-                               HorizontalAlignment="Center"/>
+                               HorizontalAlignment="Center"/> 
 
                         <TextBlock Text="PUNTO DE VENTA"
                                    Foreground="#08783D"
@@ -108,7 +115,7 @@
                                 Margin="6,7,6,0"
                                 Background="#E4EAE6"/>
 
-                    </StackPanel>
+                    </StackPanel> 
 
 
                     <!-- ================================================= -->
@@ -116,9 +123,14 @@
                     <!-- ================================================= -->
 
                     <StackPanel x:Name="IdentidadColapsada"
-                                Grid.Row="1"
+                               Grid.Row="1"
+                                Spacing="8"
                                 IsVisible="False"
-                                Spacing="7">
+                                Opacity="0"
+                                Height="0"
+                                Width="0"
+                                IsHitTestVisible="False"
+                                Margin="0">
 
                         <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
                                Width="48"
@@ -156,7 +168,11 @@
                                    Foreground="#94A39A"
                                    FontSize="9"
                                    FontWeight="SemiBold"
-                                   Margin="12,0,0,4"/>
+                                   Margin="12,0,0,4"
+                                   IsVisible="False"
+                                   Opacity="0"
+                                   IsHitTestVisible="False"
+                                   />
 
 
                         <!-- ================================================= -->
@@ -173,7 +189,7 @@
 
                             <Grid ColumnDefinitions="30,*">
 
-                                <TextBlock Text="+"
+                                <TextBlock Text="🛒"
                                            FontSize="21"
                                            FontWeight="SemiBold"
                                            HorizontalAlignment="Center"
@@ -442,136 +458,114 @@
         <!-- ===================================================== -->
 
         <Grid Grid.Column="1"
-              RowDefinitions="70,*">
+              RowDefinitions="90,*">
 
 
-            <!-- ================================================= -->
+         <!-- ================================================= -->
             <!-- HEADER                                            -->
             <!-- ================================================= -->
 
             <Border Grid.Row="0"
-                    Background="White"
+                    Background="#FFFFFF"
                     BorderBrush="#E4EAE6"
-                    BorderThickness="0,0,0,1">
+                    BorderThickness="0,0,0,1"
+                    ClipToBounds="True">
 
-                <Grid Margin="24,0"
-                      ColumnDefinitions="*,Auto">
+                <!-- Grid contenedor de capas (Fondo y Contenido) -->
+                <Grid>
 
+                    <Canvas Width="700" 
+                            Height="90"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            IsHitTestVisible="False">
 
-                    <!-- ================================================= -->
-                    <!-- TÍTULO                                             -->
-                    <!-- ================================================= -->
-
-                    <StackPanel VerticalAlignment="Center"
-                                Spacing="2">
-
-                        <TextBlock Text="{Binding TituloPagina}"
-                                   Foreground="#21382A"
-                                   FontSize="21"
-                                   FontWeight="SemiBold"
-                                   TextWrapping="NoWrap"
-                                   TextTrimming="CharacterEllipsis"/>
-
-                        <StackPanel Orientation="Horizontal"
-                                    Spacing="7">
-
-                            <TextBlock Text="{Binding SubtituloPagina}"
-                                       Foreground="#718078"
-                                       FontSize="11"
-                                       TextTrimming="CharacterEllipsis"/>
-
-                            <TextBlock Text="•"
-                                       Foreground="#CBD5CE"
-                                       FontSize="11"/>
-
-                            <TextBlock Text="{Binding FechaActual}"
-                                       Foreground="#94A39A"
-                                       FontSize="11"/>
-
-                        </StackPanel>
-
-                    </StackPanel>
+                            <!-- Amarillo -->
+                            <Polygon Points="180,0 245,0 100,90 35,90" Fill="#FFD52A"/>
+                            
+                            <!-- Rojo -->
+                            <Polygon Points="245,0 320,0 175,90 100,90" Fill="#F20D35"/>
+                            
+                            <!-- Verde  -->
+                            <Polygon Points="320,0 700,0 700,90 175,90" Fill="#079447"/>
+                    </Canvas>
 
 
-                    <!-- ================================================= -->
-                    <!-- POS / USUARIO                                     -->
-                    <!-- ================================================= -->
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          Margin="20,0,0,0"
+                          ColumnSpacing="18">
 
-                    <StackPanel Grid.Column="1"
-                                Orientation="Horizontal"
-                                Spacing="16"
-                                VerticalAlignment="Center">
+                            <Image Grid.Column="0" 
+                                   Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                                   Width="120"
+                                   Height="70"
+                                   Stretch="Uniform"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
 
+                            <!-- TÍTULO, SUBTÍTULO Y FECHA (Columna 1 Centro) -->
+                            <StackPanel Grid.Column="1"
+                                        VerticalAlignment="Center"
+                                        Spacing="3">
 
-                        <!-- ================================================= -->
-                        <!-- SUCURSAL                                          -->
-                        <!-- ================================================= -->
+                                    <TextBlock Text="{Binding TituloPagina}"
+                                               Foreground="#155C37"
+                                               FontSize="25"
+                                               FontWeight="Bold"
+                                               TextWrapping="NoWrap"
+                                               TextTrimming="CharacterEllipsis"/>
 
-                        <StackPanel VerticalAlignment="Center"
-                                    Spacing="1">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <TextBlock Text="{Binding SubtituloPagina}" Foreground="#77847D" FontSize="11" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="•" Foreground="#A8B5AD" FontSize="11" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding FechaActual}" Foreground="#77847D" FontSize="11" VerticalAlignment="Center"/>
+                                    </StackPanel>
 
-                            <TextBlock Text="{Binding NombreSucursal}"
-                                       Foreground="#08783D"
-                                       FontSize="11"
-                                       FontWeight="SemiBold"
-                                       HorizontalAlignment="Right"/>
+                            </StackPanel>
 
-                            <TextBlock Text="Punto de Venta"
-                                       Foreground="#94A39A"
-                                       FontSize="9"
-                                       HorizontalAlignment="Right"/>
+                            <!-- SUCURSAL Y USUARIO (Columna 2 Derecha) -->
+                           <Border Grid.Column="2"
+                                Background="#FFFFFF"
+                                BorderBrush="#E8EEE9"
+                                BorderThickness="1,1,0,1"
+                                CornerRadius="28,0,0,28"
+                                Padding="18,8,24,8"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Right">
 
-                        </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                        Spacing="16"
+                                        VerticalAlignment="Center">
 
+                                        <!-- SUCURSAL -->
+                                        <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+                                                <Border Width="34" Height="34" Background="#E8F7ED" CornerRadius="17">
+                                                        <TextBlock Text="▦" Foreground="#079447" FontSize="21" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <StackPanel VerticalAlignment="Center" Spacing="2">
+                                                        <TextBlock Text="{Binding NombreSucursal}" Foreground="#08783D" FontSize="12" FontWeight="Bold" TextTrimming="CharacterEllipsis" MaxWidth="155"/>
+                                                        <TextBlock Text="Punto de Venta" Foreground="#94A39A" FontSize="10"/>
+                                                </StackPanel>
+                                        </StackPanel>
 
-                        <Border Width="1"
-                                Height="30"
-                                Background="#E4EAE6"/>
+                                        <!-- SEPARADOR -->
+                                        <Border Width="1" Height="38" Background="#E1E8E3"/>
 
+                                        <!-- USUARIO -->
+                                        <StackPanel VerticalAlignment="Center" Spacing="3">
+                                                <TextBlock Text="{Binding NombreUsuario}" Foreground="#26372C" FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" MaxWidth="115"/>
+                                                <TextBlock Text="Usuario activo" Foreground="#94A39A" FontSize="10"/>
+                                        </StackPanel>
 
-                        <!-- ================================================= -->
-                        <!-- USUARIO                                           -->
-                        <!-- ================================================= -->
+                                        <!-- AVATAR -->
+                                        <Border Width="42" Height="42" CornerRadius="21" Background="#16A34A">
+                                                <TextBlock Text="A" Foreground="#FFFFFF" FontSize="17" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
 
-                        <StackPanel VerticalAlignment="Center"
-                                    Spacing="1">
-
-                            <TextBlock Text="{Binding NombreUsuario}"
-                                       Foreground="#26372C"
-                                       FontSize="12"
-                                       FontWeight="SemiBold"
-                                       HorizontalAlignment="Right"/>
-
-                            <TextBlock Text="Usuario activo"
-                                       Foreground="#94A39A"
-                                       FontSize="9"
-                                       HorizontalAlignment="Right"/>
-
-                        </StackPanel>
-
-
-                        <!-- ================================================= -->
-                        <!-- AVATAR                                            -->
-                        <!-- ================================================= -->
-
-                        <Border Width="40"
-                                Height="40"
-                                CornerRadius="20"
-                                Background="#16A34A">
-
-                            <TextBlock Text="A"
-                                       Foreground="White"
-                                       FontSize="15"
-                                       FontWeight="Bold"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
-
+                                </StackPanel>
                         </Border>
-
-                    </StackPanel>
-
+                    </Grid>
                 </Grid>
-
             </Border>
 
 

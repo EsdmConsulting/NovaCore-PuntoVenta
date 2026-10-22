@@ -136,7 +136,11 @@
                             Classes="secondaryButton"
                             Content="Mostrador"
                             Command="{Binding QuitarClienteCommand}"
-                            VerticalAlignment="Center"/>
+                            VerticalAlignment="Center"
+                            Background="#e2f7ea"
+                            BorderBrush="#e2f7ea"
+                            Foreground="#0f5330"
+                            />
 
                 </Grid>
 
@@ -146,49 +150,68 @@
             <!-- ================================================= -->
             <!-- BUSCADOR / ESCÁNER                                -->
             <!-- ================================================= -->
+                <Border Grid.Row="1"
+                        Background="White"
+                        CornerRadius="15"
+                        BorderBrush="#CBD5E1"
+                        BorderThickness="1"
+                        Padding="4">
 
-            <Border Grid.Row="1"
-                    Background="White"
-                    CornerRadius="15"
-                    BorderBrush="#CBD5E1"
-                    BorderThickness="1"
-                    Padding="4">
+                <Grid ColumnDefinitions="Auto,*,Auto"
+                        Margin="12,0"
+                        ColumnSpacing="4">
 
-                <Grid ColumnDefinitions="Auto,*"
-                      Margin="12,0"
-                      ColumnSpacing="4">
 
-                    <Border Width="38"
-                            Height="38"
-                            CornerRadius="10"
-                            Background="#EAF6EE"
-                            VerticalAlignment="Center">
+                       <Border Width="38"
+                                Height="38"
+                                CornerRadius="10"
+                                Background="#EAF6EE"
+                                VerticalAlignment="Center">
 
+                        <StackPanel Orientation="Horizontal" 
+                                        Spacing="2" 
+                                        HorizontalAlignment="Center" 
+                                        VerticalAlignment="Center">
+                                
+                                <Border Width="2" Height="20" Background="#16A34A"/>
+                                <Border Width="4" Height="18" Background="#16A34A"/>
+                                <Border Width="1" Height="16" Background="#16A34A"/>
+                                <Border Width="2" Height="17" Background="#16A34A"/>
+                                <Border Width="3" Height="18" Background="#16A34A"/>
+                                <Border Width="1" Height="16" Background="#16A34A"/>
+                                <Border Width="2" Height="20" Background="#16A34A"/>
+                                
+                        </StackPanel>
+                        </Border>
+
+                      <TextBox Grid.Column="1"
+                        x:Name="BuscadorProductosTextBox"
+                        Text="{Binding TextoBusqueda, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Height="52"
+                        Watermark="Escanea un código de barras o busca un producto..."
+                        FontSize="15"
+                        Padding="12,0" 
+                        BorderThickness="0"
+                        Background="Transparent"
+                        VerticalContentAlignment="Center"
+                        KeyDown="BuscadorProductosTextBox_KeyDown"/>
+
+                        <!-- Columna 2: Nuevo Icono Buscar (Se agregó Grid.Column="2") -->
+                        <Border Grid.Column="2"
+                                Width="38"
+                                Height="38"
+                                CornerRadius="10"
+                                Background="#039d3b"
+                                VerticalAlignment="Center">
                         <TextBlock Text="⌕"
-                                   Foreground="#16A34A"
-                                   FontSize="22"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
-
-                    </Border>
-
-
-                    <TextBox Grid.Column="1"
-                             x:Name="BuscadorProductosTextBox"
-                             Text="{Binding TextoBusqueda,
-                                            Mode=TwoWay,
-                                            UpdateSourceTrigger=PropertyChanged}"
-                             Height="52"
-                             Watermark="Escanea un código de barras o busca un producto..."
-                             FontSize="15"
-                             Padding="12,0"
-                             BorderThickness="0"
-                             Background="Transparent"
-                             KeyDown="BuscadorProductosTextBox_KeyDown"/>
+                                Foreground="#EAF6EE"
+                                FontSize="22"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
+                        </Border>
 
                 </Grid>
-
-            </Border>
+                </Border>
 
 
             <!-- ================================================= -->
@@ -204,7 +227,7 @@
 
                 <Grid RowDefinitions="Auto,Auto,*">
 
-                    <Grid.Styles>
+                <Grid.Styles>
                 <Style Selector="Border.productCard">
                 <Setter Property="Width" Value="170"/>
                 <Setter Property="MinHeight" Value="205"/>
@@ -486,7 +509,7 @@
 
                         <ItemsControl.ItemTemplate>
 
-                            <DataTemplate x:DataType="models:DetalleVenta">
+                       <DataTemplate x:DataType="models:DetalleVenta">
 
                                 <Border Background="#F8FAFC"
                                         BorderBrush="#E2E8F0"
@@ -495,176 +518,154 @@
                                         Padding="12"
                                         Margin="0,0,0,10">
 
-                                    <Grid RowDefinitions="Auto,Auto,Auto"
-                                          ColumnDefinitions="*,Auto">
+                                    <!-- ESTRUCTURA PRINCIPAL: IZQUIERDA (Imagen) y DERECHA (Detalles) -->
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+
+                                        <!-- ================================================= -->
+                                        <!-- IMAGEN DEL PRODUCTO (COLUMNA 0)                   -->
+                                        <!-- ================================================= -->
+                                        
+                                        <Border Grid.Column="0" 
+                                                Width="60" 
+                                                Height="60" 
+                                                CornerRadius="10" 
+                                                Background="White" 
+                                                BorderBrush="#E2E8F0"
+                                                BorderThickness="1"
+                                                ClipToBounds="True" 
+                                                VerticalAlignment="Top">
+                                            <Grid>
+                                                <Image Source="{Binding Producto.ImagenBitmap}" 
+                                                       Stretch="UniformToFill" 
+                                                       IsVisible="{Binding Producto.TieneImagenCargada}"/>
+                                                
+                                                <StackPanel HorizontalAlignment="Center" 
+                                                            VerticalAlignment="Center" 
+                                                            Spacing="4" 
+                                                            IsVisible="{Binding Producto.MostrarPlaceholderImagen}">
+                                                    <TextBlock Text="▣" Foreground="#A9B8C6" FontSize="26" HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="FOTO" Foreground="#94A3B8" FontSize="8" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
 
 
                                         <!-- ================================================= -->
-                                        <!-- PRODUCTO                                          -->
+                                        <!-- DETALLES Y CONTROLES (COLUMNA 1)                  -->
                                         <!-- ================================================= -->
+                                        
+                                        <Grid Grid.Column="1" RowDefinitions="Auto,Auto,Auto">
 
-                                        <StackPanel Grid.Row="0"
-                                                    Grid.Column="0"
-                                                    Spacing="3">
+                                            <!-- FILA 0: TÍTULOS Y BOTÓN ELIMINAR -->
+                                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                                
+                                                <StackPanel Grid.Column="0" Spacing="3">
+                                                    <TextBlock Text="{Binding Producto.Nombre}"
+                                                               Foreground="#172033"
+                                                               FontSize="13"
+                                                               FontWeight="SemiBold"
+                                                               TextWrapping="Wrap"/>
 
-                                            <TextBlock Text="{Binding Producto.Nombre}"
-                                                       Foreground="#172033"
-                                                       FontSize="13"
-                                                       FontWeight="SemiBold"
-                                                       TextWrapping="Wrap"/>
+                                                    <TextBlock Text="{Binding Producto.NombrePresentacion}"
+                                                               Foreground="#123B69"
+                                                               FontSize="12"
+                                                               FontWeight="SemiBold"
+                                                               TextWrapping="Wrap"/>
+                                                </StackPanel>
 
-                                            <TextBlock Text="{Binding Producto.NombrePresentacion}"
-                                                       Foreground="#123B69"
-                                                       FontSize="10"
-                                                       FontWeight="SemiBold"
-                                                       TextWrapping="Wrap"/>
-
-                                        </StackPanel>
-
-
-                                        <!-- ================================================= -->
-                                        <!-- ELIMINAR                                          -->
-                                        <!-- ================================================= -->
-
-                                        <Button Grid.Row="0"
-                                                Grid.Column="1"
-                                                Classes="deleteButton"
-                                                Content="×"
-                                                Command="{ReflectionBinding DataContext.EliminarProductoCommand,
-                                                                            ElementName=VentasRoot}"
-                                                CommandParameter="{Binding}"/>
+                                                <!-- BOTÓN ELIMINAR (Alineado arriba a la derecha) -->
+                                                <Button Grid.Column="1"
+                                                        Classes="deleteButton"
+                                                        Content="×"
+                                                        VerticalAlignment="Top"
+                                                        Margin="0,-5,-5,0"
+                                                        Command="{ReflectionBinding DataContext.EliminarProductoCommand, ElementName=VentasRoot}"
+                                                        CommandParameter="{Binding}"/>
+                                            </Grid>
 
 
-                                        <!-- ================================================= -->
-                                        <!-- PRECIO / EXISTENCIA                               -->
-                                        <!-- ================================================= -->
+                                            <!-- FILA 1: PRECIO, MENUDEO, FACTOR, EXISTENCIA -->
+                                            <WrapPanel Grid.Row="1" Orientation="Horizontal" Margin="0,8,0,0" VerticalAlignment="Center">
+                                                
+                                                <TextBlock Text="{Binding PrecioUnitario, StringFormat='Precio: ${0:N2}'}"
+                                                           Foreground="#64748B"
+                                                           FontSize="11"
+                                                           Margin="0,0,10,0"
+                                                           VerticalAlignment="Center"/>
 
-                                        <WrapPanel Grid.Row="1"
-                                                   Grid.ColumnSpan="2"
-                                                   Orientation="Horizontal"
-                                                   Margin="0,7,0,0">
+                                                <Border Background="#EEF4F8"
+                                                        CornerRadius="6"
+                                                        Padding="7,3"
+                                                        Margin="0,0,10,0">
+                                                    <TextBlock Text="{Binding TextoTipoPrecio}"
+                                                               Foreground="#123B69"
+                                                               FontSize="10"
+                                                               FontWeight="SemiBold"/>
+                                                </Border>
 
-                                            <TextBlock Text="{Binding PrecioUnitario,
-                                                                     StringFormat='Precio: ${0:N2}'}"
-                                                       Foreground="#64748B"
-                                                       FontSize="9"
-                                                       Margin="0,0,10,5"/>
+                                                <TextBlock Text="{Binding Producto.FactorConversion, StringFormat='Factor: {0}'}"
+                                                           Foreground="#94A3B8"
+                                                           FontSize="11"
+                                                           Margin="0,0,10,0"
+                                                           VerticalAlignment="Center"/>
 
-                                            <Border Background="#EEF4F8"
-                                                    CornerRadius="6"
-                                                    Padding="7,3"
-                                                    Margin="0,0,10,5">
-
-                                                <TextBlock Text="{Binding TextoTipoPrecio}"
-                                                           Foreground="#123B69"
-                                                           FontSize="9"
-                                                           FontWeight="SemiBold"/>
-
-                                            </Border>
-
-                                            <TextBlock Text="{Binding Producto.FactorConversion,
-                                                                     StringFormat='Factor: {0}'}"
-                                                       Foreground="#94A3B8"
-                                                       FontSize="9"
-                                                       Margin="0,0,10,5"/>
-
-                                            <TextBlock Text="{Binding MaximoLinea,
-                                                                     StringFormat='Existencia: {0:N0}'}"
-                                                       Foreground="#16803B"
-                                                       FontSize="9"
-                                                       FontWeight="SemiBold"
-                                                       Margin="0,0,0,5"/>
-
-                                        </WrapPanel>
+                                                <TextBlock Text="{Binding MaximoLinea, StringFormat='Existencia: {0:N0}'}"
+                                                           Foreground="#16803B"
+                                                           FontSize="11"
+                                                           FontWeight="SemiBold"
+                                                           Margin="0,0,0,0"
+                                                           VerticalAlignment="Center"/>
+                                            </WrapPanel>
 
 
-                                        <!-- ================================================= -->
-                                        <!-- CONTROLES                                         -->
-                                        <!-- ================================================= -->
+                                            <!-- FILA 2: CONTROLES DE CANTIDAD E IMPORTE -->
+                                            <Grid Grid.Row="2"
+                                                  ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto"
+                                                  ColumnSpacing="7"
+                                                  Margin="0,12,0,0">
 
-                                        <Grid Grid.Row="2"
-                                              Grid.ColumnSpan="2"
-                                              ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto"
-                                              ColumnSpacing="7"
-                                              Margin="0,10,0,0">
+                                                <!-- DISMINUIR -->
+                                                <Button Grid.Column="0" Classes="quantityButton" Content="−"
+                                                        Command="{ReflectionBinding DataContext.DisminuirCantidadCommand, ElementName=VentasRoot}"
+                                                        CommandParameter="{Binding}"/>
 
+                                                <!-- CANTIDAD ACTUAL -->
+                                                <TextBlock Grid.Column="1" Text="{Binding Cantidad}"
+                                                           Width="26" Foreground="#172033" FontSize="14"
+                                                           FontWeight="SemiBold" TextAlignment="Center" VerticalAlignment="Center"/>
 
-                                            <!-- DISMINUIR -->
+                                                <!-- INCREMENTAR -->
+                                                <Button Grid.Column="2" Classes="quantityButton" Content="+"
+                                                        Command="{ReflectionBinding DataContext.IncrementarCantidadCommand, ElementName=VentasRoot}"
+                                                        CommandParameter="{Binding}" IsEnabled="{Binding PuedeIncrementar}"/>
 
-                                            <Button Grid.Column="0"
-                                                    Classes="quantityButton"
-                                                    Content="−"
-                                                    Command="{ReflectionBinding DataContext.DisminuirCantidadCommand,
-                                                                                ElementName=VentasRoot}"
-                                                    CommandParameter="{Binding}"/>
+                                                <!-- EDITAR -->
+                                                <Button Grid.Column="3" Classes="editButton" Content="Editar"
+                                                        Command="{ReflectionBinding DataContext.EditarCantidadCommand, ElementName=VentasRoot}"
+                                                        CommandParameter="{Binding}"/>
 
+                                                <!-- PRECIO -->
+                                                <Button Grid.Column="4" Classes="priceButton" Content="Precio"
+                                                        Command="{ReflectionBinding DataContext.CambiarPrecioCommand, ElementName=VentasRoot}"
+                                                        CommandParameter="{Binding}" IsEnabled="{Binding !EstaSincronizando}"/>
 
-                                            <!-- CANTIDAD -->
-
-                                            <TextBlock Grid.Column="1"
-                                                       Text="{Binding Cantidad}"
-                                                       Width="26"
-                                                       Foreground="#172033"
-                                                       FontSize="13"
-                                                       FontWeight="SemiBold"
-                                                       TextAlignment="Center"
-                                                       VerticalAlignment="Center"/>
-
-
-                                            <!-- INCREMENTAR -->
-
-                                            <Button Grid.Column="2"
-                                                    Classes="quantityButton"
-                                                    Content="+"
-                                                    Command="{ReflectionBinding DataContext.IncrementarCantidadCommand,
-                                                                                ElementName=VentasRoot}"
-                                                    CommandParameter="{Binding}"
-                                                    IsEnabled="{Binding PuedeIncrementar}"/>
-
-
-                                            <!-- EDITAR -->
-
-                                            <Button Grid.Column="3"
-                                                    Classes="editButton"
-                                                    Content="Editar"
-                                                    Command="{ReflectionBinding DataContext.EditarCantidadCommand,
-                                                                                ElementName=VentasRoot}"
-                                                    CommandParameter="{Binding}"/>
-
-
-                                            <!-- PRECIO -->
-
-                                            <Button Grid.Column="4"
-                                                    Classes="priceButton"
-                                                    Content="Precio"
-                                                    Command="{ReflectionBinding DataContext.CambiarPrecioCommand,
-                                                                                ElementName=VentasRoot}"
-                                                    CommandParameter="{Binding}"
-                                                    IsEnabled="{Binding !EstaSincronizando}"/>
-
-
-                                            <!-- IMPORTE -->
-
-                                            <TextBlock Grid.Column="6"
-                                                       Text="{Binding Importe,
-                                                                      StringFormat='${0:N2}'}"
-                                                       Foreground="#172033"
-                                                       FontSize="15"
-                                                       FontWeight="Bold"
-                                                       VerticalAlignment="Center"
-                                                       HorizontalAlignment="Right"/>
-
+                                                <!-- IMPORTE TOTAL (Alineado completamente a la derecha) -->
+                                                <TextBlock Grid.Column="6" Text="{Binding Importe, StringFormat='${0:N2}'}"
+                                                           Foreground="#172033" FontSize="17" FontWeight="Bold"
+                                                           VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                            </Grid>
                                         </Grid>
-
                                     </Grid>
-
                                 </Border>
-
                             </DataTemplate>
 
                         </ItemsControl.ItemTemplate>
 
-                    </ItemsControl>
+                   
+                   
+                   
+                   
+                   </ItemsControl>
 
                 </ScrollViewer>
 
