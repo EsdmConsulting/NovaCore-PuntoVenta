@@ -390,6 +390,25 @@ public async Task CargarProductosAsync()
 }
 
 
+    // =========================================================
+    // ACTUALIZAR PRODUCTOS DESDE LA API
+    // =========================================================
+
+    [RelayCommand]
+    public async Task ActualizarProductosAsync()
+    {
+        if (EstaCargandoProductos)
+            return;
+
+        await CargarProductosAsync();
+
+        if (!string.IsNullOrWhiteSpace(TextoBusqueda))
+        {
+            FiltrarProductos(TextoBusqueda);
+        }
+    }
+
+
 
 
 
@@ -1017,11 +1036,11 @@ private async Task CargarImagenesProductosAsync()
 // PROCESAR CÓDIGO ESCANEADO
 // =========================================================
 
-public async Task ProcesarCodigoEscaneadoAsync(
+public async Task<bool> ProcesarCodigoEscaneadoAsync(
     string codigo)
 {
     if (string.IsNullOrWhiteSpace(codigo))
-        return;
+        return false;
 
 
     codigo =
@@ -1093,7 +1112,7 @@ public async Task ProcesarCodigoEscaneadoAsync(
         );
 
 
-        return;
+        return true;
     }
 
 
@@ -1132,7 +1151,7 @@ public async Task ProcesarCodigoEscaneadoAsync(
         MensajeError =
             $"No se encontró ningún producto con el código de barras {codigo}.";
 
-        return;
+        return false;
     }
 
 
@@ -1149,7 +1168,7 @@ public async Task ProcesarCodigoEscaneadoAsync(
         MensajeError =
             $"El producto {productoEncontrado.NombreComercial} no tiene presentaciones configuradas.";
 
-        return;
+        return false;
     }
 
 
@@ -1170,7 +1189,7 @@ public async Task ProcesarCodigoEscaneadoAsync(
         MensajeError =
             $"El producto {productoEncontrado.NombreComercial} no tiene presentaciones activas.";
 
-        return;
+        return false;
     }
 
 
@@ -1191,7 +1210,7 @@ public async Task ProcesarCodigoEscaneadoAsync(
         );
 
 
-        return;
+        return true;
     }
 
 
@@ -1219,6 +1238,8 @@ public async Task ProcesarCodigoEscaneadoAsync(
     SolicitarSeleccionPresentacion?.Invoke(
         productoEncontrado
     );
+
+    return true;
 }
 
 

@@ -46,6 +46,15 @@ public partial class VentasView : UserControl
     
     private Window? _parentWindow;
 
+    // =========================================================
+    // CHECADORA / ESCÁNER DE CÓDIGO DE BARRAS (TECLADO HID)
+    // =========================================================
+
+    private readonly System.Text.StringBuilder _scannerBuffer = new();
+    private DateTime _ultimoTiempoTeclaScanner = DateTime.MinValue;
+    private const int ScannerMaxDelayMs = 70;
+    private readonly System.Threading.SemaphoreSlim _semaforoEscaneo = new(1, 1);
+
 
     public VentasView()
     {
@@ -192,7 +201,94 @@ public partial class VentasView : UserControl
 
 
 // =========================================================
-// ESCÁNER / ENTER
+// PROCESAMIENTO CENTRALIZADO DE CÓDIGO DE BARRAS / CHECADORA
+// =========================================================
+
+    private async Task ProcesarCodigoBarrasEscaneadoAsync(string codigo)
+    {
+        if (_viewModel is null || string.IsNullOrWhiteSpace(codigo))
+            return;
+
+        await _semaforoEscaneo.WaitAsync();
+        try
+        {
+            // Limpiamos cualquier texto que haya podido entrar al buscador
+            _viewModel.TextoBusqueda = string.Empty;
+            if (BuscadorProductosTextBox != null)
+            {
+                BuscadorProductosTextBox.Text = string.Empty;
+            }
+
+            // Si el buscador de clientes tenía foco y le cayó el carácter inicial, lo restauramos
+            if (BuscadorClienteTextBox != null && BuscadorClienteTextBox.IsFocused && !string.IsNullOrEmpty(BuscadorClienteTextBox.Text))
+            {
+                if (BuscadorClienteTextBox.Text.Length > 0 && BuscadorClienteTextBox.Text[^1] == codigo[0])
+                {
+                    BuscadorClienteTextBox.Text = BuscadorClienteTextBox.Text[..^1];
+                }
+            }
+
+            // Consultar producto por código de barras y agregar automáticamente al carrito
+            var encontrado = await _viewModel.ProcesarCodigoEscaneadoAsync(codigo);
+
+            if (!encontrado)
+            {
+                // En caso de no ser encontrado: queda listo en el buscador para revisión o búsqueda manual
+                _viewModel.TextoBusqueda = codigo;
+                if (BuscadorProductosTextBox != null)
+                {
+                    BuscadorProductosTextBox.Text = codigo;
+                    EnfocarBuscadorProductos();
+                }
+            }
+            else
+            {
+                // Producto agregado con éxito al carrito
+                EnfocarBuscadorProductos();
+            }
+        }
+        catch (Exception ex)
+        {
+            _viewModel.MensajeError =
+                $"No fue posible procesar el código: {ex.Message}";
+        }
+        finally
+        {
+            _semaforoEscaneo.Release();
+        }
+    }
+
+    private static char? ObtenerCaracterDeTecla(KeyEventArgs e)
+    {
+        // 1. Si Avalonia proporciona KeySymbol imprimible
+        if (!string.IsNullOrEmpty(e.KeySymbol) && e.KeySymbol.Length == 1)
+        {
+            char c = e.KeySymbol[0];
+            if (!char.IsControl(c) && c >= 32 && c <= 126)
+                return c;
+        }
+
+        // 2. Mapeo por Key enum para compatibilidad universal con lectores USB HID
+        if (e.Key >= Key.D0 && e.Key <= Key.D9)
+            return (char)('0' + (e.Key - Key.D0));
+
+        if (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9)
+            return (char)('0' + (e.Key - Key.NumPad0));
+
+        if (e.Key >= Key.A && e.Key <= Key.Z)
+        {
+            char c = (char)('A' + (e.Key - Key.A));
+            return e.KeyModifiers.HasFlag(KeyModifiers.Shift) ? c : char.ToLower(c);
+        }
+
+        if (e.Key == Key.OemMinus || e.Key == Key.Subtract)
+            return '-';
+
+        return null;
+    }
+
+// =========================================================
+// ESCÁNER / ENTER DESDE EL INPUT MANUAL
 // =========================================================
 
     private async void BuscadorProductosTextBox_KeyDown(object? sender, KeyEventArgs e)
@@ -214,50 +310,11 @@ public partial class VentasView : UserControl
 
         e.Handled = true;
 
-        if (_viewModel is null)
-            return;
-
-        var codigo =
-            BuscadorProductosTextBox
-                ?.Text
-                ?.Trim();
-
+        var codigo = BuscadorProductosTextBox?.Text?.Trim();
         if (string.IsNullOrWhiteSpace(codigo))
             return;
 
-        try
-        {
-            await _viewModel
-                .ProcesarCodigoEscaneadoAsync(
-                    codigo
-                );
-        }
-        catch (Exception ex)
-        {
-            _viewModel.MensajeError =
-                $"No fue posible procesar el código: {ex.Message}";
-        }
-        finally
-        {
-            // =====================================================
-            // LIMPIAR BÚSQUEDA
-            // =====================================================
-
-            _viewModel.TextoBusqueda =
-                string.Empty;
-
-            BuscadorProductosTextBox.Text =
-                string.Empty;
-
-
-            // =====================================================
-            // DEJAR ESCÁNER LISTO PARA EL SIGUIENTE PRODUCTO
-            // =====================================================
-
-            EnfocarBuscadorProductos();
-        }
-
-        // NO reenfocar por ahora
+        await ProcesarCodigoBarrasEscaneadoAsync(codigo);
     }
     
     
@@ -1279,6 +1336,62 @@ public partial class VentasView : UserControl
     
    private void ParentWindow_KeyDown(object? sender, KeyEventArgs e)
 {
+    var ahora = DateTime.UtcNow;
+    var diff = (ahora - _ultimoTiempoTeclaScanner).TotalMilliseconds;
+
+    // =================================================
+    // DETECCIÓN DE CHECADORA / PISTOLA DE CÓDIGO DE BARRAS
+    // =================================================
+
+    // 1. Detectar ENTER (fin de lectura de la checadora)
+    if (e.Key == Key.Enter || e.Key == Key.Return)
+    {
+        if (_scannerBuffer.Length >= 3 && diff <= 95)
+        {
+            e.Handled = true;
+            var codigoEscaneado = _scannerBuffer.ToString().Trim();
+            _scannerBuffer.Clear();
+
+            _ = ProcesarCodigoBarrasEscaneadoAsync(codigoEscaneado);
+            return;
+        }
+
+        _scannerBuffer.Clear();
+    }
+    else
+    {
+        var caracter = ObtenerCaracterDeTecla(e);
+        if (caracter.HasValue)
+        {
+            if (diff > ScannerMaxDelayMs)
+            {
+                _scannerBuffer.Clear();
+            }
+
+            _scannerBuffer.Append(caracter.Value);
+            _ultimoTiempoTeclaScanner = ahora;
+
+            // Si ya van 2 o más teclas en ráfaga rápida (< 70ms),
+            // corresponde indiscutiblemente a la checadora.
+            // Consumimos el evento para evitar que contamine controles con foco.
+            if (_scannerBuffer.Length >= 2 && diff <= ScannerMaxDelayMs)
+            {
+                e.Handled = true;
+                return;
+            }
+        }
+        else
+        {
+            // Teclas de control (flechas, escape, etc.) que no sean modificadores
+            if (e.Key != Key.LeftShift && e.Key != Key.RightShift &&
+                e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl &&
+                e.Key != Key.LeftAlt && e.Key != Key.RightAlt)
+            {
+                _scannerBuffer.Clear();
+            }
+        }
+    }
+
 
     // =================================================
     // F5 - CONSULTAR PRODUCTO SELECCIONADO
@@ -1431,7 +1544,6 @@ private void CatalogoProductosListBox_KeyDown(object? sender, KeyEventArgs e)
         var listBox = sender as ListBox;
         if (listBox == null) return;
 
-        // F5 o Enter abren la presentación del producto seleccionado
         if (e.Key == Key.F5 || e.Key == Key.Enter)
         {
             if (listBox.SelectedItem != null)
