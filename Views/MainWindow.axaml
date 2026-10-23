@@ -516,9 +516,9 @@
                                                TextTrimming="CharacterEllipsis"/>
 
                                     <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <TextBlock Text="{Binding SubtituloPagina}" Foreground="#77847D" FontSize="11" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                            <TextBlock Text="•" Foreground="#A8B5AD" FontSize="11" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding FechaActual}" Foreground="#77847D" FontSize="11" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding SubtituloPagina}" Foreground="#000000" FontSize="11" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="•" Foreground="#000000" FontSize="11" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding FechaActual}" Foreground="#000000" FontSize="11" VerticalAlignment="Center"/>
                                     </StackPanel>
 
                             </StackPanel>
@@ -700,7 +700,7 @@
                     Value="Transparent"/>
 
             <Setter Property="Foreground"
-                    Value="#526158"/>
+                    Value="#000000"/>
 
             <Setter Property="BorderThickness"
                     Value="0"/>

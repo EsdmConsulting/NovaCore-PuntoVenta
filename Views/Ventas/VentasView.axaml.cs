@@ -1151,27 +1151,49 @@ public partial class VentasView : UserControl
     }
 
 
-    // =========================================================
+// =========================================================
     // CONFIRMACIÓN DE VENTA FINALIZADA
     // =========================================================
 
     private async Task OnSolicitarConfirmacionVentaFinalizada(
         string folioTicket)
     {
+
+        if (_viewModel is not null)
+        {
+            _viewModel.TextoBusqueda = string.Empty;
+            _viewModel.TextoBusquedaCliente = string.Empty;
+
+
+            if (_viewModel.QuitarClienteCommand != null && _viewModel.QuitarClienteCommand.CanExecute(null))
+            {
+                _viewModel.QuitarClienteCommand.Execute(null);
+            }
+        }
+
+        var buscadorCliente = this.FindControl<TextBox>("BuscadorClienteTextBox");
+        if (buscadorCliente != null)
+        {
+            buscadorCliente.Text = string.Empty;
+        }
+
+        var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+        if (buscadorProductos != null)
+        {
+            buscadorProductos.Text = string.Empty;
+        }
+
         var owner =
             TopLevel.GetTopLevel(this)
             as Window;
 
-
         if (owner is null)
             return;
-
 
         var ventana =
             new VentaFinalizadaWindow(
                 folioTicket
             );
-
 
         await ventana
             .ShowDialog(
