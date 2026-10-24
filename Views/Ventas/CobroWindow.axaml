@@ -98,12 +98,14 @@
                                 VerticalAlignment="Center"
                                 Spacing="3">
 
-                        <TextBlock Text="Total a pagar"
+                        <TextBlock x:Name="TextoEtiquetaTotal"
+                                   Text="Total a pagar"
                                    FontSize="13"
                                    FontWeight="SemiBold"
                                    Foreground="#E8E7FF"/>
 
-                        <TextBlock Text="Importe total de la venta actual"
+                        <TextBlock x:Name="TextoSubtituloTotal"
+                                   Text="Importe total de la venta actual"
                                    FontSize="10"
                                    Foreground="#CFCBFF"
                                    TextWrapping="Wrap"/>

@@ -339,7 +339,8 @@
                         Background="Transparent"
                         BorderThickness="0"
                         SelectionMode="Single"
-                        KeyDown="CatalogoProductosListBox_KeyDown">
+                        KeyDown="CatalogoProductosListBox_KeyDown"
+                        DoubleTapped="CatalogoProductosListBox_DoubleTapped">
 
                         <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -735,6 +736,29 @@
                                                       StringFormat='${0:N2}'}"
                                        Foreground="#17365D"
                                        FontSize="28"
+                                       FontWeight="Bold"/>
+
+                        </Grid>
+
+
+                        <!-- ================================================= -->
+                        <!-- SALDO RESTANTE (SI HAY PAGOS PARCIALES)           -->
+                        <!-- ================================================= -->
+
+                        <Grid ColumnDefinitions="*,Auto"
+                              IsVisible="{Binding TienePagosParciales}">
+
+                            <TextBlock Text="Saldo restante"
+                                       Foreground="#DC2626"
+                                       FontSize="15"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding SaldoPendiente,
+                                                      StringFormat='${0:N2}'}"
+                                       Foreground="#DC2626"
+                                       FontSize="24"
                                        FontWeight="Bold"/>
 
                         </Grid>

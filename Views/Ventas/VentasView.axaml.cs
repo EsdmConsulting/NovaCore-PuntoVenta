@@ -378,10 +378,46 @@ public partial class VentasView : UserControl
                 return;
 
 
+            // ================================================
+            // VENTA POR PESO (KG / GRA)
+            // ================================================
+            var presentacionSel = selector.PresentacionSeleccionada;
+            var esKg = presentacionSel.UnidadMedida.Equals("KG", StringComparison.OrdinalIgnoreCase)
+                    || presentacionSel.UnidadMedida.Equals("GRA", StringComparison.OrdinalIgnoreCase)
+                    || presentacionSel.UnidadMedida.Equals("GR", StringComparison.OrdinalIgnoreCase);
+
+            if (esKg)
+            {
+                var pesoWindow = new CapturarPesoWindow(
+                    producto.NombreComercial,
+                    presentacionSel.NombrePresentacion,
+                    presentacionSel.UnidadMedida,
+                    presentacionSel.Precio);
+
+                var confirmado = await pesoWindow.ShowDialog<bool>(parentWindow);
+
+                if (!confirmado || pesoWindow.PesoIngresado <= 0m)
+                    return;
+
+                // Ajustar la cantidad comercial al peso real
+                presentacionSel = new PresentacionVentaItem
+                {
+                    IdPresentacion    = selector.PresentacionSeleccionada.IdPresentacion,
+                    NombrePresentacion= selector.PresentacionSeleccionada.NombrePresentacion,
+                    UnidadMedida      = selector.PresentacionSeleccionada.UnidadMedida,
+                    FactorConversion  = selector.PresentacionSeleccionada.FactorConversion,
+                    CodigoBarras      = selector.PresentacionSeleccionada.CodigoBarras,
+                    EsBase            = selector.PresentacionSeleccionada.EsBase,
+                    Precio            = selector.PresentacionSeleccionada.Precio,
+                    TienePrecio       = selector.PresentacionSeleccionada.TienePrecio,
+                    CantidadPeso      = pesoWindow.PesoIngresado
+                };
+            }
+
             await _viewModel
                 .AgregarPresentacionAlCarritoAsync(
                     producto,
-                    selector.PresentacionSeleccionada
+                    presentacionSel
                 );
         }
         catch (Exception ex)
@@ -579,13 +615,19 @@ public partial class VentasView : UserControl
 
             while (true)
             {
+                var saldoACobrar =
+                    _viewModel.SaldoPendiente;
+
+                if (saldoACobrar <= 0 || _viewModel.VentaFinalizadaCorrectamente)
+                    return;
+
                 // =====================================================
                 // SELECTOR DE MÉTODO DE PAGO
                 // =====================================================
 
                 var ventana =
                     new CobroWindow(
-                        _viewModel.Total,
+                        saldoACobrar,
                         _viewModel
                     );
 
@@ -616,7 +658,7 @@ public partial class VentasView : UserControl
                 {
                     var pagoEfectivo =
                         new PagoEfectivoWindow(
-                            _viewModel.Total
+                            saldoACobrar
                         );
 
 
@@ -645,7 +687,7 @@ public partial class VentasView : UserControl
                     var pagoRegistrado =
                         await _viewModel
                             .RegistrarPagoEfectivoAsync(
-                                _viewModel.Total,
+                                pagoEfectivo.ImporteAplicado,
                                 pagoEfectivo.CantidadRecibida,
                                 pagoEfectivo.Cambio
                             );
@@ -656,10 +698,14 @@ public partial class VentasView : UserControl
 
 
                     // =================================================
-                    // PAGO TERMINADO
+                    // VALIDAR SI LA VENTA TERMINÓ O QUEDA SALDO
                     // =================================================
 
-                    return;
+                    if (_viewModel.SaldoPendiente <= 0 || _viewModel.VentaFinalizadaCorrectamente)
+                        return;
+
+                    // Queda saldo restante (pago mixto) -> continuar cobrando
+                    continue;
                 }
                 
                 
@@ -691,7 +737,7 @@ public partial class VentasView : UserControl
 
                     var pagoTransferencia =
                         new PagoTransferenciaWindow(
-                            _viewModel.Total
+                            saldoACobrar
                         );
 
 
@@ -720,7 +766,7 @@ public partial class VentasView : UserControl
                     var pagoRegistrado =
                         await _viewModel
                             .RegistrarPagoTransferenciaAsync(
-                                _viewModel.Total
+                                saldoACobrar
                             );
 
 
@@ -738,11 +784,15 @@ public partial class VentasView : UserControl
                     }
 
 
-            // =================================================
-            // PAGO TERMINADO
-            // =================================================
+                    // =================================================
+                    // VALIDAR SI LA VENTA TERMINÓ O QUEDA SALDO
+                    // =================================================
 
-                    return;
+                    if (_viewModel.SaldoPendiente <= 0 || _viewModel.VentaFinalizadaCorrectamente)
+                        return;
+
+                    // Queda saldo restante (pago mixto) -> continuar cobrando
+                    continue;
                 }
 
 
@@ -881,7 +931,7 @@ public partial class VentasView : UserControl
                         {
                             var selectorTerminal =
                                 new MercadoPagoTerminalWindow(
-                                    _viewModel.Total,
+                                    saldoACobrar,
                                     terminales
                                 );
 
@@ -922,7 +972,7 @@ public partial class VentasView : UserControl
                             new MercadoPagoPagoWindow(
                                 _viewModel.IdVentaActual,
                                 terminalSeleccionada.IdTpvBancaria,
-                                _viewModel.Total,
+                                saldoACobrar,
                                 terminalSeleccionada.NombreVisual
                             );
 
@@ -988,11 +1038,7 @@ public partial class VentasView : UserControl
                         // 7. PAGO APROBADO Y REGISTRADO
                         // =================================================
 
-                        if (
-                            resultadoMercadoPago.PagoRegistrado
-                            &&
-                            resultadoMercadoPago.PagoCompleto
-                        )
+                        if (resultadoMercadoPago.PagoRegistrado)
                         {
                             /*
                              * IMPORTANTE:
@@ -1001,43 +1047,47 @@ public partial class VentasView : UserControl
                              *
                              * tr_pos_ventas_pagos
                              *
-                             * Por lo tanto NO llamamos:
-                             *
-                             * RegistrarPagoAsync()
-                             *
-                             * ni RegistrarPagoEfectivoAsync().
-                             *
-                             * Solamente finalizamos la venta.
+                             * Recargamos la venta actual para reflejar
+                             * el nuevo monto pagado y saldo en memoria.
                              */
 
-                            var finalizada =
-                                await _viewModel
-                                    .FinalizarVentaAsync();
+                            await _viewModel
+                                .CargarVentaActualAsync();
 
-
-                            if (!finalizada)
+                            if (
+                                resultadoMercadoPago.PagoCompleto
+                                ||
+                                _viewModel.SaldoPendiente <= 0
+                            )
                             {
-                                /*
-                                 * El dinero YA fue cobrado.
-                                 *
-                                 * Si falla la finalización:
-                                 *
-                                 * NO volver a cobrar.
-                                 *
-                                 * CargarVentaActualAsync() podrá recuperar
-                                 * posteriormente la venta pagada pendiente
-                                 * de finalizar.
-                                 */
+                                var finalizada =
+                                    await _viewModel
+                                        .FinalizarVentaAsync();
+
+                                if (!finalizada)
+                                {
+                                    /*
+                                     * El dinero YA fue cobrado.
+                                     *
+                                     * Si falla la finalización:
+                                     *
+                                     * NO volver a cobrar.
+                                     *
+                                     * CargarVentaActualAsync() podrá recuperar
+                                     * posteriormente la venta pagada pendiente
+                                     * de finalizar.
+                                     */
+
+                                    return;
+                                }
 
                                 return;
                             }
-
-
-                            // =================================================
-                            // VENTA TERMINADA
-                            // =================================================
-
-                            return;
+                            else
+                            {
+                                // Queda saldo restante (pago mixto) -> continuar cobrando
+                                continue;
+                            }
                         }
 
 
@@ -1539,7 +1589,28 @@ private void BuscadorClienteTextBox_KeyDown(object? sender, KeyEventArgs e)
     }
 }
 
-private void CatalogoProductosListBox_KeyDown(object? sender, KeyEventArgs e)
+private void CatalogoProductosListBox_DoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)
+    {
+        var listBox = sender as ListBox;
+        if (listBox?.SelectedItem == null) return;
+
+        if (DataContext is VentasViewModel viewModel)
+        {
+            viewModel.SeleccionarProductoCommand.Execute(listBox.SelectedItem);
+
+            var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+            if (buscadorProductos != null)
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    buscadorProductos.Focus();
+                    buscadorProductos.SelectAll();
+                }, DispatcherPriority.Input);
+            }
+        }
+    }
+
+    private void CatalogoProductosListBox_KeyDown(object? sender, KeyEventArgs e)
     {
         var listBox = sender as ListBox;
         if (listBox == null) return;

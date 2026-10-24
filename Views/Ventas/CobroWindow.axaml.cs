@@ -42,8 +42,22 @@ public partial class CobroWindow : Window
             viewModel;
 
 
-        TextoTotal.Text =
-            $"${totalVenta:N2}";
+        if (_viewModel.TienePagosParciales)
+        {
+            TextoEtiquetaTotal.Text =
+                "Saldo restante a pagar";
+
+            TextoSubtituloTotal.Text =
+                $"Total: ${_viewModel.Total:N2} | Pagado: ${_viewModel.MontoPagadoActual:N2}";
+
+            TextoTotal.Text =
+                $"${totalVenta:N2}";
+        }
+        else
+        {
+            TextoTotal.Text =
+                $"${totalVenta:N2}";
+        }
     }
 
 

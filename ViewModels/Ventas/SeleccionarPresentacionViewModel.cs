@@ -270,6 +270,13 @@ public partial class PresentacionVentaItem : ObservableObject
     public bool TienePrecio { get; set; }
 
 
+    /// <summary>
+    /// Cantidad real capturada en la ventana de peso (KG / GRA).
+    /// 0 = no aplica (unidad normal).
+    /// </summary>
+    public decimal CantidadPeso { get; set; }
+
+
     public string TextoPrecio =>
         Precio > 0
             ? $"Desde ${Precio:N2}"

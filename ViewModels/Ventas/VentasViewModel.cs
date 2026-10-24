@@ -153,6 +153,16 @@ public partial class VentasViewModel : ViewModelBase
     [ObservableProperty]
     private string _uuidVentaActual =
         string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SaldoPendiente))]
+    [NotifyPropertyChangedFor(nameof(TienePagosParciales))]
+    private decimal _montoPagadoActual;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SaldoPendiente))]
+    [NotifyPropertyChangedFor(nameof(TienePagosParciales))]
+    private decimal _saldoActual;
     
     // =========================================================
     // FINALZIAR VENTA ACTUAL
@@ -199,6 +209,12 @@ public partial class VentasViewModel : ViewModelBase
 
     public decimal Total =>
         Subtotal;
+
+    public decimal SaldoPendiente =>
+        Math.Max(0m, Total - MontoPagadoActual);
+
+    public bool TienePagosParciales =>
+        MontoPagadoActual > 0 && SaldoPendiente > 0;
 
     public string TextoCantidadProductos =>
         CantidadProductos == 1m
@@ -253,6 +269,9 @@ public partial class VentasViewModel : ViewModelBase
 
     public VentasViewModel()
     {
+        Carrito.CollectionChanged +=
+            (_, _) => ActualizarTotales();
+
         _productosService =
             new ProductosService();
 
@@ -721,6 +740,10 @@ public async Task AgregarPresentacionAlCarritoAsync(
     nuevoDetalle.UnidadMedida =
         presentacion.UnidadMedida;
 
+    // Para venta por peso, mostrar la cantidad real desde el inicio
+    if (presentacion.CantidadPeso > 0m)
+        nuevoDetalle.Cantidad = presentacion.CantidadPeso;
+
     nuevoDetalle.EstaSincronizando =
         true;
 
@@ -733,7 +756,10 @@ public async Task AgregarPresentacionAlCarritoAsync(
                     nameof(DetalleVenta.Cantidad)
                 ||
                 args.PropertyName ==
-                    nameof(DetalleVenta.Importe))
+                    nameof(DetalleVenta.Importe)
+                ||
+                args.PropertyName ==
+                    nameof(DetalleVenta.PrecioUnitario))
             {
                 ActualizarTotales();
             }
@@ -802,7 +828,9 @@ public async Task AgregarPresentacionAlCarritoAsync(
                     producto.IdPresentacion,
 
                 CantidadComercial =
-                    1m,
+                    presentacion.CantidadPeso > 0m
+                        ? presentacion.CantidadPeso
+                        : 1m,
 
                 FactorConversion =
                     producto.FactorConversion,
@@ -1243,6 +1271,26 @@ public async Task<bool> ProcesarCodigoEscaneadoAsync(
 }
 
 
+private static decimal ObtenerPrecioCatalogoPresentacion(
+    PresentacionProducto presentacion)
+{
+    var precioMenudeo = presentacion.Precios?
+        .FirstOrDefault(p =>
+            string.Equals(p.TipoPrecio, "MENUDEO", StringComparison.OrdinalIgnoreCase)
+            && p.Precio > 0);
+
+    if (precioMenudeo is not null)
+        return precioMenudeo.Precio;
+
+    var precio = presentacion.Precios?
+        .Where(p => p.Precio > 0)
+        .OrderByDescending(p => p.FechaInicio)
+        .FirstOrDefault();
+
+    return precio?.Precio ?? 0m;
+}
+
+
 // =========================================================
 // AGREGAR PRESENTACIÓN DESDE ESCÁNER
 // =========================================================
@@ -1364,13 +1412,8 @@ private async Task AgregarPresentacionEscaneadaAsync(
             CodigoBarras =
                 presentacion.CodigoBarras,
 
-            /*
-             * Precio provisional.
-             *
-             * NO es el precio de venta definitivo.
-             */
             Precio =
-                0m,
+                ObtenerPrecioCatalogoPresentacion(presentacion),
 
             /*
              * Permitimos llegar al backend para que sea
@@ -1740,6 +1783,8 @@ public async Task CargarVentaActualAsync()
             IdVentaActual = 0;
             UuidVentaActual = string.Empty;
             FolioVentaActual = string.Empty;
+            MontoPagadoActual = 0m;
+            SaldoActual = 0m;
 
             Carrito.Clear();
 
@@ -1759,6 +1804,12 @@ public async Task CargarVentaActualAsync()
 
         FolioVentaActual =
             venta.Folio;
+
+        MontoPagadoActual =
+            venta.MontoPagado;
+
+        SaldoActual =
+            venta.Saldo;
         
         // =========================================================
 // RECUPERAR VENTA PAGADA PENDIENTE DE FINALIZAR
@@ -1935,7 +1986,10 @@ public async Task CargarVentaActualAsync()
                         nameof(DetalleVenta.Cantidad)
                         ||
                         args.PropertyName ==
-                        nameof(DetalleVenta.Importe))
+                        nameof(DetalleVenta.Importe)
+                        ||
+                        args.PropertyName ==
+                        nameof(DetalleVenta.PrecioUnitario))
                     {
                         ActualizarTotales();
                     }
@@ -2159,17 +2213,15 @@ public async Task<bool> RegistrarPagoEfectivoAsync(
         }
 
 
-        if (!resultado.Data.PagoCompleto)
-        {
-            MensajeError =
-                $"El pago fue registrado, pero aún queda un saldo de ${resultado.Data.Saldo:N2}.";
+        MontoPagadoActual =
+            resultado.Data.MontoPagado;
 
-            return false;
-        }
+        SaldoActual =
+            resultado.Data.Saldo;
 
 
         // =====================================================
-        // PAGO COMPLETO → ABRIR CAJÓN
+        // ABRIR CAJÓN (Siempre que se registre efectivo)
         // =====================================================
 
         try
@@ -2220,16 +2272,23 @@ public async Task<bool> RegistrarPagoEfectivoAsync(
 
 
         // =====================================================
-        // PAGO COMPLETO → FINALIZAR VENTA
+        // VALIDAR SI LA VENTA QUEDÓ TOTALMENTE PAGADA
         // =====================================================
 
-        var finalizada =
-            await FinalizarVentaAsync();
-
-
-        if (!finalizada)
+        if (resultado.Data.PagoCompleto || resultado.Data.Saldo <= 0)
         {
-            return false;
+            var finalizada =
+                await FinalizarVentaAsync();
+
+            if (!finalizada)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            MensajeError =
+                string.Empty;
         }
 
 
@@ -2347,41 +2406,42 @@ public async Task<bool> RegistrarPagoTransferenciaAsync(
         }
 
 
+        MontoPagadoActual =
+            resultado.Data.MontoPagado;
+
+        SaldoActual =
+            resultado.Data.Saldo;
+
+
         // =====================================================
-        // VALIDAR QUE LA VENTA QUEDE COMPLETAMENTE PAGADA
+        // VALIDAR SI LA VENTA QUEDÓ TOTALMENTE PAGADA
         // =====================================================
 
-        if (!resultado.Data.PagoCompleto)
+        if (resultado.Data.PagoCompleto || resultado.Data.Saldo <= 0)
+        {
+            var finalizada =
+                await FinalizarVentaAsync();
+
+            if (!finalizada)
+            {
+                /*
+                 * IMPORTANTE:
+                 *
+                 * El pago YA quedó registrado.
+                 *
+                 * Si la finalización falla, NO debemos registrar
+                 * nuevamente la transferencia automáticamente.
+                 *
+                 * La venta podrá recuperarse posteriormente.
+                 */
+
+                return false;
+            }
+        }
+        else
         {
             MensajeError =
-                $"La transferencia fue registrada, pero aún queda un saldo de ${resultado.Data.Saldo:N2}.";
-
-            return false;
-        }
-
-
-        // =====================================================
-        // PAGO COMPLETO → FINALIZAR VENTA
-        // =====================================================
-
-        var finalizada =
-            await FinalizarVentaAsync();
-
-
-        if (!finalizada)
-        {
-            /*
-             * IMPORTANTE:
-             *
-             * El pago YA quedó registrado.
-             *
-             * Si la finalización falla, NO debemos registrar
-             * nuevamente la transferencia automáticamente.
-             *
-             * La venta podrá recuperarse posteriormente.
-             */
-
-            return false;
+                string.Empty;
         }
 
 
@@ -2909,13 +2969,17 @@ public async Task<bool> FinalizarVentaAsync()
                     resultado.Data.Transferencias,
 
                 FormaPago =
-                    resultado.Data.Efectivo > 0
-                        ? "Efectivo"
-                        : resultado.Data.Tarjetas > 0
-                            ? "Tarjeta"
-                            : resultado.Data.Transferencias > 0
-                                ? "Transferencia"
-                                : string.Empty,
+                    ((resultado.Data.Efectivo > 0 ? 1 : 0) +
+                     (resultado.Data.Tarjetas > 0 ? 1 : 0) +
+                     (resultado.Data.Transferencias > 0 ? 1 : 0)) > 1
+                        ? "PAGO MIXTO"
+                        : resultado.Data.Efectivo > 0
+                            ? "Efectivo"
+                            : resultado.Data.Tarjetas > 0
+                                ? "Tarjeta"
+                                : resultado.Data.Transferencias > 0
+                                    ? "Transferencia"
+                                    : (resultado.Data.Total > 0 && resultado.Data.MontoPagado == 0 ? "Crédito" : string.Empty),
 
                 ContenidoQr =
                     "https://plataformaluisfer.com/Plataforma_LuisFer/auth/login"
@@ -3216,6 +3280,12 @@ public async Task<bool> FinalizarVentaAsync()
 
         FolioVentaActual =
             string.Empty;
+
+        MontoPagadoActual =
+            0m;
+
+        SaldoActual =
+            0m;
 
 
         Carrito.Clear();
@@ -5176,6 +5246,12 @@ private async Task QuitarClienteAsync()
 
         OnPropertyChanged(
             nameof(Total));
+
+        OnPropertyChanged(
+            nameof(SaldoPendiente));
+
+        OnPropertyChanged(
+            nameof(TienePagosParciales));
 
         OnPropertyChanged(
             nameof(TextoCantidadProductos));

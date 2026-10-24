@@ -12,6 +12,8 @@ public partial class PagoEfectivoWindow : Window
 
     public decimal CantidadRecibida { get; private set; }
 
+    public decimal ImporteAplicado { get; private set; }
+
     public decimal Cambio { get; private set; }
 
 
@@ -94,9 +96,11 @@ public partial class PagoEfectivoWindow : Window
         CantidadRecibida =
             recibido;
 
-
-        if (recibido < TotalVenta)
+        if (recibido <= 0)
         {
+            ImporteAplicado =
+                0;
+
             Cambio =
                 0;
 
@@ -106,21 +110,38 @@ public partial class PagoEfectivoWindow : Window
             ConfirmarButton.IsEnabled =
                 false;
 
+            return;
+        }
+
+        if (recibido < TotalVenta)
+        {
+            ImporteAplicado =
+                recibido;
+
+            Cambio =
+                0;
+
+            TextoCambio.Text =
+                "$0.00";
+
+            ConfirmarButton.IsEnabled =
+                true;
+
             TextoMensaje.Text =
-                $"Faltan ${(TotalVenta - recibido):N2}.";
+                $"Pago parcial: se aplicarán ${recibido:N2} y quedará un saldo de ${(TotalVenta - recibido):N2}.";
 
             return;
         }
 
+        ImporteAplicado =
+            TotalVenta;
 
         Cambio =
             recibido -
             TotalVenta;
 
-
         TextoCambio.Text =
             $"${Cambio:N2}";
-
 
         ConfirmarButton.IsEnabled =
             true;
@@ -139,7 +160,7 @@ public partial class PagoEfectivoWindow : Window
         object? sender,
         RoutedEventArgs e)
     {
-        if (CantidadRecibida < TotalVenta)
+        if (CantidadRecibida <= 0)
             return;
 
 

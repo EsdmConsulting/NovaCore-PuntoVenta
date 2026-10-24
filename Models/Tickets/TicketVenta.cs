@@ -108,7 +108,7 @@ public class TicketVenta
     // =========================================================
 
     public const string UrlPlataforma =
-        "https://plataformaluisfer.com/Plataforma_LuisFer/auth/login";
+        "https://nubeesdm8.ddns.net:4433/LuisFerWeb/portal-de-facturacion";
 
 
     // =========================================================
