@@ -310,6 +310,17 @@ public class TicketVentaService
         }
 
 
+        // =====================================================
+        // UUID DE LA VENTA
+        // =====================================================
+
+        if (!string.IsNullOrWhiteSpace(ticket.Uuid))
+        {
+            Centrar(bytes);
+            AgregarTexto(bytes, $"FOLIO:\n{ticket.Uuid}\n\n");
+        }
+
+
         AgregarTexto(
             bytes,
             new string('\n', Math.Max(0, formato.LineasEnBlancoAlFinal)));

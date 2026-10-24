@@ -246,6 +246,8 @@ public class ReimpresionService
                     ? venta.FolioTicket!
                     : venta.Folio ?? $"VENTA-{venta.Id}",
 
+            Uuid = venta.Uuid ?? string.Empty,
+
             Fecha = ParsearFechaHora(venta.Fecha, venta.Hora),
 
             Caja = caja,

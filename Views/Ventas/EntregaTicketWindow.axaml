@@ -207,7 +207,7 @@
                                                FontWeight="SemiBold"
                                                Foreground="#08783D"/>
 
-                                    <TextBlock Text="Enviar a la impresora"
+                                    <TextBlock Text="2 tickets: negocio y cliente (pausa 5s)"
                                                FontSize="9"
                                                Foreground="#5F816A"
                                                TextWrapping="Wrap"/>
