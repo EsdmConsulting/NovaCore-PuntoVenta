@@ -3,100 +3,330 @@
 
         x:Class="NovaCoreESDM.Views.Ventas.EnviarWhatsAppWindow"
 
-        Width="430"
-        Height="300"
+        Width="540"
+        Height="500"
 
         CanResize="False"
         WindowStartupLocation="CenterOwner"
 
         Title="Enviar ticket por WhatsApp"
-        Background="#F6F8F7">
+        Icon="/Assets/Brand/esdm-app-icon.ico"
 
-    <Border Background="White"
-            Margin="14"
-            Padding="26"
-            CornerRadius="16">
-
-        <Grid RowDefinitions="Auto,Auto,*,Auto"
-              RowSpacing="16">
-
-            <!-- TÍTULO -->
-
-            <StackPanel Grid.Row="0"
-                        Spacing="4">
-
-                <TextBlock Text="Enviar por WhatsApp"
-                           Foreground="#21382A"
-                           FontSize="22"
-                           FontWeight="SemiBold"/>
-
-                <TextBlock Text="Captura el número del cliente."
-                           Foreground="#718078"
-                           FontSize="11"/>
-
-            </StackPanel>
+        Background="#F4F6F8">
 
 
-            <!-- TELÉFONO -->
-
-            <StackPanel Grid.Row="1"
-                        Spacing="6">
-
-                <TextBlock Text="Número de teléfono"
-                           Foreground="#44534A"
-                           FontSize="12"
-                           FontWeight="SemiBold"/>
-
-                <TextBox x:Name="TelefonoTextBox"
-                         Height="48"
-                         Watermark="Ej. 5512345678"
-                         FontSize="16"
-                         Padding="14,0"
-                         CornerRadius="9"
-                         BorderBrush="#CBD5CE"/>
-
-            </StackPanel>
+    <Grid RowDefinitions="Auto,*,Auto">
 
 
-            <!-- MENSAJE -->
+        <!-- ===================================================== -->
+        <!-- ENCABEZADO                                            -->
+        <!-- ===================================================== -->
 
-            <TextBlock Grid.Row="2"
-                       x:Name="MensajeTextBlock"
-                       Foreground="#B51F2A"
-                       FontSize="11"
-                       TextWrapping="Wrap"/>
+        <Border Grid.Row="0"
+                Padding="26,22,26,20"
+                BorderBrush="#D4F3DF"
+                BorderThickness="0,0,0,1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#EFFBF3"/>
+                    <GradientStop Offset="1" Color="#E0F7E8"/>
+                </LinearGradientBrush>
+            </Border.Background>
 
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="16">
 
-            <!-- BOTONES -->
+                <Border Width="58"
+                        Height="58"
+                        CornerRadius="18"
+                        VerticalAlignment="Center">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Offset="0" Color="#3BE07A"/>
+                            <GradientStop Offset="1" Color="#1FAF54"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <PathIcon Width="30" Height="30"
+                              Foreground="White"
+                              Data="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.24 8.23-1.48 0-2.93-.39-4.19-1.15l-.3-.17-3.12.82.83-3.04-.2-.32a8.188 8.188 0 0 1-1.26-4.38c.01-4.54 3.7-8.24 8.25-8.24M8.53 7.33c-.16 0-.43.06-.66.31-.22.25-.87.86-.87 2.07 0 1.22.89 2.39 1 2.56.14.17 1.76 2.67 4.25 3.73.59.27 1.05.42 1.41.53.59.19 1.13.16 1.56.1.48-.07 1.46-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.07-.1-.23-.16-.48-.27-.25-.14-1.47-.74-1.69-.82-.23-.08-.37-.12-.56.12-.16.25-.64.81-.78.97-.15.17-.29.19-.53.07-.26-.13-1.06-.39-2-1.23-.74-.66-1.23-1.47-1.38-1.72-.12-.24-.01-.39.11-.5.11-.11.27-.29.37-.44.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.11-.56-1.35-.77-1.84-.2-.48-.4-.42-.56-.43-.14 0-.3-.01-.47-.01z"/>
+                </Border>
 
-            <Grid Grid.Row="3"
-                  ColumnDefinitions="*,*"
-                  ColumnSpacing="10">
-
-                <Button Grid.Column="0"
-                        Height="44"
-                        Content="Cancelar"
-                        Click="Cancelar_Click"
-                        Background="White"
-                        Foreground="#B51F2A"
-                        BorderBrush="#F0B5BA"
-                        BorderThickness="1"
-                        CornerRadius="9"/>
-
-                <Button Grid.Column="1"
-                        Height="44"
-                        Content="Abrir WhatsApp"
-                        Click="AbrirWhatsApp_Click"
-                        Background="#16A34A"
-                        Foreground="White"
-                        BorderThickness="0"
-                        CornerRadius="9"
-                        FontWeight="SemiBold"/>
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="3">
+                    <TextBlock Text="TICKET DIGITAL"
+                               Foreground="#1FAF54"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               LetterSpacing="1.6"
+                               LineHeight="16"/>
+                    <TextBlock Text="Enviar por WhatsApp"
+                               Foreground="#0B1220"
+                               FontSize="22"
+                               FontWeight="Bold"/>
+                    <TextBlock Text="Captura el celular del cliente para mandarle su ticket"
+                               Foreground="#4B6A57"
+                               FontSize="13"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
 
             </Grid>
 
-        </Grid>
+        </Border>
 
-    </Border>
+
+        <!-- ===================================================== -->
+        <!-- TELÉFONO                                              -->
+        <!-- ===================================================== -->
+
+        <StackPanel Grid.Row="1"
+                    Margin="26,22,26,8"
+                    Spacing="10">
+
+            <TextBlock Text="Número de celular"
+                       Foreground="#334155"
+                       FontSize="14"
+                       FontWeight="SemiBold"/>
+
+            <TextBox x:Name="TelefonoTextBox"
+                     Classes="telefono"
+                     PlaceholderText="55 1234 5678"
+                     TextChanged="Telefono_TextChanged">
+                <TextBox.InnerLeftContent>
+                    <Border Margin="10,0,4,0"
+                            Padding="10,6"
+                            CornerRadius="10"
+                            Background="#F1F5F9"
+                            VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <PathIcon Width="14" Height="14"
+                                      Foreground="#64748B"
+                                      Data="M15.5 1h-8C6.12 1 5 2.12 5 3.5v17C5 21.88 6.12 23 7.5 23h8c1.38 0 2.5-1.12 2.5-2.5v-17C18 2.12 16.88 1 15.5 1zm-4 21c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4.5-4H7V4h9v14z"/>
+                            <TextBlock Text="MX"
+                                       Foreground="#475569"
+                                       FontSize="13"
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </TextBox.InnerLeftContent>
+            </TextBox>
+
+            <!-- Contador de dígitos -->
+            <StackPanel Orientation="Horizontal"
+                        Spacing="7">
+                <Ellipse x:Name="IndicadorDigitos"
+                         Width="8" Height="8"
+                         Fill="#CBD5E1"
+                         VerticalAlignment="Center"/>
+                <TextBlock x:Name="TextoDigitos"
+                           Text="Escribe los 10 dígitos del celular"
+                           Foreground="#64748B"
+                           FontSize="12"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Error -->
+            <Border Margin="0,4,0,0"
+                    Padding="12,9"
+                    CornerRadius="12"
+                    Background="#FEF2F2"
+                    BorderBrush="#FECACA"
+                    BorderThickness="1"
+                    IsVisible="{Binding #MensajeTextBlock.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Width="16" Height="16"
+                              Foreground="#C61F2B"
+                              Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    <TextBlock x:Name="MensajeTextBlock"
+                               Foreground="#9F1239"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+
+
+        <!-- ===================================================== -->
+        <!-- BOTONES                                               -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Row="2"
+                Background="White"
+                BorderBrush="#EAEEF2"
+                BorderThickness="0,1,0,0"
+                Padding="26,14,26,20">
+
+            <StackPanel Spacing="12">
+
+                <StackPanel Orientation="Horizontal"
+                            Spacing="18"
+                            HorizontalAlignment="Center">
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Enter"/></Border>
+                        <TextBlock Text="Abrir WhatsApp"/>
+                    </StackPanel>
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Esc"/></Border>
+                        <TextBlock Text="Cancelar"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,2*"
+                      ColumnSpacing="12">
+
+                    <Button Grid.Column="0"
+                            Classes="cancelar"
+                            IsCancel="True"
+                            Click="Cancelar_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <PathIcon Width="14" Height="14"
+                                      Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                            <TextBlock Text="Cancelar" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="1"
+                            Classes="whatsapp"
+                            IsDefault="True"
+                            Click="AbrirWhatsApp_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="9">
+                            <PathIcon Width="18" Height="18"
+                                      Data="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            <TextBlock Text="Abrir WhatsApp" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                </Grid>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <Window.Styles>
+
+        <Style Selector="TextBox.telefono">
+            <Setter Property="Height" Value="66"/>
+            <Setter Property="FontSize" Value="26"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="1"/>
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="Padding" Value="8,0,18,0"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="TextBox.telefono:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#B9C2CF"/>
+        </Style>
+
+        <Style Selector="TextBox.telefono:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#25D366"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BoxShadow" Value="0 0 0 5 #2225D366"/>
+        </Style>
+
+        <!-- Atajos -->
+        <Style Selector="StackPanel.atajo">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Spacing" Value="6"/>
+        </Style>
+
+        <Style Selector="StackPanel.atajo > TextBlock">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla">
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <!-- Botones -->
+        <Style Selector="Button.cancelar">
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#F5C2C2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#C61F2B"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.cancelar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#C61F2B"/>
+            <Setter Property="BorderBrush" Value="#C61F2B"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style Selector="Button.whatsapp">
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#3BE07A"/>
+                    <GradientStop Offset="1" Color="#1FAF54"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.whatsapp /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 24 -8 #8025D366"/>
+        </Style>
+
+        <Style Selector="Button.whatsapp:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#45E886"/>
+                    <GradientStop Offset="1" Color="#22BD5C"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.whatsapp:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#179A48"/>
+        </Style>
+
+    </Window.Styles>
 
 </Window>

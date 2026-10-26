@@ -5,78 +5,450 @@
         x:DataType="vm:LoginViewModel"
         Title="Grupo Luis Fer - Punto de Venta"
         Icon="/Assets/Brand/esdm-app-icon-2.ico"
-        Width="1100"
-        Height="680"
-        MinWidth="900"
-        MinHeight="600"
+        Width="1280"
+        Height="780"
+        MinWidth="1000"
+        MinHeight="640"
         WindowStartupLocation="CenterScreen"
-        Background="#F8FAFC">
+        Background="#07090A">
 
-    <Grid>
+    <!-- ===================================================== -->
+    <!-- ESTILOS LOCALES DEL LOGIN                             -->
+    <!-- ===================================================== -->
 
-        <!-- Fondo -->
-        <Border Background="#F8FAFC"/>
+    <Window.Styles>
 
-        <!-- Acentos decorativos inferiores -->
-        <Ellipse Width="650"
-                 Height="650"
-                 HorizontalAlignment="Left"
-                 VerticalAlignment="Bottom"
-                 Margin="-370,0,0,-380"
-                 Fill="#17B455"/>
+        <!-- Orbes de color que flotan en el panel de marca -->
+        <Style Selector="Ellipse.orbe">
+            <Setter Property="IsHitTestVisible" Value="False"/>
+        </Style>
 
-        <Ellipse Width="620"
-                 Height="620"
-                 HorizontalAlignment="Right"
-                 VerticalAlignment="Bottom"
-                 Margin="0,0,-350,-360"
-                 Fill="#C61F2B"/>
+        <Style Selector="Ellipse.flotaA">
+            <Style.Animations>
+                <Animation Duration="0:0:16"
+                           IterationCount="Infinite"
+                           PlaybackDirection="Alternate"
+                           Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="90"/>
+                        <Setter Property="TranslateTransform.Y" Value="60"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
 
-        <!-- Contenedor -->
-        <Border Width="510"
-                Padding="48"
-                CornerRadius="26"
-                Background="White"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                BoxShadow="0 12 35 0 #22000000">
+        <Style Selector="Ellipse.flotaB">
+            <Style.Animations>
+                <Animation Duration="0:0:19"
+                           IterationCount="Infinite"
+                           PlaybackDirection="Alternate"
+                           Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="-80"/>
+                        <Setter Property="TranslateTransform.Y" Value="-70"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
 
-            <StackPanel Spacing="12">
+        <Style Selector="Ellipse.flotaC">
+            <Style.Animations>
+                <Animation Duration="0:0:22"
+                           IterationCount="Infinite"
+                           PlaybackDirection="Alternate"
+                           Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="Opacity" Value="0.55"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="70"/>
+                        <Setter Property="Opacity" Value="0.9"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
 
-                <!-- Logo -->
-                <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
-                       Width="240"
-                       Height="145"
+        <!-- Entrada suave del formulario y del logo -->
+        <Style Selector=":is(Control).entrada">
+            <Style.Animations>
+                <Animation Duration="0:0:0.7"
+                           FillMode="Forward"
+                           Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="18"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Campos de texto -->
+        <Style Selector="TextBox.campo">
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="Padding" Value="4,0,14,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E4E7EC"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+        </Style>
+
+        <Style Selector="TextBox.campo:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#B9C2CF"/>
+        </Style>
+
+        <Style Selector="TextBox.campo:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#16A34A"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BoxShadow" Value="0 0 0 4 #2216A34A"/>
+        </Style>
+
+        <Style Selector="TextBox.campo PathIcon.icono">
+            <Setter Property="Width" Value="18"/>
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Margin" Value="16,0,10,0"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+        </Style>
+
+        <Style Selector="TextBox.campo:focus PathIcon.icono">
+            <Setter Property="Foreground" Value="#16A34A"/>
+        </Style>
+
+        <!-- Botón principal -->
+        <Style Selector="Button.primario">
+            <Setter Property="Height" Value="58"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#1FBF5B"/>
+                    <GradientStop Offset="1" Color="#0B8A3E"/>
+                </LinearGradientBrush>
+            </Setter>
+            <Setter Property="RenderTransform" Value="translateY(0px)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.primario /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 24 -6 #6616A34A"/>
+        </Style>
+
+        <Style Selector="Button.primario:pointerover">
+            <Setter Property="RenderTransform" Value="translateY(-2px)"/>
+        </Style>
+
+        <Style Selector="Button.primario:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BoxShadow" Value="0 16 32 -8 #8816A34A"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22CC63"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.primario:pressed">
+            <Setter Property="RenderTransform" Value="translateY(0px)"/>
+        </Style>
+
+        <Style Selector="Button.primario:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#0B7A37"/>
+        </Style>
+
+        <Style Selector="Button.primario:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#7FCF9C"/>
+            <Setter Property="BoxShadow" Value="none"/>
+        </Style>
+
+        <!-- Botón discreto (prueba de cajón) -->
+        <Style Selector="Button.enlace">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.enlace:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="Foreground" Value="#0B8A3E"/>
+        </Style>
+
+    </Window.Styles>
+
+
+    <Grid ColumnDefinitions="1.15*,*">
+
+        <!-- ================================================= -->
+        <!-- PANEL DE MARCA                                    -->
+        <!-- ================================================= -->
+
+        <Panel Grid.Column="0"
+               ClipToBounds="True"
+               Background="#050607">
+
+            <!-- Orbes de luz con los colores de la marca -->
+            <Ellipse Classes="orbe flotaA"
+                     Width="560" Height="560"
+                     HorizontalAlignment="Left" VerticalAlignment="Top"
+                     Margin="-220,-200,0,0"
+                     Opacity="0.75">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#AA16A34A"/>
+                        <GradientStop Offset="1" Color="#0016A34A"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Ellipse Classes="orbe flotaB"
+                     Width="620" Height="620"
+                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                     Margin="0,0,-260,-240"
+                     Opacity="0.75">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#AAC61F2B"/>
+                        <GradientStop Offset="1" Color="#00C61F2B"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Ellipse Classes="orbe flotaC"
+                     Width="420" Height="420"
+                     HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                     Margin="-120,0,0,-180">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#88F5C400"/>
+                        <GradientStop Offset="1" Color="#00F5C400"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Ellipse Classes="orbe flotaA"
+                     Width="360" Height="360"
+                     HorizontalAlignment="Right" VerticalAlignment="Top"
+                     Margin="0,-120,-120,0"
+                     Opacity="0.6">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#889A4A0E"/>
+                        <GradientStop Offset="1" Color="#009A4A0E"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <!-- Velo para dar profundidad -->
+            <Border IsHitTestVisible="False">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Offset="0" Color="#00050607"/>
+                        <GradientStop Offset="0.65" Color="#00050607"/>
+                        <GradientStop Offset="1" Color="#CC050607"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+
+            <!-- Contenido del panel -->
+            <Grid RowDefinitions="Auto,*,Auto"
+                  Margin="56,48">
+
+                <!-- Etiqueta superior -->
+                <Border Grid.Row="0"
+                        HorizontalAlignment="Left"
+                        Padding="14,7"
+                        CornerRadius="999"
+                        Background="#14FFFFFF"
+                        BorderBrush="#24FFFFFF"
+                        BorderThickness="1">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Ellipse Width="7" Height="7" Fill="#22C55E" VerticalAlignment="Center"/>
+                        <TextBlock Text="TERMINAL PUNTO DE VENTA"
+                                   Foreground="#D9E2EC"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   LetterSpacing="1.6"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Logo con bordes desvanecidos -->
+                <Image Grid.Row="1"
+                       Classes="entrada"
+                       Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                       MaxWidth="560"
+                       Margin="0,12"
                        Stretch="Uniform"
-                       HorizontalAlignment="Center"/>
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center">
+                    <Image.RenderTransform>
+                        <TranslateTransform/>
+                    </Image.RenderTransform>
+                    <Image.OpacityMask>
+                        <RadialGradientBrush RadiusX="64%" RadiusY="62%">
+                            <GradientStop Offset="0.8" Color="White"/>
+                            <GradientStop Offset="1" Color="Transparent"/>
+                        </RadialGradientBrush>
+                    </Image.OpacityMask>
+                </Image>
 
-                <TextBlock Text="PUNTO DE VENTA"
-                           Foreground="#123B69"
-                           FontSize="26"
+                <!-- Reloj y franja de marca -->
+                <Grid Grid.Row="2"
+                      ColumnDefinitions="*,Auto">
+
+                    <StackPanel Grid.Column="0" Spacing="2">
+                        <TextBlock x:Name="TextoHora"
+                                   Text="--:--"
+                                   Foreground="White"
+                                   FontSize="52"
+                                   FontWeight="Light"
+                                   LetterSpacing="-1"/>
+                        <TextBlock x:Name="TextoFecha"
+                                   Foreground="#9AA8B8"
+                                   FontSize="14"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1"
+                                VerticalAlignment="Bottom"
+                                HorizontalAlignment="Right"
+                                Margin="0,0,0,8">
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="6"
+                                    HorizontalAlignment="Right">
+                            <Border Width="34" Height="5" CornerRadius="3" Background="#16A34A"/>
+                            <Border Width="34" Height="5" CornerRadius="3" Background="#F5C400"/>
+                            <Border Width="34" Height="5" CornerRadius="3" Background="#B5651D"/>
+                            <Border Width="34" Height="5" CornerRadius="3" Background="#C61F2B"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                </Grid>
+
+            </Grid>
+
+        </Panel>
+
+
+        <!-- ================================================= -->
+        <!-- PANEL DE ACCESO                                   -->
+        <!-- ================================================= -->
+
+        <Grid Grid.Column="1"
+              Background="#FAFAF7"
+              RowDefinitions="Auto,*,Auto">
+
+            <!-- Encabezado -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="*,Auto"
+                  Margin="48,36,48,0">
+                <TextBlock Grid.Column="0"
+                           Text="NovaCore"
+                           Foreground="#0F172A"
+                           FontSize="14"
                            FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           Margin="0,4,0,0"/>
+                           VerticalAlignment="Center"/>
+                <Border Grid.Column="1"
+                        Padding="10,4"
+                        CornerRadius="999"
+                        Background="#EEF2F6">
+                    <TextBlock Text="v0.1.0"
+                               Foreground="#64748B"
+                               FontSize="11"
+                               FontWeight="SemiBold"/>
+                </Border>
+            </Grid>
 
-                <TextBlock Text="Ingresa tus credenciales para continuar"
+            <!-- Formulario -->
+            <StackPanel Grid.Row="1"
+                        Classes="entrada"
+                        Width="400"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="0">
+                <StackPanel.RenderTransform>
+                    <TranslateTransform/>
+                </StackPanel.RenderTransform>
+
+                <TextBlock Text="BIENVENIDO"
+                           Foreground="#16A34A"
+                           FontSize="12"
+                           FontWeight="Bold"
+                           LetterSpacing="2.4"/>
+
+                <TextBlock Text="Inicia sesión"
+                           Foreground="#0B1220"
+                           FontSize="38"
+                           FontWeight="Bold"
+                           LetterSpacing="-0.8"
+                           Margin="0,10,0,0"/>
+
+                <TextBlock Text="Accede con tus credenciales para abrir o continuar tu turno."
                            Foreground="#64748B"
-                           FontSize="13"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,20"/>
-                
+                           FontSize="14"
+                           TextWrapping="Wrap"
+                           Margin="0,8,0,36"/>
 
 
                 <!-- Usuario -->
                 <TextBlock Text="Usuario"
                            Foreground="#334155"
                            FontSize="13"
-                           FontWeight="SemiBold"/>
+                           FontWeight="SemiBold"
+                           Margin="2,0,0,8"/>
 
-                <TextBox Text="{Binding Usuario}"
-                         Watermark="Escribe tu usuario"
-                         Height="50"
-                         Padding="14,0"
-                         FontSize="14"
-                         CornerRadius="10"/>
+                <TextBox x:Name="CampoUsuario"
+                         Classes="campo clearButton"
+                         Text="{Binding Usuario}"
+                         PlaceholderText="Escribe tu usuario">
+                    <TextBox.InnerLeftContent>
+                        <PathIcon Classes="icono"
+                                  Data="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.5h19.6v-2.5c0-3.3-6.5-4.9-9.8-4.9z"/>
+                    </TextBox.InnerLeftContent>
+                </TextBox>
 
 
                 <!-- Contraseña -->
@@ -84,95 +456,127 @@
                            Foreground="#334155"
                            FontSize="13"
                            FontWeight="SemiBold"
-                           Margin="0,8,0,0"/>
+                           Margin="2,22,0,8"/>
 
-                <TextBox Text="{Binding Contrasena}"
-                         Watermark="Escribe tu contraseña"
-                         PasswordChar="●"
-                         Height="50"
-                         Padding="14,0"
-                         FontSize="14"
-                         CornerRadius="10"/>
+                <TextBox Classes="campo revealPasswordButton"
+                         Text="{Binding Contrasena}"
+                         PlaceholderText="Escribe tu contraseña"
+                         PasswordChar="●">
+                    <TextBox.InnerLeftContent>
+                        <PathIcon Classes="icono"
+                                  Data="M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.7 1.4-3.1 3.1-3.1s3.1 1.4 3.1 3.1v2z"/>
+                    </TextBox.InnerLeftContent>
+                </TextBox>
 
 
                 <!-- Error -->
-                <TextBlock Text="{Binding MensajeError}"
-                           Foreground="#C61F2B"
-                           FontSize="12"
-                           TextWrapping="Wrap"
-                           MinHeight="20"
-                           Margin="0,5,0,0"/>
+                <Border Margin="0,18,0,0"
+                        Padding="14,12"
+                        CornerRadius="12"
+                        Background="#FEF2F2"
+                        BorderBrush="#FECACA"
+                        BorderThickness="1"
+                        IsVisible="{Binding MensajeError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <PathIcon Width="16" Height="16"
+                                  Foreground="#C61F2B"
+                                  VerticalAlignment="Top"
+                                  Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        <TextBlock Text="{Binding MensajeError}"
+                                   Foreground="#9F1239"
+                                   FontSize="13"
+                                   TextWrapping="Wrap"
+                                   MaxWidth="340"/>
+                    </StackPanel>
+                </Border>
 
 
                 <!-- Botón principal -->
-                <Button Command="{Binding IniciarSesionCommand}"
-                        Height="54"
-                        Margin="0,8,0,0"
-                        Background="#16A34A"
-                        Foreground="White"
-                        CornerRadius="10"
-                        HorizontalContentAlignment="Center"
-                        FontSize="15"
-                        FontWeight="Bold">
+                <Button Classes="primario"
+                        IsDefault="True"
+                        Command="{Binding IniciarSesionCommand}"
+                        Margin="0,28,0,0">
 
                     <Grid>
 
-                        <TextBlock Text="INICIAR SESIÓN"
-                                   IsVisible="{Binding !EstaCargando}"
-                                   HorizontalAlignment="Center"/>
-
                         <StackPanel Orientation="Horizontal"
                                     Spacing="10"
+                                    IsVisible="{Binding !EstaCargando}"
+                                    HorizontalAlignment="Center">
+                            <TextBlock Text="Entrar"
+                                       VerticalAlignment="Center"/>
+                            <PathIcon Width="16" Height="16"
+                                      Foreground="White"
+                                      VerticalAlignment="Center"
+                                      Data="M12 4l-1.4 1.4 5.6 5.6H4v2h12.2l-5.6 5.6L12 20l8-8z"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="12"
                                     IsVisible="{Binding EstaCargando}"
                                     HorizontalAlignment="Center">
-
-                            <ProgressBar Width="24"
+                            <ProgressBar Width="36"
+                                         MinWidth="36"
                                          Height="4"
                                          IsIndeterminate="True"
+                                         Foreground="White"
+                                         Background="#40FFFFFF"
                                          VerticalAlignment="Center"/>
-
                             <TextBlock Text="Validando..."
                                        VerticalAlignment="Center"/>
-
                         </StackPanel>
 
                     </Grid>
 
                 </Button>
 
-
-                <!-- ===================================================== -->
-                <!-- TEMPORAL: PRUEBA DEL CAJÓN                            -->
-                <!-- ===================================================== -->
-
-                <Button Content="PRUEBA: ABRIR CAJÓN"
-                        Click="AbrirCajonPrueba_Click"
-                        Height="42"
-                        Margin="0,4,0,0"
-                        Background="White"
-                        Foreground="#08783D"
-                        BorderBrush="#16A34A"
-                        BorderThickness="1"
-                        CornerRadius="10"
-                        HorizontalContentAlignment="Center"
-                        FontSize="12"
-                        FontWeight="SemiBold"/>
-
-
-                <!-- Footer -->
-                <TextBlock Text="Grupo Luis Fer"
-                           Foreground="#475569"
-                           FontSize="11"
-                           HorizontalAlignment="Center"
-                           Margin="0,20,0,0"/>
-
-                <TextBlock Text="Versión 0.1.0 · ESDM Consulting"
-                           Foreground="#94A3B8"
-                           FontSize="10"
-                           HorizontalAlignment="Center"/>
+                <!-- Pista de teclado -->
+                <StackPanel Orientation="Horizontal"
+                            Spacing="6"
+                            HorizontalAlignment="Center"
+                            Margin="0,16,0,0">
+                    <TextBlock Text="Presiona"
+                               Foreground="#94A3B8"
+                               FontSize="12"
+                               VerticalAlignment="Center"/>
+                    <Border Padding="7,2"
+                            CornerRadius="6"
+                            Background="White"
+                            BorderBrush="#E2E8F0"
+                            BorderThickness="1">
+                        <TextBlock Text="Enter ↵"
+                                   Foreground="#475569"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"/>
+                    </Border>
+                    <TextBlock Text="para entrar"
+                               Foreground="#94A3B8"
+                               FontSize="12"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
 
             </StackPanel>
-        </Border>
+
+            <!-- Pie -->
+            <Grid Grid.Row="2"
+                  ColumnDefinitions="*,Auto"
+                  Margin="48,0,40,28">
+
+                <TextBlock Grid.Column="0"
+                           Text="© Grupo Luis Fer · Desarrollado por ESDM Consulting"
+                           Foreground="#94A3B8"
+                           FontSize="11"
+                           VerticalAlignment="Center"/>
+
+                <!-- TEMPORAL: PRUEBA DEL CAJÓN -->
+                <Button Grid.Column="1"
+                        Classes="enlace"
+                        Content="Prueba: abrir cajón"
+                        Click="AbrirCajonPrueba_Click"/>
+
+            </Grid>
+
+        </Grid>
 
     </Grid>
-</Window> 
+</Window>

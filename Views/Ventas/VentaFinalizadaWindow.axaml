@@ -3,131 +3,302 @@
 
         x:Class="NovaCoreESDM.Views.Ventas.VentaFinalizadaWindow"
 
-        Width="430"
-        Height="360"
+        Width="520"
+        Height="500"
 
         CanResize="False"
         WindowStartupLocation="CenterOwner"
 
         Title="Venta finalizada"
-        Background="#F6F8F7">
+        Icon="/Assets/Brand/esdm-app-icon.ico"
 
-    <Border Background="White"
-            Margin="14"
-            Padding="28"
-            CornerRadius="18">
-
-        <StackPanel Spacing="18">
+        Background="#F4F6F8">
 
 
-            <!-- ================================================= -->
-            <!-- ICONO                                             -->
-            <!-- ================================================= -->
-
-            <Border Width="64"
-                    Height="64"
-                    CornerRadius="32"
-                    Background="#EAF7EF"
-                    HorizontalAlignment="Center">
-
-                <TextBlock Text="✓"
-                           Foreground="#16A34A"
-                           FontSize="31"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center"/>
-
-            </Border>
+    <Grid RowDefinitions="*,Auto">
 
 
-            <!-- ================================================= -->
-            <!-- MENSAJE                                           -->
-            <!-- ================================================= -->
+        <!-- ===================================================== -->
+        <!-- ÉXITO                                                 -->
+        <!-- ===================================================== -->
 
-            <StackPanel HorizontalAlignment="Center"
-                        Spacing="6">
+        <Border Grid.Row="0"
+                Padding="28,26,28,22">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Offset="0" Color="#E6F6EC"/>
+                    <GradientStop Offset="1" Color="#F4F6F8"/>
+                </LinearGradientBrush>
+            </Border.Background>
 
-                <TextBlock Text="Venta finalizada"
-                           Foreground="#21382A"
-                           FontSize="24"
-                           FontWeight="SemiBold"
-                           HorizontalAlignment="Center"/>
+            <StackPanel Spacing="14"
+                        VerticalAlignment="Center">
 
-                <TextBlock Text="La venta se ha registrado correctamente."
-                           Foreground="#718078"
-                           FontSize="11"
-                           HorizontalAlignment="Center"/>
+                <!-- Palomita con pulso -->
+                <Panel Width="92" Height="92"
+                       HorizontalAlignment="Center">
+
+                    <Ellipse Classes="pulso"
+                             Fill="#3322C55E"
+                             RenderTransformOrigin="50%,50%">
+                        <Ellipse.RenderTransform>
+                            <ScaleTransform/>
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
+
+                    <Border Classes="palomita"
+                            Width="68" Height="68"
+                            CornerRadius="34"
+                            RenderTransformOrigin="50%,50%">
+                        <Border.RenderTransform>
+                            <ScaleTransform/>
+                        </Border.RenderTransform>
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                <GradientStop Offset="0" Color="#22C55E"/>
+                                <GradientStop Offset="1" Color="#0B8A3E"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <PathIcon Width="32" Height="32"
+                                  Foreground="White"
+                                  Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </Border>
+
+                </Panel>
+
+                <StackPanel Spacing="4"
+                            HorizontalAlignment="Center">
+                    <TextBlock Text="¡Venta finalizada!"
+                               Foreground="#0B1220"
+                               FontSize="27"
+                               FontWeight="Bold"
+                               LetterSpacing="-0.5"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="La venta se registró correctamente"
+                               Foreground="#4B6A57"
+                               FontSize="14"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Ticket -->
+                <Border Padding="18,14"
+                        CornerRadius="16"
+                        Background="White"
+                        BorderBrush="#D9EFE1"
+                        BorderThickness="1"
+                        Margin="0,6,0,0">
+
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="14">
+
+                        <Border Width="44" Height="44"
+                                CornerRadius="13"
+                                Background="#EAF7EF"
+                                VerticalAlignment="Center">
+                            <PathIcon Width="20" Height="20"
+                                      Foreground="#16A34A"
+                                      Data="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z"/>
+                        </Border>
+
+                        <StackPanel Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Spacing="2">
+                            <TextBlock Text="TICKET GENERADO"
+                                       Foreground="#94A3B8"
+                                       FontSize="10"
+                                       FontWeight="Bold"
+                                       LetterSpacing="1.4"/>
+                            <TextBlock x:Name="FolioTicketTextBlock"
+                                       Foreground="#0B6B33"
+                                       FontSize="17"
+                                       FontWeight="Bold"
+                                       TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="2"
+                                x:Name="CopiarFolioButton"
+                                Classes="copiar"
+                                Content="Copiar"
+                                ToolTip.Tip="Copiar folio"
+                                Click="CopiarFolioButton_Click"/>
+
+                    </Grid>
+
+                </Border>
 
             </StackPanel>
 
+        </Border>
 
-         <!-- ================================================= -->
-        <!-- TICKET                                            -->
-        <!-- ================================================= -->
 
-            <Border Background="#F8FAF9"
-                    BorderBrush="#DDE7E0"
-                    BorderThickness="1"
-                    CornerRadius="13"
-                    Padding="18">
+        <!-- ===================================================== -->
+        <!-- ACEPTAR                                               -->
+        <!-- ===================================================== -->
 
-                <StackPanel Spacing="5"
+        <Border Grid.Row="1"
+                Background="White"
+                BorderBrush="#EAEEF2"
+                BorderThickness="0,1,0,0"
+                Padding="28,14,28,20">
+
+            <StackPanel Spacing="12">
+
+                <StackPanel Orientation="Horizontal"
+                            Spacing="6"
                             HorizontalAlignment="Center">
-
-                    <TextBlock Text="Ticket generado"
-                               Foreground="#94A39A"
-                               FontSize="9"
-                               HorizontalAlignment="Center"/>
-
-                    <StackPanel Orientation="Horizontal" 
-                                Spacing="8" 
-                                HorizontalAlignment="Center">
-                        
-                        <TextBlock x:Name="FolioTicketTextBlock"
-                                   Text="PV-001-B-00000001"
-                                   Foreground="#08783D"
-                                   FontSize="17"
-                                   FontWeight="Bold"
-                                   VerticalAlignment="Center"/>
-
-                        <Button x:Name="CopiarFolioButton"
-                                Content="Copiar"
-                                FontSize="12"
-                                Foreground="#08783D"
-                                Background="Transparent"
-                                BorderThickness="1"
-                                BorderBrush="#DDE7E0"
-                                CornerRadius="5"
-                                Padding="10,5"
-                                VerticalAlignment="Center"
-                                Click="CopiarFolioButton_Click" />
-                                
-                    </StackPanel>
-
+                    <Border Classes="tecla"><TextBlock Text="Enter"/></Border>
+                    <TextBlock Text="o"
+                               Foreground="#64748B"
+                               FontSize="12"
+                               VerticalAlignment="Center"/>
+                    <Border Classes="tecla"><TextBlock Text="Esc"/></Border>
+                    <TextBlock Text="para continuar"
+                               Foreground="#64748B"
+                               FontSize="12"
+                               VerticalAlignment="Center"/>
                 </StackPanel>
 
-            </Border>
+                <Button Classes="aceptar"
+                        IsDefault="True"
+                        IsCancel="True"
+                        Click="Aceptar_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="9">
+                        <PathIcon Width="18" Height="18"
+                                  Data="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                        <TextBlock Text="Aceptar" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
 
 
-            <!-- ================================================= -->
-            <!-- BOTÓN                                             -->
-            <!-- ================================================= -->
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
 
-            <Button Height="48"
-                    Content="Aceptar"
-                    Click="Aceptar_Click"
-                    Background="#16A34A"
-                    Foreground="White"
-                    BorderThickness="0"
-                    CornerRadius="10"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center"
-                    FontSize="13"
-                    FontWeight="SemiBold"/>
+    <Window.Styles>
 
-        </StackPanel>
+        <!-- Animación de la palomita -->
+        <Style Selector="Border.palomita">
+            <Style.Animations>
+                <Animation Duration="0:0:0.6"
+                           FillMode="Forward"
+                           Easing="BackEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="0.3"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="0.3"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
 
-    </Border>
+        <Style Selector="Ellipse.pulso">
+            <Style.Animations>
+                <Animation Duration="0:0:1.8"
+                           IterationCount="Infinite"
+                           Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="0.7"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="0.7"/>
+                        <Setter Property="Opacity" Value="0.9"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1.25"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1.25"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Copiar folio -->
+        <Style Selector="Button.copiar">
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="CornerRadius" Value="11"/>
+            <Setter Property="Background" Value="#F4F6F8"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
+
+        <Style Selector="Button.copiar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#EAF7EF"/>
+            <Setter Property="BorderBrush" Value="#A7DDBA"/>
+            <Setter Property="Foreground" Value="#0B6B33"/>
+        </Style>
+
+        <!-- Tecla -->
+        <Style Selector="Border.tecla">
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <!-- Aceptar -->
+        <Style Selector="Button.aceptar">
+            <Setter Property="Height" Value="58"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22C55E"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.aceptar /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 24 -8 #8022C55E"/>
+        </Style>
+
+        <Style Selector="Button.aceptar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#2BD268"/>
+                    <GradientStop Offset="1" Color="#11A84E"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.aceptar:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#0B7A37"/>
+        </Style>
+
+    </Window.Styles>
 
 </Window>

@@ -148,6 +148,40 @@ public partial class PagoEfectivoWindow : Window
     }
 
 
+    // =========================================================
+    // MONTOS RÁPIDOS
+    // =========================================================
+    //
+    // Solo escriben el monto en el campo; el cálculo del cambio
+    // lo sigue haciendo CantidadRecibida_TextChanged.
+    // =========================================================
+
+    private void MontoRapido_Click(
+        object? sender,
+        RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: string valor })
+            return;
+
+        var monto =
+            valor == "exacto"
+                ? TotalVenta
+                : decimal.Parse(
+                    valor,
+                    CultureInfo.InvariantCulture);
+
+        CantidadRecibidaTextBox.Text =
+            monto.ToString(
+                "0.00",
+                CultureInfo.InvariantCulture);
+
+        CantidadRecibidaTextBox.Focus();
+
+        CantidadRecibidaTextBox.CaretIndex =
+            CantidadRecibidaTextBox.Text.Length;
+    }
+
+
     private void Cancelar_Click(
         object? sender,
         RoutedEventArgs e)

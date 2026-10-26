@@ -1,6 +1,8 @@
 using System;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using NovaCoreESDM.ViewModels.Ventas;
 
 namespace NovaCoreESDM.Views.Ventas;
@@ -58,6 +60,115 @@ public partial class CobroWindow : Window
             TextoTotal.Text =
                 $"${totalVenta:N2}";
         }
+
+
+        // Arranca con Efectivo enfocado para cobrar solo con teclado.
+        Opened +=
+            (_, _) =>
+                Dispatcher.UIThread.Post(
+                    () => BotonEfectivo.Focus(NavigationMethod.Directional),
+                    DispatcherPriority.Input);
+    }
+
+
+    // =========================================================
+    // TECLADO
+    // =========================================================
+    //
+    // 1-4   : elige el método directamente.
+    // Flechas: se mueve entre las 4 tarjetas (cuadrícula 2 x 2).
+    // Enter : lo resuelve el propio botón enfocado.
+    // Esc   : lo resuelve el botón Cerrar (IsCancel).
+    // =========================================================
+
+    protected override void OnKeyDown(
+        KeyEventArgs e)
+    {
+        var metodos =
+            new[]
+            {
+                BotonEfectivo,
+                BotonTarjeta,
+                BotonTransferencia,
+                BotonCredito
+            };
+
+
+        var indiceNumero =
+            e.Key switch
+            {
+                Key.D1 or Key.NumPad1 => 0,
+                Key.D2 or Key.NumPad2 => 1,
+                Key.D3 or Key.NumPad3 => 2,
+                Key.D4 or Key.NumPad4 => 3,
+                _ => -1
+            };
+
+
+        if (indiceNumero >= 0)
+        {
+            e.Handled = true;
+
+            metodos[indiceNumero].Focus(NavigationMethod.Directional);
+
+            metodos[indiceNumero].RaiseEvent(
+                new RoutedEventArgs(Button.ClickEvent));
+
+            return;
+        }
+
+
+        var actual =
+            Array.FindIndex(
+                metodos,
+                b => b.IsFocused);
+
+
+        if (actual >= 0)
+        {
+            var destino =
+                e.Key switch
+                {
+                    Key.Right when actual % 2 == 0 => actual + 1,
+                    Key.Left when actual % 2 == 1 => actual - 1,
+                    Key.Down when actual < 2 => actual + 2,
+                    Key.Up when actual >= 2 => actual - 2,
+                    _ => -1
+                };
+
+
+            if (destino >= 0)
+            {
+                e.Handled = true;
+
+                metodos[destino].Focus(NavigationMethod.Directional);
+
+                return;
+            }
+        }
+
+
+        base.OnKeyDown(e);
+    }
+
+
+    // =========================================================
+    // MENSAJES EN PANTALLA
+    // =========================================================
+
+    private void MostrarMensaje(
+        string? mensaje,
+        bool esInformativo = false)
+    {
+        BannerMensaje.IsVisible =
+            !string.IsNullOrWhiteSpace(mensaje);
+
+        BannerMensaje.Classes.Set(
+            "info",
+            esInformativo);
+
+        TextoMensaje.Text =
+            mensaje;
     }
 
 
@@ -159,9 +270,17 @@ public partial class CobroWindow : Window
             // CONSULTAR CRÉDITO
             // =====================================================
 
+            MostrarMensaje(
+                "Consultando el crédito del cliente…",
+                esInformativo: true);
+
+
             var resultado =
                 await _viewModel
                     .ObtenerCreditoActualAsync();
+
+
+            MostrarMensaje(null);
 
 
             if (
@@ -180,6 +299,11 @@ public partial class CobroWindow : Window
 
                 Console.WriteLine(
                     "====================================");
+
+                MostrarMensaje(
+                    string.IsNullOrWhiteSpace(_viewModel.MensajeError)
+                        ? "No fue posible consultar el crédito del cliente."
+                        : _viewModel.MensajeError);
 
                 return;
             }
@@ -205,6 +329,9 @@ public partial class CobroWindow : Window
                         : "El cliente no tiene crédito disponible para esta venta.";
 
 
+                MostrarMensaje(
+                    _viewModel.MensajeError);
+
                 return;
             }
 
@@ -222,6 +349,9 @@ public partial class CobroWindow : Window
             {
                 _viewModel.MensajeError =
                     "No existe un cliente seleccionado.";
+
+                MostrarMensaje(
+                    "Para vender a crédito, cierra esta ventana y elige un cliente (F9).");
 
                 return;
             }
@@ -302,6 +432,9 @@ public partial class CobroWindow : Window
         {
             _viewModel.MensajeError =
                 $"No fue posible procesar la venta a crédito: {ex.Message}";
+
+            MostrarMensaje(
+                _viewModel.MensajeError);
 
 
             Console.WriteLine(

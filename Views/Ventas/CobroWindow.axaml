@@ -7,577 +7,575 @@
 
         Icon="/Assets/Brand/esdm-app-icon.ico"
 
-        Width="820"
-        Height="640"
+        Width="860"
+        Height="660"
 
-        MinWidth="640"
-        MinHeight="520"
+        MinWidth="680"
+        MinHeight="560"
 
         CanResize="True"
 
         WindowStartupLocation="CenterOwner"
 
-        Background="#F3F6FA">
+        Background="#F4F6F8">
 
 
-    <!-- ========================================================= -->
-    <!-- CONTENEDOR GENERAL                                        -->
-    <!-- ========================================================= -->
+    <!--
+        Auto = total
+        *    = métodos de pago
+        Auto = pie (mensajes, atajos y cerrar)
+    -->
 
-    <Border Margin="12"
-            Padding="26"
-            Background="White"
-            CornerRadius="18">
-
-        <!--
-            Auto = encabezado
-            Auto = total
-            Auto = título métodos
-            *    = métodos de pago -> zona flexible / scroll
-            Auto = pie -> SIEMPRE visible
-        -->
-
-        <Grid RowDefinitions="Auto,Auto,Auto,*,Auto"
-              RowSpacing="18">
+    <Grid RowDefinitions="Auto,*,Auto">
 
 
-            <!-- ================================================= -->
-            <!-- ENCABEZADO                                        -->
-            <!-- ================================================= -->
+        <!-- ===================================================== -->
+        <!-- TOTAL                                                 -->
+        <!-- ===================================================== -->
 
-            <StackPanel Grid.Row="0"
-                        Spacing="4">
+        <Border Grid.Row="0"
+                Padding="30,26,30,24"
+                BorderBrush="#D9EFE1"
+                BorderThickness="0,0,0,1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#F0FAF4"/>
+                    <GradientStop Offset="1" Color="#E3F5EA"/>
+                </LinearGradientBrush>
+            </Border.Background>
 
-                <TextBlock Text="Cobrar venta"
-                           FontSize="30"
-                           FontWeight="Bold"
-                           Foreground="#0B3D6E"
-                           TextWrapping="Wrap"/>
+            <Grid ColumnDefinitions="Auto,*,Auto"
+                  ColumnSpacing="18">
 
-                <TextBlock Text="Selecciona el método con el que se realizará el cobro"
-                           FontSize="13"
-                           Foreground="#5F7591"
-                           TextWrapping="Wrap"/>
+                <Border Grid.Column="0"
+                        Width="60"
+                        Height="60"
+                        CornerRadius="18"
+                        VerticalAlignment="Center">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Offset="0" Color="#22C55E"/>
+                            <GradientStop Offset="1" Color="#0B8A3E"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <PathIcon Width="28" Height="28"
+                              Foreground="White"
+                              Data="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                </Border>
 
-            </StackPanel>
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="3">
 
-
-            <!-- ================================================= -->
-            <!-- TOTAL                                             -->
-            <!-- ================================================= -->
-
-            <Border Grid.Row="1"
-                    Background="#4B36DD"
-                    CornerRadius="15"
-                    Padding="20">
-
-                <Grid ColumnDefinitions="58,*,Auto"
-                      ColumnSpacing="16">
-
-
-                    <!-- ICONO -->
-
-                    <Border Grid.Column="0"
-                            Width="54"
-                            Height="54"
-                            Background="#25FFFFFF"
-                            CornerRadius="13"
-                            VerticalAlignment="Center">
-
-                        <TextBlock Text="🛒"
-                                   FontSize="26"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
-
-                    </Border>
-
-
-                    <!-- INFORMACIÓN -->
-
-                    <StackPanel Grid.Column="1"
-                                VerticalAlignment="Center"
-                                Spacing="3">
-
-                        <TextBlock x:Name="TextoEtiquetaTotal"
-                                   Text="Total a pagar"
-                                   FontSize="13"
-                                   FontWeight="SemiBold"
-                                   Foreground="#E8E7FF"/>
-
-                        <TextBlock x:Name="TextoSubtituloTotal"
-                                   Text="Importe total de la venta actual"
-                                   FontSize="10"
-                                   Foreground="#CFCBFF"
-                                   TextWrapping="Wrap"/>
-
-                    </StackPanel>
-
-
-                    <!-- TOTAL -->
-
-                    <TextBlock Grid.Column="2"
-                               x:Name="TextoTotal"
-                               FontSize="34"
+                    <TextBlock Text="COBRAR VENTA"
+                               Foreground="#16A34A"
+                               FontSize="11"
                                FontWeight="Bold"
-                               Foreground="White"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Right"/>
+                               LetterSpacing="1.6"
+                               LineHeight="16"/>
 
-                </Grid>
+                    <TextBlock x:Name="TextoEtiquetaTotal"
+                               Text="Total a pagar"
+                               Foreground="#0B1220"
+                               FontSize="20"
+                               FontWeight="Bold"/>
 
-            </Border>
+                    <TextBlock x:Name="TextoSubtituloTotal"
+                               Text="Importe total de la venta actual"
+                               Foreground="#4B6A57"
+                               FontSize="13"
+                               TextWrapping="Wrap"/>
 
+                </StackPanel>
 
-            <!-- ================================================= -->
-            <!-- TÍTULO MÉTODOS                                    -->
-            <!-- ================================================= -->
-
-            <StackPanel Grid.Row="2"
-                        Spacing="3">
-
-                <TextBlock Text="Método de pago"
-                           FontSize="18"
+                <TextBlock Grid.Column="2"
+                           x:Name="TextoTotal"
+                           Foreground="#0B1220"
+                           FontSize="50"
                            FontWeight="Bold"
-                           Foreground="#17365D"/>
+                           LetterSpacing="-1.5"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Right"/>
 
-                <TextBlock Text="Selecciona una opción para continuar"
-                           FontSize="11"
-                           Foreground="#64748B"/>
+            </Grid>
 
-            </StackPanel>
+        </Border>
 
 
-            <!-- ================================================= -->
-            <!-- MÉTODOS DE PAGO                                   -->
-            <!-- ================================================= -->
+        <!-- ===================================================== -->
+        <!-- MÉTODOS DE PAGO                                       -->
+        <!-- ===================================================== -->
 
-            <ScrollViewer Grid.Row="3"
+        <Grid Grid.Row="1"
+              Margin="24,22,24,8"
+              RowDefinitions="Auto,*">
+
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="*,Auto"
+                  Margin="6,0,6,8">
+
+                <StackPanel Spacing="2">
+                    <TextBlock Text="¿Cómo pagará el cliente?"
+                               Foreground="#0B1220"
+                               FontSize="19"
+                               FontWeight="Bold"/>
+                    <TextBlock Text="Presiona el número del método o haz clic en él"
+                               Foreground="#94A3B8"
+                               FontSize="12"/>
+                </StackPanel>
+
+            </Grid>
+
+            <ScrollViewer Grid.Row="1"
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
 
-                <Grid RowDefinitions="Auto,Auto"
+                <Grid RowDefinitions="*,*"
                       ColumnDefinitions="*,*"
                       RowSpacing="14"
                       ColumnSpacing="14"
-                      Margin="0,2,0,2">
+                      Margin="6,8,6,10">
 
 
-                    <!-- ================================================= -->
-                    <!-- EFECTIVO                                          -->
-                    <!-- ================================================= -->
+                    <!-- ============ EFECTIVO ============ -->
 
-                    <Button Grid.Row="0"
+                    <Button x:Name="BotonEfectivo"
+                            Grid.Row="0"
                             Grid.Column="0"
-
-                            Click="Efectivo_Click"
-
-                            MinHeight="108"
-
-                            Background="#F3FBF5"
-                            Foreground="#16803B"
-
-                            BorderBrush="#A9E3BA"
-                            BorderThickness="1"
-
-                            CornerRadius="14"
-
-                            Padding="16"
-
-                            HorizontalContentAlignment="Stretch"
-                            VerticalContentAlignment="Stretch">
-
-                        <Grid ColumnDefinitions="52,*,38"
-                              ColumnSpacing="12">
-
-
-                            <Border Grid.Column="0"
-                                    Width="48"
-                                    Height="48"
-                                    Background="#DDF5E5"
-                                    CornerRadius="11"
-                                    VerticalAlignment="Center">
-
-                                <TextBlock Text="💵"
-                                           FontSize="23"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-
-                            </Border>
-
-
-                            <StackPanel Grid.Column="1"
-                                        VerticalAlignment="Center"
-                                        Spacing="4">
-
-                                <TextBlock Text="Efectivo"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#16803B"/>
-
-                                <TextBlock Text="Cobro directo en caja"
-                                           FontSize="10"
-                                           Foreground="#4F765C"
-                                           TextWrapping="Wrap"/>
-
-                            </StackPanel>
-
-
-                            <Border Grid.Column="2"
-                                    Width="36"
-                                    Height="36"
-                                    CornerRadius="18"
-                                    Background="#DDF5E5"
-                                    VerticalAlignment="Center">
-
-                                <TextBlock Text="›"
-                                           FontSize="25"
-                                           FontWeight="Bold"
-                                           Foreground="#16803B"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           Margin="0,-3,0,0"/>
-
-                            </Border>
-
-                        </Grid>
-
-                    </Button>
-
-
-                    <!-- ================================================= -->
-                    <!-- TARJETA / MERCADO PAGO                            -->
-                    <!-- ================================================= -->
-
-                    <Button Grid.Row="0"
-                            Grid.Column="1"
-
-                            Click="Tarjeta_Click"
-
-                            MinHeight="108"
-
-                            Background="#F4F8FF"
-                            Foreground="#2563EB"
-
-                            BorderBrush="#BFDBFE"
-                            BorderThickness="1"
-
-                            CornerRadius="14"
-
-                            Padding="16"
-
-                            HorizontalContentAlignment="Stretch"
-                            VerticalContentAlignment="Stretch">
-
-                        <Grid ColumnDefinitions="52,*,38"
-                              ColumnSpacing="12">
-
-
-                            <Border Grid.Column="0"
-                                    Width="48"
-                                    Height="48"
-                                    Background="#DBEAFE"
-                                    CornerRadius="11"
-                                    VerticalAlignment="Center">
-
-                                <TextBlock Text="💳"
-                                           FontSize="23"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-
-                            </Border>
-
-
-                            <StackPanel Grid.Column="1"
-                                        VerticalAlignment="Center"
-                                        Spacing="4">
-
-                                <TextBlock Text="Tarjeta"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#2563EB"/>
-
-                                <TextBlock Text="Cobrar con terminal Mercado Pago"
-                                           FontSize="10"
-                                           Foreground="#5273A8"
-                                           TextWrapping="Wrap"/>
-
-                            </StackPanel>
-
-
-                            <Border Grid.Column="2"
-                                    Width="36"
-                                    Height="36"
-                                    CornerRadius="18"
-                                    Background="#DBEAFE"
-                                    VerticalAlignment="Center">
-
-                                <TextBlock Text="›"
-                                           FontSize="25"
-                                           FontWeight="Bold"
-                                           Foreground="#2563EB"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           Margin="0,-3,0,0"/>
-
-                            </Border>
-
-                        </Grid>
-
-                    </Button>
-
-
-                        <!-- ================================================= -->
-                        <!-- TRANSFERENCIA                                     -->
-                        <!-- ================================================= -->
-
-                        <Button Grid.Row="1"
-                                Grid.Column="0"
-
-                                Click="Transferencia_Click"
-
-                                MinHeight="108"
-
-                                Background="#F0FDFA"
-                                Foreground="#0F766E"
-
-                                BorderBrush="#99F6E4"
-                                BorderThickness="1"
-
-                                CornerRadius="14"
-
-                                Padding="16"
-
-                                HorizontalContentAlignment="Stretch"
-                                VerticalContentAlignment="Stretch">
-
-                            <Grid ColumnDefinitions="52,*,38"
-                                  ColumnSpacing="12">
-
-                                <!-- ICONO -->
-
-                                <Border Grid.Column="0"
-                                        Width="48"
-                                        Height="48"
-                                        Background="#CCFBF1"
-                                        CornerRadius="11"
-                                        VerticalAlignment="Center">
-
-                                    <TextBlock Text="🏦"
-                                               FontSize="23"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"/>
-
+                            Classes="metodo efectivo"
+                            Click="Efectivo_Click">
+                        <Grid RowDefinitions="Auto,*,Auto">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Border Classes="iconoMetodo">
+                                    <PathIcon Data="M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-6v11c0 1.1-.9 2-2 2H4v-2h17V7h2z"/>
                                 </Border>
-
-
-                                <!-- INFORMACIÓN -->
-
-                                <StackPanel Grid.Column="1"
-                                            VerticalAlignment="Center"
-                                            Spacing="4">
-
-                                    <TextBlock Text="Transferencia"
-                                               FontSize="16"
-                                               FontWeight="Bold"
-                                               Foreground="#0F766E"/>
-
-                                    <TextBlock Text="Pago mediante transferencia bancaria"
-                                               FontSize="10"
-                                               Foreground="#477C77"
-                                               TextWrapping="Wrap"/>
-
-                                </StackPanel>
-
-
-                                <!-- FLECHA -->
-
-                                <Border Grid.Column="2"
-                                        Width="36"
-                                        Height="36"
-                                        CornerRadius="18"
-                                        Background="#CCFBF1"
-                                        VerticalAlignment="Center">
-
-                                    <TextBlock Text="›"
-                                               FontSize="25"
-                                               FontWeight="Bold"
-                                               Foreground="#0F766E"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               Margin="0,-3,0,0"/>
-
+                                <Border Grid.Column="1" Classes="numero">
+                                    <TextBlock Text="1"/>
                                 </Border>
-
                             </Grid>
-
-                        </Button>
-
-
-                    <!-- ================================================= -->
-                    <!-- CRÉDITO                                           -->
-                    <!-- ================================================= -->
-
-                    <Button Grid.Row="1"
-                            Grid.Column="1"
-
-                            Click="Credito_Click"
-
-                            MinHeight="108"
-
-                            Background="#F8F6FF"
-                            Foreground="#4938D6"
-
-                            BorderBrush="#CFC7FF"
-                            BorderThickness="1"
-
-                            CornerRadius="14"
-
-                            Padding="16"
-
-                            HorizontalContentAlignment="Stretch"
-                            VerticalContentAlignment="Stretch">
-
-                        <Grid ColumnDefinitions="52,*,38"
-                              ColumnSpacing="12">
-
-
-                            <Border Grid.Column="0"
-                                    Width="48"
-                                    Height="48"
-                                    Background="#EBE7FF"
-                                    CornerRadius="11"
-                                    VerticalAlignment="Center">
-
-                                <TextBlock Text="📋"
-                                           FontSize="23"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-
-                            </Border>
-
-
-                            <StackPanel Grid.Column="1"
-                                        VerticalAlignment="Center"
-                                        Spacing="4">
-
-                                <TextBlock Text="Pagar con crédito"
-                                           FontSize="16"
-                                           FontWeight="Bold"
-                                           Foreground="#4938D6"
-                                           TextWrapping="Wrap"/>
-
-                                <TextBlock Text="Usar línea de crédito del cliente"
-                                           FontSize="10"
-                                           Foreground="#7065B5"
-                                           TextWrapping="Wrap"/>
-
+                            <StackPanel Grid.Row="2" Spacing="3" Margin="0,16,0,0">
+                                <TextBlock Classes="tituloMetodo" Text="Efectivo"/>
+                                <TextBlock Classes="detalleMetodo" Text="Cobro directo en caja"/>
                             </StackPanel>
-
-
-                            <Border Grid.Column="2"
-                                    Width="36"
-                                    Height="36"
-                                    CornerRadius="18"
-                                    Background="#EBE7FF"
-                                    VerticalAlignment="Center">
-
-                                <TextBlock Text="›"
-                                           FontSize="25"
-                                           FontWeight="Bold"
-                                           Foreground="#4938D6"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           Margin="0,-3,0,0"/>
-
-                            </Border>
-
                         </Grid>
+                    </Button>
 
+
+                    <!-- ============ TARJETA ============ -->
+
+                    <Button x:Name="BotonTarjeta"
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Classes="metodo tarjeta"
+                            Click="Tarjeta_Click">
+                        <Grid RowDefinitions="Auto,*,Auto">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Border Classes="iconoMetodo">
+                                    <PathIcon Data="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                                </Border>
+                                <Border Grid.Column="1" Classes="numero">
+                                    <TextBlock Text="2"/>
+                                </Border>
+                            </Grid>
+                            <StackPanel Grid.Row="2" Spacing="3" Margin="0,16,0,0">
+                                <TextBlock Classes="tituloMetodo" Text="Tarjeta"/>
+                                <TextBlock Classes="detalleMetodo" Text="Cobrar con terminal Mercado Pago"/>
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+
+
+                    <!-- ============ TRANSFERENCIA ============ -->
+
+                    <Button x:Name="BotonTransferencia"
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Classes="metodo transferencia"
+                            Click="Transferencia_Click">
+                        <Grid RowDefinitions="Auto,*,Auto">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Border Classes="iconoMetodo">
+                                    <PathIcon Data="M4 10h3v7H4zm6.5 0h3v7h-3zM2 19h20v3H2zm15-9h3v7h-3zm-5-9L2 6v2h20V6z"/>
+                                </Border>
+                                <Border Grid.Column="1" Classes="numero">
+                                    <TextBlock Text="3"/>
+                                </Border>
+                            </Grid>
+                            <StackPanel Grid.Row="2" Spacing="3" Margin="0,16,0,0">
+                                <TextBlock Classes="tituloMetodo" Text="Transferencia"/>
+                                <TextBlock Classes="detalleMetodo" Text="Pago mediante transferencia bancaria"/>
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+
+
+                    <!-- ============ CRÉDITO ============ -->
+
+                    <Button x:Name="BotonCredito"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Classes="metodo credito"
+                            Click="Credito_Click">
+                        <Grid RowDefinitions="Auto,*,Auto">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Border Classes="iconoMetodo">
+                                    <PathIcon Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                                </Border>
+                                <Border Grid.Column="1" Classes="numero">
+                                    <TextBlock Text="4"/>
+                                </Border>
+                            </Grid>
+                            <StackPanel Grid.Row="2" Spacing="3" Margin="0,16,0,0">
+                                <TextBlock Classes="tituloMetodo" Text="Crédito"/>
+                                <TextBlock Classes="detalleMetodo" Text="Usar línea de crédito del cliente"/>
+                            </StackPanel>
+                        </Grid>
                     </Button>
 
                 </Grid>
 
             </ScrollViewer>
 
-
-            <!-- ================================================= -->
-            <!-- PIE                                               -->
-            <!-- ================================================= -->
-
-            <Grid Grid.Row="4"
-                  ColumnDefinitions="Auto,*"
-                  ColumnSpacing="14">
+        </Grid>
 
 
-                <!-- ================================================= -->
-                <!-- CERRAR                                            -->
-                <!-- ================================================= -->
+        <!-- ===================================================== -->
+        <!-- PIE                                                   -->
+        <!-- ===================================================== -->
+
+        <StackPanel Grid.Row="2"
+                    Margin="30,8,30,22"
+                    Spacing="14">
+
+
+            <!-- MENSAJE (consulta de crédito, avisos) -->
+
+            <Border x:Name="BannerMensaje"
+                    Classes="mensaje"
+                    IsVisible="False">
+                <StackPanel Orientation="Horizontal" Spacing="9">
+                    <PathIcon x:Name="IconoMensaje"
+                              Width="16" Height="16"
+                              Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    <TextBlock x:Name="TextoMensaje"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+
+            <!-- CERRAR + ATAJOS -->
+
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="20">
 
                 <Button Grid.Column="0"
-                        Height="48"
+                        Classes="cerrar"
+                        IsCancel="True"
+                        Click="Cerrar_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Width="14" Height="14"
+                                  Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        <TextBlock Text="Cerrar" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
 
-                        MinWidth="135"
-
-                        Content="✕   Cerrar"
-
-                        Click="Cerrar_Click"
-
-                        Background="White"
-                        Foreground="#53657D"
-
-                        BorderBrush="#BCC8D6"
-                        BorderThickness="1"
-
-                        CornerRadius="10"
-
-                        FontSize="13"
-                        FontWeight="SemiBold"
-
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"/>
-
-
-                <!-- ================================================= -->
-                <!-- ESTADO                                            -->
-                <!-- ================================================= -->
-
-                <Border Grid.Column="1"
-                        Height="48"
-
-                        Background="#F2FBF4"
-                        BorderBrush="#B8E8C3"
-                        BorderThickness="1"
-
-                        CornerRadius="10"
-                        Padding="14,7">
-
-                    <Grid ColumnDefinitions="Auto,*"
-                          ColumnSpacing="9"
-                          HorizontalAlignment="Center"
-                          VerticalAlignment="Center">
-
-                        <Border Width="9"
-                                Height="9"
-                                CornerRadius="5"
-                                Background="#16A34A"
-                                VerticalAlignment="Center"/>
-
-                        <TextBlock Grid.Column="1"
-                                   Text="Sistema listo para cobrar"
-                                   FontSize="11"
-                                   FontWeight="SemiBold"
-                                   Foreground="#16803B"
-                                   VerticalAlignment="Center"
-                                   TextWrapping="Wrap"/>
-
-                    </Grid>
-
-                </Border>
+                <WrapPanel Grid.Column="1"
+                           Orientation="Horizontal"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center">
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="1 – 4"/></Border>
+                        <TextBlock Text="Elegir método"/>
+                    </StackPanel>
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="← → ↑ ↓"/></Border>
+                        <TextBlock Text="Moverse"/>
+                    </StackPanel>
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Enter"/></Border>
+                        <TextBlock Text="Cobrar"/>
+                    </StackPanel>
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Esc"/></Border>
+                        <TextBlock Text="Cerrar"/>
+                    </StackPanel>
+                </WrapPanel>
 
             </Grid>
 
-        </Grid>
+        </StackPanel>
 
-    </Border>
+    </Grid>
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <Window.Styles>
+
+
+        <!-- ===================================================== -->
+        <!-- TARJETA DE MÉTODO                                    -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Button.metodo">
+            <Setter Property="MinHeight" Value="150"/>
+            <Setter Property="Padding" Value="20,18"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E6EAEE"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="22"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusAdorner" Value="{x:Null}"/>
+            <Setter Property="RenderTransform" Value="translateY(0px)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.metodo /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 1 2 0 #0A0F172A"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.15"/>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                    <BrushTransition Property="Background" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.metodo:pointerover, Button.metodo:focus">
+            <Setter Property="RenderTransform" Value="translateY(-3px)"/>
+        </Style>
+
+        <Style Selector="Button.metodo:pressed">
+            <Setter Property="RenderTransform" Value="translateY(0px)"/>
+        </Style>
+
+        <!-- Ícono -->
+        <Style Selector="Border.iconoMetodo">
+            <Setter Property="Width" Value="56"/>
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="CornerRadius" Value="17"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+        <Style Selector="Border.iconoMetodo PathIcon">
+            <Setter Property="Width" Value="26"/>
+            <Setter Property="Height" Value="26"/>
+        </Style>
+
+        <!-- Número de atajo -->
+        <Style Selector="Border.numero">
+            <Setter Property="Width" Value="34"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+        </Style>
+
+        <Style Selector="Border.numero TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="TextBlock.tituloMetodo">
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="-0.3"/>
+        </Style>
+
+        <Style Selector="TextBlock.detalleMetodo">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- COLORES POR MÉTODO                                   -->
+        <!-- ===================================================== -->
+
+        <!-- Efectivo: verde -->
+        <Style Selector="Button.efectivo Border.iconoMetodo">
+            <Setter Property="Background" Value="#EAF7EF"/>
+        </Style>
+        <Style Selector="Button.efectivo Border.iconoMetodo PathIcon">
+            <Setter Property="Foreground" Value="#16A34A"/>
+        </Style>
+        <Style Selector="Button.efectivo:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                         Button.efectivo:focus /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F3FBF6"/>
+            <Setter Property="BorderBrush" Value="#16A34A"/>
+            <Setter Property="BoxShadow" Value="0 0 0 4 #2216A34A, 0 16 30 -14 #5516A34A"/>
+        </Style>
+        <Style Selector="Button.efectivo:pointerover Border.iconoMetodo, Button.efectivo:focus Border.iconoMetodo">
+            <Setter Property="Background" Value="#16A34A"/>
+        </Style>
+
+        <!-- Tarjeta: azul -->
+        <Style Selector="Button.tarjeta Border.iconoMetodo">
+            <Setter Property="Background" Value="#EAF1FE"/>
+        </Style>
+        <Style Selector="Button.tarjeta Border.iconoMetodo PathIcon">
+            <Setter Property="Foreground" Value="#2563EB"/>
+        </Style>
+        <Style Selector="Button.tarjeta:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                         Button.tarjeta:focus /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F5F8FF"/>
+            <Setter Property="BorderBrush" Value="#2563EB"/>
+            <Setter Property="BoxShadow" Value="0 0 0 4 #222563EB, 0 16 30 -14 #552563EB"/>
+        </Style>
+        <Style Selector="Button.tarjeta:pointerover Border.iconoMetodo, Button.tarjeta:focus Border.iconoMetodo">
+            <Setter Property="Background" Value="#2563EB"/>
+        </Style>
+
+        <!-- Transferencia: verde azulado -->
+        <Style Selector="Button.transferencia Border.iconoMetodo">
+            <Setter Property="Background" Value="#E6F6F4"/>
+        </Style>
+        <Style Selector="Button.transferencia Border.iconoMetodo PathIcon">
+            <Setter Property="Foreground" Value="#0F766E"/>
+        </Style>
+        <Style Selector="Button.transferencia:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                         Button.transferencia:focus /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F2FBFA"/>
+            <Setter Property="BorderBrush" Value="#0F766E"/>
+            <Setter Property="BoxShadow" Value="0 0 0 4 #220F766E, 0 16 30 -14 #550F766E"/>
+        </Style>
+        <Style Selector="Button.transferencia:pointerover Border.iconoMetodo, Button.transferencia:focus Border.iconoMetodo">
+            <Setter Property="Background" Value="#0F766E"/>
+        </Style>
+
+        <!-- Crédito: violeta -->
+        <Style Selector="Button.credito Border.iconoMetodo">
+            <Setter Property="Background" Value="#F1EEFE"/>
+        </Style>
+        <Style Selector="Button.credito Border.iconoMetodo PathIcon">
+            <Setter Property="Foreground" Value="#6D4AE0"/>
+        </Style>
+        <Style Selector="Button.credito:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                         Button.credito:focus /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F8F6FF"/>
+            <Setter Property="BorderBrush" Value="#6D4AE0"/>
+            <Setter Property="BoxShadow" Value="0 0 0 4 #226D4AE0, 0 16 30 -14 #556D4AE0"/>
+        </Style>
+        <Style Selector="Button.credito:pointerover Border.iconoMetodo, Button.credito:focus Border.iconoMetodo">
+            <Setter Property="Background" Value="#6D4AE0"/>
+        </Style>
+
+        <!-- Ícono en blanco cuando la tarjeta está activa -->
+        <Style Selector="Button.metodo:pointerover Border.iconoMetodo PathIcon,
+                         Button.metodo:focus Border.iconoMetodo PathIcon">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <!-- La tecla del número se resalta en la tarjeta activa -->
+        <Style Selector="Button.metodo:focus Border.numero">
+            <Setter Property="Background" Value="#0B1220"/>
+            <Setter Property="BorderBrush" Value="#0B1220"/>
+        </Style>
+        <Style Selector="Button.metodo:focus Border.numero TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- MENSAJES                                             -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Border.mensaje">
+            <Setter Property="Padding" Value="14,10"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="#FEF2F2"/>
+            <Setter Property="BorderBrush" Value="#FECACA"/>
+        </Style>
+        <Style Selector="Border.mensaje PathIcon">
+            <Setter Property="Foreground" Value="#C61F2B"/>
+        </Style>
+        <Style Selector="Border.mensaje TextBlock">
+            <Setter Property="Foreground" Value="#9F1239"/>
+        </Style>
+
+        <Style Selector="Border.mensaje.info">
+            <Setter Property="Background" Value="#F1EEFE"/>
+            <Setter Property="BorderBrush" Value="#DCD3FB"/>
+        </Style>
+        <Style Selector="Border.mensaje.info PathIcon">
+            <Setter Property="Foreground" Value="#6D4AE0"/>
+        </Style>
+        <Style Selector="Border.mensaje.info TextBlock">
+            <Setter Property="Foreground" Value="#4C2FB5"/>
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- PIE                                                  -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Button.cerrar">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Padding" Value="22,0"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.cerrar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+        </Style>
+
+        <Style Selector="StackPanel.atajo">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Spacing" Value="6"/>
+            <Setter Property="Margin" Value="16,3,0,3"/>
+        </Style>
+
+        <Style Selector="StackPanel.atajo > TextBlock">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla">
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+    </Window.Styles>
 
 </Window>

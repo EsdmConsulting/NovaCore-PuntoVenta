@@ -1,3 +1,4 @@
+using Avalonia;
 using System;
 using System.Threading.Tasks;
 
@@ -1589,14 +1590,17 @@ private void BuscadorClienteTextBox_KeyDown(object? sender, KeyEventArgs e)
     }
 }
 
-private void CatalogoProductosListBox_DoubleTapped(object? sender, Avalonia.Input.TappedEventArgs e)
+private void CatalogoProductosListBox_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
     {
-        var listBox = sender as ListBox;
-        if (listBox?.SelectedItem == null) return;
+        // Un solo clic sobre una tarjeta abre el producto.
+        // Se toma el producto de la tarjeta tocada para que un clic
+        // en un espacio vacío no vuelva a abrir el último seleccionado.
+        var item = (e.Source as Visual)?.FindAncestorOfType<ListBoxItem>(true);
+        if (item?.DataContext == null) return;
 
         if (DataContext is VentasViewModel viewModel)
         {
-            viewModel.SeleccionarProductoCommand.Execute(listBox.SelectedItem);
+            viewModel.SeleccionarProductoCommand.Execute(item.DataContext);
 
             var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
             if (buscadorProductos != null)

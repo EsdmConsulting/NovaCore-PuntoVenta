@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 
 using Avalonia.Controls;
+using Avalonia.Input.Platform;
 using Avalonia.Interactivity;
 
 namespace NovaCoreESDM.Views.Ventas;
@@ -22,6 +23,37 @@ public partial class PagoTransferenciaWindow : Window
 
         TextoTotal.Text =
             $"${totalVenta:N2}";
+    }
+
+
+    // =========================================================
+    // COPIAR CLABE
+    // =========================================================
+
+    private async void CopiarClabe_Click(
+        object? sender,
+        RoutedEventArgs e)
+    {
+        var clipboard =
+            TopLevel.GetTopLevel(this)?.Clipboard;
+
+        if (clipboard is null ||
+            string.IsNullOrWhiteSpace(TextoClabe.Text))
+            return;
+
+        await clipboard.SetTextAsync(
+            TextoClabe.Text);
+
+        if (sender is Button boton)
+        {
+            boton.Content =
+                "¡Copiada!";
+
+            await Task.Delay(2000);
+
+            boton.Content =
+                "Copiar";
+        }
     }
 
 

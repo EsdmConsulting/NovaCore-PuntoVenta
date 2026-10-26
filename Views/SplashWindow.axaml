@@ -1,87 +1,439 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="NovaCoreESDM.Views.SplashWindow"
-        Width="760"
-        Height="460"
+        Title="Grupo Luis Fer - Punto de Venta"
+        Width="880"
+        Height="520"
         CanResize="False"
-        SystemDecorations="None"
+        WindowDecorations="None"
         WindowStartupLocation="CenterScreen"
         ShowInTaskbar="False"
-        Background="#F8FAFC">
+        TransparencyLevelHint="Transparent"
+        Background="Transparent">
 
-    <Grid>
+    <!-- ===================================================== -->
+    <!-- ANIMACIONES                                           -->
+    <!-- ===================================================== -->
 
-        <!-- Fondo principal -->
-        <Border Background="#F8FAFC"/>
+    <Window.Styles>
 
-        <!-- Acento verde inferior izquierdo -->
-        <Ellipse Width="460"
-                 Height="460"
-                 HorizontalAlignment="Left"
-                 VerticalAlignment="Bottom"
-                 Margin="-260,0,0,-280"
-                 Fill="#17B455"
-                 Opacity="0.95"/>
+        <Style Selector="Ellipse.orbe">
+            <Setter Property="IsHitTestVisible" Value="False"/>
+        </Style>
 
-        <!-- Acento rojo inferior derecho -->
-        <Ellipse Width="420"
-                 Height="420"
-                 HorizontalAlignment="Right"
-                 VerticalAlignment="Bottom"
-                 Margin="0,0,-230,-250"
-                 Fill="#C61F2B"
-                 Opacity="0.95"/>
+        <Style Selector="Ellipse.flotaA">
+            <Style.Animations>
+                <Animation Duration="0:0:6"
+                           IterationCount="Infinite"
+                           PlaybackDirection="Alternate"
+                           Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="70"/>
+                        <Setter Property="TranslateTransform.Y" Value="40"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
 
-        <!-- Contenido central -->
-        <StackPanel HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Spacing="8">
+        <Style Selector="Ellipse.flotaB">
+            <Style.Animations>
+                <Animation Duration="0:0:7"
+                           IterationCount="Infinite"
+                           PlaybackDirection="Alternate"
+                           Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="-60"/>
+                        <Setter Property="TranslateTransform.Y" Value="-50"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
 
-            <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
-                   Width="255"
-                   Height="180"
-                   Stretch="Uniform"/>
+        <!-- Anillo que gira detrás del logo -->
+        <Style Selector="Ellipse.anillo">
+            <Style.Animations>
+                <Animation Duration="0:0:5"
+                           IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="RotateTransform.Angle" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="RotateTransform.Angle" Value="360"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
 
-            <TextBlock Text="PUNTO DE VENTA"
-                       Foreground="#123B69"
-                       FontSize="28"
-                       FontWeight="Bold"
+        <Style Selector="Ellipse.anilloInverso">
+            <Style.Animations>
+                <Animation Duration="0:0:9"
+                           IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="RotateTransform.Angle" Value="360"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="RotateTransform.Angle" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Entrada del logo -->
+        <Style Selector="Image.logo">
+            <Style.Animations>
+                <Animation Duration="0:0:0.9"
+                           FillMode="Forward"
+                           Easing="BackEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                        <Setter Property="ScaleTransform.ScaleX" Value="0.86"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="0.86"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                        <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Texto que aparece después del logo -->
+        <Style Selector="StackPanel.texto">
+            <Style.Animations>
+                <Animation Duration="0:0:1.1"
+                           FillMode="Forward"
+                           Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="14"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="40%">
+                        <Setter Property="Opacity" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="14"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Barra de progreso que se llena en los 2 s del splash -->
+        <Style Selector="Border.progreso">
+            <Style.Animations>
+                <Animation Duration="0:0:2"
+                           FillMode="Forward"
+                           Easing="QuadraticEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Puntos de "cargando" -->
+        <Style Selector="Ellipse.punto">
+            <Setter Property="Width" Value="5"/>
+            <Setter Property="Height" Value="5"/>
+            <Setter Property="Fill" Value="#9AA8B8"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Ellipse.punto">
+            <Style.Animations>
+                <Animation Duration="0:0:1.2"
+                           IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.2"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="30%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="60%">
+                        <Setter Property="Opacity" Value="0.2"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.2"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Ellipse.punto.p2">
+            <Style.Animations>
+                <Animation Duration="0:0:1.2"
+                           IterationCount="Infinite"
+                           Delay="0:0:0.2">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.2"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="30%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="60%">
+                        <Setter Property="Opacity" Value="0.2"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.2"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Ellipse.punto.p3">
+            <Style.Animations>
+                <Animation Duration="0:0:1.2"
+                           IterationCount="Infinite"
+                           Delay="0:0:0.4">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.2"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="30%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="60%">
+                        <Setter Property="Opacity" Value="0.2"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.2"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+    </Window.Styles>
+
+
+    <!-- ===================================================== -->
+    <!-- TARJETA PRINCIPAL                                     -->
+    <!-- ===================================================== -->
+
+    <Border CornerRadius="28"
+            ClipToBounds="True"
+            Background="#050607"
+            BorderBrush="#1FFFFFFF"
+            BorderThickness="1">
+
+        <Panel>
+
+            <!-- Orbes de color -->
+            <Ellipse Classes="orbe flotaA"
+                     Width="520" Height="520"
+                     HorizontalAlignment="Left" VerticalAlignment="Top"
+                     Margin="-240,-240,0,0">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#9916A34A"/>
+                        <GradientStop Offset="1" Color="#0016A34A"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Ellipse Classes="orbe flotaB"
+                     Width="560" Height="560"
+                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                     Margin="0,0,-240,-260">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#99C61F2B"/>
+                        <GradientStop Offset="1" Color="#00C61F2B"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Ellipse Classes="orbe flotaB"
+                     Width="380" Height="380"
+                     HorizontalAlignment="Right" VerticalAlignment="Top"
+                     Margin="0,-200,-80,0"
+                     Opacity="0.7">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#88F5C400"/>
+                        <GradientStop Offset="1" Color="#00F5C400"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Ellipse Classes="orbe flotaA"
+                     Width="340" Height="340"
+                     HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                     Margin="-100,0,0,-200"
+                     Opacity="0.7">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#889A4A0E"/>
+                        <GradientStop Offset="1" Color="#009A4A0E"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+
+            <!-- Contenido -->
+            <Grid RowDefinitions="Auto,*,Auto"
+                  Margin="40,30">
+
+                <!-- Encabezado -->
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                    <Border Grid.Column="0"
+                            HorizontalAlignment="Left"
+                            Padding="12,6"
+                            CornerRadius="999"
+                            Background="#14FFFFFF"
+                            BorderBrush="#24FFFFFF"
+                            BorderThickness="1">
+                        <TextBlock Text="NOVACORE · PUNTO DE VENTA"
+                                   Foreground="#D9E2EC"
+                                   FontSize="10"
+                                   FontWeight="SemiBold"
+                                   LetterSpacing="1.6"/>
+                    </Border>
+                    <TextBlock Grid.Column="1"
+                               Text="v0.1.0"
+                               Foreground="#6B7A8C"
+                               FontSize="11"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                </Grid>
+
+                <!-- Logo con anillos -->
+                <Panel Grid.Row="1"
                        HorizontalAlignment="Center"
-                       Margin="0,6,0,0"/>
+                       VerticalAlignment="Center">
 
-            <TextBlock Text="Grupo Luis Fer"
-                       Foreground="#64748B"
-                       FontSize="15"
-                       HorizontalAlignment="Center"/>
+                    <Ellipse Classes="anillo"
+                             Width="300" Height="300"
+                             StrokeThickness="2"
+                             Opacity="0.55"
+                             RenderTransformOrigin="50%,50%">
+                        <Ellipse.RenderTransform>
+                            <RotateTransform/>
+                        </Ellipse.RenderTransform>
+                        <Ellipse.Stroke>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                <GradientStop Offset="0" Color="#0016A34A"/>
+                                <GradientStop Offset="0.5" Color="#FF22C55E"/>
+                                <GradientStop Offset="1" Color="#0016A34A"/>
+                            </LinearGradientBrush>
+                        </Ellipse.Stroke>
+                    </Ellipse>
 
-            <ProgressBar Width="290"
-                         Height="5"
-                         Margin="0,26,0,0"
-                         IsIndeterminate="True"/>
+                    <Ellipse Classes="anilloInverso"
+                             Width="340" Height="340"
+                             StrokeThickness="1.5"
+                             Opacity="0.45"
+                             RenderTransformOrigin="50%,50%">
+                        <Ellipse.RenderTransform>
+                            <RotateTransform/>
+                        </Ellipse.RenderTransform>
+                        <Ellipse.Stroke>
+                            <LinearGradientBrush StartPoint="100%,0%" EndPoint="0%,100%">
+                                <GradientStop Offset="0" Color="#00C61F2B"/>
+                                <GradientStop Offset="0.5" Color="#FFE23B47"/>
+                                <GradientStop Offset="1" Color="#00C61F2B"/>
+                            </LinearGradientBrush>
+                        </Ellipse.Stroke>
+                    </Ellipse>
 
-            <TextBlock Text="Inicializando el sistema..."
-                       Foreground="#64748B"
-                       FontSize="13"
-                       Margin="0,7,0,0"
-                       HorizontalAlignment="Center"/>
-        </StackPanel>
+                    <Image Classes="logo"
+                           Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                           Width="400"
+                           Stretch="Uniform"
+                           RenderTransformOrigin="50%,50%">
+                        <Image.RenderTransform>
+                            <ScaleTransform/>
+                        </Image.RenderTransform>
+                        <Image.OpacityMask>
+                            <RadialGradientBrush RadiusX="64%" RadiusY="62%">
+                                <GradientStop Offset="0.8" Color="White"/>
+                                <GradientStop Offset="1" Color="Transparent"/>
+                            </RadialGradientBrush>
+                        </Image.OpacityMask>
+                    </Image>
 
-        <!-- Pie -->
-        <StackPanel HorizontalAlignment="Center"
-                    VerticalAlignment="Bottom"
-                    Margin="0,0,0,22"
-                    Spacing="3">
+                </Panel>
 
-            <TextBlock Text="Punto de Venta Grupo Luis Fer"
-                       Foreground="#475569"
-                       FontSize="11"
-                       HorizontalAlignment="Center"/>
+                <!-- Progreso y estado -->
+                <StackPanel Grid.Row="2"
+                            Classes="texto"
+                            Width="420"
+                            HorizontalAlignment="Center"
+                            Spacing="14">
+                    <StackPanel.RenderTransform>
+                        <TranslateTransform/>
+                    </StackPanel.RenderTransform>
 
-            <TextBlock Text="Desarrollado por ESDM Consulting"
-                       Foreground="#94A3B8"
-                       FontSize="10"
-                       HorizontalAlignment="Center"/>
-        </StackPanel>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Grid.Column="0"
+                                    Orientation="Horizontal"
+                                    Spacing="5">
+                            <TextBlock Text="Preparando tu punto de venta"
+                                       Foreground="#D9E2EC"
+                                       FontSize="13"
+                                       FontWeight="Medium"
+                                       VerticalAlignment="Center"/>
+                            <Ellipse Classes="punto" Margin="3,4,0,0"/>
+                            <Ellipse Classes="punto p2" Margin="0,4,0,0"/>
+                            <Ellipse Classes="punto p3" Margin="0,4,0,0"/>
+                        </StackPanel>
+                        <TextBlock Grid.Column="1"
+                                   Text="ESDM Consulting"
+                                   Foreground="#6B7A8C"
+                                   FontSize="11"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
 
-    </Grid>
+                    <!-- Pista y barra con los colores de la marca -->
+                    <Border Height="6"
+                            CornerRadius="3"
+                            Background="#1AFFFFFF"
+                            ClipToBounds="True">
+                        <Border Classes="progreso"
+                                CornerRadius="3"
+                                RenderTransformOrigin="0%,50%">
+                            <Border.RenderTransform>
+                                <ScaleTransform ScaleX="0"/>
+                            </Border.RenderTransform>
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                    <GradientStop Offset="0" Color="#16A34A"/>
+                                    <GradientStop Offset="0.38" Color="#F5C400"/>
+                                    <GradientStop Offset="0.68" Color="#B5651D"/>
+                                    <GradientStop Offset="1" Color="#C61F2B"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                    </Border>
+
+                </StackPanel>
+
+            </Grid>
+
+        </Panel>
+
+    </Border>
 </Window>

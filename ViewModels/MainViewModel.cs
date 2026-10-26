@@ -4,6 +4,10 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using Avalonia.Threading;
+
+using NovaCoreESDM.Models.Session;
+
 using NovaCoreESDM.ViewModels.Cancelaciones;
 using NovaCoreESDM.ViewModels.Configuracion;
 using NovaCoreESDM.ViewModels.Cortes;
@@ -134,6 +138,77 @@ public partial class MainViewModel : ViewModelBase
 
 
     // =========================================================
+    // TARJETA DE USUARIO (MENÚ LATERAL)
+    // =========================================================
+
+    public string UsuarioActual =>
+        string.IsNullOrWhiteSpace(PosSession.NombreUsuario)
+            ? "Usuario"
+            : PosSession.NombreUsuario;
+
+
+    public string InicialesUsuario
+    {
+        get
+        {
+            var partes =
+                UsuarioActual.Split(
+                    ' ',
+                    StringSplitOptions.RemoveEmptyEntries);
+
+            return partes.Length >= 2
+                ? $"{char.ToUpper(partes[0][0])}{char.ToUpper(partes[1][0])}"
+                : char.ToUpper(partes[0][0]).ToString();
+        }
+    }
+
+
+    public string DetalleUsuario
+    {
+        get
+        {
+            var caja =
+                string.IsNullOrWhiteSpace(PosSession.NombreCaja)
+                    ? PosSession.CodigoCaja
+                    : PosSession.NombreCaja;
+
+            var estadoTurno =
+                PosSession.TieneTurnoActivo
+                    ? "Turno abierto"
+                    : "Sin turno";
+
+            return string.IsNullOrWhiteSpace(caja)
+                ? estadoTurno
+                : $"{caja} · {estadoTurno}";
+        }
+    }
+
+
+    public bool TurnoAbierto =>
+        PosSession.TieneTurnoActivo;
+
+
+    public string CajaActual =>
+        string.IsNullOrWhiteSpace(PosSession.NombreCaja)
+            ? string.IsNullOrWhiteSpace(PosSession.CodigoCaja)
+                ? "Sin caja"
+                : PosSession.CodigoCaja
+            : PosSession.NombreCaja;
+
+
+    // =========================================================
+    // RELOJ DEL ENCABEZADO
+    // =========================================================
+
+    [ObservableProperty]
+    private string _horaActual =
+        DateTime.Now.ToString("HH:mm");
+
+
+    private readonly DispatcherTimer _reloj;
+
+
+    // =========================================================
     // ESTADOS DEL MENÚ
     // =========================================================
 
@@ -238,6 +313,30 @@ public partial class MainViewModel : ViewModelBase
 
         _vistaActual =
             InicioModulo;
+
+
+        // =====================================================
+        // RELOJ
+        // =====================================================
+
+        _reloj =
+            new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(15)
+            };
+
+        _reloj.Tick +=
+            (_, _) =>
+            {
+                HoraActual =
+                    DateTime.Now.ToString("HH:mm");
+
+                FechaActual =
+                    DateTime.Now.ToString(
+                        "dddd, dd 'de' MMMM 'de' yyyy");
+            };
+
+        _reloj.Start();
     }
 
 

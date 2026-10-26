@@ -7,315 +7,476 @@
 
         Icon="/Assets/Brand/esdm-app-icon.ico"
 
-        Width="600"
-        Height="650"
+        Width="620"
+        Height="700"
 
         MinWidth="540"
-        MinHeight="580"
+        MinHeight="600"
 
-        CanResize="False"
+        CanResize="True"
+
         WindowStartupLocation="CenterOwner"
 
-        Background="#F3F6FA">
-
-
-    <Border Margin="12"
-            Padding="26"
-            Background="White"
-            CornerRadius="18">
-
-        <Grid RowDefinitions="Auto,Auto,*,Auto"
-              RowSpacing="18">
-
-
-            <!-- ================================================= -->
-            <!-- ENCABEZADO                                        -->
-            <!-- ================================================= -->
-
-            <StackPanel Grid.Row="0"
-                        Spacing="4">
-
-                <TextBlock Text="Transferencia bancaria"
-                           FontSize="27"
-                           FontWeight="Bold"
-                           Foreground="#0F766E"/>
-
-                <TextBlock Text="Realiza la transferencia y verifica que el pago haya sido recibido"
-                           FontSize="12"
-                           Foreground="#64748B"
-                           TextWrapping="Wrap"/>
-
-            </StackPanel>
-
-
-            <!-- ================================================= -->
-            <!-- TOTAL                                             -->
-            <!-- ================================================= -->
-
-            <Border Grid.Row="1"
-                    Background="#0F766E"
-                    CornerRadius="15"
-                    Padding="20">
-
-                <Grid ColumnDefinitions="Auto,*"
-                      ColumnSpacing="16">
-
-                    <Border Width="52"
-                            Height="52"
-                            Background="#25FFFFFF"
-                            CornerRadius="12"
-                            VerticalAlignment="Center">
-
-                        <TextBlock Text="🏦"
-                                   FontSize="24"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
-
-                    </Border>
-
-
-                    <StackPanel Grid.Column="1"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Center"
-                                Spacing="2">
-
-                        <TextBlock Text="Total a transferir"
-                                   FontSize="12"
-                                   Foreground="#CCFBF1"
-                                   HorizontalAlignment="Right"/>
-
-                        <TextBlock x:Name="TextoTotal"
-                                   Text="$0.00"
-                                   FontSize="31"
-                                   FontWeight="Bold"
-                                   Foreground="White"
-                                   HorizontalAlignment="Right"/>
-
-                    </StackPanel>
-
-                </Grid>
-
-            </Border>
-
-
-            <!-- ================================================= -->
-            <!-- CONTENIDO                                         -->
-            <!-- ================================================= -->
-
-            <ScrollViewer Grid.Row="2"
-                          VerticalScrollBarVisibility="Auto"
-                          HorizontalScrollBarVisibility="Disabled">
-
-                <StackPanel Spacing="14">
-
-
-                    <!-- DATOS BANCARIOS -->
-
-                    <Border Background="#F0FDFA"
-                            BorderBrush="#99F6E4"
-                            BorderThickness="1"
-                            CornerRadius="13"
-                            Padding="18">
-
-                        <StackPanel Spacing="14">
-
-                            <TextBlock Text="Datos para transferencia"
-                                       FontSize="16"
-                                       FontWeight="Bold"
-                                       Foreground="#0F766E"/>
-
-
-                            <Grid RowDefinitions="Auto,Auto,Auto"
-                                  ColumnDefinitions="125,*"
-                                  RowSpacing="12"
-                                  ColumnSpacing="12">
-
-                                <!-- BANCO -->
-
-                                <TextBlock Grid.Row="0"
-                                           Grid.Column="0"
-                                           Text="Banco"
-                                           FontSize="12"
-                                           FontWeight="SemiBold"
-                                           Foreground="#64748B"/>
-
-                                <TextBlock Grid.Row="0"
-                                           Grid.Column="1"
-                                           Text="BBVA"
-                                           FontSize="13"
-                                           FontWeight="Bold"
-                                           Foreground="#17365D"/>
-
-
-                                <!-- BENEFICIARIO -->
-
-                                <TextBlock Grid.Row="1"
-                                           Grid.Column="0"
-                                           Text="Beneficiario"
-                                           FontSize="12"
-                                           FontWeight="SemiBold"
-                                           Foreground="#64748B"/>
-
-                                <TextBlock Grid.Row="1"
-                                           Grid.Column="1"
-                                           Text="GRUPO LUIS FER"
-                                           FontSize="13"
-                                           FontWeight="Bold"
-                                           Foreground="#17365D"
-                                           TextWrapping="Wrap"/>
-
-
-                                <!-- CLABE -->
-
-                                <TextBlock Grid.Row="2"
-                                           Grid.Column="0"
-                                           Text="CLABE"
-                                           FontSize="12"
-                                           FontWeight="SemiBold"
-                                           Foreground="#64748B"/>
-
-                                <TextBlock Grid.Row="2"
-                                           Grid.Column="1"
-                                           Text="012345678901234567"
-                                           FontSize="15"
-                                           FontWeight="Bold"
-                                           Foreground="#17365D"
-                                           TextWrapping="Wrap"/>
-
-                            </Grid>
-
-                        </StackPanel>
-
-                    </Border>
-
-
-                    <!-- ADVERTENCIA -->
-
-                    <Border Background="#FFFBEB"
-                            BorderBrush="#FDE68A"
-                            BorderThickness="1"
-                            CornerRadius="12"
-                            Padding="15">
-
-                        <Grid ColumnDefinitions="Auto,*"
-                              ColumnSpacing="11">
-
-                            <TextBlock Text="⚠"
-                                       FontSize="21"
-                                       VerticalAlignment="Top"/>
-
-                            <StackPanel Grid.Column="1"
-                                        Spacing="4">
-
-                                <TextBlock Text="Verifica el pago antes de continuar"
-                                           FontSize="13"
-                                           FontWeight="Bold"
-                                           Foreground="#92400E"/>
-
-                                <TextBlock Text="Confirma únicamente cuando hayas comprobado que la transferencia fue recibida correctamente."
-                                           FontSize="11"
-                                           Foreground="#A16207"
-                                           TextWrapping="Wrap"/>
-
-                            </StackPanel>
-
-                        </Grid>
-
-                    </Border>
-
-
-                    <!-- MENSAJE / LOADING -->
-
-                    <Border x:Name="ProcesandoPanel"
-                            IsVisible="False"
-                            Background="#EFF6FF"
-                            BorderBrush="#BFDBFE"
-                            BorderThickness="1"
-                            CornerRadius="12"
-                            Padding="14">
-
-                        <StackPanel Spacing="9">
-
-                            <TextBlock x:Name="TextoProcesando"
-                                       Text="Registrando transferencia..."
-                                       FontSize="12"
-                                       FontWeight="SemiBold"
-                                       Foreground="#1D4ED8"
-                                       HorizontalAlignment="Center"/>
-
-                            <ProgressBar IsIndeterminate="True"
-                                         Height="5"/>
-
-                        </StackPanel>
-
-                    </Border>
-
-
-                    <!-- ERROR -->
-
-                    <TextBlock x:Name="TextoMensaje"
-                               Text=""
+        Background="#F4F6F8">
+
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+
+        <!-- ===================================================== -->
+        <!-- TOTAL                                                 -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Row="0"
+                Padding="28,24,28,22"
+                BorderBrush="#CDEBE6"
+                BorderThickness="0,0,0,1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#EFFAF8"/>
+                    <GradientStop Offset="1" Color="#DFF3EF"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Grid ColumnDefinitions="Auto,*,Auto"
+                  ColumnSpacing="16">
+
+                <Border Grid.Column="0"
+                        Width="56"
+                        Height="56"
+                        CornerRadius="17"
+                        VerticalAlignment="Center">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Offset="0" Color="#14B8A6"/>
+                            <GradientStop Offset="1" Color="#0F766E"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <PathIcon Width="26" Height="26"
+                              Foreground="White"
+                              Data="M4 10h3v7H4zm6.5 0h3v7h-3zM2 19h20v3H2zm15-9h3v7h-3zm-5-9L2 6v2h20V6z"/>
+                </Border>
+
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="3">
+                    <TextBlock Text="TRANSFERENCIA BANCARIA"
+                               Foreground="#0F766E"
                                FontSize="11"
-                               Foreground="#DC2626"
-                               FontWeight="SemiBold"
-                               TextWrapping="Wrap"
-                               HorizontalAlignment="Center"/>
-
+                               FontWeight="Bold"
+                               LetterSpacing="1.6"
+                               LineHeight="16"/>
+                    <TextBlock Text="Total a transferir"
+                               Foreground="#0B1220"
+                               FontSize="19"
+                               FontWeight="Bold"/>
                 </StackPanel>
 
-            </ScrollViewer>
-
-
-            <!-- ================================================= -->
-            <!-- ACCIONES                                          -->
-            <!-- ================================================= -->
-
-            <Grid Grid.Row="3"
-                  ColumnDefinitions="*,*"
-                  ColumnSpacing="12">
-
-                <Button x:Name="CancelarButton"
-                        Grid.Column="0"
-                        Height="50"
-
-                        Content="Regresar"
-
-                        Click="Cancelar_Click"
-
-                        Background="White"
-                        Foreground="#53657D"
-
-                        BorderBrush="#BCC8D6"
-                        BorderThickness="1"
-
-                        CornerRadius="10"
-
-                        FontSize="13"
-                        FontWeight="SemiBold"/>
-
-
-                <Button x:Name="ConfirmarButton"
-                        Grid.Column="1"
-                        Height="50"
-
-                        Content="✓  Confirmar transferencia"
-
-                        Click="Confirmar_Click"
-
-                        Background="#0F766E"
-                        Foreground="White"
-
-                        BorderThickness="0"
-
-                        CornerRadius="10"
-
-                        FontSize="13"
-                        FontWeight="Bold"/>
+                <TextBlock Grid.Column="2"
+                           x:Name="TextoTotal"
+                           Foreground="#0B1220"
+                           FontSize="42"
+                           FontWeight="Bold"
+                           LetterSpacing="-1.2"
+                           VerticalAlignment="Center"/>
 
             </Grid>
 
-        </Grid>
+        </Border>
 
-    </Border>
+
+        <!-- ===================================================== -->
+        <!-- DATOS Y AVISOS                                        -->
+        <!-- ===================================================== -->
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <StackPanel Margin="28,22,28,10"
+                        Spacing="16">
+
+
+                <!-- DATOS PARA TRANSFERENCIA -->
+
+                <Border Classes="tarjeta">
+
+                    <StackPanel Spacing="0">
+
+                        <Grid ColumnDefinitions="*,Auto"
+                              Margin="20,16,16,10">
+                            <TextBlock Text="Datos para transferencia"
+                                       Foreground="#0B1220"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="Compártelos con el cliente"
+                                       Foreground="#94A3B8"
+                                       FontSize="12"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+
+                        <!-- Banco -->
+                        <Grid Classes="dato" ColumnDefinitions="Auto,*">
+                            <Border Classes="iconoDato">
+                                <PathIcon Data="M4 10h3v7H4zm6.5 0h3v7h-3zM2 19h20v3H2zm15-9h3v7h-3zm-5-9L2 6v2h20V6z"/>
+                            </Border>
+                            <StackPanel Grid.Column="1" Classes="textoDato">
+                                <TextBlock Classes="etiqueta" Text="BANCO"/>
+                                <TextBlock Classes="valor" Text="BBVA"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Beneficiario -->
+                        <Grid Classes="dato" ColumnDefinitions="Auto,*">
+                            <Border Classes="iconoDato">
+                                <PathIcon Data="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.5h19.6v-2.5c0-3.3-6.5-4.9-9.8-4.9z"/>
+                            </Border>
+                            <StackPanel Grid.Column="1" Classes="textoDato">
+                                <TextBlock Classes="etiqueta" Text="BENEFICIARIO"/>
+                                <TextBlock Classes="valor" Text="GRUPO LUIS FER"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- CLABE -->
+                        <Grid Classes="dato ultimo" ColumnDefinitions="Auto,*,Auto">
+                            <Border Classes="iconoDato">
+                                <PathIcon Data="M3 5v14h18V5H3zm4 2v2H5V7h2zm-2 6v-2h2v2H5zm0 2h2v2H5v-2zm14 2H9v-2h10v2zm0-4H9v-2h10v2zm0-4H9V7h10v2z"/>
+                            </Border>
+                            <StackPanel Grid.Column="1" Classes="textoDato">
+                                <TextBlock Classes="etiqueta" Text="CLABE INTERBANCARIA"/>
+                                <TextBlock x:Name="TextoClabe"
+                                           Classes="valor clabe"
+                                           Text="012345678901234567"/>
+                            </StackPanel>
+                            <Button Grid.Column="2"
+                                    Classes="copiar"
+                                    Content="Copiar"
+                                    ToolTip.Tip="Copiar CLABE"
+                                    Click="CopiarClabe_Click"/>
+                        </Grid>
+
+                    </StackPanel>
+
+                </Border>
+
+
+                <!-- AVISO -->
+
+                <Border Padding="16,14"
+                        CornerRadius="16"
+                        Background="#FFF7E0"
+                        BorderBrush="#FBD98A"
+                        BorderThickness="1">
+                    <Grid ColumnDefinitions="Auto,*"
+                          ColumnSpacing="12">
+                        <Border Width="36" Height="36"
+                                CornerRadius="11"
+                                Background="#FDEBB5"
+                                VerticalAlignment="Top">
+                            <PathIcon Width="18" Height="18"
+                                      Foreground="#B7791F"
+                                      Data="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" Spacing="3">
+                            <TextBlock Text="Verifica el pago antes de continuar"
+                                       Foreground="#7A4E05"
+                                       FontSize="14"
+                                       FontWeight="Bold"/>
+                            <TextBlock Text="Confirma únicamente cuando hayas comprobado que la transferencia fue recibida en la cuenta."
+                                       Foreground="#92600A"
+                                       FontSize="13"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+
+                <!-- PROCESANDO -->
+
+                <Border x:Name="ProcesandoPanel"
+                        IsVisible="False"
+                        Background="#EFFAF8"
+                        BorderBrush="#B7E4DC"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        Padding="16,14">
+                    <StackPanel Spacing="10">
+                        <TextBlock x:Name="TextoProcesando"
+                                   Text="Registrando transferencia..."
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="#0F766E"
+                                   HorizontalAlignment="Center"/>
+                        <ProgressBar IsIndeterminate="True"
+                                     Height="4"
+                                     MinHeight="4"
+                                     Foreground="#0F766E"
+                                     Background="#D5F0EB"/>
+                    </StackPanel>
+                </Border>
+
+
+                <!-- ERROR -->
+
+                <Border Padding="12,9"
+                        CornerRadius="12"
+                        Background="#FEF2F2"
+                        BorderBrush="#FECACA"
+                        BorderThickness="1"
+                        IsVisible="{Binding #TextoMensaje.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <TextBlock x:Name="TextoMensaje"
+                               Text=""
+                               FontSize="13"
+                               Foreground="#9F1239"
+                               TextWrapping="Wrap"/>
+                </Border>
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+
+        <!-- ===================================================== -->
+        <!-- ACCIONES                                              -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Row="2"
+                Background="White"
+                BorderBrush="#EAEEF2"
+                BorderThickness="0,1,0,0"
+                Padding="28,14,28,20">
+
+            <StackPanel Spacing="12">
+
+                <StackPanel Orientation="Horizontal"
+                            Spacing="18"
+                            HorizontalAlignment="Center">
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Enter"/></Border>
+                        <TextBlock Text="Confirmar transferencia"/>
+                    </StackPanel>
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Esc"/></Border>
+                        <TextBlock Text="Regresar"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,2*"
+                      ColumnSpacing="12">
+
+                    <Button x:Name="CancelarButton"
+                            Grid.Column="0"
+                            Classes="regresar"
+                            IsCancel="True"
+                            Click="Cancelar_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <PathIcon Width="14" Height="14"
+                                      Data="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                            <TextBlock Text="Regresar" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="ConfirmarButton"
+                            Grid.Column="1"
+                            Classes="confirmar"
+                            IsDefault="True"
+                            Click="Confirmar_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="9">
+                            <PathIcon Width="18" Height="18"
+                                      Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            <TextBlock Text="Confirmar transferencia" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                </Grid>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <Window.Styles>
+
+        <Style Selector="Border.tarjeta">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#EAEEF2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="BoxShadow" Value="0 1 2 0 #0A0F172A"/>
+        </Style>
+
+        <!-- Renglones de datos -->
+        <Style Selector="Grid.dato">
+            <Setter Property="Margin" Value="20,0,16,0"/>
+            <Setter Property="MinHeight" Value="64"/>
+            <Setter Property="ColumnSpacing" Value="14"/>
+        </Style>
+
+        <Style Selector="Grid.dato.ultimo">
+            <Setter Property="Margin" Value="20,0,16,8"/>
+        </Style>
+
+        <Style Selector="Border.iconoDato">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Background" Value="#EFFAF8"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.iconoDato PathIcon">
+            <Setter Property="Width" Value="18"/>
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Foreground" Value="#0F766E"/>
+        </Style>
+
+        <Style Selector="StackPanel.textoDato">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Spacing" Value="2"/>
+        </Style>
+
+        <Style Selector="TextBlock.etiqueta">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="1.2"/>
+        </Style>
+
+        <Style Selector="TextBlock.valor">
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style Selector="TextBlock.valor.clabe">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="LetterSpacing" Value="1.5"/>
+            <Setter Property="Foreground" Value="#0F766E"/>
+        </Style>
+
+        <Style Selector="Button.copiar">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="CornerRadius" Value="11"/>
+            <Setter Property="Background" Value="#F4F6F8"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.copiar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#EFFAF8"/>
+            <Setter Property="BorderBrush" Value="#99D6CB"/>
+            <Setter Property="Foreground" Value="#0F766E"/>
+        </Style>
+
+        <!-- Atajos -->
+        <Style Selector="StackPanel.atajo">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Spacing" Value="6"/>
+        </Style>
+
+        <Style Selector="StackPanel.atajo > TextBlock">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla">
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <!-- Botones -->
+        <Style Selector="Button.regresar">
+            <Setter Property="Height" Value="58"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.regresar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+        </Style>
+
+        <Style Selector="Button.confirmar">
+            <Setter Property="Height" Value="58"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#14B8A6"/>
+                    <GradientStop Offset="1" Color="#0F766E"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.confirmar /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 24 -8 #800F766E"/>
+        </Style>
+
+        <Style Selector="Button.confirmar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#2DD4BF"/>
+                    <GradientStop Offset="1" Color="#118A80"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.confirmar:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#0B5E57"/>
+        </Style>
+
+        <Style Selector="Button.confirmar:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#BFE3DD"/>
+            <Setter Property="Foreground" Value="#F5FBFA"/>
+            <Setter Property="BoxShadow" Value="none"/>
+        </Style>
+
+    </Window.Styles>
 
 </Window>

@@ -17,358 +17,269 @@
         WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
 
-        Background="#F6F8F7">
+        Background="#F4F6F8">
 
 
     <!-- ========================================================= -->
     <!-- LAYOUT PRINCIPAL                                          -->
     <!-- ========================================================= -->
 
-    <Grid x:Name="MainLayout">
-
-        <Grid.ColumnDefinitions>
-
-            <ColumnDefinition Width="220"/>
-
-            <ColumnDefinition Width="*"/>
-
-        </Grid.ColumnDefinitions>
+    <Grid x:Name="MainLayout"
+          ColumnDefinitions="Auto,*">
 
 
         <!-- ===================================================== -->
         <!-- SIDEBAR                                               -->
         <!-- ===================================================== -->
+        <!-- La clase "colapsado" (puesta desde el code-behind)    -->
+        <!-- cambia el ancho y oculta los textos mediante estilos. -->
+        <!-- ===================================================== -->
 
-        <Border Grid.Column="0"
+        <Border x:Name="Sidebar"
+                Grid.Column="0"
+                Classes="sidebar"
+                ZIndex="1"
                 Background="White"
-                BorderBrush="#E4EAE6"
+                BorderBrush="#E8ECEF"
                 BorderThickness="0,0,1,0">
 
-            <Grid RowDefinitions="Auto,*,Auto">
+            <Grid RowDefinitions="Auto,Auto,*,Auto">
 
 
                 <!-- ================================================= -->
                 <!-- IDENTIDAD                                         -->
                 <!-- ================================================= -->
 
-                <Grid Grid.Row="0"
-                      Margin="8,14,8,10"
-                      RowDefinitions="Auto,Auto">
+                <Border Grid.Row="0"
+                        Classes="marca"
+                        Margin="16,18,16,0"
+                        HorizontalAlignment="Left"
+                        CornerRadius="18"
+                        ClipToBounds="True"
+                        Background="#050607">
 
+                    <Panel>
 
-                    <!-- ================================================= -->
-                    <!-- BOTÓN COLAPSAR                                    -->
-                    <!-- ================================================= -->
+                        <Ellipse Width="150" Height="150"
+                                 HorizontalAlignment="Left" VerticalAlignment="Top"
+                                 Margin="-70,-70,0,0"
+                                 IsHitTestVisible="False">
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Offset="0" Color="#9916A34A"/>
+                                    <GradientStop Offset="1" Color="#0016A34A"/>
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
 
-                    <Button x:Name="ToggleSidebarButton"
-                            Grid.Row="0"
-                            Width="38"
-                            Height="38"
-                            HorizontalAlignment="Right"
-                            Margin="0,0,2,8"
-
-                            Click="ToggleSidebar_Click"
-
-                            Background="#F1F7F3"
-                            Foreground="#08783D"
-
-                            BorderThickness="0"
-                            CornerRadius="9"
-
-                            HorizontalContentAlignment="Center"
-                            VerticalContentAlignment="Center"
-
-                            FontSize="18"
-                            FontWeight="SemiBold"
-
-                            Content="‹"/>
-
-
-                    <!-- ================================================= -->
-                    <!-- IDENTIDAD EXPANDIDA                               -->
-                    <!-- ================================================= -->
-
-                    <StackPanel x:Name="IdentidadExpandida"
-                                Grid.Row="1"
-                                Spacing="8"
-                                IsVisible="False"
-                                Opacity="0"
-                                Height="0"
-                                Width="0"
-                                IsHitTestVisible="False"
-                                Margin="0">
-                                
-
-                         <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
-                               Width="154"
-                               Height="90"
-                               Stretch="Uniform"
-                               HorizontalAlignment="Center"/> 
-
-                        <TextBlock Text="PUNTO DE VENTA"
-                                   Foreground="#08783D"
-                                   FontSize="12"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"/>
-
-                        <Border Height="1"
-                                Margin="6,7,6,0"
-                                Background="#E4EAE6"/>
-
-                    </StackPanel> 
-
-
-                    <!-- ================================================= -->
-                    <!-- IDENTIDAD COLAPSADA                               -->
-                    <!-- ================================================= -->
-
-                    <StackPanel x:Name="IdentidadColapsada"
-                               Grid.Row="1"
-                                Spacing="8"
-                                IsVisible="False"
-                                Opacity="0"
-                                Height="0"
-                                Width="0"
-                                IsHitTestVisible="False"
-                                Margin="0">
+                        <Ellipse Width="150" Height="150"
+                                 HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                                 Margin="0,0,-70,-70"
+                                 IsHitTestVisible="False">
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Offset="0" Color="#99C61F2B"/>
+                                    <GradientStop Offset="1" Color="#00C61F2B"/>
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
 
                         <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
-                               Width="48"
-                               Height="48"
+                               Classes="logoMarca"
                                Stretch="Uniform"
-                               HorizontalAlignment="Center"/>
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center">
+                            <Image.OpacityMask>
+                                <RadialGradientBrush RadiusX="64%" RadiusY="62%">
+                                    <GradientStop Offset="0.8" Color="White"/>
+                                    <GradientStop Offset="1" Color="Transparent"/>
+                                </RadialGradientBrush>
+                            </Image.OpacityMask>
+                        </Image>
 
-                        <Border Height="1"
-                                Margin="5,4,5,0"
-                                Background="#E4EAE6"/>
+                    </Panel>
 
-                    </StackPanel>
+                </Border>
 
-                </Grid>
+
+                <!-- Botón flotante para colapsar / expandir -->
+                <Button x:Name="ToggleSidebarButton"
+                        Grid.Row="0"
+                        Classes="toggleSidebar"
+                        Click="ToggleSidebar_Click"
+                        ToolTip.Tip="Contraer / expandir menú">
+                    <PathIcon x:Name="ToggleSidebarIcon"
+                              Width="12" Height="12"
+                              Data="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                </Button>
+
+
+                <!-- ================================================= -->
+                <!-- NUEVA VENTA                                       -->
+                <!-- ================================================= -->
+
+                <Button Grid.Row="1"
+                        Classes="newSaleButton"
+                        Classes.active="{Binding EsNuevaVenta}"
+                        Command="{Binding NavegarCommand}"
+                        CommandParameter="NuevaVenta"
+                        Click="NuevaVenta_Click"
+                        ToolTip.Tip="Nueva venta">
+
+                    <Grid ColumnDefinitions="Auto,*">
+
+                        <Border Width="38" Height="38"
+                                CornerRadius="11"
+                                Background="#2EFFFFFF">
+                            <PathIcon Width="20" Height="20"
+                                      Foreground="White"
+                                      Data="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                        </Border>
+
+                        <StackPanel Grid.Column="1"
+                                    Classes="etiqueta"
+                                    Margin="12,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Spacing="1">
+                            <TextBlock Text="Nueva venta"
+                                       FontSize="15"
+                                       FontWeight="Bold"/>
+                            <TextBlock Text="Agregar productos y cobrar"
+                                       FontSize="11"
+                                       Opacity="0.85"/>
+                        </StackPanel>
+
+                    </Grid>
+
+                </Button>
 
 
                 <!-- ================================================= -->
                 <!-- NAVEGACIÓN                                       -->
                 <!-- ================================================= -->
 
-                <ScrollViewer Grid.Row="1"
+                <ScrollViewer Grid.Row="2"
                               VerticalScrollBarVisibility="Auto"
                               HorizontalScrollBarVisibility="Disabled">
 
-                    <StackPanel Margin="12,8"
-                                Spacing="6">
+                    <StackPanel Margin="16,4,16,12"
+                                Spacing="4">
 
 
-                        <!-- ================================================= -->
-                        <!-- TÍTULO OPERACIÓN                                  -->
-                        <!-- ================================================= -->
+                        <!-- ============ OPERACIÓN ============ -->
 
-                        <TextBlock x:Name="OperacionTextBlock"
-                                   Text="OPERACIÓN"
-                                   Foreground="#94A39A"
-                                   FontSize="9"
-                                   FontWeight="SemiBold"
-                                   Margin="12,0,0,4"
-                                   IsVisible="False"
-                                   Opacity="0"
-                                   IsHitTestVisible="False"
-                                   />
+                        <TextBlock Classes="seccion etiqueta"
+                                   Text="OPERACIÓN"/>
+                        <Border Classes="divisor"/>
 
 
-                        <!-- ================================================= -->
-                        <!-- NUEVA VENTA                                       -->
-                        <!-- ================================================= -->
-
-                        <Button Classes="newSaleButton"
-                                Classes.active="{Binding EsNuevaVenta}"
-
-                                Command="{Binding NavegarCommand}"
-                                CommandParameter="NuevaVenta"
-
-                                Click="NuevaVenta_Click">
-
-                            <Grid ColumnDefinitions="30,*">
-
-                                <TextBlock Text="🛒"
-                                           FontSize="21"
-                                           FontWeight="SemiBold"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-
-                                <TextBlock x:Name="NuevaVentaText"
-                                           Grid.Column="1"
-                                           Text="Nueva venta"
-                                           Margin="10,0,0,0"
-                                           VerticalAlignment="Center"
-                                           FontWeight="SemiBold"/>
-
-                            </Grid>
-
-                        </Button>
-
-
-                        <!-- ================================================= -->
-                        <!-- RESUMEN                                           -->
-                        <!-- ================================================= -->
-
+                        <!-- RESUMEN -->
                         <Button Classes="menuItem"
                                 Classes.active="{Binding EsInicio}"
                                 Command="{Binding NavegarCommand}"
-                                CommandParameter="Inicio">
-
-                            <Grid ColumnDefinitions="30,*">
-
-                                <TextBlock Text="⌂"
-                                           FontSize="17"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-
-                                <TextBlock x:Name="ResumenText"
-                                           Grid.Column="1"
-                                           Text="Resumen"
-                                           Margin="10,0,0,0"
-                                           VerticalAlignment="Center"/>
-
+                                CommandParameter="Inicio"
+                                ToolTip.Tip="Resumen">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border Classes="iconoMenu">
+                                    <PathIcon Data="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                                </Border>
+                                <TextBlock Grid.Column="1"
+                                           Classes="etiqueta textoMenu"
+                                           Text="Resumen"/>
                             </Grid>
-
                         </Button>
 
 
-                        <!-- ================================================= -->
-                        <!-- PAGAR CRÉDITO                                     -->
-                        <!-- ================================================= -->
-
-                      <!--   <Button Classes="menuItem"
+                        <!-- PAGAR CRÉDITO (deshabilitado)
+                        <Button Classes="menuItem"
                                 Classes.active="{Binding EsPagoCredito}"
                                 Command="{Binding NavegarCommand}"
-                                CommandParameter="PagoCredito">
-
-                            <Grid ColumnDefinitions="30,*">
-
-                                <TextBlock Text="$"
-                                           FontSize="17"
-                                           FontWeight="SemiBold"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-
-                                <TextBlock x:Name="PagarCreditoText"
-                                           Grid.Column="1"
-                                           Text="Pagar crédito"
-                                           Margin="10,0,0,0"
-                                           VerticalAlignment="Center"
-                                           FontWeight="SemiBold"/>
-
+                                CommandParameter="PagoCredito"
+                                ToolTip.Tip="Pagar crédito">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border Classes="iconoMenu">
+                                    <PathIcon Data="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                                </Border>
+                                <TextBlock Grid.Column="1"
+                                           Classes="etiqueta textoMenu"
+                                           Text="Pagar crédito"/>
                             </Grid>
-
                         </Button> -->
 
 
-                        <!-- ================================================= -->
-                        <!-- CORTES                                            -->
-                        <!-- ================================================= -->
-
+                        <!-- CORTES -->
                         <Button Classes="menuItem"
                                 Classes.active="{Binding EsCortes}"
                                 Command="{Binding NavegarCommand}"
-                                CommandParameter="Cortes">
-
-                            <Grid ColumnDefinitions="30,*">
-
-                                <TextBlock Text="▥"
-                                           FontSize="16"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-
-                                <TextBlock x:Name="CortesText"
-                                           Grid.Column="1"
-                                           Text="Cortes y reportes"
-                                           Margin="10,0,0,0"
-                                           VerticalAlignment="Center"/>
-
+                                CommandParameter="Cortes"
+                                ToolTip.Tip="Cortes y reportes">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border Classes="iconoMenu">
+                                    <PathIcon Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                                </Border>
+                                <TextBlock Grid.Column="1"
+                                           Classes="etiqueta textoMenu"
+                                           Text="Cortes y reportes"/>
                             </Grid>
-
                         </Button>
 
 
-                        <!-- ================================================= -->
-                        <!-- CANCELAR VENTAS                                   -->
-                        <!-- ================================================= -->
-
+                        <!-- CANCELAR VENTAS -->
                         <Button Classes="menuItem"
                                 Classes.active="{Binding EsCancelaciones}"
                                 Command="{Binding NavegarCommand}"
-                                CommandParameter="Cancelaciones">
-
-                            <Grid ColumnDefinitions="30,*">
-
-                                <TextBlock Text="×"
-                                           FontSize="19"
-                                           FontWeight="SemiBold"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-
-                                <TextBlock x:Name="CancelarVentasText"
-                                           Grid.Column="1"
-                                           Text="Cancelar ventas"
-                                           Margin="10,0,0,0"
-                                           VerticalAlignment="Center"/>
-
+                                CommandParameter="Cancelaciones"
+                                ToolTip.Tip="Cancelar ventas">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border Classes="iconoMenu">
+                                    <PathIcon Data="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+                                </Border>
+                                <TextBlock Grid.Column="1"
+                                           Classes="etiqueta textoMenu"
+                                           Text="Cancelar ventas"/>
                             </Grid>
-
                         </Button>
 
 
-                        <!-- ================================================= -->
-                        <!-- REIMPRESIÓN DE TICKETS                            -->
-                        <!-- ================================================= -->
+                        <!-- ============ HERRAMIENTAS ============ -->
 
+                        <TextBlock Classes="seccion etiqueta"
+                                   Text="HERRAMIENTAS"
+                                   Margin="12,14,0,4"/>
+                        <Border Classes="divisor"/>
+
+
+                        <!-- REIMPRESIÓN -->
                         <Button Classes="menuItem"
                                 Classes.active="{Binding EsReimpresion}"
                                 Command="{Binding NavegarCommand}"
-                                CommandParameter="Reimpresion">
-
-                            <Grid ColumnDefinitions="30,*">
-
-                                <TextBlock Text="▤"
-                                           FontSize="17"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-
-                                <TextBlock x:Name="ReimpresionText"
-                                           Grid.Column="1"
-                                           Text="Reimpresión"
-                                           Margin="10,0,0,0"
-                                           VerticalAlignment="Center"/>
-
+                                CommandParameter="Reimpresion"
+                                ToolTip.Tip="Reimpresión de tickets">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border Classes="iconoMenu">
+                                    <PathIcon Data="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+                                </Border>
+                                <TextBlock Grid.Column="1"
+                                           Classes="etiqueta textoMenu"
+                                           Text="Reimpresión"/>
                             </Grid>
-
                         </Button>
 
 
-                        <!-- ================================================= -->
-                        <!-- CONFIGURACIÓN                                     -->
-                        <!-- ================================================= -->
-
+                        <!-- CONFIGURACIÓN -->
                         <Button Classes="menuItem"
                                 Classes.active="{Binding EsConfiguracion}"
                                 Command="{Binding NavegarCommand}"
-                                CommandParameter="Configuracion">
-
-                            <Grid ColumnDefinitions="30,*">
-
-                                <TextBlock Text="⚙"
-                                           FontSize="17"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
-
-                                <TextBlock x:Name="ConfiguracionText"
-                                           Grid.Column="1"
-                                           Text="Configuración"
-                                           Margin="10,0,0,0"
-                                           VerticalAlignment="Center"/>
-
+                                CommandParameter="Configuracion"
+                                ToolTip.Tip="Configuración">
+                            <Grid ColumnDefinitions="Auto,*">
+                                <Border Classes="iconoMenu">
+                                    <PathIcon Data="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/>
+                                </Border>
+                                <TextBlock Grid.Column="1"
+                                           Classes="etiqueta textoMenu"
+                                           Text="Configuración"/>
                             </Grid>
-
                         </Button>
 
                     </StackPanel>
@@ -380,70 +291,92 @@
                 <!-- PARTE INFERIOR DEL MENÚ                          -->
                 <!-- ================================================= -->
 
-                <StackPanel Grid.Row="2"
-                            Margin="12,0,12,14"
+                <StackPanel Grid.Row="3"
+                            Margin="16,0,16,16"
                             Spacing="8">
 
 
+                    <!-- USUARIO ACTIVO -->
+                    <Border Classes="tarjetaUsuario"
+                            ToolTip.Tip="{Binding UsuarioActual}">
+                        <Grid ColumnDefinitions="Auto,*">
 
-                        <Button x:Name="CambiarCajaButton"
-                                Classes="CambiarCaja"
-                                Click="CambiarCaja_Click">
+                            <Panel Width="40" Height="40">
+                                <Border CornerRadius="20">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                            <GradientStop Offset="0" Color="#22C55E"/>
+                                            <GradientStop Offset="1" Color="#0B8A3E"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <TextBlock Text="{Binding InicialesUsuario}"
+                                               Foreground="White"
+                                               FontSize="14"
+                                               FontWeight="Bold"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"/>
+                                </Border>
+                                <Ellipse Width="12" Height="12"
+                                         HorizontalAlignment="Right"
+                                         VerticalAlignment="Bottom"
+                                         Fill="#22C55E"
+                                         Stroke="White"
+                                         StrokeThickness="2"
+                                         IsVisible="{Binding TurnoAbierto}"/>
+                            </Panel>
 
-                                <Grid ColumnDefinitions="28,*"
-                                        ColumnSpacing="8">
-
-                                        <TextBlock Text="⇄"
-                                                Foreground="White"
-                                                FontSize="16"
-                                                HorizontalAlignment="Center"
-                                                VerticalAlignment="Center"/>
-
-                                        <TextBlock x:Name="CambiarCajaText"
-                                                Grid.Column="1"
-                                                Text="Cambiar caja"
-                                                Foreground="White"
-                                                FontSize="11"
-                                                FontWeight="SemiBold"
-                                                VerticalAlignment="Center"
-                                                TextTrimming="CharacterEllipsis"/>
-
-                                </Grid>
-
-                        </Button>
-
-
-                    <Border Height="1"
-                            Margin="8,0,8,4"
-                            Background="#E4EAE6"/>
-
-
-                    <!-- ================================================= -->
-                    <!-- CERRAR SESIÓN                                      -->
-                    <!-- ================================================= -->
-
-                    <Button Classes="logoutButton"
-                            Click="CerrarSesion_Click">
-
-                        <Grid ColumnDefinitions="28,*"
-                              ColumnSpacing="8">
-
-                            <TextBlock Text="↪"
-                                       Foreground="White"
-                                       FontSize="18"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
-
-                            <TextBlock x:Name="CerrarSesionText"
-                                       Grid.Column="1"
-                                       Text="Cerrar sesión"
-                                       Foreground="White"
-                                       FontSize="11"
-                                       FontWeight="SemiBold"
-                                       VerticalAlignment="Center"/>
+                            <StackPanel Grid.Column="1"
+                                        Classes="etiqueta"
+                                        Margin="10,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Spacing="2">
+                                <TextBlock Text="{Binding UsuarioActual}"
+                                           Foreground="#0F172A"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Text="{Binding DetalleUsuario}"
+                                           Foreground="#64748B"
+                                           FontSize="11"
+                                           TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
 
                         </Grid>
+                    </Border>
 
+
+                    <!-- CAMBIAR CAJA -->
+                    <Button x:Name="CambiarCajaButton"
+                            Classes="accionInferior cambiarCaja"
+                            Click="CambiarCaja_Click"
+                            ToolTip.Tip="Cambiar caja">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Width="18" Height="18"
+                                      Margin="8,0"
+                                      Data="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
+                            <TextBlock Grid.Column="1"
+                                       Classes="etiqueta"
+                                       Text="Cambiar caja"
+                                       Margin="4,0,0,0"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </Button>
+
+
+                    <!-- CERRAR SESIÓN -->
+                    <Button Classes="accionInferior logoutButton"
+                            Click="CerrarSesion_Click"
+                            ToolTip.Tip="Cerrar sesión">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <PathIcon Width="18" Height="18"
+                                      Margin="8,0"
+                                      Data="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                            <TextBlock Grid.Column="1"
+                                       Classes="etiqueta"
+                                       Text="Cerrar sesión"
+                                       Margin="4,0,0,0"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
                     </Button>
 
                 </StackPanel>
@@ -458,7 +391,7 @@
         <!-- ===================================================== -->
 
         <Grid Grid.Column="1"
-              RowDefinitions="90,*">
+              RowDefinitions="78,*">
 
 
          <!-- ================================================= -->
@@ -466,106 +399,146 @@
             <!-- ================================================= -->
 
             <Border Grid.Row="0"
-                    Background="#FFFFFF"
-                    BorderBrush="#E4EAE6"
-                    BorderThickness="0,0,0,1"
-                    ClipToBounds="True">
+                    Background="White"
+                    BorderBrush="#E8ECEF"
+                    BorderThickness="0,0,0,1">
 
-                <!-- Grid contenedor de capas (Fondo y Contenido) -->
-                <Grid>
+                <Grid RowDefinitions="*,Auto">
 
-                    <Canvas Width="700" 
-                            Height="90"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Top"
-                            IsHitTestVisible="False">
+                    <Grid Grid.Row="0"
+                          ColumnDefinitions="*,Auto"
+                          Margin="32,0,24,0">
 
-                            <!-- Amarillo -->
-                            <Polygon Points="180,0 245,0 100,90 35,90" Fill="#FFD52A"/>
-                            
-                            <!-- Rojo -->
-                            <Polygon Points="245,0 320,0 175,90 100,90" Fill="#F20D35"/>
-                            
-                            <!-- Verde  -->
-                            <Polygon Points="320,0 700,0 700,90 175,90" Fill="#079447"/>
-                    </Canvas>
+                        <!-- TÍTULO, SUBTÍTULO Y FECHA -->
+                        <StackPanel Grid.Column="0"
+                                    VerticalAlignment="Center"
+                                    Spacing="3">
 
+                            <TextBlock Text="{Binding TituloPagina}"
+                                       Foreground="#0B1220"
+                                       FontSize="24"
+                                       FontWeight="Bold"
+                                       LetterSpacing="-0.4"
+                                       TextTrimming="CharacterEllipsis"/>
 
-                    <Grid ColumnDefinitions="Auto,*,Auto"
-                          Margin="20,0,0,0"
-                          ColumnSpacing="18">
-
-                            <Image Grid.Column="0" 
-                                   Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
-                                   Width="120"
-                                   Height="70"
-                                   Stretch="Uniform"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
-
-                            <!-- TÍTULO, SUBTÍTULO Y FECHA (Columna 1 Centro) -->
-                            <StackPanel Grid.Column="1"
-                                        VerticalAlignment="Center"
-                                        Spacing="3">
-
-                                    <TextBlock Text="{Binding TituloPagina}"
-                                               Foreground="#155C37"
-                                               FontSize="25"
-                                               FontWeight="Bold"
-                                               TextWrapping="NoWrap"
-                                               TextTrimming="CharacterEllipsis"/>
-
-                                    <StackPanel Orientation="Horizontal" Spacing="8">
-                                            <TextBlock Text="{Binding SubtituloPagina}" Foreground="#000000" FontSize="11" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                            <TextBlock Text="•" Foreground="#000000" FontSize="11" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding FechaActual}" Foreground="#000000" FontSize="11" VerticalAlignment="Center"/>
-                                    </StackPanel>
-
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="{Binding SubtituloPagina}"
+                                           Foreground="#64748B"
+                                           FontSize="12"
+                                           VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis"/>
+                                <Ellipse Width="4" Height="4"
+                                         Fill="#CBD5E1"
+                                         VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding FechaActual}"
+                                           Foreground="#64748B"
+                                           FontSize="12"
+                                           VerticalAlignment="Center"/>
                             </StackPanel>
 
-                            <!-- SUCURSAL Y USUARIO (Columna 2 Derecha) -->
-                           <Border Grid.Column="2"
-                                Background="#FFFFFF"
-                                BorderBrush="#E8EEE9"
-                                BorderThickness="1,1,0,1"
-                                CornerRadius="28,0,0,28"
-                                Padding="18,8,24,8"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Right">
+                        </StackPanel>
 
-                                <StackPanel Orientation="Horizontal"
-                                        Spacing="16"
-                                        VerticalAlignment="Center">
+                        <!-- RELOJ, CAJA Y USUARIO -->
+                        <StackPanel Grid.Column="1"
+                                    Orientation="Horizontal"
+                                    Spacing="10"
+                                    VerticalAlignment="Center">
 
-                                        <!-- SUCURSAL -->
-                                        <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
-                                                <Border Width="34" Height="34" Background="#E8F7ED" CornerRadius="17">
-                                                        <TextBlock Text="▦" Foreground="#079447" FontSize="21" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <StackPanel VerticalAlignment="Center" Spacing="2">
-                                                        <TextBlock Text="{Binding NombreSucursal}" Foreground="#08783D" FontSize="12" FontWeight="Bold" TextTrimming="CharacterEllipsis" MaxWidth="155"/>
-                                                        <TextBlock Text="Punto de Venta" Foreground="#94A39A" FontSize="10"/>
-                                                </StackPanel>
-                                        </StackPanel>
-
-                                        <!-- SEPARADOR -->
-                                        <Border Width="1" Height="38" Background="#E1E8E3"/>
-
-                                        <!-- USUARIO -->
-                                        <StackPanel VerticalAlignment="Center" Spacing="3">
-                                                <TextBlock Text="{Binding NombreUsuario}" Foreground="#26372C" FontSize="12" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" MaxWidth="115"/>
-                                                <TextBlock Text="Usuario activo" Foreground="#94A39A" FontSize="10"/>
-                                        </StackPanel>
-
-                                        <!-- AVATAR -->
-                                        <Border Width="42" Height="42" CornerRadius="21" Background="#16A34A">
-                                                <TextBlock Text="A" Foreground="#FFFFFF" FontSize="17" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-
+                            <Border Classes="chipEncabezado">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Width="16" Height="16"
+                                              Foreground="#64748B"
+                                              Data="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                                    <TextBlock Text="{Binding HoraActual}"
+                                               Foreground="#0F172A"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
                                 </StackPanel>
-                        </Border>
+                            </Border>
+
+                            <Border Classes="chipEncabezado">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Border Width="26" Height="26"
+                                            CornerRadius="8"
+                                            Background="#EAF7EF">
+                                        <PathIcon Width="14" Height="14"
+                                                  Foreground="#16A34A"
+                                                  Data="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding CajaActual}"
+                                                   Foreground="#0F172A"
+                                                   FontSize="13"
+                                                   FontWeight="SemiBold"
+                                                   MaxWidth="160"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="5">
+                                            <Ellipse Width="6" Height="6"
+                                                     Fill="#22C55E"
+                                                     VerticalAlignment="Center"
+                                                     IsVisible="{Binding TurnoAbierto}"/>
+                                            <TextBlock Text="Turno abierto"
+                                                       Foreground="#16A34A"
+                                                       FontSize="11"
+                                                       IsVisible="{Binding TurnoAbierto}"/>
+                                            <TextBlock Text="Sin turno"
+                                                       Foreground="#94A3B8"
+                                                       FontSize="11"
+                                                       IsVisible="{Binding !TurnoAbierto}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Classes="chipEncabezado"
+                                    Padding="6,6,14,6">
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Border Width="34" Height="34"
+                                            CornerRadius="17">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                                <GradientStop Offset="0" Color="#22C55E"/>
+                                                <GradientStop Offset="1" Color="#0B8A3E"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <TextBlock Text="{Binding InicialesUsuario}"
+                                                   Foreground="White"
+                                                   FontSize="13"
+                                                   FontWeight="Bold"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding UsuarioActual}"
+                                                   Foreground="#0F172A"
+                                                   FontSize="13"
+                                                   FontWeight="SemiBold"
+                                                   MaxWidth="160"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="Usuario activo"
+                                                   Foreground="#94A3B8"
+                                                   FontSize="11"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+
+                        </StackPanel>
+
                     </Grid>
+
+                    <!-- Franja con los colores de la marca -->
+                    <Grid Grid.Row="1"
+                          Height="3"
+                          ColumnDefinitions="6*,1*,1*,1*">
+                        <Border Grid.Column="0" Background="#16A34A"/>
+                        <Border Grid.Column="1" Background="#F5C400"/>
+                        <Border Grid.Column="2" Background="#B5651D"/>
+                        <Border Grid.Column="3" Background="#C61F2B"/>
+                    </Grid>
+
                 </Grid>
+
             </Border>
 
 
@@ -574,7 +547,7 @@
             <!-- ================================================= -->
 
             <Border Grid.Row="1"
-                    Background="#F6F8F7">
+                    Background="#F4F6F8">
 
                 <ContentControl Content="{Binding VistaActual}"
                                 HorizontalContentAlignment="Stretch"
@@ -595,22 +568,109 @@
 
 
         <!-- ===================================================== -->
-        <!-- BOTÓN COLAPSAR                                       -->
+        <!-- SIDEBAR: ANCHO Y MODO COLAPSADO                      -->
         <!-- ===================================================== -->
 
-        <Style Selector="Button#ToggleSidebarButton:pointerover">
+        <Style Selector="Border.sidebar">
+            <Setter Property="Width" Value="252"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Width"
+                                      Duration="0:0:0.22"
+                                      Easing="CubicEaseOut"/>
+                </Transitions>
+            </Setter>
+        </Style>
 
-            <Setter Property="Background"
-                    Value="#E5F3EA"/>
+        <Style Selector="Border.sidebar.colapsado">
+            <Setter Property="Width" Value="84"/>
+        </Style>
 
+        <!-- Textos que se ocultan al colapsar -->
+        <Style Selector="Border.sidebar.colapsado :is(Control).etiqueta">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+
+        <!-- Encabezados de sección -->
+        <Style Selector="TextBlock.seccion">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="1.4"/>
+            <Setter Property="LineHeight" Value="18"/>
+            <Setter Property="Margin" Value="12,6,0,4"/>
+        </Style>
+
+        <!-- Divisor que sustituye a los títulos en modo colapsado -->
+        <Style Selector="Border.divisor">
+            <Setter Property="IsVisible" Value="False"/>
+            <Setter Property="Height" Value="1"/>
+            <Setter Property="Margin" Value="10,10"/>
+            <Setter Property="Background" Value="#E8ECEF"/>
+        </Style>
+
+        <Style Selector="Border.sidebar.colapsado Border.divisor">
+            <Setter Property="IsVisible" Value="True"/>
         </Style>
 
 
-        <Style Selector="Button#ToggleSidebarButton:pressed">
+        <!-- ===================================================== -->
+        <!-- IDENTIDAD                                            -->
+        <!-- ===================================================== -->
 
-            <Setter Property="Background"
-                    Value="#D5EBDD"/>
+        <Style Selector="Border.marca">
+            <Setter Property="Width" Value="220"/>
+            <Setter Property="Height" Value="96"/>
+        </Style>
 
+        <Style Selector="Border.sidebar.colapsado Border.marca">
+            <Setter Property="Width" Value="52"/>
+            <Setter Property="Height" Value="52"/>
+            <Setter Property="CornerRadius" Value="15"/>
+        </Style>
+
+        <Style Selector="Image.logoMarca">
+            <Setter Property="Margin" Value="10,6"/>
+        </Style>
+
+        <Style Selector="Border.sidebar.colapsado Image.logoMarca">
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- BOTÓN COLAPSAR (flota sobre el borde del menú)       -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Button.toggleSidebar">
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0,18,-14,0"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.toggleSidebar /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 2 8 0 #1A0F172A"/>
+        </Style>
+
+        <Style Selector="Button.toggleSidebar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#16A34A"/>
+            <Setter Property="BorderBrush" Value="#16A34A"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style Selector="Border.sidebar.colapsado PathIcon#ToggleSidebarIcon">
+            <Setter Property="RenderTransform" Value="rotate(180deg)"/>
         </Style>
 
 
@@ -619,238 +679,233 @@
         <!-- ===================================================== -->
 
         <Style Selector="Button.newSaleButton">
-
-            <Setter Property="Height"
-                    Value="48"/>
-
-            <Setter Property="Margin"
-                    Value="0,3,0,7"/>
-
-            <Setter Property="Padding"
-                    Value="12,0"/>
-
-            <Setter Property="HorizontalAlignment"
-                    Value="Stretch"/>
-
-            <Setter Property="HorizontalContentAlignment"
-                    Value="Stretch"/>
-
-            <Setter Property="VerticalContentAlignment"
-                    Value="Center"/>
-
-            <Setter Property="Background"
-                    Value="#16A34A"/>
-
-            <Setter Property="Foreground"
-                    Value="White"/>
-
-            <Setter Property="BorderThickness"
-                    Value="0"/>
-
-            <Setter Property="CornerRadius"
-                    Value="10"/>
-
-            <Setter Property="FontSize"
-                    Value="12"/>
-
+            <Setter Property="Height" Value="62"/>
+            <Setter Property="Margin" Value="16,18,16,14"/>
+            <Setter Property="Padding" Value="11,0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#1FBF5B"/>
+                    <GradientStop Offset="1" Color="#0B8A3E"/>
+                </LinearGradientBrush>
+            </Setter>
+            <Setter Property="RenderTransform" Value="translateY(0px)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
         </Style>
 
+        <Style Selector="Button.newSaleButton /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 22 -8 #8016A34A"/>
+        </Style>
 
         <Style Selector="Button.newSaleButton:pointerover">
-
-            <Setter Property="Background"
-                    Value="#15803D"/>
-
+            <Setter Property="RenderTransform" Value="translateY(-2px)"/>
         </Style>
 
+        <Style Selector="Button.newSaleButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BoxShadow" Value="0 14 28 -8 #9916A34A"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22CC63"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
 
-        <Style Selector="Button.newSaleButton:pressed">
+        <Style Selector="Button.newSaleButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#0B7A37"/>
+        </Style>
 
-            <Setter Property="Background"
-                    Value="#166534"/>
+        <!-- Venta en curso: anillo verde alrededor del botón -->
+        <Style Selector="Button.newSaleButton.active /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 0 0 3 #3316A34A, 0 10 22 -8 #8016A34A"/>
+        </Style>
 
+        <Style Selector="Border.sidebar.colapsado Button.newSaleButton">
+            <Setter Property="Height" Value="52"/>
+            <Setter Property="Padding" Value="7,0"/>
+            <Setter Property="CornerRadius" Value="15"/>
         </Style>
 
 
         <!-- ===================================================== -->
-        <!-- MENÚ NORMAL                                          -->
+        <!-- MENÚ                                                 -->
         <!-- ===================================================== -->
 
         <Style Selector="Button.menuItem">
-
-            <Setter Property="Height"
-                    Value="44"/>
-
-            <Setter Property="Margin"
-                    Value="0,1"/>
-
-            <Setter Property="Padding"
-                    Value="12,0"/>
-
-            <Setter Property="HorizontalAlignment"
-                    Value="Stretch"/>
-
-            <Setter Property="HorizontalContentAlignment"
-                    Value="Stretch"/>
-
-            <Setter Property="VerticalContentAlignment"
-                    Value="Center"/>
-
-            <Setter Property="Background"
-                    Value="Transparent"/>
-
-            <Setter Property="Foreground"
-                    Value="#000000"/>
-
-            <Setter Property="BorderThickness"
-                    Value="0"/>
-
-            <Setter Property="CornerRadius"
-                    Value="9"/>
-
-            <Setter Property="FontSize"
-                    Value="12"/>
-
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Padding" Value="8,0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
         </Style>
 
-
-        <Style Selector="Button.menuItem:pointerover">
-
-            <Setter Property="Background"
-                    Value="#F1F7F3"/>
-
-            <Setter Property="Foreground"
-                    Value="#08783D"/>
-
+        <Style Selector="Border.sidebar.colapsado Button.menuItem">
+            <Setter Property="Padding" Value="9,0"/>
         </Style>
 
-
-        <Style Selector="Button.menuItem:pressed">
-
-            <Setter Property="Background"
-                    Value="#E6F2E9"/>
-
+        <Style Selector="Button.menuItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F3F6F8"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
         </Style>
 
-
-        <Style Selector="Button.menuItem.active">
-
-            <Setter Property="Background"
-                    Value="#EAF7EF"/>
-
-            <Setter Property="Foreground"
-                    Value="#08783D"/>
-
-            <Setter Property="FontWeight"
-                    Value="SemiBold"/>
-
+        <Style Selector="Button.menuItem:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#E9EEF2"/>
         </Style>
 
-        <!-- ===================================================== -->
-        <!-- CAMBIAR CAJA                                          -->
-        <!-- ===================================================== -->
-
-        <Style Selector="Button.CambiarCaja">
-
-        <Setter Property="Height"
-                Value="44"/>
-
-        <Setter Property="Padding"
-                Value="12,0"/>
-
-        <Setter Property="HorizontalAlignment"
-                Value="Stretch"/>
-
-        <Setter Property="HorizontalContentAlignment"
-                Value="Stretch"/>
-
-        <Setter Property="VerticalContentAlignment"
-                Value="Center"/>
-
-        <Setter Property="Background"
-                Value="#0F766E"/>
-
-        <Setter Property="Foreground"
-                Value="White"/>
-
-        <Setter Property="BorderThickness"
-                Value="0"/>
-
-        <Setter Property="CornerRadius"
-                Value="10"/>
-
-        <Setter Property="FontSize"
-                Value="11"/>
-
+        <Style Selector="Button.menuItem.active /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#EAF7EF"/>
+            <Setter Property="Foreground" Value="#0B6B33"/>
         </Style>
 
-        <Style Selector="Button.CambiarCaja:pointerover">
-
-        <Setter Property="Background"
-                Value="#0D5F5A"/>
-
+        <!-- Cuadro del ícono -->
+        <Style Selector="Border.iconoMenu">
+            <Setter Property="Width" Value="34"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Background" Value="#F1F5F9"/>
         </Style>
 
-        <Style Selector="Button.CambiarCaja:pressed">
+        <Style Selector="Border.iconoMenu PathIcon">
+            <Setter Property="Width" Value="17"/>
+            <Setter Property="Height" Value="17"/>
+            <Setter Property="Foreground" Value="#475569"/>
+        </Style>
 
-        <Setter Property="Background"
-                Value="#0A4A46"/>
+        <Style Selector="Button.menuItem:pointerover Border.iconoMenu">
+            <Setter Property="Background" Value="White"/>
+        </Style>
 
+        <Style Selector="Button.menuItem:pointerover Border.iconoMenu PathIcon">
+            <Setter Property="Foreground" Value="#16A34A"/>
+        </Style>
+
+        <Style Selector="Button.menuItem.active Border.iconoMenu">
+            <Setter Property="Background" Value="#16A34A"/>
+        </Style>
+
+        <Style Selector="Button.menuItem.active Border.iconoMenu PathIcon">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style Selector="TextBlock.textoMenu">
+            <Setter Property="Margin" Value="12,0,0,0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Button.menuItem.active TextBlock.textoMenu">
+            <Setter Property="FontWeight" Value="Bold"/>
         </Style>
 
 
         <!-- ===================================================== -->
-        <!-- CERRAR SESIÓN                                         -->
+        <!-- TARJETA DE USUARIO                                   -->
         <!-- ===================================================== -->
 
+        <Style Selector="Border.tarjetaUsuario">
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Background" Value="#F6F8F9"/>
+            <Setter Property="BorderBrush" Value="#EDF1F4"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="Border.sidebar.colapsado Border.tarjetaUsuario">
+            <Setter Property="Padding" Value="5"/>
+        </Style>
+
+
+        <!-- ===================================================== -->
+        <!-- ACCIONES INFERIORES                                  -->
+        <!-- ===================================================== -->
+
+        <Style Selector="Button.accionInferior">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Padding" Value="9,0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Border.sidebar.colapsado Button.accionInferior">
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+
+        <Style Selector="Border.sidebar.colapsado Button.accionInferior PathIcon">
+            <Setter Property="Margin" Value="16,0"/>
+        </Style>
+
+        <!-- Cambiar caja -->
+        <Style Selector="Button.cambiarCaja">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#0F766E"/>
+            <Setter Property="BorderBrush" Value="#D6E4E2"/>
+        </Style>
+
+        <Style Selector="Button.cambiarCaja:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#0F766E"/>
+            <Setter Property="BorderBrush" Value="#0F766E"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style Selector="Button.cambiarCaja:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#0A4A46"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <!-- Cerrar sesión -->
         <Style Selector="Button.logoutButton">
+            <Setter Property="Background" Value="#FEF2F2"/>
+            <Setter Property="Foreground" Value="#B91C1C"/>
+            <Setter Property="BorderBrush" Value="#FBE0E0"/>
+        </Style>
 
-            <Setter Property="Height"
-                    Value="44"/>
+        <Style Selector="Button.logoutButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#C61F2B"/>
+            <Setter Property="BorderBrush" Value="#C61F2B"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
 
-            <Setter Property="Padding"
-                    Value="12,0"/>
-
-            <Setter Property="HorizontalAlignment"
-                    Value="Stretch"/>
-
-            <Setter Property="HorizontalContentAlignment"
-                    Value="Stretch"/>
-
-            <Setter Property="VerticalContentAlignment"
-                    Value="Center"/>
-
-            <Setter Property="Background"
-                    Value="#C61F2B"/>
-
-            <Setter Property="Foreground"
-                    Value="White"/>
-
-            <Setter Property="BorderThickness"
-                    Value="0"/>
-
-            <Setter Property="CornerRadius"
-                    Value="10"/>
-
-            <Setter Property="FontSize"
-                    Value="11"/>
-
+        <Style Selector="Button.logoutButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#8F1720"/>
+            <Setter Property="Foreground" Value="White"/>
         </Style>
 
 
-        <Style Selector="Button.logoutButton:pointerover">
+        <!-- ===================================================== -->
+        <!-- ENCABEZADO                                           -->
+        <!-- ===================================================== -->
 
-            <Setter Property="Background"
-                    Value="#A91D26"/>
-
-        </Style>
-
-
-        <Style Selector="Button.logoutButton:pressed">
-
-            <Setter Property="Background"
-                    Value="#8F1720"/>
-
+        <Style Selector="Border.chipEncabezado">
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#EDF1F4"/>
+            <Setter Property="BorderThickness" Value="1"/>
         </Style>
 
     </Window.Styles>

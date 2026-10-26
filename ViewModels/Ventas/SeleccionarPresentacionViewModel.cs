@@ -277,6 +277,11 @@ public partial class PresentacionVentaItem : ObservableObject
     public decimal CantidadPeso { get; set; }
 
 
+    // Solo para la vista: el catálogo trae un precio que se puede mostrar.
+    public bool TienePrecioVisual =>
+        Precio > 0;
+
+
     public string TextoPrecio =>
         Precio > 0
             ? $"Desde ${Precio:N2}"

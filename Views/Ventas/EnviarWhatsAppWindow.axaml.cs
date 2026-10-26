@@ -1,4 +1,6 @@
+using System.Linq;
 using Avalonia.Controls;
+using Avalonia.Media;
 using Avalonia.Interactivity;
 
 namespace NovaCoreESDM.Views.Ventas;
@@ -18,6 +20,50 @@ public partial class EnviarWhatsAppWindow : Window
             {
                 TelefonoTextBox.Focus();
             };
+    }
+
+
+    // =========================================================
+    // CONTADOR DE DÍGITOS (solo visual)
+    // =========================================================
+
+    private void Telefono_TextChanged(
+        object? sender,
+        TextChangedEventArgs e)
+    {
+        var digitos =
+            (TelefonoTextBox.Text ?? string.Empty)
+                .Count(char.IsDigit);
+
+        MensajeTextBlock.Text =
+            string.Empty;
+
+        if (digitos == 0)
+        {
+            IndicadorDigitos.Fill =
+                new SolidColorBrush(Color.Parse("#CBD5E1"));
+
+            TextoDigitos.Text =
+                "Escribe los 10 dígitos del celular";
+        }
+        else if (digitos < 10)
+        {
+            IndicadorDigitos.Fill =
+                new SolidColorBrush(Color.Parse("#F59E0B"));
+
+            TextoDigitos.Text =
+                $"{digitos} de 10 dígitos";
+        }
+        else
+        {
+            IndicadorDigitos.Fill =
+                new SolidColorBrush(Color.Parse("#22C55E"));
+
+            TextoDigitos.Text =
+                digitos == 10
+                    ? "Número completo · Presiona Enter para abrir WhatsApp"
+                    : $"{digitos} dígitos (incluye lada internacional)";
+        }
     }
 
 
