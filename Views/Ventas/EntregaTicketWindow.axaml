@@ -157,7 +157,7 @@
                     </Border>
                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
                         <TextBlock Classes="tituloOpcion" Text="Imprimir ticket"/>
-                        <TextBlock Classes="detalleOpcion" Text="Enviar a la impresora de la caja"/>
+                        <TextBlock Classes="detalleOpcion" Text="2 tickets: negocio y cliente (pausa 5s)"/>
                     </StackPanel>
                     <Border Grid.Column="2" Classes="numero"><TextBlock Text="1"/></Border>
                 </Grid>

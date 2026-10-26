@@ -35,6 +35,8 @@ public class TicketVenta
     public string Cajero { get; set; } =
         string.Empty;
 
+    public string Uuid { get; set; } = string.Empty;
+
 
     // =========================================================
     // PRODUCTOS

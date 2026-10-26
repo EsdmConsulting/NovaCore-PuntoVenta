@@ -111,6 +111,9 @@ public partial class EntregaTicketWindow : Window
         object? sender,
         RoutedEventArgs e)
     {
+        if (sender is Button btn)
+            btn.IsEnabled = false;
+
         OpcionSeleccionada =
             "IMPRIMIR";
 
