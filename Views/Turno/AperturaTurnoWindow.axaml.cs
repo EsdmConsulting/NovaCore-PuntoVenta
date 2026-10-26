@@ -8,6 +8,9 @@ using Avalonia.Markup.Xaml;
 using NovaCoreESDM.Models.Turno;
 using NovaCoreESDM.ViewModels;
 using NovaCoreESDM.ViewModels.Turno;
+using System.Globalization;
+using Avalonia.Interactivity;
+using NovaCoreESDM.Views.Comun;
 
 namespace NovaCoreESDM.Views.Turno;
 
@@ -48,6 +51,12 @@ public partial class AperturaTurnoWindow : Window
 
         _viewModel.TurnoAbiertoCorrectamente +=
             OnTurnoAbiertoCorrectamente;
+
+
+        // El cursor arranca en el fondo inicial.
+        Opened +=
+            (_, _) =>
+                this.FindControl<NumericUpDown>("FondoInicialInput")?.Focus();
     }
 
 
@@ -137,42 +146,34 @@ public partial class AperturaTurnoWindow : Window
 
     private async Task MostrarErrorAsync(string mensaje)
     {
-        var dialogo = new Window
-        {
-            Title = "No fue posible continuar",
-            Width = 460,
-            SizeToContent = SizeToContent.Height,
-            CanResize = false,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner,
-            Content = new StackPanel
-            {
-                Margin = new Thickness(22),
-                Spacing = 16,
-                Children =
-                {
-                    new TextBlock
-                    {
-                        Text = mensaje,
-                        TextWrapping = Avalonia.Media.TextWrapping.Wrap
-                    },
-                    new Button
-                    {
-                        Content = "Aceptar",
-                        HorizontalAlignment =
-                            Avalonia.Layout.HorizontalAlignment.Right,
-                        MinWidth = 100
-                    }
-                }
-            }
-        };
+        await new AvisoWindow(
+                "No fue posible continuar",
+                mensaje)
+            .ShowDialog(this);
+    }
 
-        if (dialogo.Content is StackPanel panel &&
-            panel.Children[1] is Button boton)
-        {
-            boton.Click += (_, _) => dialogo.Close();
-        }
 
-        await dialogo.ShowDialog(this);
+    // =========================================================
+    // MONTOS RÁPIDOS
+    // =========================================================
+    //
+    // Solo llenan el fondo inicial; la validación sigue en el
+    // ViewModel.
+    // =========================================================
+
+    private void MontoRapido_Click(
+        object? sender,
+        RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: string valor })
+            return;
+
+        _viewModel.FondoInicial =
+            decimal.Parse(
+                valor,
+                CultureInfo.InvariantCulture);
+
+        this.FindControl<NumericUpDown>("FondoInicialInput")?.Focus();
     }
 
     // =========================================================

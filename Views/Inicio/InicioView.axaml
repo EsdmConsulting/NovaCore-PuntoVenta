@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:NovaCoreESDM.ViewModels.Inicio"
+             xmlns:controls="using:NovaCoreESDM.Controls"
 
              x:Class="NovaCoreESDM.Views.Inicio.InicioView"
              x:DataType="vm:InicioViewModel"
@@ -290,7 +291,8 @@
             <!-- BANNER DE BIENVENIDA                              -->
             <!-- ================================================= -->
 
-            <Border Classes="entrada"
+            <Border x:Name="BannerBienvenida"
+                    Classes="entrada"
                     CornerRadius="24"
                     ClipToBounds="True"
                     Background="#050607"
@@ -340,7 +342,7 @@
                         </Ellipse.Fill>
                     </Ellipse>
 
-                    <Grid ColumnDefinitions="*,Auto"
+                    <Grid ColumnDefinitions="Auto,*,Auto"
                           ColumnSpacing="28"
                           Margin="34,30">
 
@@ -414,8 +416,15 @@
 
                         </StackPanel>
 
+                        <!-- ESCENA ANIMADA (mismo componente que el login) -->
+                        <controls:EscenaCajaAnimada x:Name="EscenaBanner"
+                                                    Grid.Column="1"
+                                                    MaxWidth="440"
+                                                    VerticalAlignment="Center"
+                                                    Margin="0,10,0,0"/>
+
                         <!-- EFECTIVO EN CAJA (vidrio) -->
-                        <Border Grid.Column="1"
+                        <Border Grid.Column="2"
                                 Width="320"
                                 VerticalAlignment="Center"
                                 Padding="24,22"

@@ -199,7 +199,8 @@
                                      Background="Transparent"
                                      BorderThickness="0"
                                      Padding="6"
-                                     SelectionMode="Single">
+                                     SelectionMode="Single"
+                                     Tapped="SugerenciasClientesListBox_Tapped">
 
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
@@ -375,6 +376,21 @@
                                                                   Foreground="#B5C3CF"
                                                                   IsVisible="{Binding MostrarPlaceholderImagen}"
                                                                   Data="M20 2H4c-1 0-2 .9-2 2v3.01c0 .72.43 1.34 1 1.69V20c0 1.1 1.1 2 2 2h14c.9 0 2-.9 2-2V8.7c.57-.35 1-.97 1-1.69V4c0-1.1-1-2-2-2zm-5 12H9v-2h6v2zm5-7H4V4l16-.02V7z"/>
+
+                                                        <!-- Onda con los colores de la marca -->
+                                                        <Path VerticalAlignment="Bottom"
+                                                              Height="16"
+                                                              Stretch="Fill"
+                                                              Data="M0,8 C25,0 45,16 70,8 C95,0 115,16 140,6 L140,20 L0,20 Z">
+                                                            <Path.Fill>
+                                                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                                                    <GradientStop Offset="0" Color="#F5C400"/>
+                                                                    <GradientStop Offset="0.35" Color="#16A34A"/>
+                                                                    <GradientStop Offset="0.7" Color="#16A34A"/>
+                                                                    <GradientStop Offset="1" Color="#E11D2E"/>
+                                                                </LinearGradientBrush>
+                                                            </Path.Fill>
+                                                        </Path>
                                                     </Grid>
                                                 </Border>
 
@@ -512,12 +528,46 @@
                             Spacing="10"
                             Margin="24">
 
-                    <Panel Width="96" Height="96" HorizontalAlignment="Center">
-                        <Ellipse Fill="#F1F7F3"/>
+                    <!-- Escáner esperando: ondas que se expanden y láser que barre -->
+                    <Panel Width="130" Height="130" HorizontalAlignment="Center">
+                        <Ellipse Classes="onda"
+                                 Width="96" Height="96"
+                                 Stroke="#5916A34A"
+                                 StrokeThickness="2"
+                                 RenderTransformOrigin="50%,50%">
+                            <Ellipse.RenderTransform>
+                                <ScaleTransform/>
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse Classes="onda onda2"
+                                 Width="96" Height="96"
+                                 Stroke="#5916A34A"
+                                 StrokeThickness="2"
+                                 RenderTransformOrigin="50%,50%">
+                            <Ellipse.RenderTransform>
+                                <ScaleTransform/>
+                            </Ellipse.RenderTransform>
+                        </Ellipse>
+                        <Ellipse Width="96" Height="96" Fill="#F1F7F3"/>
                         <Ellipse Width="70" Height="70" Fill="#E3F3E9"/>
                         <PathIcon Width="32" Height="32"
                                   Foreground="#16A34A"
                                   Data="M2 6h2v12H2V6zm3 0h1v12H5V6zm2 0h3v12H7V6zm4 0h1v12h-1V6zm3 0h2v12h-2V6zm3 0h3v12h-3V6zm4 0h1v12h-1V6z"/>
+                        <Border Classes="laserEspera"
+                                Width="46" Height="3"
+                                CornerRadius="2"
+                                VerticalAlignment="Center">
+                            <Border.RenderTransform>
+                                <TranslateTransform/>
+                            </Border.RenderTransform>
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                    <GradientStop Offset="0" Color="#00EF4444"/>
+                                    <GradientStop Offset="0.5" Color="#FFEF4444"/>
+                                    <GradientStop Offset="1" Color="#00EF4444"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
                     </Panel>
 
                     <TextBlock Text="Listo para vender"
@@ -557,6 +607,9 @@
                                 <Border Classes="renglon"
                                         Classes.sincronizando="{Binding EstaSincronizando}"
                                         Classes.conError="{Binding TieneErrorSincronizacion}">
+                                    <Border.RenderTransform>
+                                        <TranslateTransform/>
+                                    </Border.RenderTransform>
 
                                     <Grid ColumnDefinitions="Auto,*"
                                           ColumnSpacing="12">
@@ -1211,6 +1264,81 @@
 
         <Style Selector="Border.renglon:pointerover">
             <Setter Property="BorderBrush" Value="#CDE9D7"/>
+        </Style>
+
+        <!-- Entrada del renglón al agregarse al ticket -->
+        <Style Selector="Border.renglon">
+            <Style.Animations>
+                <Animation Duration="0:0:0.35"
+                           FillMode="Forward"
+                           Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                        <Setter Property="TranslateTransform.X" Value="28"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Carrito vacío: ondas y láser del escáner -->
+        <Style Selector="Ellipse.onda">
+            <Style.Animations>
+                <Animation Duration="0:0:2.4"
+                           IterationCount="Infinite"
+                           Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                        <Setter Property="Opacity" Value="0.9"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1.35"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1.35"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Ellipse.onda.onda2">
+            <Style.Animations>
+                <Animation Duration="0:0:2.4"
+                           Delay="0:0:1.2"
+                           IterationCount="Infinite"
+                           FillMode="Both"
+                           Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                        <Setter Property="Opacity" Value="0.9"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1.35"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1.35"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Border.laserEspera">
+            <Style.Animations>
+                <Animation Duration="0:0:1.6"
+                           IterationCount="Infinite"
+                           PlaybackDirection="Alternate"
+                           Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.Y" Value="-14"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.Y" Value="14"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
         </Style>
 
         <!-- Mientras se sincroniza con el servidor -->

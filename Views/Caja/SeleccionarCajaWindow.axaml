@@ -2,546 +2,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:NovaCoreESDM.ViewModels.Caja"
         xmlns:models="using:NovaCoreESDM.Models.Caja"
-
         x:Class="NovaCoreESDM.Views.Caja.SeleccionarCajaWindow"
         x:DataType="vm:SeleccionarCajaViewModel"
-
         Title="Grupo Luis Fer - Configuración de caja"
         Icon="/Assets/Brand/esdm-app-icon.ico"
-
-        Width="1080"
-        Height="700"
-
-        MinWidth="900"
-        MinHeight="600"
-
+        Width="1200"
+        Height="760"
+        MinWidth="960"
+        MinHeight="620"
         WindowStartupLocation="CenterScreen"
-
-        Background="#F6F8F7">
-
-
-    <!-- ========================================================= -->
-    <!-- LAYOUT PRINCIPAL                                          -->
-    <!-- ========================================================= -->
-
-    <Grid ColumnDefinitions="360,*">
-
-
-        <!-- ===================================================== -->
-        <!-- PANEL INSTITUCIONAL                                   -->
-        <!-- ===================================================== -->
-
-        <Border Grid.Column="0"
-                Background="#08783D">
-
-            <Grid>
-
-
-                <!-- ================================================= -->
-                <!-- DECORACIÓN                                        -->
-                <!-- ================================================= -->
-
-                <Ellipse Width="520"
-                         Height="520"
-                         HorizontalAlignment="Left"
-                         VerticalAlignment="Top"
-                         Margin="-310,-310,0,0"
-                         Fill="#16A34A"
-                         Opacity="0.13"/>
-
-
-                <Ellipse Width="360"
-                         Height="360"
-                         HorizontalAlignment="Right"
-                         VerticalAlignment="Bottom"
-                         Margin="0,0,-210,-220"
-                         Fill="#C79A3B"
-                         Opacity="0.10"/>
-
-
-                <!-- ================================================= -->
-                <!-- CONTENIDO DEL PANEL                               -->
-                <!-- ================================================= -->
-
-                <Grid Margin="38"
-                      RowDefinitions="Auto,*,Auto">
-
-
-                    <!-- ================================================= -->
-                    <!-- MARCA                                             -->
-                    <!-- ================================================= -->
-
-                    <StackPanel Grid.Row="0"
-                                Spacing="12">
-
-
-                        <Border Width="150"
-                                Height="105"
-                                CornerRadius="16"
-                                Background="White"
-                                Padding="12"
-                                HorizontalAlignment="Left">
-
-                            <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
-                                   Stretch="Uniform"/>
-
-                        </Border>
-
-
-                        <TextBlock Text="PUNTO DE VENTA"
-                                   Foreground="#D8F3E2"
-                                   FontSize="13"
-                                   FontWeight="SemiBold"/>
-
-
-                        <TextBlock Text="Configuración de terminal"
-                                   Foreground="#BDE5CB"
-                                   FontSize="12"/>
-
-                    </StackPanel>
-
-
-                    <!-- ================================================= -->
-                    <!-- INFORMACIÓN                                       -->
-                    <!-- ================================================= -->
-
-                    <StackPanel Grid.Row="1"
-                                VerticalAlignment="Center"
-                                Spacing="14">
-
-
-                        <TextBlock Text="Asigna esta terminal"
-                                   Foreground="White"
-                                   FontSize="32"
-                                   FontWeight="SemiBold"
-                                   TextWrapping="Wrap"/>
-
-
-                        <TextBlock Text="Selecciona la caja física que utilizará este equipo para registrar ventas y turnos."
-                                   Foreground="#D8F3E2"
-                                   FontSize="15"
-                                   LineHeight="24"
-                                   TextWrapping="Wrap"/>
-
-
-                        <!-- ============================================= -->
-                        <!-- AVISO DE CONFIGURACIÓN                        -->
-                        <!-- ============================================= -->
-
-                        <Border Background="#18FFFFFF"
-                                CornerRadius="12"
-                                Padding="15"
-                                Margin="0,18,0,0">
-
-                            <Grid ColumnDefinitions="Auto,*"
-                                  ColumnSpacing="10">
-
-
-                                <Border Width="9"
-                                        Height="9"
-                                        CornerRadius="5"
-                                        Background="#4ADE80"
-                                        VerticalAlignment="Center"/>
-
-
-                                <TextBlock Grid.Column="1"
-                                           Text="Esta configuración se guardará en este equipo."
-                                           Foreground="White"
-                                           FontSize="11"
-                                           TextWrapping="Wrap"
-                                           VerticalAlignment="Center"/>
-
-                            </Grid>
-
-                        </Border>
-
-
-                        <!-- ============================================= -->
-                        <!-- AVISO DE CAJAS EN USO                         -->
-                        <!-- ============================================= -->
-
-                        <Border Background="#18FFFFFF"
-                                CornerRadius="12"
-                                Padding="15">
-
-                            <Grid ColumnDefinitions="Auto,*"
-                                  ColumnSpacing="10">
-
-
-                                <Border Width="9"
-                                        Height="9"
-                                        CornerRadius="5"
-                                        Background="#F87171"
-                                        VerticalAlignment="Center"/>
-
-
-                                <TextBlock Grid.Column="1"
-                                           Text="Las cajas marcadas como EN USO pertenecen a otra terminal y no pueden seleccionarse."
-                                           Foreground="White"
-                                           FontSize="11"
-                                           TextWrapping="Wrap"
-                                           VerticalAlignment="Center"/>
-
-                            </Grid>
-
-                        </Border>
-
-                    </StackPanel>
-
-
-                    <!-- ================================================= -->
-                    <!-- FOOTER                                            -->
-                    <!-- ================================================= -->
-
-                    <TextBlock Grid.Row="2"
-                               Text="Desarrollado por ESDM Consulting"
-                               Foreground="#C8DDCF"
-                               FontSize="11"
-                               Opacity="0.75"/>
-
-                </Grid>
-
-            </Grid>
-
-        </Border>
-
-
-        <!-- ===================================================== -->
-        <!-- PANEL DE SELECCIÓN                                    -->
-        <!-- ===================================================== -->
-
-        <Grid Grid.Column="1"
-              Margin="40,42"
-              RowDefinitions="Auto,*,Auto">
-
-
-            <!-- ================================================= -->
-            <!-- ENCABEZADO                                        -->
-            <!-- ================================================= -->
-
-            <StackPanel Grid.Row="0"
-                        Spacing="6"
-                        Margin="0,0,0,20">
-
-
-                <TextBlock Text="Selecciona una caja"
-                           Foreground="#21382A"
-                           FontSize="28"
-                           FontWeight="SemiBold"
-                           TextWrapping="Wrap"/>
-
-
-                <TextBlock Text="Elige una caja disponible para asignarla físicamente a este equipo."
-                           Foreground="#718078"
-                           FontSize="13"
-                           TextWrapping="Wrap"/>
-
-            </StackPanel>
-
-
-            <!-- ================================================= -->
-            <!-- LISTADO DE CAJAS                                  -->
-            <!-- ================================================= -->
-
-            <Grid Grid.Row="1">
-
-
-                <ScrollViewer VerticalScrollBarVisibility="Auto"
-                              HorizontalScrollBarVisibility="Disabled">
-
-
-                    <ListBox ItemsSource="{Binding Cajas}"
-                             SelectedItem="{Binding CajaSeleccionada}"
-                             Background="Transparent"
-                             BorderThickness="0">
-
-
-                        <ListBox.ItemTemplate>
-
-
-                            <!-- ========================================= -->
-                            <!-- MODELO CAJA                              -->
-                            <!-- ========================================= -->
-
-                            <DataTemplate x:DataType="models:Caja">
-
-
-                                <Border Classes="cajaCard">
-
-
-                                    <Grid ColumnDefinitions="Auto,*,Auto"
-                                          ColumnSpacing="15">
-
-
-                                        <!-- ================================= -->
-                                        <!-- ICONO                             -->
-                                        <!-- ================================= -->
-
-                                        <Grid Width="48"
-                                              Height="48"
-                                              VerticalAlignment="Center">
-
-
-                                            <!-- DISPONIBLE -->
-
-                                            <Border Width="48"
-                                                    Height="48"
-                                                    CornerRadius="14"
-                                                    Background="#EAF7EF"
-                                                    IsVisible="{Binding EstaDisponible}">
-
-                                                <TextBlock Text="▣"
-                                                           Foreground="#08783D"
-                                                           FontSize="22"
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center"/>
-
-                                            </Border>
-
-
-                                            <!-- EN USO -->
-
-                                            <Border Width="48"
-                                                    Height="48"
-                                                    CornerRadius="14"
-                                                    Background="#FEECEC"
-                                                    IsVisible="{Binding EnUso}">
-
-                                                <TextBlock Text="▣"
-                                                           Foreground="#B91C1C"
-                                                           FontSize="22"
-                                                           HorizontalAlignment="Center"
-                                                           VerticalAlignment="Center"/>
-
-                                            </Border>
-
-                                        </Grid>
-
-
-                                        <!-- ================================= -->
-                                        <!-- INFORMACIÓN DE LA CAJA            -->
-                                        <!-- ================================= -->
-
-                                        <StackPanel Grid.Column="1"
-                                                    Spacing="3"
-                                                    VerticalAlignment="Center">
-
-
-                                            <TextBlock Text="{Binding Nombre}"
-                                                       Foreground="#21382A"
-                                                       FontSize="15"
-                                                       FontWeight="SemiBold"
-                                                       TextWrapping="NoWrap"
-                                                       TextTrimming="CharacterEllipsis"/>
-
-
-                                            <!-- ============================= -->
-                                            <!-- CÓDIGO DISPONIBLE              -->
-                                            <!-- ============================= -->
-
-                                            <TextBlock Text="{Binding Codigo}"
-                                                       Foreground="#08783D"
-                                                       FontSize="11"
-                                                       FontWeight="SemiBold"
-                                                       TextWrapping="NoWrap"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       IsVisible="{Binding EstaDisponible}"/>
-
-
-                                            <!-- ============================= -->
-                                            <!-- CÓDIGO EN USO                  -->
-                                            <!-- ============================= -->
-
-                                            <TextBlock Text="{Binding Codigo}"
-                                                       Foreground="#B91C1C"
-                                                       FontSize="11"
-                                                       FontWeight="SemiBold"
-                                                       TextWrapping="NoWrap"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       IsVisible="{Binding EnUso}"/>
-
-
-                                            <TextBlock Text="{Binding UnidadNombre}"
-                                                       Foreground="#718078"
-                                                       FontSize="11"
-                                                       TextWrapping="NoWrap"
-                                                       TextTrimming="CharacterEllipsis"/>
-
-                                        </StackPanel>
-
-
-                                        <!-- ================================= -->
-                                        <!-- ESTADO + TERMINAL                  -->
-                                        <!-- ================================= -->
-
-                                        <StackPanel Grid.Column="2"
-                                                    Spacing="7"
-                                                    VerticalAlignment="Center"
-                                                    HorizontalAlignment="Right">
-
-
-                                            <!-- ============================= -->
-                                            <!-- DISPONIBLE                    -->
-                                            <!-- ============================= -->
-
-                                            <Border Background="#EAF7EF"
-                                                    BorderBrush="#C8E9D3"
-                                                    BorderThickness="1"
-                                                    CornerRadius="7"
-                                                    Padding="9,4"
-                                                    HorizontalAlignment="Right"
-                                                    IsVisible="{Binding EstaDisponible}">
-
-                                                <StackPanel Orientation="Horizontal"
-                                                            Spacing="5">
-
-
-                                                    <Border Width="6"
-                                                            Height="6"
-                                                            CornerRadius="3"
-                                                            Background="#16A34A"
-                                                            VerticalAlignment="Center"/>
-
-
-                                                    <TextBlock Text="DISPONIBLE"
-                                                               Foreground="#08783D"
-                                                               FontSize="9"
-                                                               FontWeight="Bold"
-                                                               VerticalAlignment="Center"/>
-
-                                                </StackPanel>
-
-                                            </Border>
-
-
-                                            <!-- ============================= -->
-                                            <!-- EN USO                        -->
-                                            <!-- ============================= -->
-
-                                            <Border Background="#FEECEC"
-                                                    BorderBrush="#F3C1C1"
-                                                    BorderThickness="1"
-                                                    CornerRadius="7"
-                                                    Padding="9,4"
-                                                    HorizontalAlignment="Right"
-                                                    IsVisible="{Binding EnUso}">
-
-                                                <StackPanel Orientation="Horizontal"
-                                                            Spacing="5">
-
-
-                                                    <Border Width="6"
-                                                            Height="6"
-                                                            CornerRadius="3"
-                                                            Background="#DC2626"
-                                                            VerticalAlignment="Center"/>
-
-
-                                                    <TextBlock Text="EN USO"
-                                                               Foreground="#B91C1C"
-                                                               FontSize="9"
-                                                               FontWeight="Bold"
-                                                               VerticalAlignment="Center"/>
-
-                                                </StackPanel>
-
-                                            </Border>
-
-
-                                            <!-- ============================= -->
-                                            <!-- TERMINAL                      -->
-                                            <!-- ============================= -->
-
-                                            <Border Background="#F8FAF9"
-                                                    BorderBrush="#E4EAE6"
-                                                    BorderThickness="1"
-                                                    CornerRadius="9"
-                                                    Padding="10,6"
-                                                    VerticalAlignment="Center">
-
-
-                                                <StackPanel Spacing="2">
-
-
-                                                    <TextBlock Text="Terminal"
-                                                               Foreground="#94A39A"
-                                                               FontSize="9"
-                                                               HorizontalAlignment="Center"/>
-
-
-                                                    <TextBlock Text="{Binding NumeroTerminal}"
-                                                               Foreground="#44534A"
-                                                               FontSize="11"
-                                                               FontWeight="SemiBold"
-                                                               HorizontalAlignment="Center"/>
-
-                                                </StackPanel>
-
-                                            </Border>
-
-                                        </StackPanel>
-
-                                    </Grid>
-
-                                </Border>
-
-                            </DataTemplate>
-
-                        </ListBox.ItemTemplate>
-
-                    </ListBox>
-
-                </ScrollViewer>
-
-            </Grid>
-
-
-            <!-- ================================================= -->
-            <!-- PARTE INFERIOR                                    -->
-            <!-- ================================================= -->
-
-            <StackPanel Grid.Row="2"
-                        Spacing="10"
-                        Margin="0,20,0,0">
-
-
-                <!-- ================================================= -->
-                <!-- ERROR                                             -->
-                <!-- ================================================= -->
-
-                <TextBlock Text="{Binding MensajeError}"
-                           Foreground="#B51F2A"
-                           FontSize="12"
-                           TextWrapping="Wrap"
-                           MinHeight="18"/>
-
-
-                <!-- ================================================= -->
-                <!-- CONTINUAR                                         -->
-                <!-- ================================================= -->
-
-                <Button Content="Guardar caja y continuar"
-                        Command="{Binding ConfirmarCajaCommand}"
-                        IsEnabled="{Binding PuedeContinuar}"
-
-                        Height="52"
-
-                        Background="#16A34A"
-                        Foreground="White"
-
-                        BorderThickness="0"
-                        HorizontalContentAlignment="Center"
-
-                        CornerRadius="10"
-
-                        FontSize="14"
-                        FontWeight="SemiBold"/>
-
-            </StackPanel>
-
-        </Grid>
-
-    </Grid>
+        Background="#F4F6F8">
 
 
     <!-- ========================================================= -->
@@ -550,88 +20,558 @@
 
     <Window.Styles>
 
+        <!-- Orbes animados del panel de marca (igual que el login) -->
+        <Style Selector="Ellipse.flotaA">
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Style.Animations>
+                <Animation Duration="0:0:16"
+                           IterationCount="Infinite"
+                           PlaybackDirection="Alternate"
+                           Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="70"/>
+                        <Setter Property="TranslateTransform.Y" Value="50"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
 
-        <!-- ===================================================== -->
-        <!-- TARJETA DE CAJA                                      -->
-        <!-- ===================================================== -->
+        <Style Selector="Ellipse.flotaB">
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Style.Animations>
+                <Animation Duration="0:0:19"
+                           IterationCount="Infinite"
+                           PlaybackDirection="Alternate"
+                           Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="-60"/>
+                        <Setter Property="TranslateTransform.Y" Value="-60"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Tarjeta de caja -->
+        <Style Selector="ListBoxItem">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
 
         <Style Selector="Border.cajaCard">
-
-            <Setter Property="Background"
-                    Value="White"/>
-
-            <Setter Property="BorderBrush"
-                    Value="#E2E8E4"/>
-
-            <Setter Property="BorderThickness"
-                    Value="1"/>
-
-            <Setter Property="CornerRadius"
-                    Value="14"/>
-
-            <Setter Property="Padding"
-                    Value="16"/>
-
-            <Setter Property="Margin"
-                    Value="0,0,0,10"/>
-
+            <Setter Property="Padding" Value="18,16"/>
+            <Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E6EAEE"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
         </Style>
-
-
-        <!-- ===================================================== -->
-        <!-- LISTBOX                                              -->
-        <!-- ===================================================== -->
-
-        <Style Selector="ListBoxItem">
-
-            <Setter Property="Padding"
-                    Value="0"/>
-
-            <Setter Property="Margin"
-                    Value="0"/>
-
-            <Setter Property="Background"
-                    Value="Transparent"/>
-
-            <Setter Property="HorizontalContentAlignment"
-                    Value="Stretch"/>
-
-        </Style>
-
-
-        <!-- ===================================================== -->
-        <!-- MOUSE ENCIMA                                         -->
-        <!-- ===================================================== -->
 
         <Style Selector="ListBoxItem:pointerover Border.cajaCard">
-
-            <Setter Property="BorderBrush"
-                    Value="#86C99A"/>
-
-            <Setter Property="Background"
-                    Value="#F6FBF7"/>
-
+            <Setter Property="BorderBrush" Value="#86D5A3"/>
+            <Setter Property="BoxShadow" Value="0 10 22 -12 #3316A34A"/>
         </Style>
-
-
-        <!-- ===================================================== -->
-        <!-- CAJA SELECCIONADA                                    -->
-        <!-- ===================================================== -->
 
         <Style Selector="ListBoxItem:selected Border.cajaCard">
-
-            <Setter Property="BorderBrush"
-                    Value="#16A34A"/>
-
-            <Setter Property="BorderThickness"
-                    Value="2"/>
-
-            <Setter Property="Background"
-                    Value="#EAF7EF"/>
-
+            <Setter Property="Background" Value="#F3FBF6"/>
+            <Setter Property="BorderBrush" Value="#16A34A"/>
+            <Setter Property="BoxShadow" Value="0 0 0 4 #2216A34A"/>
         </Style>
 
+        <!-- Las cajas en uso se ven atenuadas -->
+        <Style Selector="Border.cajaCard.enUso">
+            <Setter Property="Background" Value="#FAFAFB"/>
+            <Setter Property="Cursor" Value="No"/>
+        </Style>
+
+        <Style Selector="Border.cajaCard.enUso > Grid">
+            <Setter Property="Opacity" Value="0.6"/>
+        </Style>
+
+        <Style Selector="ListBoxItem:pointerover Border.cajaCard.enUso,
+                         ListBoxItem:selected Border.cajaCard.enUso">
+            <Setter Property="BorderBrush" Value="#F5C2C2"/>
+            <Setter Property="BoxShadow" Value="none"/>
+            <Setter Property="Background" Value="#FFF8F8"/>
+        </Style>
+
+        <!-- Marca de seleccionada -->
+        <Style Selector="Border.check">
+            <Setter Property="IsVisible" Value="False"/>
+        </Style>
+
+        <Style Selector="ListBoxItem:selected Border.cajaCard:not(.enUso) Border.check">
+            <Setter Property="IsVisible" Value="True"/>
+        </Style>
+
+        <!-- Etiqueta de estado -->
+        <Style Selector="Border.estado">
+            <Setter Property="Padding" Value="10,4"/>
+            <Setter Property="CornerRadius" Value="999"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+        </Style>
+
+        <Style Selector="Border.estado TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="0.6"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Botón continuar -->
+        <Style Selector="Button.continuar">
+            <Setter Property="Height" Value="58"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22C55E"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.continuar /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 24 -8 #8022C55E"/>
+        </Style>
+
+        <Style Selector="Button.continuar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#2BD268"/>
+                    <GradientStop Offset="1" Color="#11A84E"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.continuar:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#CFE9D8"/>
+            <Setter Property="Foreground" Value="#F7FCF9"/>
+            <Setter Property="BoxShadow" Value="none"/>
+        </Style>
+
+        <!-- Notas del panel de marca -->
+        <Style Selector="Border.nota">
+            <Setter Property="Padding" Value="14,12"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="#10FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#1FFFFFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="Border.nota TextBlock">
+            <Setter Property="Foreground" Value="#C9D3DE"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
 
     </Window.Styles>
+
+
+    <Grid ColumnDefinitions="400,*">
+
+
+        <!-- ===================================================== -->
+        <!-- PANEL DE MARCA                                        -->
+        <!-- ===================================================== -->
+
+        <Panel Grid.Column="0"
+               ClipToBounds="True"
+               Background="#050607">
+
+            <Ellipse Classes="flotaA"
+                     Width="460" Height="460"
+                     HorizontalAlignment="Left" VerticalAlignment="Top"
+                     Margin="-200,-180,0,0">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#AA16A34A"/>
+                        <GradientStop Offset="1" Color="#0016A34A"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Ellipse Classes="flotaB"
+                     Width="500" Height="500"
+                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                     Margin="0,0,-260,-200">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#AAC61F2B"/>
+                        <GradientStop Offset="1" Color="#00C61F2B"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Ellipse Classes="flotaA"
+                     Width="320" Height="320"
+                     HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                     Margin="-120,0,0,-160"
+                     Opacity="0.7">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#88F5C400"/>
+                        <GradientStop Offset="1" Color="#00F5C400"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+
+            <Grid RowDefinitions="Auto,Auto,*,Auto"
+                  Margin="40,38">
+
+                <!-- Etiqueta -->
+                <Border Grid.Row="0"
+                        HorizontalAlignment="Left"
+                        Padding="12,6"
+                        CornerRadius="999"
+                        Background="#14FFFFFF"
+                        BorderBrush="#24FFFFFF"
+                        BorderThickness="1">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Ellipse Width="7" Height="7" Fill="#22C55E" VerticalAlignment="Center"/>
+                        <TextBlock Text="CONFIGURACIÓN DE TERMINAL"
+                                   Foreground="#D9E2EC"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   LetterSpacing="1.4"
+                                   LineHeight="16"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Logo -->
+                <Image Grid.Row="1"
+                       Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                       Width="300"
+                       Margin="0,26,0,0"
+                       Stretch="Uniform"
+                       HorizontalAlignment="Left">
+                    <Image.OpacityMask>
+                        <RadialGradientBrush RadiusX="64%" RadiusY="62%">
+                            <GradientStop Offset="0.8" Color="White"/>
+                            <GradientStop Offset="1" Color="Transparent"/>
+                        </RadialGradientBrush>
+                    </Image.OpacityMask>
+                </Image>
+
+                <!-- Texto -->
+                <StackPanel Grid.Row="2"
+                            VerticalAlignment="Center"
+                            Spacing="12">
+                    <TextBlock Text="Asigna esta terminal"
+                               Foreground="White"
+                               FontSize="34"
+                               FontWeight="Bold"
+                               LetterSpacing="-0.8"
+                               TextWrapping="Wrap"/>
+                    <TextBlock Text="Selecciona la caja física que usará este equipo para registrar ventas y turnos."
+                               Foreground="#A8B4C2"
+                               FontSize="15"
+                               LineHeight="22"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <!-- Notas -->
+                <StackPanel Grid.Row="3" Spacing="10">
+                    <Border Classes="nota">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Ellipse Width="9" Height="9" Fill="#22C55E" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="Esta configuración se guardará en este equipo."/>
+                        </Grid>
+                    </Border>
+                    <Border Classes="nota">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Ellipse Width="9" Height="9" Fill="#F87171" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="Las cajas EN USO pertenecen a otra terminal y no pueden seleccionarse."/>
+                        </Grid>
+                    </Border>
+                    <TextBlock Text="Desarrollado por ESDM Consulting"
+                               Foreground="#6B7A8C"
+                               FontSize="11"
+                               Margin="2,8,0,0"/>
+                </StackPanel>
+
+            </Grid>
+
+        </Panel>
+
+
+        <!-- ===================================================== -->
+        <!-- PANEL DE SELECCIÓN                                    -->
+        <!-- ===================================================== -->
+
+        <Grid Grid.Column="1"
+              Margin="40,38"
+              RowDefinitions="Auto,Auto,*,Auto">
+
+            <!-- Encabezado -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="*,Auto"
+                  Margin="0,0,0,18">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Selecciona una caja"
+                               Foreground="#0B1220"
+                               FontSize="30"
+                               FontWeight="Bold"
+                               LetterSpacing="-0.6"/>
+                    <TextBlock Text="Elige una caja disponible para asignarla a este equipo."
+                               Foreground="#64748B"
+                               FontSize="14"/>
+                </StackPanel>
+                <Border Grid.Column="1"
+                        Padding="12,6"
+                        CornerRadius="999"
+                        Background="#EEF2F6"
+                        VerticalAlignment="Center">
+                    <TextBlock Foreground="#475569"
+                               FontSize="13"
+                               FontWeight="Bold">
+                        <Run Text="{Binding Cajas.Count}"/><Run Text=" cajas"/>
+                    </TextBlock>
+                </Border>
+            </Grid>
+
+            <!-- Cargando -->
+            <ProgressBar Grid.Row="1"
+                         IsIndeterminate="True"
+                         Height="3"
+                         MinHeight="3"
+                         Margin="0,0,0,12"
+                         Foreground="#16A34A"
+                         Background="#EAF7EF"
+                         IsVisible="{Binding EstaCargando}"/>
+
+            <!-- Sin cajas -->
+            <StackPanel Grid.Row="2"
+                        IsVisible="{Binding NoTieneCajas}"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Spacing="10">
+                <Panel Width="96" Height="96" HorizontalAlignment="Center">
+                    <Ellipse Fill="#EEF2F6"/>
+                    <Ellipse Width="70" Height="70" Fill="#E2E8F0"/>
+                    <PathIcon Width="30" Height="30"
+                              Foreground="#94A3B8"
+                              Data="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/>
+                </Panel>
+                <TextBlock Text="No hay cajas para mostrar"
+                           Foreground="#334155"
+                           FontSize="15"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- Listado de cajas -->
+            <ScrollViewer Grid.Row="2"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+
+                <ListBox ItemsSource="{Binding Cajas}"
+                         SelectedItem="{Binding CajaSeleccionada}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Padding="4,4,14,4">
+
+                    <!-- Sin el fondo azul de selección del tema -->
+                    <ListBox.Resources>
+                        <SolidColorBrush x:Key="SystemControlHighlightListAccentLowBrush" Color="Transparent"/>
+                        <SolidColorBrush x:Key="SystemControlHighlightListAccentMediumBrush" Color="Transparent"/>
+                        <SolidColorBrush x:Key="SystemControlHighlightListAccentHighBrush" Color="Transparent"/>
+                        <SolidColorBrush x:Key="SystemControlHighlightListLowBrush" Color="Transparent"/>
+                        <SolidColorBrush x:Key="SystemControlHighlightListMediumBrush" Color="Transparent"/>
+                    </ListBox.Resources>
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:Caja">
+
+                            <Border Classes="cajaCard"
+                                    Classes.enUso="{Binding EnUso}">
+
+                                <Grid ColumnDefinitions="Auto,*,Auto"
+                                      ColumnSpacing="16">
+
+                                    <!-- Ícono -->
+                                    <Panel Width="56" Height="56"
+                                           VerticalAlignment="Center">
+                                        <Border CornerRadius="17"
+                                                IsVisible="{Binding EstaDisponible}">
+                                            <Border.Background>
+                                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                                    <GradientStop Offset="0" Color="#22C55E"/>
+                                                    <GradientStop Offset="1" Color="#0B8A3E"/>
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                            <PathIcon Width="26" Height="26"
+                                                      Foreground="White"
+                                                      Data="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/>
+                                        </Border>
+                                        <Border CornerRadius="17"
+                                                Background="#FEE2E2"
+                                                IsVisible="{Binding EnUso}">
+                                            <PathIcon Width="24" Height="24"
+                                                      Foreground="#B91C1C"
+                                                      Data="M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.7 1.4-3.1 3.1-3.1s3.1 1.4 3.1 3.1v2z"/>
+                                        </Border>
+                                        <!-- Palomita de seleccionada -->
+                                        <Border Classes="check"
+                                                Width="22" Height="22"
+                                                CornerRadius="11"
+                                                Background="#0B8A3E"
+                                                BorderBrush="White"
+                                                BorderThickness="2"
+                                                HorizontalAlignment="Right"
+                                                VerticalAlignment="Bottom"
+                                                Margin="0,0,-5,-5">
+                                            <PathIcon Width="10" Height="10"
+                                                      Foreground="White"
+                                                      Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                        </Border>
+                                    </Panel>
+
+                                    <!-- Datos -->
+                                    <StackPanel Grid.Column="1"
+                                                VerticalAlignment="Center"
+                                                Spacing="4">
+                                        <TextBlock Text="{Binding Nombre}"
+                                                   Foreground="#0F172A"
+                                                   FontSize="17"
+                                                   FontWeight="Bold"
+                                                   TextWrapping="Wrap"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <Border Padding="8,2"
+                                                    CornerRadius="7"
+                                                    Background="#F1F5F9">
+                                                <TextBlock Text="{Binding Codigo}"
+                                                           Foreground="#334155"
+                                                           FontSize="12"
+                                                           FontWeight="Bold"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding UnidadNombre}"
+                                                       Foreground="#64748B"
+                                                       FontSize="13"
+                                                       VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <!-- Estado y terminal -->
+                                    <StackPanel Grid.Column="2"
+                                                VerticalAlignment="Center"
+                                                HorizontalAlignment="Right"
+                                                Spacing="8">
+                                        <Border Classes="estado"
+                                                Background="#EAF7EF"
+                                                IsVisible="{Binding EstaDisponible}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <Ellipse Width="7" Height="7" Fill="#16A34A" VerticalAlignment="Center"/>
+                                                <TextBlock Text="DISPONIBLE" Foreground="#0B6B33"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Classes="estado"
+                                                Background="#FEE2E2"
+                                                IsVisible="{Binding EnUso}">
+                                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                                <Ellipse Width="7" Height="7" Fill="#DC2626" VerticalAlignment="Center"/>
+                                                <TextBlock Text="EN USO" Foreground="#B91C1C"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <StackPanel HorizontalAlignment="Right" Spacing="0">
+                                            <TextBlock Text="TERMINAL"
+                                                       Foreground="#94A3B8"
+                                                       FontSize="10"
+                                                       FontWeight="Bold"
+                                                       LetterSpacing="1"
+                                                       HorizontalAlignment="Right"/>
+                                            <TextBlock Text="{Binding NumeroTerminal}"
+                                                       Foreground="#334155"
+                                                       FontSize="14"
+                                                       FontWeight="Bold"
+                                                       HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                </Grid>
+
+                            </Border>
+
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+
+                </ListBox>
+
+            </ScrollViewer>
+
+            <!-- Parte inferior -->
+            <StackPanel Grid.Row="3"
+                        Spacing="12"
+                        Margin="0,16,0,0">
+
+                <Border Padding="12,9"
+                        CornerRadius="12"
+                        Background="#FEF2F2"
+                        BorderBrush="#FECACA"
+                        BorderThickness="1"
+                        IsVisible="{Binding MensajeError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Width="16" Height="16"
+                                  Foreground="#C61F2B"
+                                  Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                        <TextBlock Text="{Binding MensajeError}"
+                                   Foreground="#9F1239"
+                                   FontSize="13"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <Button Classes="continuar"
+                        IsDefault="True"
+                        Command="{Binding ConfirmarCajaCommand}"
+                        IsEnabled="{Binding PuedeContinuar}">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <PathIcon Width="18" Height="18"
+                                  Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        <TextBlock Text="Guardar caja y continuar" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+
+        </Grid>
+
+    </Grid>
 
 </Window>

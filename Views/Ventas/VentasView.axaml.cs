@@ -1590,6 +1590,28 @@ private void BuscadorClienteTextBox_KeyDown(object? sender, KeyEventArgs e)
     }
 }
 
+// Un clic sobre un cliente sugerido lo selecciona (igual que ↓ + Enter).
+private void SugerenciasClientesListBox_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
+{
+    var item = (e.Source as Visual)?.FindAncestorOfType<ListBoxItem>(true);
+    if (item?.DataContext == null) return;
+
+    if (DataContext is VentasViewModel viewModel)
+    {
+        viewModel.SeleccionarClienteCommand.Execute(item.DataContext);
+
+        var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+        if (buscadorProductos != null)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                buscadorProductos.Focus();
+                buscadorProductos.SelectAll();
+            }, DispatcherPriority.Input);
+        }
+    }
+}
+
 private void CatalogoProductosListBox_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
     {
         // Un solo clic sobre una tarjeta abre el producto.

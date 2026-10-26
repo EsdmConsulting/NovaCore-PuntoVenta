@@ -1,6 +1,8 @@
 using System;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using Avalonia.Media;
 
 using NovaCoreESDM.Models.Credito;
@@ -93,11 +95,15 @@ public partial class CreditoVentaWindow : Window
         // =====================================================
 
         TextoDiasCredito.Text =
-            $"{credito.DiasCredito} días";
+            credito.DiasCredito is int dias
+                ? $"{dias} días"
+                : "Sin definir";
 
 
         TextoTolerancia.Text =
-            $"{credito.ToleranciaDias} días";
+            credito.ToleranciaDias is int tolerancia
+                ? $"{tolerancia} días"
+                : "Sin definir";
 
 
         TextoFechaInicio.Text =
@@ -124,6 +130,70 @@ public partial class CreditoVentaWindow : Window
         ConfigurarSemaforo(
             credito.Semaforo
         );
+
+
+        // =====================================================
+        // USO DE LA LÍNEA (solo visual)
+        // =====================================================
+
+        if (credito.LimiteCredito > 0)
+        {
+            var porcentaje =
+                Math.Clamp(
+                    credito.SaldoProyectado / credito.LimiteCredito * 100m,
+                    0m,
+                    100m);
+
+            BarraUsoCredito.Value =
+                (double)porcentaje;
+
+            TextoUsoCredito.Text =
+                $"Con esta venta usará el {porcentaje:0.#}% de su línea de crédito";
+        }
+        else
+        {
+            BarraUsoCredito.IsVisible =
+                false;
+
+            TextoUsoCredito.IsVisible =
+                false;
+        }
+
+
+        // Por seguridad el foco arranca en "Cancelar": un Enter de
+        // más nunca confirma la venta a crédito.
+        Opened +=
+            (_, _) =>
+                Dispatcher.UIThread.Post(
+                    () => BotonCancelar.Focus(),
+                    DispatcherPriority.Input);
+    }
+
+
+    // =========================================================
+    // TECLADO
+    // =========================================================
+    //
+    // S     : confirma la venta a crédito (tecla deliberada).
+    // Esc   : cancela (botón con IsCancel).
+    // Enter : acciona el botón enfocado (por defecto, cancelar).
+    // =========================================================
+
+    protected override void OnKeyDown(
+        KeyEventArgs e)
+    {
+        if (e.Key == Key.S)
+        {
+            e.Handled = true;
+
+            Confirmar_Click(
+                this,
+                new RoutedEventArgs());
+
+            return;
+        }
+
+        base.OnKeyDown(e);
     }
 
 

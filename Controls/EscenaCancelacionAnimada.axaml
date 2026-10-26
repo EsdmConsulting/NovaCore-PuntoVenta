@@ -1,0 +1,314 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NovaCoreESDM.Controls.EscenaCancelacionAnimada"
+             IsHitTestVisible="False">
+
+    <!-- ========================================================= -->
+    <!-- ESCENA ANIMADA DE CANCELACIÓN                             -->
+    <!-- ========================================================= -->
+    <!-- Un ticket recibe el sello "CANCELADA" y una caja regresa  -->
+    <!-- volando al inventario. Vectorial y escalable (lienzo de   -->
+    <!-- diseño de 560 x 180). Ciclo de 5 s.                       -->
+    <!-- ========================================================= -->
+
+    <UserControl.Styles>
+
+        <!-- Ticket: aparece y se desvanece al final del ciclo -->
+        <Style Selector="Border.ticket">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="12"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="12%">
+                        <Setter Property="Opacity" Value="1"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="88%">
+                        <Setter Property="Opacity" Value="1"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Sello: cae grande y "golpea" el ticket -->
+        <Style Selector="Border.sello">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="2.2"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="2.2"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="20%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="2.2"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="2.2"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="27%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="0.92"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="0.92"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="31%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="88%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Caja: sale del ticket y vuela en arco al inventario -->
+        <Style Selector="Border.caja">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="36%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="40%">
+                        <Setter Property="TranslateTransform.X" Value="10"/>
+                        <Setter Property="TranslateTransform.Y" Value="-10"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="52%">
+                        <Setter Property="TranslateTransform.X" Value="120"/>
+                        <Setter Property="TranslateTransform.Y" Value="-62"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="64%">
+                        <Setter Property="TranslateTransform.X" Value="232"/>
+                        <Setter Property="TranslateTransform.Y" Value="4"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="68%">
+                        <Setter Property="TranslateTransform.X" Value="236"/>
+                        <Setter Property="TranslateTransform.Y" Value="10"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="236"/>
+                        <Setter Property="TranslateTransform.Y" Value="10"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Inventario: brinquito al recibir la caja -->
+        <Style Selector="Panel.inventario">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both" Easing="SineEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="66%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="70%">
+                        <Setter Property="TranslateTransform.Y" Value="-8"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="76%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Etiqueta "+ Inventario" -->
+        <Style Selector="Border.mas">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both" Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.Y" Value="10"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="68%">
+                        <Setter Property="TranslateTransform.Y" Value="10"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="74%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="92%">
+                        <Setter Property="TranslateTransform.Y" Value="-14"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.Y" Value="-20"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+    </UserControl.Styles>
+
+
+    <Viewbox Stretch="Uniform">
+
+        <Canvas Width="560" Height="180">
+
+            <!-- Superficie -->
+            <Border Canvas.Left="20" Canvas.Top="162"
+                    Width="520" Height="6"
+                    CornerRadius="3"
+                    Background="#1AFFFFFF"/>
+
+
+            <!-- ============ TICKET ============ -->
+
+            <Border Classes="ticket"
+                    Canvas.Left="70" Canvas.Top="26"
+                    Width="120" Height="132"
+                    CornerRadius="8"
+                    Background="#F8FAFC"
+                    Padding="14,14"
+                    BoxShadow="0 10 24 -10 #CC000000">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <StackPanel Spacing="8">
+                    <Border Height="5" Width="56" CornerRadius="2" Background="#94A3B8" HorizontalAlignment="Center"/>
+                    <Border Height="3" CornerRadius="2" Background="#CBD5E1"/>
+                    <Border Height="3" CornerRadius="2" Background="#CBD5E1" Margin="0,0,24,0"/>
+                    <Border Height="3" CornerRadius="2" Background="#CBD5E1" Margin="0,0,10,0"/>
+                    <Border Height="3" CornerRadius="2" Background="#CBD5E1" Margin="0,0,30,0"/>
+                    <Border Height="1" Background="#94A3B8" Margin="0,4,0,0"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Border Height="6" Width="30" CornerRadius="2" Background="#64748B" HorizontalAlignment="Left"/>
+                        <Border Grid.Column="1" Height="8" Width="36" CornerRadius="2" Background="#334155"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Sello "CANCELADA" (girado; la escala la anima el estilo) -->
+            <Border Canvas.Left="48" Canvas.Top="70"
+                    Width="164" Height="44"
+                    RenderTransformOrigin="50%,50%">
+                <Border.RenderTransform>
+                    <RotateTransform Angle="-14"/>
+                </Border.RenderTransform>
+                <Border Classes="sello"
+                        CornerRadius="8"
+                        BorderBrush="#DC2626"
+                        BorderThickness="3"
+                        Background="#1ADC2626"
+                        RenderTransformOrigin="50%,50%">
+                    <Border.RenderTransform>
+                        <ScaleTransform/>
+                    </Border.RenderTransform>
+                    <TextBlock Text="CANCELADA"
+                               Foreground="#EF4444"
+                               FontSize="20"
+                               FontWeight="Black"
+                               LetterSpacing="2"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
+                </Border>
+            </Border>
+
+
+            <!-- ============ CAJA QUE REGRESA ============ -->
+
+            <Border Classes="caja"
+                    Canvas.Left="176" Canvas.Top="110"
+                    Width="44" Height="40"
+                    CornerRadius="6"
+                    BoxShadow="0 8 16 -6 #99000000">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Offset="0" Color="#D29A5A"/>
+                        <GradientStop Offset="1" Color="#9A5B1E"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Grid>
+                    <Border Height="6" VerticalAlignment="Top" Margin="0,8,0,0" Background="#33000000"/>
+                    <Border Width="6" HorizontalAlignment="Center" Background="#33FFFFFF"/>
+                </Grid>
+            </Border>
+
+
+            <!-- ============ INVENTARIO ============ -->
+
+            <Panel Classes="inventario"
+                   Canvas.Left="398" Canvas.Top="70"
+                   Width="100" Height="92">
+                <Panel.RenderTransform>
+                    <TranslateTransform/>
+                </Panel.RenderTransform>
+                <Ellipse Width="100" Height="100" Margin="0,-6,0,0">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush>
+                            <GradientStop Offset="0" Color="#4022C55E"/>
+                            <GradientStop Offset="1" Color="#0022C55E"/>
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                </Ellipse>
+                <Border Width="76" Height="76"
+                        CornerRadius="22"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Center"
+                        BorderBrush="#33FFFFFF"
+                        BorderThickness="1">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Offset="0" Color="#22C55E"/>
+                            <GradientStop Offset="1" Color="#0B7A37"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <PathIcon Width="38" Height="38"
+                              Foreground="White"
+                              Data="M20 2H4c-1 0-2 .9-2 2v3.01c0 .72.43 1.34 1 1.69V20c0 1.1 1.1 2 2 2h14c.9 0 2-.9 2-2V8.7c.57-.35 1-.97 1-1.69V4c0-1.1-1-2-2-2zm-5 12H9v-2h6v2zm5-7H4V4l16-.02V7z"/>
+                </Border>
+            </Panel>
+
+            <!-- "+ Inventario" -->
+            <Border Classes="mas"
+                    Canvas.Left="398" Canvas.Top="34"
+                    Padding="10,3"
+                    CornerRadius="999"
+                    Background="#22C55E">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <TextBlock Text="+ Inventario"
+                           Foreground="White"
+                           FontSize="12"
+                           FontWeight="Bold"/>
+            </Border>
+
+        </Canvas>
+
+    </Viewbox>
+
+</UserControl>

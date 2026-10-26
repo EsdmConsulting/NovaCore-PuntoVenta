@@ -4,156 +4,298 @@
         x:Class="NovaCoreESDM.Views.Turno.ConfirmarAperturaWindow"
 
         Title="Confirmar apertura"
-
         Icon="/Assets/Brand/esdm-app-icon.ico"
 
         Width="520"
-        Height="390"
+        SizeToContent="Height"
 
-        MinWidth="420"
-        MinHeight="340"
-
-        CanResize="True"
+        CanResize="False"
         WindowStartupLocation="CenterOwner"
 
-        Background="#F6F8F7">
+        Background="#F4F6F8">
 
 
-    <!-- ========================================================= -->
-    <!-- CONTENEDOR GENERAL                                        -->
-    <!-- ========================================================= -->
-
-    <Border Background="White"
-            CornerRadius="18"
-            Margin="14"
-            Padding="28">
+    <StackPanel>
 
 
-        <Grid RowDefinitions="Auto,*,Auto"
-              RowSpacing="18">
+        <!-- ===================================================== -->
+        <!-- PREGUNTA Y MONTO                                      -->
+        <!-- ===================================================== -->
 
+        <Border Padding="30,28,30,22">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Offset="0" Color="#E6F6EC"/>
+                    <GradientStop Offset="0.6" Color="#F4F6F8"/>
+                </LinearGradientBrush>
+            </Border.Background>
 
-            <!-- ================================================= -->
-            <!-- ENCABEZADO                                        -->
-            <!-- ================================================= -->
+            <StackPanel Spacing="14">
 
-            <StackPanel Grid.Row="0"
-                        Spacing="10">
+                <!-- Ícono con pulso -->
+                <Panel Width="84" Height="84"
+                       HorizontalAlignment="Center">
+                    <Ellipse Classes="pulso"
+                             Fill="#3322C55E"
+                             RenderTransformOrigin="50%,50%">
+                        <Ellipse.RenderTransform>
+                            <ScaleTransform/>
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
+                    <Border Width="62" Height="62"
+                            CornerRadius="31">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                <GradientStop Offset="0" Color="#22C55E"/>
+                                <GradientStop Offset="1" Color="#0B8A3E"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <PathIcon Width="26" Height="26"
+                                  Foreground="White"
+                                  Margin="3,0,0,0"
+                                  Data="M8 5v14l11-7z"/>
+                    </Border>
+                </Panel>
 
-
-                <Border Width="54"
-                        Height="54"
-                        CornerRadius="27"
-                        Background="#EAF7EF"
-                        HorizontalAlignment="Left">
-
-                    <TextBlock Text="?"
-                               Foreground="#08783D"
-                               FontSize="27"
+                <StackPanel Spacing="4"
+                            HorizontalAlignment="Center">
+                    <TextBlock Text="¿Iniciar tu turno?"
+                               Foreground="#0B1220"
+                               FontSize="25"
                                FontWeight="Bold"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
+                               LetterSpacing="-0.4"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock Text="Confirma el fondo inicial con el que abrirás la caja"
+                               Foreground="#4B6A57"
+                               FontSize="13"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
 
+                <!-- Monto -->
+                <Border Padding="20,16"
+                        CornerRadius="18"
+                        Background="White"
+                        BorderBrush="#D9EFE1"
+                        BorderThickness="1"
+                        Margin="0,4,0,0">
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="14">
+                        <Border Width="44" Height="44"
+                                CornerRadius="13"
+                                Background="#EAF7EF"
+                                VerticalAlignment="Center">
+                            <PathIcon Width="20" Height="20"
+                                      Foreground="#16A34A"
+                                      Data="M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-6v11c0 1.1-.9 2-2 2H4v-2h17V7h2z"/>
+                        </Border>
+                        <StackPanel Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Spacing="1">
+                            <TextBlock Text="FONDO INICIAL"
+                                       Foreground="#94A3B8"
+                                       FontSize="10"
+                                       FontWeight="Bold"
+                                       LetterSpacing="1.2"/>
+                            <TextBlock Text="Efectivo en caja al abrir"
+                                       Foreground="#475569"
+                                       FontSize="13"/>
+                        </StackPanel>
+                        <TextBlock Grid.Column="2"
+                                   x:Name="MontoTextBlock"
+                                   Text="$0.00"
+                                   Foreground="#0B6B33"
+                                   FontSize="34"
+                                   FontWeight="Bold"
+                                   LetterSpacing="-1"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
                 </Border>
 
-
-                <TextBlock Text="Confirmar apertura de turno"
-                           Foreground="#21382A"
-                           FontSize="22"
-                           FontWeight="SemiBold"
-                           TextWrapping="Wrap"
-                           Margin="0,6,0,0"/>
-
-            </StackPanel>
-
-
-            <!-- ================================================= -->
-            <!-- MENSAJE                                           -->
-            <!-- ================================================= -->
-
-            <StackPanel Grid.Row="1"
-                        VerticalAlignment="Center"
-                        Spacing="8">
-
-
-                <TextBlock Text="¿Estás seguro de iniciar tu turno con un fondo inicial de:"
-                           Foreground="#718078"
-                           FontSize="14"
-                           TextWrapping="Wrap"/>
-
-
-                <TextBlock x:Name="MontoTextBlock"
-                           Text="$0.00"
-                           Foreground="#08783D"
-                           FontSize="30"
-                           FontWeight="Bold"
-                           TextWrapping="Wrap"/>
-
-
-                <TextBlock Text="Una vez confirmado, comenzarás las operaciones de caja."
-                           Foreground="#94A39A"
-                           FontSize="11"
-                           TextWrapping="Wrap"
-                           LineHeight="17"/>
+                <StackPanel Orientation="Horizontal"
+                            Spacing="7"
+                            HorizontalAlignment="Center">
+                    <PathIcon Width="14" Height="14"
+                              Foreground="#94A3B8"
+                              Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                    <TextBlock Text="Al confirmar, comenzarán las operaciones de caja."
+                               Foreground="#94A3B8"
+                               FontSize="12"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
 
             </StackPanel>
 
-
-            <!-- ================================================= -->
-            <!-- BOTONES                                           -->
-            <!-- ================================================= -->
-
-            <Grid Grid.Row="2"
-                  ColumnDefinitions="*,*"
-                  ColumnSpacing="12">
+        </Border>
 
 
-                <Button Grid.Column="0"
-                        Content="Cancelar"
-                        Click="Cancelar_Click"
+        <!-- ===================================================== -->
+        <!-- RESPUESTA                                             -->
+        <!-- ===================================================== -->
 
-                        MinWidth="130"
-                        Height="48"
+        <Border Background="White"
+                BorderBrush="#EAEEF2"
+                BorderThickness="0,1,0,0"
+                Padding="30,14,30,20">
 
-                        Background="White"
-                        Foreground="#B51F2A"
+            <StackPanel Spacing="12">
 
-                        BorderBrush="#F0B5BA"
-                        BorderThickness="1"
+                <StackPanel Orientation="Horizontal"
+                            Spacing="18"
+                            HorizontalAlignment="Center">
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Enter"/></Border>
+                        <TextBlock Text="Iniciar turno"/>
+                    </StackPanel>
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Esc"/></Border>
+                        <TextBlock Text="Corregir monto"/>
+                    </StackPanel>
+                </StackPanel>
 
-                        CornerRadius="9"
+                <Grid ColumnDefinitions="*,2*"
+                      ColumnSpacing="12">
 
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
+                    <Button Grid.Column="0"
+                            Classes="cancelar"
+                            IsCancel="True"
+                            Click="Cancelar_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <PathIcon Width="14" Height="14"
+                                      Data="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                            <TextBlock Text="Corregir" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
 
-                        FontSize="14"
-                        FontWeight="SemiBold"/>
+                    <Button Grid.Column="1"
+                            Classes="confirmar"
+                            IsDefault="True"
+                            Click="Confirmar_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="9">
+                            <PathIcon Width="18" Height="18"
+                                      Data="M8 5v14l11-7z"/>
+                            <TextBlock Text="Sí, iniciar turno" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                </Grid>
+
+            </StackPanel>
+
+        </Border>
+
+    </StackPanel>
 
 
-                <Button Grid.Column="1"
-                        Content="Sí, iniciar turno"
-                        Click="Confirmar_Click"
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
 
-                        MinWidth="150"
-                        Height="48"
+    <Window.Styles>
 
-                        Background="#16A34A"
-                        Foreground="White"
+        <Style Selector="Ellipse.pulso">
+            <Style.Animations>
+                <Animation Duration="0:0:1.8"
+                           IterationCount="Infinite"
+                           Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="0.75"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="0.75"/>
+                        <Setter Property="Opacity" Value="0.9"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1.2"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1.2"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
 
-                        BorderThickness="0"
+        <Style Selector="StackPanel.atajo">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Spacing" Value="6"/>
+        </Style>
 
-                        CornerRadius="9"
+        <Style Selector="StackPanel.atajo > TextBlock">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
 
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center"
+        <Style Selector="Border.tecla">
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
 
-                        FontSize="14"
-                        FontWeight="SemiBold"/>
+        <Style Selector="Border.tecla TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
 
-            </Grid>
+        <Style Selector="Button.cancelar">
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
 
-        </Grid>
+        <Style Selector="Button.cancelar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+        </Style>
 
-    </Border>
+        <Style Selector="Button.confirmar">
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22C55E"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.confirmar /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 24 -8 #8022C55E"/>
+        </Style>
+
+        <Style Selector="Button.confirmar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#2BD268"/>
+                    <GradientStop Offset="1" Color="#11A84E"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.confirmar:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#0B7A37"/>
+        </Style>
+
+    </Window.Styles>
 
 </Window>

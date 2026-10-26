@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:NovaCoreESDM.ViewModels"
+        xmlns:controls="using:NovaCoreESDM.Controls"
         x:Class="NovaCoreESDM.Views.LoginWindow"
         x:DataType="vm:LoginViewModel"
         Title="Grupo Luis Fer - Punto de Venta"
@@ -294,7 +295,7 @@
             </Border>
 
             <!-- Contenido del panel -->
-            <Grid RowDefinitions="Auto,*,Auto"
+            <Grid RowDefinitions="Auto,*,Auto,Auto"
                   Margin="56,48">
 
                 <!-- Etiqueta superior -->
@@ -320,7 +321,7 @@
                 <Image Grid.Row="1"
                        Classes="entrada"
                        Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
-                       MaxWidth="560"
+                       MaxWidth="440"
                        Margin="0,12"
                        Stretch="Uniform"
                        HorizontalAlignment="Center"
@@ -336,8 +337,13 @@
                     </Image.OpacityMask>
                 </Image>
 
+                <!-- Escena animada: productos pasando por el escáner al carrito -->
+                <controls:EscenaCajaAnimada Grid.Row="2"
+                                            MaxWidth="520"
+                                            Margin="0,0,0,28"/>
+
                 <!-- Reloj y franja de marca -->
-                <Grid Grid.Row="2"
+                <Grid Grid.Row="3"
                       ColumnDefinitions="*,Auto">
 
                     <StackPanel Grid.Column="0" Spacing="2">

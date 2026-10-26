@@ -3,337 +3,497 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="using:NovaCoreESDM.ViewModels.Turno"
-
         x:Class="NovaCoreESDM.Views.Turno.AperturaTurnoWindow"
         x:DataType="vm:AperturaTurnoViewModel"
-
         mc:Ignorable="d"
-
         Title="Grupo Luis Fer - Apertura de turno"
         Icon="/Assets/Brand/esdm-app-icon.ico"
-
-        Width="1100"
-        Height="680"
-
-        MinWidth="900"
-        MinHeight="600"
-
+        Width="1200"
+        Height="760"
+        MinWidth="960"
+        MinHeight="620"
         WindowStartupLocation="CenterScreen"
-
-        Background="#F6F8F7">
+        Background="#F4F6F8">
 
 
     <!-- ========================================================= -->
-    <!-- LAYOUT PRINCIPAL                                          -->
+    <!-- ESTILOS                                                   -->
     <!-- ========================================================= -->
 
-    <Grid ColumnDefinitions="360,*">
+    <Window.Styles>
+
+        <!-- Orbes animados del panel de marca (igual que el login) -->
+        <Style Selector="Ellipse.flotaA">
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Style.Animations>
+                <Animation Duration="0:0:16"
+                           IterationCount="Infinite"
+                           PlaybackDirection="Alternate"
+                           Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="70"/>
+                        <Setter Property="TranslateTransform.Y" Value="50"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Ellipse.flotaB">
+            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Style.Animations>
+                <Animation Duration="0:0:19"
+                           IterationCount="Infinite"
+                           PlaybackDirection="Alternate"
+                           Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="-60"/>
+                        <Setter Property="TranslateTransform.Y" Value="-60"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Entrada suave del formulario -->
+        <Style Selector="StackPanel.entrada">
+            <Style.Animations>
+                <Animation Duration="0:0:0.6"
+                           FillMode="Forward"
+                           Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="16"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Campo del fondo inicial -->
+        <Style Selector="Border.marcoMonto">
+            <Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <BrushTransition Property="BorderBrush" Duration="0:0:0.15"/>
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border.marcoMonto:focus-within">
+            <Setter Property="BorderBrush" Value="#16A34A"/>
+            <Setter Property="BoxShadow" Value="0 0 0 5 #1F16A34A"/>
+        </Style>
+
+        <!-- Montos rápidos -->
+        <Style Selector="Button.rapido">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="MinWidth" Value="80"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="Margin" Value="0,0,8,8"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.rapido:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#EAF7EF"/>
+            <Setter Property="BorderBrush" Value="#16A34A"/>
+            <Setter Property="Foreground" Value="#0B6B33"/>
+        </Style>
+
+        <!-- Botón iniciar -->
+        <Style Selector="Button.iniciar">
+            <Setter Property="Height" Value="60"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22C55E"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.iniciar /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 24 -8 #8022C55E"/>
+        </Style>
+
+        <Style Selector="Button.iniciar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#2BD268"/>
+                    <GradientStop Offset="1" Color="#11A84E"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.iniciar:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#CFE9D8"/>
+            <Setter Property="Foreground" Value="#F7FCF9"/>
+            <Setter Property="BoxShadow" Value="none"/>
+        </Style>
+
+        <!-- Notas del panel de marca -->
+        <Style Selector="Border.nota">
+            <Setter Property="Padding" Value="14,12"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="#10FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#1FFFFFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="Border.nota TextBlock">
+            <Setter Property="Foreground" Value="#C9D3DE"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Teclas -->
+        <Style Selector="Border.tecla">
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+    </Window.Styles>
+
+
+    <Grid ColumnDefinitions="400,*">
 
 
         <!-- ===================================================== -->
-        <!-- PANEL IZQUIERDO                                       -->
+        <!-- PANEL DE MARCA                                        -->
         <!-- ===================================================== -->
 
-        <Border Grid.Column="0"
-                Background="#08783D">
+        <Panel Grid.Column="0"
+               ClipToBounds="True"
+               Background="#050607">
 
-            <Grid>
+            <Ellipse Classes="flotaA"
+                     Width="460" Height="460"
+                     HorizontalAlignment="Left" VerticalAlignment="Top"
+                     Margin="-200,-180,0,0">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#AA16A34A"/>
+                        <GradientStop Offset="1" Color="#0016A34A"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
 
+            <Ellipse Classes="flotaB"
+                     Width="500" Height="500"
+                     HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                     Margin="0,0,-260,-200">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#AAC61F2B"/>
+                        <GradientStop Offset="1" Color="#00C61F2B"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
 
-                <!-- ================================================= -->
-                <!-- DECORACIÓN                                        -->
-                <!-- ================================================= -->
+            <Ellipse Classes="flotaA"
+                     Width="320" Height="320"
+                     HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                     Margin="-120,0,0,-160"
+                     Opacity="0.7">
+                <Ellipse.RenderTransform>
+                    <TranslateTransform/>
+                </Ellipse.RenderTransform>
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#88F5C400"/>
+                        <GradientStop Offset="1" Color="#00F5C400"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
 
-                <Ellipse Width="520"
-                         Height="520"
-                         HorizontalAlignment="Left"
-                         VerticalAlignment="Top"
-                         Margin="-300,-300,0,0"
-                         Fill="#16A34A"
-                         Opacity="0.13"/>
+            <Grid RowDefinitions="Auto,Auto,*,Auto"
+                  Margin="40,38">
 
-
-                <Ellipse Width="360"
-                         Height="360"
-                         HorizontalAlignment="Right"
-                         VerticalAlignment="Bottom"
-                         Margin="0,0,-210,-220"
-                         Fill="#C79A3B"
-                         Opacity="0.10"/>
-
-
-                <!-- ================================================= -->
-                <!-- CONTENIDO                                         -->
-                <!-- ================================================= -->
-
-                <Grid Margin="38"
-                      RowDefinitions="Auto,*,Auto">
-
-
-                    <!-- ================================================= -->
-                    <!-- LOGO                                              -->
-                    <!-- ================================================= -->
-
-                    <StackPanel Grid.Row="0"
-                                Spacing="12">
-
-
-                        <Border Width="150"
-                                Height="105"
-                                CornerRadius="16"
-                                Background="White"
-                                Padding="12"
-                                HorizontalAlignment="Left">
-
-                            <Image Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
-                                   Stretch="Uniform"/>
-
-                        </Border>
-
-
+                <Border Grid.Row="0"
+                        HorizontalAlignment="Left"
+                        Padding="12,6"
+                        CornerRadius="999"
+                        Background="#14FFFFFF"
+                        BorderBrush="#24FFFFFF"
+                        BorderThickness="1">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Ellipse Width="7" Height="7" Fill="#22C55E" VerticalAlignment="Center"/>
                         <TextBlock Text="PUNTO DE VENTA"
-                                   Foreground="#D8F3E2"
-                                   FontSize="13"
-                                   FontWeight="SemiBold"/>
-
-                    </StackPanel>
-
-
-                    <!-- ================================================= -->
-                    <!-- MENSAJE                                           -->
-                    <!-- ================================================= -->
-
-                    <StackPanel Grid.Row="1"
-                                VerticalAlignment="Center"
-                                Spacing="14">
-
-
-                        <TextBlock Text="Comienza tu turno"
-                                   Foreground="White"
-                                   FontSize="32"
+                                   Foreground="#D9E2EC"
+                                   FontSize="11"
                                    FontWeight="SemiBold"
-                                   TextWrapping="Wrap"/>
-
-
-                        <TextBlock Text="Registra el efectivo disponible en caja antes de comenzar las operaciones."
-                                   Foreground="#D8F3E2"
-                                   FontSize="15"
-                                   LineHeight="24"
-                                   TextWrapping="Wrap"/>
-
-
-                        <!-- ================================================= -->
-                        <!-- ESTADO                                            -->
-                        <!-- ================================================= -->
-
-                        <Border Background="#18FFFFFF"
-                                CornerRadius="12"
-                                Padding="15"
-                                Margin="0,18,0,0">
-
-                            <Grid ColumnDefinitions="Auto,*"
-                                  ColumnSpacing="10">
-
-
-                                <Border Width="9"
-                                        Height="9"
-                                        CornerRadius="5"
-                                        Background="#4ADE80"
-                                        VerticalAlignment="Center"/>
-
-
-                                <TextBlock Grid.Column="1"
-                                           Text="Sesión iniciada correctamente"
-                                           Foreground="White"
-                                           FontSize="12"
-                                           VerticalAlignment="Center"
-                                           TextWrapping="Wrap"/>
-
-                            </Grid>
-
-                        </Border>
-
+                                   LetterSpacing="1.4"
+                                   VerticalAlignment="Center"/>
                     </StackPanel>
+                </Border>
 
+                <Image Grid.Row="1"
+                       Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                       Width="300"
+                       Margin="0,26,0,0"
+                       Stretch="Uniform"
+                       HorizontalAlignment="Left">
+                    <Image.OpacityMask>
+                        <RadialGradientBrush RadiusX="64%" RadiusY="62%">
+                            <GradientStop Offset="0.8" Color="White"/>
+                            <GradientStop Offset="1" Color="Transparent"/>
+                        </RadialGradientBrush>
+                    </Image.OpacityMask>
+                </Image>
 
-                    <!-- ================================================= -->
-                    <!-- FOOTER                                            -->
-                    <!-- ================================================= -->
+                <StackPanel Grid.Row="2"
+                            VerticalAlignment="Center"
+                            Spacing="12">
+                    <TextBlock Text="Comienza tu turno"
+                               Foreground="White"
+                               FontSize="34"
+                               FontWeight="Bold"
+                               LetterSpacing="-0.8"
+                               TextWrapping="Wrap"/>
+                    <TextBlock Text="Registra el efectivo disponible en caja antes de comenzar las operaciones."
+                               Foreground="#A8B4C2"
+                               FontSize="15"
+                               LineHeight="22"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
 
-                    <TextBlock Grid.Row="2"
-                               Text="Desarrollado por ESDM Consulting"
-                               Foreground="#C8DDCF"
-                               Opacity="0.75"
-                               FontSize="11"/>
-
-                </Grid>
+                <StackPanel Grid.Row="3" Spacing="10">
+                    <Border Classes="nota">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <Ellipse Width="9" Height="9" Fill="#22C55E" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="Sesión iniciada correctamente"/>
+                        </Grid>
+                    </Border>
+                    <TextBlock Text="Desarrollado por ESDM Consulting"
+                               Foreground="#6B7A8C"
+                               FontSize="11"
+                               Margin="2,8,0,0"/>
+                </StackPanel>
 
             </Grid>
 
-        </Border>
+        </Panel>
 
 
         <!-- ===================================================== -->
-        <!-- PANEL DERECHO                                         -->
+        <!-- FORMULARIO                                            -->
         <!-- ===================================================== -->
 
-        <Grid Grid.Column="1"
-              Margin="40,42">
+        <StackPanel Grid.Column="1"
+                    Classes="entrada"
+                    Width="520"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="0">
+            <StackPanel.RenderTransform>
+                <TranslateTransform/>
+            </StackPanel.RenderTransform>
 
+            <TextBlock Text="APERTURA DE TURNO"
+                       Foreground="#16A34A"
+                       FontSize="12"
+                       FontWeight="Bold"
+                       LetterSpacing="2.2"/>
 
-            <!-- ================================================= -->
-            <!-- FORMULARIO                                        -->
-            <!-- ================================================= -->
+            <TextBlock Text="¿Con cuánto efectivo abres?"
+                       Foreground="#0B1220"
+                       FontSize="34"
+                       FontWeight="Bold"
+                       LetterSpacing="-0.8"
+                       TextWrapping="Wrap"
+                       Margin="0,10,0,0"/>
 
-            <StackPanel HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Width="460"
-                        MaxWidth="460"
-                        Spacing="11">
+            <TextBlock Text="Cuenta el efectivo que hay físicamente en la caja y escríbelo aquí."
+                       Foreground="#64748B"
+                       FontSize="14"
+                       TextWrapping="Wrap"
+                       Margin="0,8,0,28"/>
 
+            <TextBlock Text="Fondo inicial"
+                       Foreground="#334155"
+                       FontSize="13"
+                       FontWeight="SemiBold"
+                       Margin="2,0,0,8"/>
 
-                <!-- ================================================= -->
-                <!-- TÍTULO                                            -->
-                <!-- ================================================= -->
-
-                <TextBlock Text="Apertura de turno"
-                           Foreground="#21382A"
-                           FontSize="30"
-                           FontWeight="SemiBold"
-                           TextWrapping="Wrap"/>
-
-
-                <TextBlock Text="Indica cuánto efectivo tienes físicamente en caja."
-                           Foreground="#718078"
-                           FontSize="14"
-                           TextWrapping="Wrap"
-                           Margin="0,0,0,22"/>
-
-
-                <!-- ================================================= -->
-                <!-- FONDO INICIAL                                     -->
-                <!-- ================================================= -->
-
-                <TextBlock Text="Fondo inicial"
-                           Foreground="#44534A"
-                           FontSize="13"
-                           FontWeight="SemiBold"/>
-
-
-                <Border Background="White"
-                        BorderBrush="#DDE7E0"
-                        BorderThickness="1"
-                        CornerRadius="12"
-                        Padding="15,7">
-
-                    <Grid ColumnDefinitions="Auto,*"
-                          ColumnSpacing="8">
-
-
-                        <TextBlock Text="$"
-                                   Foreground="#718078"
-                                   FontSize="25"
-                                   FontWeight="SemiBold"
+            <!-- Campo del fondo -->
+            <Border Classes="marcoMonto"
+                    Height="76">
+                <Grid ColumnDefinitions="Auto,*">
+                    <TextBlock Text="$"
+                               Foreground="#94A3B8"
+                               FontSize="30"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"
+                               Margin="22,0,0,0"/>
+                    <NumericUpDown x:Name="FondoInicialInput"
+                                   Grid.Column="1"
+                                   Value="{Binding FondoInicial}"
+                                   Minimum="0"
+                                   Increment="50"
+                                   FormatString="0.00"
+                                   ShowButtonSpinner="False"
+                                   FontSize="34"
+                                   FontWeight="Bold"
+                                   Foreground="#0B1220"
+                                   Background="Transparent"
+                                   BorderThickness="0"
+                                   HorizontalContentAlignment="Right"
+                                   VerticalContentAlignment="Center"
                                    VerticalAlignment="Center"
-                                   Margin="0,0,4,0"/>
+                                   Margin="0,0,14,0"/>
+                </Grid>
+            </Border>
 
+            <!-- Montos rápidos -->
+            <WrapPanel Orientation="Horizontal"
+                       Margin="0,12,0,0">
+                <Button Classes="rapido" Tag="0" Content="Sin fondo" Click="MontoRapido_Click"/>
+                <Button Classes="rapido" Tag="500" Content="$500" Click="MontoRapido_Click"/>
+                <Button Classes="rapido" Tag="1000" Content="$1,000" Click="MontoRapido_Click"/>
+                <Button Classes="rapido" Tag="1500" Content="$1,500" Click="MontoRapido_Click"/>
+                <Button Classes="rapido" Tag="2000" Content="$2,000" Click="MontoRapido_Click"/>
+            </WrapPanel>
 
-                        <NumericUpDown Grid.Column="1"
-                                       Value="{Binding FondoInicial}"
-                                       Minimum="0"
-                                       Increment="50"
-                                       FormatString="0.00"
-                                       FontSize="22"
-                                       FontWeight="SemiBold"
-                                       Foreground="#21382A"
-                                       Background="Transparent"
-                                       BorderThickness="0"
-                                       HorizontalAlignment="Stretch"/>
-
-                    </Grid>
-
-                </Border>
-
-
-                <!-- ================================================= -->
-                <!-- TEXTO DE APOYO                                    -->
-                <!-- ================================================= -->
-
-                <TextBlock Text="Este monto debe coincidir con el efectivo disponible físicamente en la caja."
-                           Foreground="#94A39A"
-                           FontSize="11"
-                           TextWrapping="Wrap"
-                           Margin="0,3,0,8"/>
-
-
-                <!-- ================================================= -->
-                <!-- ERROR                                             -->
-                <!-- ================================================= -->
-
-                <TextBlock Text="{Binding MensajeError}"
-                           Foreground="#B51F2A"
+            <StackPanel Orientation="Horizontal"
+                        Spacing="7"
+                        Margin="2,6,0,0">
+                <PathIcon Width="14" Height="14"
+                          Foreground="#94A3B8"
+                          Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                <TextBlock Text="Este monto debe coincidir con el efectivo disponible en la caja."
+                           Foreground="#94A3B8"
                            FontSize="12"
-                           TextWrapping="Wrap"
-                           MinHeight="20"/>
-
-
-                <!-- ================================================= -->
-                <!-- BOTÓN                                             -->
-                <!-- ================================================= -->
-
-                <Button Content="Iniciar turno"
-                        Command="{Binding IniciarTurnoCommand}"
-                        IsEnabled="{Binding PuedeIniciarTurno}"
-
-                        Height="52"
-                        Margin="0,4,0,0"
-
-                        Background="#16A34A"
-                        Foreground="White"
-
-                        BorderThickness="0"
-
-                        HorizontalContentAlignment="Center"
-
-                        CornerRadius="10"
-
-                        FontSize="15"
-                        FontWeight="SemiBold"/>
-
-
-                <!-- ================================================= -->
-                <!-- AYUDA                                             -->
-                <!-- ================================================= -->
-
-                <Border Background="#F1F8F3"
-                        BorderBrush="#D7E9DD"
-                        BorderThickness="1"
-                        CornerRadius="12"
-                        Padding="16"
-                        Margin="0,16,0,0">
-
-                    <StackPanel Spacing="6">
-
-
-                        <TextBlock Text="¿Qué es el fondo inicial?"
-                                   Foreground="#08783D"
-                                   FontSize="12"
-                                   FontWeight="SemiBold"/>
-
-
-                        <TextBlock Text="Es el efectivo que existe dentro de la caja al comenzar el turno. Se utilizará posteriormente para calcular el corte de caja."
-                                   Foreground="#64746B"
-                                   FontSize="11"
-                                   LineHeight="17"
-                                   TextWrapping="Wrap"/>
-
-                    </StackPanel>
-
-                </Border>
-
+                           VerticalAlignment="Center"/>
             </StackPanel>
 
-        </Grid>
+            <!-- Error -->
+            <Border Margin="0,16,0,0"
+                    Padding="12,9"
+                    CornerRadius="12"
+                    Background="#FEF2F2"
+                    BorderBrush="#FECACA"
+                    BorderThickness="1"
+                    IsVisible="{Binding MensajeError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Width="16" Height="16"
+                              Foreground="#C61F2B"
+                              Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    <TextBlock Text="{Binding MensajeError}"
+                               Foreground="#9F1239"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               MaxWidth="460"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Iniciar -->
+            <Button Classes="iniciar"
+                    IsDefault="True"
+                    Margin="0,24,0,0"
+                    Command="{Binding IniciarTurnoCommand}"
+                    IsEnabled="{Binding PuedeIniciarTurno}">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <PathIcon Width="20" Height="20"
+                              Data="M8 5v14l11-7z"/>
+                    <TextBlock Text="Iniciar turno" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Button>
+
+            <StackPanel Orientation="Horizontal"
+                        Spacing="6"
+                        HorizontalAlignment="Center"
+                        Margin="0,12,0,0">
+                <TextBlock Text="Presiona"
+                           Foreground="#94A3B8"
+                           FontSize="12"
+                           VerticalAlignment="Center"/>
+                <Border Classes="tecla"><TextBlock Text="Enter ↵"/></Border>
+                <TextBlock Text="para iniciar"
+                           Foreground="#94A3B8"
+                           FontSize="12"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- ¿Qué es el fondo inicial? -->
+            <Border Margin="0,28,0,0"
+                    Padding="16,14"
+                    CornerRadius="16"
+                    Background="#F0FAF4"
+                    BorderBrush="#CDEBD8"
+                    BorderThickness="1">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                    <Border Width="36" Height="36"
+                            CornerRadius="11"
+                            Background="#DDF3E5"
+                            VerticalAlignment="Top">
+                        <PathIcon Width="18" Height="18"
+                                  Foreground="#16A34A"
+                                  Data="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" Spacing="3">
+                        <TextBlock Text="¿Qué es el fondo inicial?"
+                                   Foreground="#0B6B33"
+                                   FontSize="14"
+                                   FontWeight="Bold"/>
+                        <TextBlock Text="Es el efectivo que hay en la caja al comenzar el turno. Se usa después para calcular el corte de caja."
+                                   Foreground="#4B6A57"
+                                   FontSize="13"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+        </StackPanel>
 
     </Grid>
 

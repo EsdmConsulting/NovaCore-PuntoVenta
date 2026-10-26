@@ -4,348 +4,369 @@
 
     x:Class="NovaCoreESDM.Views.Turno.ContinuarTurnoWindow"
 
-    Width="620"
-    Height="570"
+    Width="580"
+    SizeToContent="Height"
 
     CanResize="False"
     WindowStartupLocation="CenterOwner"
 
     Title="Turno existente"
+    Icon="/Assets/Brand/esdm-app-icon.ico"
 
-    Background="#F3F6FA">
-
-
-    <Border
-        Margin="14"
-        Padding="30"
-        Background="White"
-        CornerRadius="18">
+    Background="#F4F6F8">
 
 
-        <Grid
-            RowDefinitions="Auto,Auto,*,Auto"
-            RowSpacing="22">
+    <StackPanel>
 
 
-            <!-- ================================================= -->
-            <!-- ENCABEZADO                                        -->
-            <!-- ================================================= -->
+        <!-- ===================================================== -->
+        <!-- ENCABEZADO                                            -->
+        <!-- ===================================================== -->
 
-            <StackPanel
-                Grid.Row="0"
-                Spacing="7">
+        <Border Padding="28,24,28,20"
+                BorderBrush="#F3E3BC"
+                BorderThickness="0,0,0,1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#FFF9EC"/>
+                    <GradientStop Offset="1" Color="#FDF1D4"/>
+                </LinearGradientBrush>
+            </Border.Background>
 
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="16">
 
-                <TextBlock
-                    Text="Turno ya abierto"
-                    Foreground="#0B3D6E"
-                    FontSize="30"
-                    FontWeight="SemiBold"/>
-
-
-                <TextBlock
-                    Text="Esta caja ya tiene una operación activa."
-                    Foreground="#73808C"
-                    FontSize="13"/>
-
-            </StackPanel>
-
-
-
-            <!-- ================================================= -->
-            <!-- ALERTA                                            -->
-            <!-- ================================================= -->
-
-            <Border
-                Grid.Row="1"
-                Background="#FFF8E8"
-                BorderBrush="#F0D38B"
-                BorderThickness="1"
-                CornerRadius="12"
-                Padding="16">
-
-
-                <Grid
-                    ColumnDefinitions="Auto,*"
-                    ColumnSpacing="13">
-
-
-                    <Border
-                        Width="36"
-                        Height="36"
+                <Border Width="58" Height="58"
                         CornerRadius="18"
-                        Background="#F5DFA6"
                         VerticalAlignment="Center">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Offset="0" Color="#FBBF24"/>
+                            <GradientStop Offset="1" Color="#D97706"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <PathIcon Width="28" Height="28"
+                              Foreground="White"
+                              Data="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                </Border>
+
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="3">
+                    <TextBlock Text="TURNO EN CURSO"
+                               Foreground="#B45309"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               LetterSpacing="1.6"
+                               LineHeight="16"/>
+                    <TextBlock Text="Esta caja ya tiene un turno abierto"
+                               Foreground="#0B1220"
+                               FontSize="21"
+                               FontWeight="Bold"
+                               TextWrapping="Wrap"/>
+                    <TextBlock Text="Revisa los datos del turno antes de continuar."
+                               Foreground="#7A5A1E"
+                               FontSize="13"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+
+            </Grid>
+
+        </Border>
 
 
-                        <TextBlock
-                            Text="!"
-                            Foreground="#8A6422"
-                            FontSize="18"
-                            FontWeight="Bold"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"/>
+        <!-- ===================================================== -->
+        <!-- AVISO Y DATOS DEL TURNO                               -->
+        <!-- ===================================================== -->
 
+        <StackPanel Margin="28,20,28,18"
+                    Spacing="16">
+
+            <!-- Aviso (el código cambia el texto según quién abrió el turno) -->
+            <Border Padding="16,14"
+                    CornerRadius="16"
+                    Background="#FFF7E0"
+                    BorderBrush="#FBD98A"
+                    BorderThickness="1">
+                <Grid ColumnDefinitions="Auto,*"
+                      ColumnSpacing="12">
+                    <Border Width="36" Height="36"
+                            CornerRadius="11"
+                            Background="#FDEBB5"
+                            VerticalAlignment="Top">
+                        <PathIcon Width="18" Height="18"
+                                  Foreground="#B7791F"
+                                  Data="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                     </Border>
-
-
-                    <StackPanel
-                        Grid.Column="1"
-                        Spacing="4"
-                        VerticalAlignment="Center">
-
-
-                        <TextBlock
-                            x:Name="TituloAdvertenciaTextBlock"
-                            Text="Existe un turno abierto"
-                            Foreground="#72541E"
-                            FontSize="13"
-                            FontWeight="SemiBold"/>
-
-
-                        <TextBlock
-                            x:Name="MensajeAdvertenciaTextBlock"
-                            Text="Si continúas, trabajarás sobre el mismo turno."
-                            Foreground="#8A6A2C"
-                            FontSize="11"
-                            TextWrapping="Wrap"/>
-
+                    <StackPanel Grid.Column="1" Spacing="3">
+                        <TextBlock x:Name="TituloAdvertenciaTextBlock"
+                                   Text="Existe un turno abierto"
+                                   Foreground="#7A4E05"
+                                   FontSize="15"
+                                   FontWeight="Bold"
+                                   TextWrapping="Wrap"/>
+                        <TextBlock x:Name="MensajeAdvertenciaTextBlock"
+                                   Text="Si continúas, trabajarás sobre el mismo turno."
+                                   Foreground="#92600A"
+                                   FontSize="13"
+                                   TextWrapping="Wrap"/>
                     </StackPanel>
-
                 </Grid>
-
             </Border>
 
+            <!-- Datos -->
+            <Border Padding="18,8"
+                    CornerRadius="18"
+                    Background="White"
+                    BorderBrush="#EAEEF2"
+                    BorderThickness="1">
 
+                <StackPanel>
 
-            <!-- ================================================= -->
-            <!-- INFORMACIÓN                                       -->
-            <!-- ================================================= -->
-
-            <Border
-                Grid.Row="2"
-                Background="#F7F9FB"
-                BorderBrush="#E2E8EE"
-                BorderThickness="1"
-                CornerRadius="14"
-                Padding="20">
-
-
-                <StackPanel Spacing="14">
-
-
-                    <!-- TURNO -->
-
-                    <Grid ColumnDefinitions="*,Auto">
-
-
-                        <TextBlock
-                            Text="Turno"
-                            Classes="infoLabel"/>
-
-
-                        <TextBlock
-                            x:Name="TurnoTextBlock"
-                            Grid.Column="1"
-                            Text="—"
-                            Classes="infoValue"/>
-
+                    <Grid Classes="dato" ColumnDefinitions="Auto,*,Auto">
+                        <Border Classes="iconoDato">
+                            <PathIcon Data="M7 15h2v-2H7v2zm4 0h2v-2h-2v2zm4 0h2v-2h-2v2zM19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/>
+                        </Border>
+                        <TextBlock Grid.Column="1" Classes="etiqueta" Text="Turno"/>
+                        <TextBlock Grid.Column="2" x:Name="TurnoTextBlock" Classes="valor" Text="—"/>
                     </Grid>
 
+                    <Border Classes="separador"/>
 
-                    <Border
-                        Height="1"
-                        Background="#E4E9ED"/>
-
-
-                    <!-- CAJA -->
-
-                    <Grid ColumnDefinitions="*,Auto">
-
-
-                        <TextBlock
-                            Text="Caja"
-                            Classes="infoLabel"/>
-
-
-                        <TextBlock
-                            x:Name="CajaTextBlock"
-                            Grid.Column="1"
-                            Text="—"
-                            Classes="infoValue"/>
-
+                    <Grid Classes="dato" ColumnDefinitions="Auto,*,Auto">
+                        <Border Classes="iconoDato">
+                            <PathIcon Data="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/>
+                        </Border>
+                        <TextBlock Grid.Column="1" Classes="etiqueta" Text="Caja"/>
+                        <TextBlock Grid.Column="2" x:Name="CajaTextBlock" Classes="valor" Text="—"/>
                     </Grid>
 
+                    <Border Classes="separador"/>
 
-                    <Border
-                        Height="1"
-                        Background="#E4E9ED"/>
-
-
-                    <!-- USUARIO -->
-
-                    <Grid ColumnDefinitions="*,Auto">
-
-
-                        <TextBlock
-                            Text="Abierto por"
-                            Classes="infoLabel"/>
-
-
-                        <TextBlock
-                            x:Name="UsuarioTextBlock"
-                            Grid.Column="1"
-                            Text="—"
-                            Classes="infoValue"/>
-
+                    <Grid Classes="dato" ColumnDefinitions="Auto,*,Auto">
+                        <Border Classes="iconoDato">
+                            <PathIcon Data="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.5h19.6v-2.5c0-3.3-6.5-4.9-9.8-4.9z"/>
+                        </Border>
+                        <TextBlock Grid.Column="1" Classes="etiqueta" Text="Abierto por"/>
+                        <TextBlock Grid.Column="2" x:Name="UsuarioTextBlock" Classes="valor" Text="—"/>
                     </Grid>
 
+                    <Border Classes="separador"/>
 
-                    <Border
-                        Height="1"
-                        Background="#E4E9ED"/>
-
-
-                    <!-- FECHA -->
-
-                    <Grid ColumnDefinitions="*,Auto">
-
-
-                        <TextBlock
-                            Text="Fecha de apertura"
-                            Classes="infoLabel"/>
-
-
-                        <TextBlock
-                            x:Name="FechaTextBlock"
-                            Grid.Column="1"
-                            Text="—"
-                            Classes="infoValue"/>
-
+                    <Grid Classes="dato" ColumnDefinitions="Auto,*,Auto">
+                        <Border Classes="iconoDato">
+                            <PathIcon Data="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                        </Border>
+                        <TextBlock Grid.Column="1" Classes="etiqueta" Text="Fecha de apertura"/>
+                        <TextBlock Grid.Column="2" x:Name="FechaTextBlock" Classes="valor" Text="—"/>
                     </Grid>
 
+                    <Border Classes="separador"/>
 
-                    <Border
-                        Height="1"
-                        Background="#E4E9ED"/>
-
-
-                    <!-- FONDO -->
-
-                    <Grid ColumnDefinitions="*,Auto">
-
-
-                        <TextBlock
-                            Text="Fondo inicial"
-                            Classes="infoLabel"/>
-
-
-                        <TextBlock
-                            x:Name="FondoTextBlock"
-                            Grid.Column="1"
-                            Text="$0.00"
-                            Foreground="#08783D"
-                            FontSize="15"
-                            FontWeight="SemiBold"/>
-
+                    <Grid Classes="dato" ColumnDefinitions="Auto,*,Auto">
+                        <Border Classes="iconoDato" Background="#EAF7EF">
+                            <PathIcon Foreground="#16A34A"
+                                      Data="M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-6v11c0 1.1-.9 2-2 2H4v-2h17V7h2z"/>
+                        </Border>
+                        <TextBlock Grid.Column="1" Classes="etiqueta" Text="Fondo inicial"/>
+                        <TextBlock Grid.Column="2" x:Name="FondoTextBlock" Classes="valor" Text="$0.00"
+                                   Foreground="#0B6B33"
+                                   FontSize="20"/>
                     </Grid>
 
                 </StackPanel>
 
             </Border>
 
+        </StackPanel>
 
 
-            <!-- ================================================= -->
-            <!-- BOTONES                                           -->
-            <!-- ================================================= -->
+        <!-- ===================================================== -->
+        <!-- BOTONES                                               -->
+        <!-- ===================================================== -->
 
-            <Grid
-                Grid.Row="3"
-                ColumnDefinitions="*,*"
-                ColumnSpacing="12">
+        <Border Background="White"
+                BorderBrush="#EAEEF2"
+                BorderThickness="0,1,0,0"
+                Padding="28,14,28,20">
 
+            <StackPanel Spacing="12">
 
-                <Button
-                    Grid.Column="0"
-                    Height="50"
+                <StackPanel Orientation="Horizontal"
+                            Spacing="18"
+                            HorizontalAlignment="Center">
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Enter"/></Border>
+                        <TextBlock Text="Continuar turno"/>
+                    </StackPanel>
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Esc"/></Border>
+                        <TextBlock Text="Cancelar"/>
+                    </StackPanel>
+                </StackPanel>
 
-                    Content="Cancelar"
+                <Grid ColumnDefinitions="*,2*"
+                      ColumnSpacing="12">
 
-                    Click="Cancelar_Click"
+                    <Button Grid.Column="0"
+                            Classes="cancelar"
+                            IsCancel="True"
+                            Click="Cancelar_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <PathIcon Width="14" Height="14"
+                                      Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                            <TextBlock Text="Cancelar" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
 
-                    Background="#F2F4F6"
-                    Foreground="#53606B"
+                    <Button Grid.Column="1"
+                            Classes="continuar"
+                            IsDefault="True"
+                            Click="Continuar_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="9">
+                            <PathIcon Width="18" Height="18"
+                                      Data="M12 4l-1.4 1.4 5.6 5.6H4v2h12.2l-5.6 5.6L12 20l8-8z"/>
+                            <TextBlock Text="Continuar turno" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
 
-                    BorderBrush="#E0E5E9"
-                    BorderThickness="1"
+                </Grid>
 
-                    CornerRadius="10"
+            </StackPanel>
 
-                    FontSize="13"
-                    FontWeight="SemiBold"/>
+        </Border>
 
-
-                <Button
-                    Grid.Column="1"
-                    Height="50"
-
-                    Content="Continuar turno"
-
-                    Click="Continuar_Click"
-
-                    Background="#16A34A"
-                    Foreground="White"
-
-                    BorderThickness="0"
-
-                    CornerRadius="10"
-
-                    FontSize="13"
-                    FontWeight="SemiBold"/>
-
-            </Grid>
-
-        </Grid>
-
-    </Border>
-
+    </StackPanel>
 
 
     <!-- ========================================================= -->
-    <!-- ESTILOS                                                    -->
+    <!-- ESTILOS                                                   -->
     <!-- ========================================================= -->
 
     <Window.Styles>
 
-
-        <Style Selector="TextBlock.infoLabel">
-
-            <Setter
-                Property="Foreground"
-                Value="#7B8790"/>
-
-            <Setter
-                Property="FontSize"
-                Value="12"/>
-
+        <Style Selector="Grid.dato">
+            <Setter Property="MinHeight" Value="54"/>
+            <Setter Property="ColumnSpacing" Value="12"/>
         </Style>
 
+        <Style Selector="Border.iconoDato">
+            <Setter Property="Width" Value="34"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
 
-        <Style Selector="TextBlock.infoValue">
+        <Style Selector="Border.iconoDato PathIcon">
+            <Setter Property="Width" Value="16"/>
+            <Setter Property="Height" Value="16"/>
+            <Setter Property="Foreground" Value="#475569"/>
+        </Style>
 
-            <Setter
-                Property="Foreground"
-                Value="#33414B"/>
+        <Style Selector="TextBlock.etiqueta">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
 
-            <Setter
-                Property="FontSize"
-                Value="12"/>
+        <Style Selector="TextBlock.valor">
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+            <Setter Property="MaxWidth" Value="300"/>
+        </Style>
 
-            <Setter
-                Property="FontWeight"
-                Value="SemiBold"/>
+        <Style Selector="Border.separador">
+            <Setter Property="Height" Value="1"/>
+            <Setter Property="Background" Value="#F1F4F7"/>
+        </Style>
 
+        <Style Selector="StackPanel.atajo">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Spacing" Value="6"/>
+        </Style>
+
+        <Style Selector="StackPanel.atajo > TextBlock">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla">
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style Selector="Button.cancelar">
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.cancelar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+        </Style>
+
+        <Style Selector="Button.continuar">
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22C55E"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.continuar /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 24 -8 #8022C55E"/>
+        </Style>
+
+        <Style Selector="Button.continuar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#2BD268"/>
+                    <GradientStop Offset="1" Color="#11A84E"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.continuar:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#0B7A37"/>
         </Style>
 
     </Window.Styles>

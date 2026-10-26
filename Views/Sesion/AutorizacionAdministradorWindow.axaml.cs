@@ -94,6 +94,9 @@ public partial class AutorizacionAdministradorWindow : Window
         {
             _cargando = false;
             ActualizarControles();
+
+            // Listo para escribir la contraseña y presionar Enter.
+            _passwordTextBox.Focus();
         }
     }
 
@@ -183,7 +186,15 @@ public partial class AutorizacionAdministradorWindow : Window
         _passwordTextBox.IsEnabled = !_cargando;
         _autorizarButton.IsEnabled = !_cargando;
         _cancelarButton.IsEnabled = !_cargando;
-        _autorizarButton.Content =
+        // El botón tiene ícono + texto; se cambia solo el texto y se
+        // muestra una barra de carga mientras valida.
+        this.FindControl<TextBlock>("TextoAutorizar")!.Text =
             _cargando ? "Validando..." : "Validar y continuar";
+
+        this.FindControl<PathIcon>("IconoAutorizar")!.IsVisible =
+            !_cargando;
+
+        this.FindControl<ProgressBar>("ProgresoAutorizar")!.IsVisible =
+            _cargando;
     }
 }

@@ -405,6 +405,60 @@
 
                 <Grid RowDefinitions="*,Auto">
 
+                    <!-- Franjas diagonales de la marca con destello de luz -->
+                    <Panel Grid.Row="0"
+                           ClipToBounds="True"
+                           IsHitTestVisible="False">
+                        <Canvas Width="820"
+                                Height="75"
+                                HorizontalAlignment="Right">
+
+                            <Polygon Points="250,0 322,0 262,75 190,75">
+                                <Polygon.Fill>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                        <GradientStop Offset="0" Color="#FCD535"/>
+                                        <GradientStop Offset="1" Color="#F5B400"/>
+                                    </LinearGradientBrush>
+                                </Polygon.Fill>
+                            </Polygon>
+
+                            <Polygon Points="322,0 402,0 342,75 262,75">
+                                <Polygon.Fill>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                                        <GradientStop Offset="0" Color="#EF4444"/>
+                                        <GradientStop Offset="1" Color="#C61F2B"/>
+                                    </LinearGradientBrush>
+                                </Polygon.Fill>
+                            </Polygon>
+
+                            <Polygon Points="402,0 820,0 820,75 342,75">
+                                <Polygon.Fill>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                        <GradientStop Offset="0" Color="#16A34A"/>
+                                        <GradientStop Offset="1" Color="#0B7A37"/>
+                                    </LinearGradientBrush>
+                                </Polygon.Fill>
+                            </Polygon>
+
+                            <!-- Destello -->
+                            <Polygon Classes="destello"
+                                     Points="60,0 130,0 70,75 0,75"
+                                     Canvas.Left="0">
+                                <Polygon.RenderTransform>
+                                    <TranslateTransform/>
+                                </Polygon.RenderTransform>
+                                <Polygon.Fill>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                        <GradientStop Offset="0" Color="#00FFFFFF"/>
+                                        <GradientStop Offset="0.5" Color="#66FFFFFF"/>
+                                        <GradientStop Offset="1" Color="#00FFFFFF"/>
+                                    </LinearGradientBrush>
+                                </Polygon.Fill>
+                            </Polygon>
+
+                        </Canvas>
+                    </Panel>
+
                     <Grid Grid.Row="0"
                           ColumnDefinitions="*,Auto"
                           Margin="32,0,24,0">
@@ -527,15 +581,31 @@
 
                     </Grid>
 
-                    <!-- Franja con los colores de la marca -->
-                    <Grid Grid.Row="1"
-                          Height="3"
-                          ColumnDefinitions="6*,1*,1*,1*">
-                        <Border Grid.Column="0" Background="#16A34A"/>
-                        <Border Grid.Column="1" Background="#F5C400"/>
-                        <Border Grid.Column="2" Background="#B5651D"/>
-                        <Border Grid.Column="3" Background="#C61F2B"/>
-                    </Grid>
+                    <!-- Franja con los colores de la marca y un brillo que corre -->
+                    <Panel Grid.Row="1"
+                           Height="3"
+                           ClipToBounds="True">
+                        <Grid ColumnDefinitions="6*,1*,1*,1*">
+                            <Border Grid.Column="0" Background="#16A34A"/>
+                            <Border Grid.Column="1" Background="#F5C400"/>
+                            <Border Grid.Column="2" Background="#B5651D"/>
+                            <Border Grid.Column="3" Background="#C61F2B"/>
+                        </Grid>
+                        <Border Classes="brilloFranja"
+                                Width="180"
+                                HorizontalAlignment="Left">
+                            <Border.RenderTransform>
+                                <TranslateTransform/>
+                            </Border.RenderTransform>
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,0%">
+                                    <GradientStop Offset="0" Color="#00FFFFFF"/>
+                                    <GradientStop Offset="0.5" Color="#CCFFFFFF"/>
+                                    <GradientStop Offset="1" Color="#00FFFFFF"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                        </Border>
+                    </Panel>
 
                 </Grid>
 
@@ -903,9 +973,48 @@
             <Setter Property="Height" Value="46"/>
             <Setter Property="Padding" Value="12,6"/>
             <Setter Property="CornerRadius" Value="14"/>
-            <Setter Property="Background" Value="#F8FAFB"/>
-            <Setter Property="BorderBrush" Value="#EDF1F4"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E6F1EA"/>
             <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BoxShadow" Value="0 6 16 -8 #66000000"/>
+        </Style>
+
+        <!-- Destello que recorre las franjas cada 6 s -->
+        <Style Selector="Polygon.destello">
+            <Style.Animations>
+                <Animation Duration="0:0:6"
+                           IterationCount="Infinite"
+                           Easing="CubicEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="120"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="30%">
+                        <Setter Property="TranslateTransform.X" Value="840"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="840"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Brillo que corre por la franja inferior -->
+        <Style Selector="Border.brilloFranja">
+            <Style.Animations>
+                <Animation Duration="0:0:5"
+                           IterationCount="Infinite"
+                           Easing="SineEaseInOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="-200"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="60%">
+                        <Setter Property="TranslateTransform.X" Value="2400"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="2400"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
         </Style>
 
     </Window.Styles>

@@ -1,0 +1,488 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NovaCoreESDM.Controls.EscenaCorteAnimada"
+             IsHitTestVisible="False">
+
+    <!-- ========================================================= -->
+    <!-- ESCENA ANIMADA DE CORTE DE CAJA                           -->
+    <!-- ========================================================= -->
+    <!-- Impresora sacando el ticket del corte, billetes que caen  -->
+    <!-- y se apilan, y monedas que forman una torre. Vectorial y  -->
+    <!-- escalable (lienzo de diseño de 560 x 180). Ciclo de 5 s.  -->
+    <!-- ========================================================= -->
+
+    <UserControl.Styles>
+
+        <!-- Papel del ticket saliendo de la impresora -->
+        <Style Selector="Border.papel">
+            <Style.Animations>
+                <Animation Duration="0:0:5"
+                           IterationCount="Infinite"
+                           FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="55%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="88%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Lucecita de la impresora mientras imprime -->
+        <Style Selector="Ellipse.led">
+            <Style.Animations>
+                <Animation Duration="0:0:0.5"
+                           IterationCount="Infinite"
+                           PlaybackDirection="Alternate">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.3"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Billetes que caen y se apilan -->
+        <Style Selector="Border.billete">
+            <Setter Property="Width" Value="104"/>
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="BorderBrush" Value="#4DFFFFFF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BoxShadow" Value="0 6 14 -6 #99000000"/>
+        </Style>
+
+        <Style Selector="Border.b1">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.Y" Value="-130"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="4%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="16%">
+                        <Setter Property="TranslateTransform.Y" Value="4"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="20%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="88%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Border.b2">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.Y" Value="-130"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="14%">
+                        <Setter Property="TranslateTransform.Y" Value="-130"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="18%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="30%">
+                        <Setter Property="TranslateTransform.Y" Value="4"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="34%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="88%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Border.b3">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.Y" Value="-130"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="28%">
+                        <Setter Property="TranslateTransform.Y" Value="-130"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="32%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="44%">
+                        <Setter Property="TranslateTransform.Y" Value="4"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="48%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="88%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Monedas que caen y forman una torre -->
+        <Style Selector="Border.moneda">
+            <Setter Property="Width" Value="58"/>
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="CornerRadius" Value="9"/>
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="BorderBrush" Value="#B07A00"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="Border.m1">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.Y" Value="-140"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="40%">
+                        <Setter Property="TranslateTransform.Y" Value="-140"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="43%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="52%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="88%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Border.m2">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.Y" Value="-140"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="50%">
+                        <Setter Property="TranslateTransform.Y" Value="-140"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="53%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="62%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="88%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Border.m3">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.Y" Value="-140"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="60%">
+                        <Setter Property="TranslateTransform.Y" Value="-140"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="63%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="72%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="88%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Border.m4">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.Y" Value="-140"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="68%">
+                        <Setter Property="TranslateTransform.Y" Value="-140"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="71%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="80%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="88%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+    </UserControl.Styles>
+
+
+    <Viewbox Stretch="Uniform">
+
+        <Canvas Width="560" Height="180">
+
+            <!-- Superficie -->
+            <Border Canvas.Left="20" Canvas.Top="162"
+                    Width="520" Height="6"
+                    CornerRadius="3"
+                    Background="#1AFFFFFF"/>
+
+
+            <!-- ============ IMPRESORA Y TICKET ============ -->
+
+            <!-- Papel (crece hacia abajo desde la ranura) -->
+            <Border Classes="papel"
+                    Canvas.Left="62" Canvas.Top="56"
+                    Width="96" Height="104"
+                    CornerRadius="0,0,6,6"
+                    Background="#F8FAFC"
+                    Padding="10,10"
+                    RenderTransformOrigin="50%,0%">
+                <Border.RenderTransform>
+                    <ScaleTransform/>
+                </Border.RenderTransform>
+                <StackPanel Spacing="6">
+                    <Border Height="4" Width="44" CornerRadius="2" Background="#94A3B8" HorizontalAlignment="Center"/>
+                    <Border Height="3" CornerRadius="2" Background="#CBD5E1"/>
+                    <Border Height="3" CornerRadius="2" Background="#CBD5E1" Margin="0,0,18,0"/>
+                    <Border Height="3" CornerRadius="2" Background="#CBD5E1" Margin="0,0,8,0"/>
+                    <Border Height="3" CornerRadius="2" Background="#CBD5E1" Margin="0,0,24,0"/>
+                    <Border Height="1" Background="#94A3B8" Margin="0,2,0,0"/>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Border Height="5" Width="24" CornerRadius="2" Background="#64748B" HorizontalAlignment="Left"/>
+                        <Border Grid.Column="1" Height="7" Width="30" CornerRadius="2" Background="#16A34A"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Cuerpo de la impresora -->
+            <Border Canvas.Left="40" Canvas.Top="14"
+                    Width="140" Height="46"
+                    CornerRadius="14"
+                    BorderBrush="#33FFFFFF"
+                    BorderThickness="1">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Offset="0" Color="#3A4250"/>
+                        <GradientStop Offset="1" Color="#1E242E"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Grid ColumnDefinitions="Auto,*" Margin="14,0">
+                    <Ellipse Classes="led"
+                             Width="9" Height="9"
+                             Fill="#22C55E"
+                             VerticalAlignment="Center"/>
+                    <PathIcon Grid.Column="1"
+                              Width="20" Height="20"
+                              Foreground="#D9E2EC"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Center"
+                              Data="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+                </Grid>
+            </Border>
+
+            <!-- Ranura -->
+            <Border Canvas.Left="56" Canvas.Top="54"
+                    Width="108" Height="5"
+                    CornerRadius="3"
+                    Background="#0B0F14"/>
+
+
+            <!-- ============ BILLETES ============ -->
+
+            <Border Classes="billete b1" Canvas.Left="236" Canvas.Top="114">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Offset="0" Color="#34D27A"/>
+                        <GradientStop Offset="1" Color="#0E8A42"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border Width="28" Height="28" CornerRadius="14"
+                        Background="#33FFFFFF"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="$" Foreground="White" FontSize="16" FontWeight="Bold"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+            </Border>
+
+            <Border Classes="billete b2" Canvas.Left="242" Canvas.Top="100">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Offset="0" Color="#3BDB82"/>
+                        <GradientStop Offset="1" Color="#119A4B"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border Width="28" Height="28" CornerRadius="14"
+                        Background="#33FFFFFF"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="$" Foreground="White" FontSize="16" FontWeight="Bold"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+            </Border>
+
+            <Border Classes="billete b3" Canvas.Left="232" Canvas.Top="86">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Offset="0" Color="#43E38B"/>
+                        <GradientStop Offset="1" Color="#16A34A"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border Width="28" Height="28" CornerRadius="14"
+                        Background="#33FFFFFF"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="$" Foreground="White" FontSize="16" FontWeight="Bold"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+            </Border>
+
+
+            <!-- ============ MONEDAS ============ -->
+
+            <Border Classes="moneda m1" Canvas.Left="420" Canvas.Top="144">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Offset="0" Color="#FDE68A"/>
+                        <GradientStop Offset="1" Color="#E0A800"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+
+            <Border Classes="moneda m2" Canvas.Left="422" Canvas.Top="128">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Offset="0" Color="#FDE68A"/>
+                        <GradientStop Offset="1" Color="#E0A800"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+
+            <Border Classes="moneda m3" Canvas.Left="419" Canvas.Top="112">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Offset="0" Color="#FDE68A"/>
+                        <GradientStop Offset="1" Color="#E0A800"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+
+            <!-- Última moneda: de frente, con el signo de pesos -->
+            <Border Classes="moneda m4" Canvas.Left="425" Canvas.Top="58"
+                    Width="50" Height="50" CornerRadius="25">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <Border.Background>
+                    <RadialGradientBrush>
+                        <GradientStop Offset="0" Color="#FEF3C7"/>
+                        <GradientStop Offset="0.7" Color="#FACC15"/>
+                        <GradientStop Offset="1" Color="#D9A400"/>
+                    </RadialGradientBrush>
+                </Border.Background>
+                <TextBlock Text="$"
+                           Foreground="#92600A"
+                           FontSize="24"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+            </Border>
+
+        </Canvas>
+
+    </Viewbox>
+
+</UserControl>

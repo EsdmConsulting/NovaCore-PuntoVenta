@@ -2,112 +2,374 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:NovaCoreESDM.ViewModels.Cancelaciones"
+    xmlns:controls="using:NovaCoreESDM.Controls"
     xmlns:models="clr-namespace:NovaCoreESDM.Models.Cancelaciones"
 
     x:Class="NovaCoreESDM.Views.Cancelaciones.CancelacionesView"
     x:DataType="vm:CancelacionesViewModel"
     x:Name="Root"
 
-    Background="#F5F7F6">
+    Background="#F4F6F8">
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <UserControl.Styles>
+
+        <!-- Tarjetas -->
+        <Style Selector="Border.seccion">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#EAEEF2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="24"/>
+            <Setter Property="BoxShadow" Value="0 1 2 0 #0A0F172A"/>
+        </Style>
+
+        <Style Selector="TextBlock.tituloSeccion">
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style Selector="TextBlock.subtituloSeccion">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="LineHeight" Value="17"/>
+        </Style>
+
+        <Style Selector="TextBlock.etiquetaCampo">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <!-- Campos -->
+        <Style Selector="TextBox.campo, ComboBox.campo, DatePicker.campo">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        </Style>
+
+        <Style Selector="TextBox.campo">
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="ComboBox.campo">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="TextBox.campo:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#16A34A"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BoxShadow" Value="0 0 0 4 #1F16A34A"/>
+        </Style>
+
+        <!-- Botones -->
+        <Style Selector="Button.boton">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.verde">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22C55E"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.verde:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#16A34A"/>
+        </Style>
+
+        <Style Selector="Button.rojo">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#EF4444"/>
+                    <GradientStop Offset="1" Color="#B91C1C"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.rojo /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 8 20 -8 #80DC2626"/>
+        </Style>
+
+        <Style Selector="Button.rojo:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#C82424"/>
+        </Style>
+
+        <Style Selector="Button.rojo:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F5C9C9"/>
+            <Setter Property="Foreground" Value="#FFF7F7"/>
+            <Setter Property="BoxShadow" Value="none"/>
+        </Style>
+
+        <Style Selector="Button.gris">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#475569"/>
+        </Style>
+
+        <Style Selector="Button.gris:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+        </Style>
+
+        <!-- Renglones de venta -->
+        <Style Selector="Button.venta">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="14,12"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#EEF1F4"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.venta:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#86D5A3"/>
+            <Setter Property="BoxShadow" Value="0 8 20 -12 #3316A34A"/>
+        </Style>
+
+        <Style Selector="Button.venta PathIcon.flecha">
+            <Setter Property="Foreground" Value="#CBD5E1"/>
+        </Style>
+
+        <Style Selector="Button.venta:pointerover PathIcon.flecha">
+            <Setter Property="Foreground" Value="#16A34A"/>
+        </Style>
+
+        <!-- Ayuda del motivo -->
+        <Style Selector="Border.ayudaMotivo">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Background" Value="#FFF7E0"/>
+        </Style>
+
+        <Style Selector="Border.ayudaMotivo TextBlock">
+            <Setter Property="Foreground" Value="#92600A"/>
+        </Style>
+
+        <Style Selector="Border.ayudaMotivo PathIcon.iconoAyuda">
+            <Setter Property="Foreground" Value="#B7791F"/>
+            <Setter Property="Data" Value="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </Style>
+
+        <Style Selector="Border.ayudaMotivo.valido">
+            <Setter Property="Background" Value="#EAF7EF"/>
+        </Style>
+
+        <Style Selector="Border.ayudaMotivo.valido TextBlock">
+            <Setter Property="Foreground" Value="#0B6B33"/>
+        </Style>
+
+        <Style Selector="Border.ayudaMotivo.valido PathIcon.iconoAyuda">
+            <Setter Property="Foreground" Value="#16A34A"/>
+            <Setter Property="Data" Value="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </Style>
+
+        <!-- Etiqueta de estado -->
+        <Style Selector="Border.estado">
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="CornerRadius" Value="999"/>
+            <Setter Property="Background" Value="#EAF7EF"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.estado TextBlock">
+            <Setter Property="Foreground" Value="#0B6B33"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="0.6"/>
+        </Style>
+
+        <Style Selector="Border.estado.cancelada">
+            <Setter Property="Background" Value="#FEE2E2"/>
+        </Style>
+
+        <Style Selector="Border.estado.cancelada TextBlock">
+            <Setter Property="Foreground" Value="#B91C1C"/>
+        </Style>
+
+    </UserControl.Styles>
 
 
     <ScrollViewer
         VerticalScrollBarVisibility="Auto"
         HorizontalScrollBarVisibility="Disabled">
 
-
         <StackPanel
-            Margin="28"
+            Margin="28,24,28,28"
             Spacing="20">
 
 
             <!-- ================================================= -->
-            <!-- HERO                                               -->
+            <!-- ZONA PROTEGIDA                                    -->
             <!-- ================================================= -->
 
-            <Border
-                Background="#7F1D1D"
-                CornerRadius="20"
-                Padding="30">
+            <Border x:Name="BannerCancelacion"
+                    CornerRadius="24"
+                    ClipToBounds="True"
+                    Background="#050607"
+                    MinHeight="170">
 
-                <Grid
-                    ColumnDefinitions="*,Auto"
-                    ColumnSpacing="24">
+                <Panel>
 
+                    <Ellipse Width="520" Height="520"
+                             HorizontalAlignment="Left" VerticalAlignment="Top"
+                             Margin="-200,-280,0,0"
+                             IsHitTestVisible="False">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="#88C61F2B"/>
+                                <GradientStop Offset="1" Color="#00C61F2B"/>
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
 
-                    <StackPanel
-                        Spacing="7"
-                        VerticalAlignment="Center">
+                    <Ellipse Width="460" Height="460"
+                             HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                             Margin="0,0,-160,-300"
+                             IsHitTestVisible="False">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="#66F59E0B"/>
+                                <GradientStop Offset="1" Color="#00F59E0B"/>
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
 
-                        <TextBlock
-                            Text="GRUPO LUIS FER"
-                            Foreground="#FECACA"
-                            FontSize="11"
-                            FontWeight="Bold"/>
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="24"
+                          Margin="34,28">
 
-                        <TextBlock
-                            Text="Cancelación de ventas"
-                            Foreground="White"
-                            FontSize="28"
-                            FontWeight="SemiBold"/>
+                        <StackPanel VerticalAlignment="Center">
 
-                        <TextBlock
-                            Text="Consulta ventas finalizadas y realiza cancelaciones administrativas."
-                            Foreground="#FEE2E2"
-                            FontSize="14"/>
+                            <Border HorizontalAlignment="Left"
+                                    Padding="12,6"
+                                    CornerRadius="999"
+                                    Background="#14FFFFFF"
+                                    BorderBrush="#24FFFFFF"
+                                    BorderThickness="1">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Width="12" Height="12"
+                                              Foreground="#F87171"
+                                              Data="M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.7 1.4-3.1 3.1-3.1s3.1 1.4 3.1 3.1v2z"/>
+                                    <TextBlock Text="ZONA PROTEGIDA · ADMINISTRADOR"
+                                               Foreground="#D9E2EC"
+                                               FontSize="11"
+                                               FontWeight="SemiBold"
+                                               LetterSpacing="1.2"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
 
-                        <StackPanel
-                            Orientation="Horizontal"
-                            Spacing="8"
-                            Margin="0,8,0,0">
+                            <TextBlock Text="Cancelación de ventas"
+                                       Foreground="White"
+                                       FontSize="32"
+                                       FontWeight="Bold"
+                                       LetterSpacing="-0.8"
+                                       Margin="0,14,0,0"/>
 
-                            <Border
-                                Width="8"
-                                Height="8"
-                                CornerRadius="4"
-                                Background="#FCA5A5"
-                                VerticalAlignment="Center"/>
-
-                            <TextBlock
-                                Text="Operación protegida por autorización administrativa"
-                                Foreground="#FEE2E2"
-                                FontSize="11"
-                                VerticalAlignment="Center"/>
-
-                        </StackPanel>
-
-                    </StackPanel>
-
-
-                    <Border
-                        Grid.Column="1"
-                        Background="#991B1B"
-                        CornerRadius="14"
-                        Padding="20,14"
-                        VerticalAlignment="Center">
-
-                        <StackPanel
-                            Spacing="3">
-
-                            <TextBlock
-                                Text="SEGURIDAD"
-                                Foreground="#FECACA"
-                                FontSize="10"
-                                FontWeight="Bold"
-                                HorizontalAlignment="Center"/>
-
-                            <TextBlock
-                                Text="ADMIN"
-                                Foreground="White"
-                                FontSize="22"
-                                FontWeight="Bold"
-                                HorizontalAlignment="Center"/>
+                            <TextBlock Text="Consulta ventas finalizadas y cancélalas con autorización de un administrador."
+                                       Foreground="#A8B4C2"
+                                       FontSize="14"
+                                       TextWrapping="Wrap"
+                                       Margin="0,6,0,0"/>
 
                         </StackPanel>
 
-                    </Border>
+                        <!-- Escena animada: sello "CANCELADA" y regreso al inventario -->
+                        <controls:EscenaCancelacionAnimada x:Name="EscenaCancelacion"
+                                                           Grid.Column="1"
+                                                           MaxWidth="420"
+                                                           VerticalAlignment="Center"/>
 
-                </Grid>
+                        <!-- Estado de la autorización -->
+                        <Border Grid.Column="2"
+                                VerticalAlignment="Center"
+                                Padding="18,14"
+                                CornerRadius="18"
+                                Background="#12FFFFFF"
+                                BorderBrush="#22FFFFFF"
+                                BorderThickness="1">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="12"
+                                            IsVisible="{Binding AdministradorAutorizado}">
+                                    <Border Width="40" Height="40"
+                                            CornerRadius="20"
+                                            Background="#22C55E">
+                                        <PathIcon Width="20" Height="20"
+                                                  Foreground="White"
+                                                  Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                                        <TextBlock Text="AUTORIZADO"
+                                                   Foreground="#86EFAC"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   LetterSpacing="1.2"/>
+                                        <TextBlock Text="{Binding NombreAdministrador}"
+                                                   Foreground="White"
+                                                   FontSize="15"
+                                                   FontWeight="Bold"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="12"
+                                            IsVisible="{Binding !AdministradorAutorizado}">
+                                    <Border Width="40" Height="40"
+                                            CornerRadius="20"
+                                            Background="#33FFFFFF">
+                                        <PathIcon Width="18" Height="18"
+                                                  Foreground="White"
+                                                  Data="M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.7 1.4-3.1 3.1-3.1s3.1 1.4 3.1 3.1v2z"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                                        <TextBlock Text="BLOQUEADO"
+                                                   Foreground="#FCA5A5"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   LetterSpacing="1.2"/>
+                                        <TextBlock Text="Requiere administrador"
+                                                   Foreground="White"
+                                                   FontSize="15"
+                                                   FontWeight="Bold"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                    </Grid>
+
+                </Panel>
 
             </Border>
 
@@ -116,147 +378,56 @@
             <!-- AUTORIZACIÓN                                      -->
             <!-- ================================================= -->
 
-            <Border
-                Background="White"
-                BorderBrush="#E1E8E3"
-                BorderThickness="1"
-                CornerRadius="16"
-                Padding="24">
+            <Border Classes="seccion">
 
-                <StackPanel
-                    Spacing="18">
+                <StackPanel Spacing="16">
 
-                    <Grid
-                        ColumnDefinitions="*,Auto">
+                    <StackPanel Spacing="2">
+                        <TextBlock Classes="tituloSeccion" Text="Autorización administrativa"/>
+                        <TextBlock Classes="subtituloSeccion" Text="Elige un administrador y escribe su contraseña para acceder a las cancelaciones"/>
+                    </StackPanel>
 
-                        <StackPanel
-                            Spacing="4">
+                    <Grid ColumnDefinitions="*,*,Auto"
+                          ColumnSpacing="14">
 
-                            <TextBlock
-                                Text="Autorización administrativa"
-                                Foreground="#21382A"
-                                FontSize="19"
-                                FontWeight="SemiBold"/>
-
-                            <TextBlock
-                                Text="Ingresa las credenciales de un administrador para acceder a las cancelaciones."
-                                Foreground="#718078"
-                                FontSize="12"/>
-
+                        <StackPanel Grid.Column="0" Spacing="7">
+                            <TextBlock Classes="etiquetaCampo" Text="Administrador"/>
+                            <ComboBox Classes="campo"
+                                      ItemsSource="{Binding ListaAdministradores}"
+                                      SelectedItem="{Binding AdministradorSeleccionado}"
+                                      PlaceholderText="Selecciona un administrador">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Nombre}"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
                         </StackPanel>
 
+                        <StackPanel Grid.Column="1" Spacing="7">
+                            <TextBlock Classes="etiquetaCampo" Text="Contraseña"/>
+                            <TextBox Classes="campo revealPasswordButton"
+                                     Text="{Binding PasswordAdministrador}"
+                                     PasswordChar="●"
+                                     PlaceholderText="Contraseña del administrador">
+                                <TextBox.KeyBindings>
+                                    <KeyBinding Gesture="Enter"
+                                                Command="{Binding AutorizarAdministradorCommand}"/>
+                                </TextBox.KeyBindings>
+                            </TextBox>
+                        </StackPanel>
 
-                        <Border
-                            Grid.Column="1"
-                            IsVisible="{Binding AdministradorAutorizado}"
-                            Background="#ECFDF3"
-                            BorderBrush="#BBF7D0"
-                            BorderThickness="1"
-                            CornerRadius="10"
-                            Padding="12,7">
-
-                            <StackPanel
-                                Orientation="Horizontal"
-                                Spacing="7">
-
-                                <TextBlock
-                                    Text="✓"
-                                    Foreground="#15803D"
-                                    FontWeight="Bold"/>
-
-                                <TextBlock
-                                    Text="{Binding NombreAdministrador}"
-                                    Foreground="#166534"
-                                    FontWeight="SemiBold"/>
-
+                        <Button Grid.Column="2"
+                                Classes="boton rojo"
+                                MinWidth="160"
+                                VerticalAlignment="Bottom"
+                                Command="{Binding AutorizarAdministradorCommand}"
+                                IsEnabled="{Binding !EstaAutorizando}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Width="16" Height="16"
+                                          Data="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+                                <TextBlock Text="Autorizar" VerticalAlignment="Center"/>
                             </StackPanel>
-
-                        </Border>
-
-                    </Grid>
-
-
-                    <Grid
-                        ColumnDefinitions="*,*,Auto"
-                        ColumnSpacing="12">
-
-                        <!-- USUARIO -->
-
-                        <StackPanel
-                            Grid.Column="0"
-                            Spacing="6">
-
-                            <TextBlock
-                                Text="Usuario administrador"
-                                FontSize="11"
-                                Foreground="#53665B"
-                                FontWeight="SemiBold"/>
-
-                           <!--  <TextBox
-                                Text="{Binding UsuarioAdministrador}"
-                                Watermark="Usuario"
-                                Height="42"
-                                Padding="12,0"
-                                VerticalContentAlignment="Center"/> -->
-
-                                <ComboBox
-                                    ItemsSource="{Binding ListaAdministradores}"
-                                    SelectedItem="{Binding AdministradorSeleccionado}"
-                                    Height="42"
-                                    PlaceholderText="Selecciona un administrador"
-                                    HorizontalAlignment="Stretch"
-                                    VerticalAlignment="Center">
-
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Nombre}" />
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                        </StackPanel>
-
-
-                        <!-- PASSWORD -->
-                        <StackPanel
-                            Grid.Column="1"
-                            Spacing="6">
-
-                            <TextBlock
-                                Text="Contraseña"
-                                FontSize="11"
-                                Foreground="#53665B"
-                                FontWeight="SemiBold"/>
-
-                            <TextBox
-                                Text="{Binding PasswordAdministrador}"
-                                PasswordChar="●"
-                                Watermark="Contraseña"
-                                Height="42"
-                                Padding="12,0"
-                                VerticalContentAlignment="Center"/>
-
-                        </StackPanel>
-
-
-                        <!-- AUTORIZAR -->
-
-                        <Button
-                            Grid.Column="2"
-                            Command="{Binding AutorizarAdministradorCommand}"
-                            IsEnabled="{Binding !EstaAutorizando}"
-                            Height="42"
-                            MinWidth="150"
-                            Margin="0,22,0,0"
-                            Background="#7F1D1D"
-                            Foreground="White"
-                            BorderThickness="0"
-                            CornerRadius="9"
-                            Cursor="Hand">
-
-                            <TextBlock
-                                Text="Autorizar"
-                                FontWeight="SemiBold"/>
-
                         </Button>
 
                     </Grid>
@@ -270,63 +441,40 @@
             <!-- MENSAJES                                          -->
             <!-- ================================================= -->
 
-            <Border
-                IsVisible="{Binding HayError}"
-                Background="#FEF2F2"
-                BorderBrush="#FECACA"
-                BorderThickness="1"
-                CornerRadius="10"
-                Padding="14">
-
-                <Grid
-                    ColumnDefinitions="Auto,*"
-                    ColumnSpacing="10">
-
-                    <TextBlock
-                        Text="!"
-                        Foreground="#B91C1C"
-                        FontWeight="Bold"
-                        FontSize="16"/>
-
-                    <TextBlock
-                        Grid.Column="1"
-                        Text="{Binding MensajeError}"
-                        Foreground="#991B1B"
-                        FontSize="12"
-                        TextWrapping="Wrap"/>
-
-                </Grid>
-
+            <Border Padding="16,12"
+                    CornerRadius="14"
+                    Background="#FEF2F2"
+                    BorderBrush="#FECACA"
+                    BorderThickness="1"
+                    IsVisible="{Binding HayError}">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <PathIcon Width="18" Height="18"
+                              Foreground="#C61F2B"
+                              Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    <TextBlock Text="{Binding MensajeError}"
+                               Foreground="#9F1239"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
             </Border>
 
-
-            <Border
-                IsVisible="{Binding HayMensajeExito}"
-                Background="#F0FDF4"
-                BorderBrush="#BBF7D0"
-                BorderThickness="1"
-                CornerRadius="10"
-                Padding="14">
-
-                <Grid
-                    ColumnDefinitions="Auto,*"
-                    ColumnSpacing="10">
-
-                    <TextBlock
-                        Text="✓"
-                        Foreground="#15803D"
-                        FontWeight="Bold"
-                        FontSize="16"/>
-
-                    <TextBlock
-                        Grid.Column="1"
-                        Text="{Binding MensajeExito}"
-                        Foreground="#166534"
-                        FontSize="12"
-                        TextWrapping="Wrap"/>
-
-                </Grid>
-
+            <Border Padding="16,12"
+                    CornerRadius="14"
+                    Background="#EAF7EF"
+                    BorderBrush="#BFE6CD"
+                    BorderThickness="1"
+                    IsVisible="{Binding HayMensajeExito}">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <PathIcon Width="18" Height="18"
+                              Foreground="#16A34A"
+                              Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    <TextBlock Text="{Binding MensajeExito}"
+                               Foreground="#0B6B33"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
             </Border>
 
 
@@ -334,692 +482,452 @@
             <!-- CONTENIDO PROTEGIDO                               -->
             <!-- ================================================= -->
 
-            <StackPanel
-                IsVisible="{Binding AdministradorAutorizado}"
-                Spacing="20">
+            <StackPanel IsVisible="{Binding AdministradorAutorizado}"
+                        Spacing="20">
 
 
-                <!-- ================================================= -->
-                <!-- FILTROS                                            -->
-                <!-- ================================================= -->
+                <!-- FILTROS -->
 
-                <Border
-                    Background="White"
-                    BorderBrush="#E1E8E3"
-                    BorderThickness="1"
-                    CornerRadius="16"
-                    Padding="22">
+                <Border Classes="seccion">
 
-                    <StackPanel
-                        Spacing="16">
+                    <Grid ColumnDefinitions="260,*,180,Auto,Auto"
+                          ColumnSpacing="14">
 
-                        <TextBlock
-                            Text="Buscar ventas"
-                            Foreground="#21382A"
-                            FontSize="17"
-                            FontWeight="SemiBold"/>
+                        <StackPanel Grid.Column="0" Spacing="7">
+                            <TextBlock Classes="etiquetaCampo" Text="Fecha"/>
+                            <DatePicker Classes="campo"
+                                        SelectedDate="{Binding FechaSeleccionada}"
+                                        MinWidth="250"/>
+                        </StackPanel>
 
+                        <StackPanel Grid.Column="1" Spacing="7">
+                            <TextBlock Classes="etiquetaCampo" Text="Folio"/>
+                            <TextBox Classes="campo"
+                                     Text="{Binding FolioBusqueda}"
+                                     PlaceholderText="Buscar por folio…">
+                                <TextBox.InnerLeftContent>
+                                    <PathIcon Width="16" Height="16"
+                                              Margin="14,0,0,0"
+                                              Foreground="#94A3B8"
+                                              Data="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                                </TextBox.InnerLeftContent>
+                                <TextBox.KeyBindings>
+                                    <KeyBinding Gesture="Enter"
+                                                Command="{Binding BuscarVentasCommand}"/>
+                                </TextBox.KeyBindings>
+                            </TextBox>
+                        </StackPanel>
 
-                        <Grid
-                            ColumnDefinitions="250,*,170,115,115"
-                            ColumnSpacing="14">
+                        <StackPanel Grid.Column="2" Spacing="7">
+                            <TextBlock Classes="etiquetaCampo" Text="Estado"/>
+                            <ComboBox x:Name="EstadoComboBox"
+                                      Classes="campo"
+                                      SelectedIndex="0"
+                                      SelectionChanged="EstadoComboBox_SelectionChanged">
+                                <ComboBoxItem Content="Todos"/>
+                                <ComboBoxItem Content="FINALIZADA"/>
+                                <ComboBoxItem Content="CANCELADA"/>
+                            </ComboBox>
+                        </StackPanel>
 
-                            <!-- FECHA -->
-
-                            <StackPanel
-                                Grid.Column="0"
-                                Spacing="6">
-
-                                <TextBlock
-                                    Text="Fecha"
-                                    Foreground="#53665B"
-                                    FontSize="11"
-                                    FontWeight="SemiBold"/>
-
-                                <DatePicker
-                                    SelectedDate="{Binding FechaSeleccionada}"
-                                    Height="42"
-                                    MinWidth="240"
-                                    HorizontalAlignment="Stretch"/>
-
+                        <Button Grid.Column="3"
+                                Classes="boton verde"
+                                MinWidth="120"
+                                VerticalAlignment="Bottom"
+                                Command="{Binding BuscarVentasCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Width="16" Height="16"
+                                          Data="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                                <TextBlock Text="Buscar" VerticalAlignment="Center"/>
                             </StackPanel>
+                        </Button>
 
-                            <!-- FOLIO -->
+                        <Button Grid.Column="4"
+                                Classes="boton gris"
+                                MinWidth="110"
+                                VerticalAlignment="Bottom"
+                                Command="{Binding LimpiarFiltrosCommand}">
+                            <TextBlock Text="Limpiar" FontWeight="SemiBold"/>
+                        </Button>
 
-
-                            <!-- FOLIO -->
-
-                            <StackPanel
-                                Grid.Column="1"
-                                Spacing="6">
-
-                                <TextBlock
-                                    Text="Folio"
-                                    Foreground="#53665B"
-                                    FontSize="11"
-                                    FontWeight="SemiBold"/>
-
-                                <TextBox
-                                    Text="{Binding FolioBusqueda}"
-                                    Watermark="Buscar por folio..."
-                                    Height="40"
-                                    Padding="12,0"
-                                    VerticalContentAlignment="Center"/>
-
-                            </StackPanel>
-
-
-                            <!-- ESTADO -->
-
-                            <StackPanel
-                                Grid.Column="2"
-                                Spacing="6">
-
-                                <TextBlock
-                                    Text="Estado"
-                                    Foreground="#53665B"
-                                    FontSize="11"
-                                    FontWeight="SemiBold"/>
-
-                                <ComboBox
-                                    x:Name="EstadoComboBox"
-                                    Height="40"
-                                    SelectedIndex="0"
-                                    SelectionChanged="EstadoComboBox_SelectionChanged">
-
-                                    <ComboBoxItem
-                                        Content="Todos"/>
-
-                                    <ComboBoxItem
-                                        Content="FINALIZADA"/>
-
-                                    <ComboBoxItem
-                                        Content="CANCELADA"/>
-
-                                </ComboBox>
-
-                            </StackPanel>
-
-
-                            <!-- BUSCAR -->
-
-                            <Button
-                                Grid.Column="3"
-                                Command="{Binding BuscarVentasCommand}"
-                                Height="40"
-                                MinWidth="105"
-                                Margin="0,22,0,0"
-                                Background="#08783D"
-                                Foreground="White"
-                                BorderThickness="0"
-                                CornerRadius="8"
-                                Cursor="Hand">
-
-                                <TextBlock
-                                    Text="Buscar"
-                                    FontWeight="SemiBold"/>
-
-                            </Button>
-
-
-                            <!-- LIMPIAR -->
-
-                            <Button
-                                Grid.Column="4"
-                                Command="{Binding LimpiarFiltrosCommand}"
-                                Height="40"
-                                MinWidth="105"
-                                Margin="0,22,0,0"
-                                Background="#F3F6F4"
-                                Foreground="#385044"
-                                BorderBrush="#DCE5DF"
-                                BorderThickness="1"
-                                CornerRadius="8"
-                                Cursor="Hand">
-
-                                <TextBlock
-                                    Text="Limpiar"
-                                    FontWeight="SemiBold"/>
-
-                            </Button>
-
-                        </Grid>
-
-                    </StackPanel>
+                    </Grid>
 
                 </Border>
 
 
-                <!-- ================================================= -->
-                <!-- PRINCIPAL                                         -->
-                <!-- ================================================= -->
+                <!-- VENTAS + DETALLE -->
 
-                <Grid
-                    ColumnDefinitions="1.05*,0.95*"
-                    ColumnSpacing="18">
+                <Grid ColumnDefinitions="1.1*,*"
+                      ColumnSpacing="16">
 
 
-                    <!-- ================================================= -->
-                    <!-- LISTADO                                            -->
-                    <!-- ================================================= -->
+                    <!-- LISTADO (alto fijo: unas 7-8 ventas, el resto con scroll) -->
+                    <Border x:Name="ListadoCard"
+                            Grid.Column="0"
+                            Classes="seccion"
+                            Height="760">
 
-                    <Border
-                        Grid.Column="0"
-                        Background="White"
-                        BorderBrush="#E1E8E3"
-                        BorderThickness="1"
-                        CornerRadius="16"
-                        Padding="20">
+                        <Grid RowDefinitions="Auto,Auto,*"
+                              RowSpacing="12">
 
-                        <StackPanel
-                            Spacing="14">
-
-                            <Grid
-                                ColumnDefinitions="*,Auto">
-
-                                <StackPanel
-                                    Spacing="3">
-
-                                    <TextBlock
-                                        Text="Ventas encontradas"
-                                        Foreground="#21382A"
-                                        FontSize="17"
-                                        FontWeight="SemiBold"/>
-
-                                    <TextBlock
-                                        Text="Selecciona una venta para revisar su detalle."
-                                        Foreground="#7B8B82"
-                                        FontSize="11"/>
-
+                            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Classes="tituloSeccion" Text="Ventas encontradas"/>
+                                    <TextBlock Classes="subtituloSeccion" Text="Selecciona una venta para revisar su detalle"/>
                                 </StackPanel>
-
-
-                                <Border
-                                    Grid.Column="1"
-                                    Background="#F0F7F3"
-                                    CornerRadius="10"
-                                    Padding="12,5">
-
-                                    <TextBlock
-                                        Text="{Binding Ventas.Count}"
-                                        Foreground="#08783D"
-                                        FontWeight="Bold"/>
-
+                                <Border Grid.Column="1"
+                                        Padding="12,6"
+                                        CornerRadius="999"
+                                        Background="#EAF7EF"
+                                        VerticalAlignment="Center">
+                                    <TextBlock Foreground="#0B6B33"
+                                               FontSize="13"
+                                               FontWeight="Bold">
+                                        <Run Text="{Binding Ventas.Count}"/><Run Text=" ventas"/>
+                                    </TextBlock>
                                 </Border>
-
                             </Grid>
 
+                            <ProgressBar Grid.Row="1"
+                                         IsVisible="{Binding EstaCargando}"
+                                         IsIndeterminate="True"
+                                         Height="3"
+                                         MinHeight="3"
+                                         Foreground="#16A34A"
+                                         Background="#EAF7EF"/>
 
-                            <!-- CARGANDO -->
+                            <ScrollViewer Grid.Row="2"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled">
 
-                            <ProgressBar
-                                IsVisible="{Binding EstaCargando}"
-                                IsIndeterminate="True"
-                                Height="3"/>
+                                <ItemsControl ItemsSource="{Binding Ventas}"
+                                              Margin="0,0,10,0">
 
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="models:VentaCancelacionItem">
 
-                            <!-- LISTA -->
+                                            <Button Classes="venta"
+                                                    Command="{Binding #Root.((vm:CancelacionesViewModel)DataContext).VerDetalleCommand}"
+                                                    CommandParameter="{Binding}">
 
-                            <ItemsControl
-                                ItemsSource="{Binding Ventas}">
+                                                <Grid ColumnDefinitions="Auto,*,Auto,Auto"
+                                                      ColumnSpacing="14">
 
-                                <ItemsControl.ItemTemplate>
+                                                    <Border Width="44" Height="44"
+                                                            CornerRadius="14"
+                                                            Background="#EEF2F6"
+                                                            VerticalAlignment="Center">
+                                                        <PathIcon Width="20" Height="20"
+                                                                  Foreground="#475569"
+                                                                  Data="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z"/>
+                                                    </Border>
 
-                                    <DataTemplate x:DataType="models:VentaCancelacionItem">
-                                        
-                                        <Button
-                                            Command="{Binding #Root.((vm:CancelacionesViewModel)DataContext).VerDetalleCommand}"
-                                            CommandParameter="{Binding}"
-                                            HorizontalContentAlignment="Stretch"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Padding="0"
-                                            Margin="0,0,0,8"
-                                            Cursor="Hand">
-
-                                            <Border
-                                                Background="#FAFCFB"
-                                                BorderBrush="#E3EAE6"
-                                                BorderThickness="1"
-                                                CornerRadius="11"
-                                                Padding="14">
-
-                                                <Grid
-                                                    ColumnDefinitions="*,Auto"
-                                                    RowDefinitions="Auto,Auto"
-                                                    ColumnSpacing="12"
-                                                    RowSpacing="7">
-
-                                                    <WrapPanel
-                                                        Grid.Row="1"
-                                                        Grid.Column="0"
-                                                        Orientation="Horizontal"
-                                                        ItemSpacing="6">
-
-                                                        <TextBlock
-                                                            Text="{Binding Fecha}"
-                                                            Foreground="#7A8B81"
-                                                            FontSize="11"/>
-
-                                                        <TextBlock
-                                                            Text="·"
-                                                            Foreground="#B2BDB7"/>
-
-                                                        <TextBlock
-                                                            Text="{Binding Hora}"
-                                                            Foreground="#7A8B81"
-                                                            FontSize="11"/>
-
-                                                        <TextBlock
-                                                            Text="·"
-                                                            Foreground="#B2BDB7"/>
-
-                                                        <TextBlock
-                                                            Text="{Binding UsuarioRegistro}"
-                                                            Foreground="#7A8B81"
-                                                            FontSize="11"/>
-
-                                                    </WrapPanel>
-
-
-                                                    <TextBlock
-                                                        Grid.Row="0"
-                                                        Grid.Column="1"
-                                                        Text="{Binding TextoTotal}"
-                                                        Foreground="#08783D"
-                                                        FontSize="16"
-                                                        FontWeight="Bold"/>
-
-
-                                                    <StackPanel
-                                                        Grid.Row="1"
-                                                        Grid.Column="0"
-                                                        Orientation="Horizontal"
-                                                        Spacing="6">
-
-                                                        <TextBlock
-                                                            Text="{Binding Fecha}"
-                                                            Foreground="#7A8B81"
-                                                            FontSize="11"/>
-
-                                                        <TextBlock
-                                                            Text="·"
-                                                            Foreground="#B2BDB7"/>
-
-                                                        <TextBlock
-                                                            Text="{Binding Hora}"
-                                                            Foreground="#7A8B81"
-                                                            FontSize="11"/>
-
-                                                        <TextBlock
-                                                            Text="·"
-                                                            Foreground="#B2BDB7"/>
-
-                                                        <TextBlock
-                                                            Text="{Binding UsuarioRegistro}"
-                                                            Foreground="#7A8B81"
-                                                            FontSize="11"/>
-
+                                                    <StackPanel Grid.Column="1"
+                                                                VerticalAlignment="Center"
+                                                                Spacing="4">
+                                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                                            <TextBlock Text="{Binding FolioMostrar}"
+                                                                       Foreground="#0F172A"
+                                                                       FontSize="14"
+                                                                       FontWeight="Bold"
+                                                                       VerticalAlignment="Center"
+                                                                       TextTrimming="CharacterEllipsis"/>
+                                                            <Border Classes="estado"
+                                                                    Classes.cancelada="{Binding EstaCancelada}">
+                                                                <TextBlock Text="{Binding TextoEstado}"/>
+                                                            </Border>
+                                                        </StackPanel>
+                                                        <TextBlock Foreground="#64748B"
+                                                                   FontSize="12"
+                                                                   TextTrimming="CharacterEllipsis">
+                                                            <Run Text="{Binding Fecha}"/><Run Text="  ·  "/><Run Text="{Binding Hora}"/><Run Text="  ·  "/><Run Text="{Binding UsuarioRegistro}"/>
+                                                        </TextBlock>
                                                     </StackPanel>
 
+                                                    <TextBlock Grid.Column="2"
+                                                               Text="{Binding TextoTotal}"
+                                                               Foreground="#0B1220"
+                                                               FontSize="17"
+                                                               FontWeight="Bold"
+                                                               VerticalAlignment="Center"/>
 
-                                                    <TextBlock
-                                                        Grid.Row="1"
-                                                        Grid.Column="1"
-                                                        Text="Ver detalle ›"
-                                                        Foreground="#08783D"
-                                                        FontSize="11"
-                                                        FontWeight="SemiBold"/>
+                                                    <PathIcon Grid.Column="3"
+                                                              Classes="flecha"
+                                                              Width="18" Height="18"
+                                                              VerticalAlignment="Center"
+                                                              Data="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
 
                                                 </Grid>
 
-                                            </Border>
+                                            </Button>
 
-                                        </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
 
-                                    </DataTemplate>
+                                </ItemsControl>
 
-                                </ItemsControl.ItemTemplate>
+                            </ScrollViewer>
 
-                            </ItemsControl>
-
-                        </StackPanel>
+                        </Grid>
 
                     </Border>
 
 
-                    <!-- ================================================= -->
-                    <!-- DETALLE                                            -->
-                    <!-- ================================================= -->
-
-                    <Border
-                        Grid.Column="1"
-                        Background="White"
-                        BorderBrush="#E1E8E3"
-                        BorderThickness="1"
-                        CornerRadius="16"
-                        Padding="20">
+                    <!-- DETALLE (mismo alto que el listado) -->
+                    <Border Grid.Column="1"
+                            Classes="seccion"
+                            Height="{Binding #ListadoCard.Bounds.Height}">
 
                         <Grid>
 
 
                             <!-- SIN SELECCIÓN -->
-
-                            <StackPanel
-                                IsVisible="{Binding !HayVentaSeleccionada}"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Spacing="10"
-                                Margin="20">
-
-                                <Border
-                                    Width="56"
-                                    Height="56"
-                                    CornerRadius="28"
-                                    Background="#F0F5F2">
-
-                                    <TextBlock
-                                        Text="▤"
-                                        Foreground="#789084"
-                                        FontSize="25"
+                            <StackPanel IsVisible="{Binding !HayVentaSeleccionada}"
                                         HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"/>
-
-                                </Border>
-
-                                <TextBlock
-                                    Text="Selecciona una venta"
-                                    Foreground="#31483B"
-                                    FontSize="16"
-                                    FontWeight="SemiBold"
-                                    HorizontalAlignment="Center"/>
-
-                                <TextBlock
-                                    Text="Aquí podrás revisar los productos antes de realizar la cancelación."
-                                    Foreground="#89968F"
-                                    FontSize="11"
-                                    TextWrapping="Wrap"
-                                    TextAlignment="Center"
-                                    MaxWidth="280"/>
-
+                                        VerticalAlignment="Center"
+                                        Spacing="10">
+                                <Panel Width="96" Height="96" HorizontalAlignment="Center">
+                                    <Ellipse Fill="#F4F6F8"/>
+                                    <Ellipse Width="70" Height="70" Fill="#EAEEF2"/>
+                                    <PathIcon Width="30" Height="30"
+                                              Foreground="#94A3B8"
+                                              Data="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z"/>
+                                </Panel>
+                                <TextBlock Text="Selecciona una venta"
+                                           Foreground="#0F172A"
+                                           FontSize="16"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="Aquí podrás revisar los productos antes de realizar la cancelación."
+                                           Foreground="#94A3B8"
+                                           FontSize="13"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           MaxWidth="280"
+                                           HorizontalAlignment="Center"/>
                             </StackPanel>
 
 
                             <!-- CON DETALLE -->
+                            <Grid IsVisible="{Binding HayVentaSeleccionada}"
+                                  RowDefinitions="Auto,*,Auto"
+                                  RowSpacing="14">
 
-                            <StackPanel
-                                IsVisible="{Binding HayVentaSeleccionada}"
-                                Spacing="16">
+                                <!-- Encabezado -->
+                                <StackPanel Grid.Row="0" Spacing="12">
 
-
-                                <!-- CABECERA DETALLE -->
-
-                                <Grid
-                                    ColumnDefinitions="*,Auto">
-
-                                    <StackPanel
-                                        Spacing="3">
-
-                                        <TextBlock
-                                            Text="Detalle de venta"
-                                            Foreground="#21382A"
-                                            FontSize="17"
-                                            FontWeight="SemiBold"/>
-
-                                        <TextBlock
-                                            Text="{Binding VentaDetalle.Folio}"
-                                            Foreground="#718078"
-                                            FontSize="12"/>
-
-                                    </StackPanel>
-
-
-                                    <Button
-                                        Grid.Column="1"
-                                        Command="{Binding CerrarDetalleCommand}"
-                                        Width="32"
-                                        Height="32"
-                                        Padding="0"
-                                        Background="#F4F6F5"
-                                        Foreground="#66776D"
-                                        BorderThickness="0"
-                                        CornerRadius="8"
-                                        Cursor="Hand">
-
-                                        <TextBlock
-                                            Text="×"
-                                            FontSize="18"/>
-
-                                    </Button>
-
-                                </Grid>
-
-
-                                <!-- TOTALES -->
-
-                                <Border
-                                    Background="#F7FAF8"
-                                    CornerRadius="10"
-                                    Padding="14">
-
-                                    <Grid
-                                        ColumnDefinitions="*,Auto">
-
-                                        <StackPanel
-                                            Spacing="3">
-
-                                            <TextBlock
-                                                Text="{Binding VentaDetalle.Estado}"
-                                                Foreground="#566A5E"
-                                                FontSize="10"
-                                                FontWeight="SemiBold"/>
-
-                                            <TextBlock
-                                                Text="Total de la venta"
-                                                Foreground="#7C8C83"
-                                                FontSize="11"/>
-
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <StackPanel Spacing="2">
+                                            <TextBlock Classes="subtituloSeccion" Text="DETALLE DE VENTA"
+                                                       FontWeight="Bold"
+                                                       LetterSpacing="1.2"
+                                                       FontSize="11"/>
+                                            <TextBlock Text="{Binding VentaDetalle.Folio}"
+                                                       Foreground="#0B1220"
+                                                       FontSize="18"
+                                                       FontWeight="Bold"/>
                                         </StackPanel>
-
-                                        <TextBlock
-                                            Grid.Column="1"
-                                            Text="{Binding VentaDetalle.TextoTotal}"
-                                            Foreground="#08783D"
-                                            FontSize="21"
-                                            FontWeight="Bold"
-                                            VerticalAlignment="Center"/>
-
+                                        <Button Grid.Column="1"
+                                                Classes="boton gris"
+                                                Width="40" Height="40"
+                                                Padding="0"
+                                                VerticalAlignment="Top"
+                                                ToolTip.Tip="Cerrar detalle"
+                                                Command="{Binding CerrarDetalleCommand}">
+                                            <PathIcon Width="14" Height="14"
+                                                      Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                        </Button>
                                     </Grid>
 
-                                </Border>
-
-
-                                <!-- PRODUCTOS -->
-
-                                <TextBlock
-                                    Text="Productos"
-                                    Foreground="#31483B"
-                                    FontSize="12"
-                                    FontWeight="SemiBold"/>
-
-
-                                <ScrollViewer
-                                    MaxHeight="280"
-                                    VerticalScrollBarVisibility="Auto">
-
-                                    <ItemsControl
-                                        ItemsSource="{Binding Detalles}">
-
-                                        <ItemsControl.ItemTemplate>
-
-                                            <DataTemplate>
-
-                                                <Border
-                                                    BorderBrush="#EDF1EF"
-                                                    BorderThickness="0,0,0,1"
-                                                    Padding="0,9">
-
-                                                    <Grid
-                                                        ColumnDefinitions="*,Auto"
-                                                        RowDefinitions="Auto,Auto"
-                                                        ColumnSpacing="12">
-
-                                                        <TextBlock
-                                                            Grid.Row="0"
-                                                            Grid.Column="0"
-                                                            Text="{Binding NombreMostrar}"
-                                                            Foreground="#293E32"
-                                                            FontSize="12"
-                                                            FontWeight="SemiBold"
-                                                            TextWrapping="Wrap"/>
-
-                                                        <TextBlock
-                                                            Grid.Row="0"
-                                                            Grid.Column="1"
-                                                            Text="{Binding TextoTotal}"
-                                                            Foreground="#293E32"
-                                                            FontSize="12"
-                                                            FontWeight="SemiBold"/>
-
-                                                        <StackPanel
-                                                            Grid.Row="1"
-                                                            Grid.Column="0"
-                                                            Orientation="Horizontal"
-                                                            Spacing="5"
-                                                            Margin="0,3,0,0">
-
-                                                            <TextBlock
-                                                                Text="{Binding TextoCantidad}"
-                                                                Foreground="#819087"
-                                                                FontSize="10"/>
-
-                                                            <TextBlock
-                                                                Text="×"
-                                                                Foreground="#A7B2AC"
-                                                                FontSize="10"/>
-
-                                                            <TextBlock
-                                                                Text="{Binding TextoPrecio}"
-                                                                Foreground="#819087"
-                                                                FontSize="10"/>
-
-                                                        </StackPanel>
-
-                                                        <TextBlock
-                                                            Grid.Row="1"
-                                                            Grid.Column="1"
-                                                            Text="{Binding TipoPrecioAplicado}"
-                                                            Foreground="#819087"
-                                                            FontSize="9"
-                                                            HorizontalAlignment="Right"/>
-
-                                                    </Grid>
-
+                                    <Border Padding="16,14"
+                                            CornerRadius="16"
+                                            Background="#F8FAFB"
+                                            BorderBrush="#EEF1F4"
+                                            BorderThickness="1">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <StackPanel Spacing="4" VerticalAlignment="Center">
+                                                <TextBlock Text="Total de la venta"
+                                                           Foreground="#64748B"
+                                                           FontSize="12"/>
+                                                <Border Classes="estado"
+                                                        Classes.cancelada="{Binding VentaSeleccionada.EstaCancelada}"
+                                                        HorizontalAlignment="Left">
+                                                    <TextBlock Text="{Binding VentaDetalle.Estado}"/>
                                                 </Border>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding VentaDetalle.TextoTotal}"
+                                                       Foreground="#0B1220"
+                                                       FontSize="28"
+                                                       FontWeight="Bold"
+                                                       LetterSpacing="-0.6"
+                                                       VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
 
-                                            </DataTemplate>
-
-                                        </ItemsControl.ItemTemplate>
-
-                                    </ItemsControl>
-
-                                </ScrollViewer>
-
-
-                                <!-- YA CANCELADA -->
-
-                                <Border
-                                    IsVisible="{Binding VentaSeleccionada.EstaCancelada}"
-                                    Background="#FEF2F2"
-                                    BorderBrush="#FECACA"
-                                    BorderThickness="1"
-                                    CornerRadius="10"
-                                    Padding="13">
-
-                                    <StackPanel
-                                        Spacing="5">
-
-                                        <TextBlock
-                                            Text="Venta cancelada"
-                                            Foreground="#991B1B"
-                                            FontWeight="Bold"
-                                            FontSize="12"/>
-
-                                        <TextBlock
-                                            Text="{Binding VentaDetalle.MotivoCancelacion}"
-                                            Foreground="#7F1D1D"
-                                            FontSize="12"
-                                            TextWrapping="Wrap"/>
-
-                                        <TextBlock
-                                            Text="{Binding VentaDetalle.UsuarioCancelacion, StringFormat='Autorizó: {0}'}"
-                                            Foreground="#A34A4A"
-                                            FontSize="12"/>
-
-                                    </StackPanel>
-
-                                </Border>
-
-
-                                <!-- CANCELAR -->
-
-                                <StackPanel
-                                    IsVisible="{Binding PuedeCancelarVenta}"
-                                    Spacing="8">
-
-                                    <TextBlock
-                                        Text="Motivo de cancelación"
-                                        Foreground="#53665B"
-                                        FontSize="11"
-                                        FontWeight="SemiBold"/>
-
-                                    <StackPanel Spacing="6">
-                                        <TextBox
-                                            Text="{Binding MotivoCancelacion, UpdateSourceTrigger=PropertyChanged}"
-                                            Watermark="Describe brevemente el motivo..."
-                                            AcceptsReturn="True"
-                                            TextWrapping="Wrap"
-                                            MinHeight="75"
-                                            MaxLength="35"
-                                            Padding="11"/>
-
-                                        <TextBlock
-                                            Text="{Binding ContadorRestanteTexto}"
-                                            Foreground="#8A9890"
-                                            FontSize="10"
-                                            FontWeight="SemiBold"
-                                            HorizontalAlignment="Right"/>
-                                    </StackPanel>
-
-
-                                    <Button
-                                        Click="CancelarVenta_Click"
-                                        IsEnabled="{Binding PuedeEjecutarCancelacion}"
-                                        Height="44"
-                                        Background="#B91C1C"
-                                        Foreground="White"
-                                        BorderThickness="0"
-                                        CornerRadius="9"
-                                        Cursor="Hand"
-                                        HorizontalContentAlignment="Center">
-
-                                        <TextBlock
-                                            Text="Cancelar venta"
-                                            FontWeight="Bold"/>
-
-                                    </Button>
-
-
-                                    <TextBlock
-                                        Text="La venta conservará su historial y el inventario será restituido."
-                                        Foreground="#8A9890"
-                                        FontSize="9"
-                                        TextWrapping="Wrap"
-                                        TextAlignment="Center"/>
+                                    <TextBlock Text="Productos"
+                                               Foreground="#334155"
+                                               FontSize="14"
+                                               FontWeight="Bold"/>
 
                                 </StackPanel>
 
-                            </StackPanel>
+                                <!-- Productos -->
+                                <ScrollViewer Grid.Row="1"
+                                              VerticalScrollBarVisibility="Auto"
+                                              HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsControl ItemsSource="{Binding Detalles}"
+                                                  Margin="0,0,10,0">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="models:DetalleProductoCancelacion">
+                                                <Border Padding="12,10"
+                                                        Margin="0,0,0,6"
+                                                        CornerRadius="12"
+                                                        Background="#F8FAFB">
+                                                    <Grid ColumnDefinitions="*,Auto"
+                                                          RowDefinitions="Auto,Auto"
+                                                          ColumnSpacing="12">
+                                                        <TextBlock Text="{Binding NombreMostrar}"
+                                                                   Foreground="#0F172A"
+                                                                   FontSize="13"
+                                                                   FontWeight="SemiBold"
+                                                                   TextWrapping="Wrap"/>
+                                                        <TextBlock Grid.Column="1"
+                                                                   Text="{Binding TextoTotal}"
+                                                                   Foreground="#0B1220"
+                                                                   FontSize="14"
+                                                                   FontWeight="Bold"/>
+                                                        <StackPanel Grid.Row="1"
+                                                                    Orientation="Horizontal"
+                                                                    Spacing="6"
+                                                                    Margin="0,4,0,0">
+                                                            <TextBlock Text="{Binding TextoCantidad}"
+                                                                       Foreground="#64748B"
+                                                                       FontSize="12"/>
+                                                            <TextBlock Text="×"
+                                                                       Foreground="#CBD5E1"
+                                                                       FontSize="12"/>
+                                                            <TextBlock Text="{Binding TextoPrecio}"
+                                                                       Foreground="#64748B"
+                                                                       FontSize="12"/>
+                                                        </StackPanel>
+                                                        <Border Grid.Row="1"
+                                                                Grid.Column="1"
+                                                                Padding="7,1"
+                                                                Margin="0,4,0,0"
+                                                                CornerRadius="6"
+                                                                Background="#EEF4FB"
+                                                                HorizontalAlignment="Right">
+                                                            <TextBlock Text="{Binding TipoPrecioAplicado}"
+                                                                       Foreground="#1E4F8A"
+                                                                       FontSize="10"
+                                                                       FontWeight="SemiBold"/>
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+
+                                <!-- Pie: ya cancelada / formulario de cancelación -->
+                                <StackPanel Grid.Row="2" Spacing="12">
+
+                                    <Border IsVisible="{Binding VentaSeleccionada.EstaCancelada}"
+                                            Padding="14,12"
+                                            CornerRadius="14"
+                                            Background="#FEF2F2"
+                                            BorderBrush="#FECACA"
+                                            BorderThickness="1">
+                                        <StackPanel Spacing="4">
+                                            <TextBlock Text="Venta cancelada"
+                                                       Foreground="#B91C1C"
+                                                       FontSize="14"
+                                                       FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding VentaDetalle.MotivoCancelacion}"
+                                                       Foreground="#7F1D1D"
+                                                       FontSize="13"
+                                                       TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding VentaDetalle.UsuarioCancelacion, StringFormat='Autorizó: {0}'}"
+                                                       Foreground="#9F1239"
+                                                       FontSize="12"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <StackPanel IsVisible="{Binding PuedeCancelarVenta}"
+                                                Spacing="10">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock Classes="etiquetaCampo" Text="Motivo de cancelación"/>
+                                            <TextBlock Grid.Column="1"
+                                                       Text="{Binding ContadorRestanteTexto}"
+                                                       Foreground="#94A3B8"
+                                                       FontSize="12"/>
+                                        </Grid>
+                                        <TextBox Classes="campo"
+                                                 Height="NaN"
+                                                 MinHeight="70"
+                                                 Padding="12,10"
+                                                 VerticalContentAlignment="Top"
+                                                 Text="{Binding MotivoCancelacion, UpdateSourceTrigger=PropertyChanged}"
+                                                 PlaceholderText="Describe brevemente el motivo…"
+                                                 AcceptsReturn="True"
+                                                 TextWrapping="Wrap"
+                                                 MaxHeight="120"
+                                                 MaxLength="250"/>
+
+                                        <!-- Ayuda en vivo: ámbar mientras falta, verde cuando ya es válido -->
+                                        <Border Classes="ayudaMotivo"
+                                                Classes.valido="{Binding MotivoValido}">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <PathIcon Classes="iconoAyuda"
+                                                          Width="15" Height="15"/>
+                                                <TextBlock Text="{Binding TextoAyudaMotivo}"
+                                                           FontSize="12"
+                                                           FontWeight="SemiBold"
+                                                           TextWrapping="Wrap"
+                                                           VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Border>
+
+                                        <!-- Errores al cancelar, junto al botón -->
+                                        <Border Padding="12,9"
+                                                CornerRadius="12"
+                                                Background="#FEF2F2"
+                                                BorderBrush="#FECACA"
+                                                BorderThickness="1"
+                                                IsVisible="{Binding HayError}">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <PathIcon Width="15" Height="15"
+                                                          Foreground="#C61F2B"
+                                                          Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                                                <TextBlock Text="{Binding MensajeError}"
+                                                           Foreground="#9F1239"
+                                                           FontSize="12"
+                                                           TextWrapping="Wrap"
+                                                           VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Button Classes="boton rojo"
+                                                Height="54"
+                                                HorizontalAlignment="Stretch"
+                                                Click="CancelarVenta_Click"
+                                                IsEnabled="{Binding PuedeEjecutarCancelacion}">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <PathIcon Width="16" Height="16"
+                                                          Data="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/>
+                                                <TextBlock Text="Cancelar venta" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <TextBlock Text="La venta conservará su historial y el inventario será restituido."
+                                                   Foreground="#94A3B8"
+                                                   FontSize="12"
+                                                   TextWrapping="Wrap"
+                                                   TextAlignment="Center"/>
+                                    </StackPanel>
+
+                                </StackPanel>
+
+                            </Grid>
 
                         </Grid>
 

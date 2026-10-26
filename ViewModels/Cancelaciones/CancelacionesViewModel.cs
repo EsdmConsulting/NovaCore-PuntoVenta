@@ -157,8 +157,7 @@ public partial class CancelacionesViewModel : ViewModelBase
         VentaDetalle is not null &&
         PuedeCancelarVenta &&
         !EstaCancelando &&
-        !string.IsNullOrWhiteSpace(MotivoCancelacion) &&
-        MotivoCancelacion.Trim().Length >= 15;
+        MotivoValido;
 
 
     // =========================================================
@@ -851,23 +850,38 @@ public partial class CancelacionesViewModel : ViewModelBase
     {
         OnPropertyChanged(nameof(PuedeEjecutarCancelacion));
         OnPropertyChanged(nameof(ContadorRestanteTexto));
+        OnPropertyChanged(nameof(MotivoValido));
+        OnPropertyChanged(nameof(TextoAyudaMotivo));
     }
 
     // =========================================================
     // CONTADOR DE MOTIVO
     // =========================================================
-    
-    public string ContadorRestanteTexto
-    {
-        get
-        {
-            var texto = MotivoCancelacion ?? string.Empty;
-            
-            var restantes = Math.Max(0, 35);
-            
-            return $"{restantes} restantes";
-        }
-    }
+
+    public const int MinimoCaracteresMotivo = 25;
+
+    public const int MaximoCaracteresMotivo = 250;
+
+
+    private int CaracteresMotivo =>
+        (MotivoCancelacion ?? string.Empty).Trim().Length;
+
+
+    public bool MotivoValido =>
+        CaracteresMotivo >= MinimoCaracteresMotivo;
+
+
+    public string ContadorRestanteTexto =>
+        $"{(MotivoCancelacion ?? string.Empty).Length}/{MaximoCaracteresMotivo}";
+
+
+    // Ayuda en vivo debajo del motivo.
+    public string TextoAyudaMotivo =>
+        MotivoValido
+            ? "Motivo válido. Ya puedes cancelar la venta."
+            : CaracteresMotivo == 0
+                ? $"Escribe un motivo claro de al menos {MinimoCaracteresMotivo} caracteres."
+                : $"Faltan {MinimoCaracteresMotivo - CaracteresMotivo} caracteres (mínimo {MinimoCaracteresMotivo}).";
 
 
 

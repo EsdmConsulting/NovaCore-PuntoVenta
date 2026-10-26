@@ -27,6 +27,23 @@ public partial class CancelacionesView
     {
         AvaloniaXamlLoader.Load(
             this);
+
+
+        // La escena animada del banner solo se muestra cuando hay
+        // espacio suficiente; en pantallas angostas se vería diminuta.
+        var banner =
+            this.FindControl<Border>("BannerCancelacion");
+
+        var escena =
+            this.FindControl<Control>("EscenaCancelacion");
+
+        if (banner is not null && escena is not null)
+        {
+            banner.SizeChanged +=
+                (_, e) =>
+                    escena.IsVisible =
+                        e.NewSize.Width >= 1050;
+        }
     }
 
 
@@ -120,9 +137,9 @@ public partial class CancelacionesView
         var motivo = ViewModel.MotivoCancelacion?.Trim() ?? string.Empty;
 
 
-        if (motivo.Length < 25)
+        if (motivo.Length < CancelacionesViewModel.MinimoCaracteresMotivo)
         {
-            ViewModel.MensajeError = "El motivo de cancelación debe ser claro y contener al menos 25 caracteres.";
+            ViewModel.MensajeError = $"El motivo de cancelación debe ser claro y contener al menos {CancelacionesViewModel.MinimoCaracteresMotivo} caracteres.";
             return;
         }
 
@@ -159,162 +176,10 @@ public partial class CancelacionesView
 
 
         var confirmacion =
-            new Window
-            {
-                Title =
-                    "Confirmar cancelación",
-
-                Width =
-                    430,
-
-                Height =
-                    280,
-
-                CanResize =
-                    false,
-
-                WindowStartupLocation =
-                    WindowStartupLocation.CenterOwner
-            };
-
-
-        var botonVolver =
-            new Button
-            {
-                Content =
-                    "Volver",
-
-                Width =
-                    110,
-
-                Height =
-                    40,
-
-                HorizontalContentAlignment =
-                    Avalonia.Layout.HorizontalAlignment.Center
-            };
-
-
-        var botonCancelar =
-            new Button
-            {
-                Content =
-                    "Sí, cancelar venta",
-
-                Width =
-                    160,
-
-                Height =
-                    40,
-
-                Background =
-                    Avalonia.Media.Brushes.Firebrick,
-
-                Foreground =
-                    Avalonia.Media.Brushes.White,
-
-                HorizontalContentAlignment =
-                    Avalonia.Layout.HorizontalAlignment.Center
-            };
-
-
-        var resultado =
-            false;
-
-
-        botonVolver.Click +=
-            (_, _) =>
-            {
-                confirmacion.Close(
-                    false);
-            };
-
-
-        botonCancelar.Click +=
-            (_, _) =>
-            {
-                resultado =
-                    true;
-
-                confirmacion.Close(
-                    true);
-            };
-
-
-        confirmacion.Content =
-            new Border
-            {
-                Padding =
-                    new Avalonia.Thickness(
-                        24),
-
-                Child =
-                    new StackPanel
-                    {
-                        Spacing =
-                            16,
-
-                        Children =
-                        {
-                            new TextBlock
-                            {
-                                Text =
-                                    "¿Cancelar esta venta?",
-
-                                FontSize =
-                                    21,
-
-                                FontWeight =
-                                    Avalonia.Media.FontWeight.SemiBold,
-
-                                Foreground =
-                                    Avalonia.Media.Brushes.DarkRed
-                            },
-
-                            new TextBlock
-                            {
-                                Text =
-                                    $"Folio: {ViewModel.VentaDetalle.Folio}",
-
-                                FontSize =
-                                    13,
-
-                                FontWeight =
-                                    Avalonia.Media.FontWeight.SemiBold
-                            },
-
-                            new TextBlock
-                            {
-                                Text =
-                                    "Esta operación marcará la venta como CANCELADA y devolverá al inventario las cantidades vendidas.",
-
-                                TextWrapping =
-                                    Avalonia.Media.TextWrapping.Wrap,
-
-                                Foreground =
-                                    Avalonia.Media.Brushes.DimGray
-                            },
-
-                            new StackPanel
-                            {
-                                Orientation =
-                                    Avalonia.Layout.Orientation.Horizontal,
-
-                                Spacing =
-                                    10,
-
-                                HorizontalAlignment =
-                                    Avalonia.Layout.HorizontalAlignment.Right,
-
-                                Children =
-                                {
-                                    botonVolver,
-                                    botonCancelar
-                                }
-                            }
-                        }
-                    }
-            };
+            new ConfirmarCancelacionWindow(
+                ViewModel.VentaDetalle.Folio ?? string.Empty,
+                ViewModel.VentaDetalle.TextoTotal,
+                motivo);
 
 
         var confirmado =
@@ -323,8 +188,7 @@ public partial class CancelacionesView
                     ventanaPadre);
 
 
-        if (!confirmado ||
-            !resultado)
+        if (!confirmado)
         {
             return;
         }

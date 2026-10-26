@@ -77,6 +77,12 @@ public partial class RealizarCorteWindow : Window
             resumen;
 
         CargarResumen();
+
+
+        // El cursor arranca en el efectivo contado.
+        Opened +=
+            (_, _) =>
+                TxtEfectivoContado.Focus();
     }
 
 

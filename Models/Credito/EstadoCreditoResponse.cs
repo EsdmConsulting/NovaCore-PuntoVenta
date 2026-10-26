@@ -77,11 +77,12 @@ public class EstadoCreditoData
     [JsonPropertyName("dias_max_vencido")]
     public int DiasMaxVencido { get; set; }
 
+    // Puede venir null cuando el cliente no tiene línea de crédito.
     [JsonPropertyName("dias_credito")]
-    public int DiasCredito { get; set; }
+    public int? DiasCredito { get; set; }
 
     [JsonPropertyName("tolerancia_dias")]
-    public int ToleranciaDias { get; set; }
+    public int? ToleranciaDias { get; set; }
 
     [JsonPropertyName("fecha_inicio")]
     public string FechaInicio { get; set; } =

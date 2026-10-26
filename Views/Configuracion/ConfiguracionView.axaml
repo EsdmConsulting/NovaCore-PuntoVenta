@@ -2,50 +2,354 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:NovaCoreESDM.ViewModels.Configuracion"
+    xmlns:controls="using:NovaCoreESDM.Controls"
 
     x:Class="NovaCoreESDM.Views.Configuracion.ConfiguracionView"
     x:DataType="vm:ConfiguracionViewModel"
 
-    Background="#F5F7F6">
+    Background="#F4F6F8">
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <UserControl.Styles>
+
+        <Style Selector="Border.seccion">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#EAEEF2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="24"/>
+            <Setter Property="BoxShadow" Value="0 1 2 0 #0A0F172A"/>
+        </Style>
+
+        <Style Selector="TextBlock.tituloSeccion">
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style Selector="TextBlock.subtituloSeccion">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="LineHeight" Value="17"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <!-- Pasos de la guía -->
+        <Style Selector="Border.paso">
+            <Setter Property="Padding" Value="14,12"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#EEF1F4"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="Border.numeroPaso">
+            <Setter Property="Width" Value="28"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="#16A34A"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+        </Style>
+
+        <Style Selector="Border.numeroPaso TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="TextBlock.tituloPaso">
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style Selector="TextBlock.detallePaso">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <!-- Botones -->
+        <Style Selector="Button.boton">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="CornerRadius" Value="13"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="0,0,10,10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.verde">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22C55E"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.verde /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 8 20 -8 #8022C55E"/>
+        </Style>
+
+        <Style Selector="Button.verde:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#16A34A"/>
+        </Style>
+
+        <Style Selector="Button.gris">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#334155"/>
+        </Style>
+
+        <Style Selector="Button.gris:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+        </Style>
+
+        <Style Selector="Button.rojo">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#F5C2C2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#C61F2B"/>
+        </Style>
+
+        <Style Selector="Button.rojo:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#C61F2B"/>
+            <Setter Property="BorderBrush" Value="#C61F2B"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <!-- Estado de la impresora (verde si está lista, ámbar si no se encuentra) -->
+        <Style Selector="Border.estadoImpresora">
+            <Setter Property="Padding" Value="10,4"/>
+            <Setter Property="CornerRadius" Value="999"/>
+            <Setter Property="Background" Value="#FFF7E0"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+        <Style Selector="Border.estadoImpresora TextBlock">
+            <Setter Property="Foreground" Value="#92600A"/>
+        </Style>
+
+        <Style Selector="Border.estadoImpresora Ellipse">
+            <Setter Property="Fill" Value="#F59E0B"/>
+        </Style>
+
+        <Style Selector="Border.estadoImpresora.ok">
+            <Setter Property="Background" Value="#EAF7EF"/>
+        </Style>
+
+        <Style Selector="Border.estadoImpresora.ok TextBlock">
+            <Setter Property="Foreground" Value="#0B6B33"/>
+        </Style>
+
+        <Style Selector="Border.estadoImpresora.ok Ellipse">
+            <Setter Property="Fill" Value="#16A34A"/>
+        </Style>
+
+        <Style Selector="Border.iconoImpresora">
+            <Setter Property="Background" Value="#FEF3C7"/>
+        </Style>
+
+        <Style Selector="Border.iconoImpresora PathIcon">
+            <Setter Property="Foreground" Value="#B7791F"/>
+        </Style>
+
+        <Style Selector="Border.iconoImpresora.ok">
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22C55E"/>
+                    <GradientStop Offset="1" Color="#0B8A3E"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border.iconoImpresora.ok PathIcon">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <!-- Lista de impresoras -->
+        <Style Selector="ComboBox.campo">
+            <Setter Property="Height" Value="52"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="CornerRadius" Value="13"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+    </UserControl.Styles>
+
 
     <ScrollViewer
         VerticalScrollBarVisibility="Auto"
         HorizontalScrollBarVisibility="Disabled">
 
         <StackPanel
-            Margin="28"
+            Margin="28,24,28,28"
             Spacing="20">
 
+
             <!-- ================================================= -->
-            <!-- HERO                                              -->
+            <!-- ENCABEZADO                                        -->
             <!-- ================================================= -->
 
-            <Border
-                Background="#123D2B"
-                CornerRadius="20"
-                Padding="30">
+            <Border x:Name="BannerConfiguracion"
+                    CornerRadius="24"
+                    ClipToBounds="True"
+                    Background="#050607"
+                    MinHeight="160">
 
-                <StackPanel
-                    Spacing="7">
+                <Panel>
 
-                    <TextBlock
-                        Text="GRUPO LUIS FER"
-                        Foreground="#A7D8BC"
-                        FontSize="11"
-                        FontWeight="Bold"/>
+                    <Ellipse Width="520" Height="520"
+                             HorizontalAlignment="Left" VerticalAlignment="Top"
+                             Margin="-200,-280,0,0"
+                             IsHitTestVisible="False">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="#8816A34A"/>
+                                <GradientStop Offset="1" Color="#0016A34A"/>
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
 
-                    <TextBlock
-                        Text="Configuración del equipo"
-                        Foreground="White"
-                        FontSize="28"
-                        FontWeight="SemiBold"/>
+                    <Ellipse Width="460" Height="460"
+                             HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                             Margin="0,0,-160,-300"
+                             IsHitTestVisible="False">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="#66F5C400"/>
+                                <GradientStop Offset="1" Color="#00F5C400"/>
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
 
-                    <TextBlock
-                        Text="Impresora de tickets y formato de impresión de este punto de venta."
-                        Foreground="#D6EBDD"
-                        FontSize="14"/>
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="24"
+                          Margin="34,28">
 
-                </StackPanel>
+                        <StackPanel VerticalAlignment="Center">
+
+                            <Border HorizontalAlignment="Left"
+                                    Padding="12,6"
+                                    CornerRadius="999"
+                                    Background="#14FFFFFF"
+                                    BorderBrush="#24FFFFFF"
+                                    BorderThickness="1">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Width="12" Height="12"
+                                              Foreground="#86EFAC"
+                                              Data="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/>
+                                    <TextBlock Text="AJUSTES DE ESTE EQUIPO"
+                                               Foreground="#D9E2EC"
+                                               FontSize="11"
+                                               FontWeight="SemiBold"
+                                               LetterSpacing="1.2"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock Text="Configuración del equipo"
+                                       Foreground="White"
+                                       FontSize="32"
+                                       FontWeight="Bold"
+                                       LetterSpacing="-0.8"
+                                       Margin="0,14,0,0"/>
+
+                            <TextBlock Text="Impresora de tickets y cajón de dinero de este punto de venta."
+                                       Foreground="#A8B4C2"
+                                       FontSize="14"
+                                       TextWrapping="Wrap"
+                                       Margin="0,6,0,0"/>
+
+                        </StackPanel>
+
+                        <!-- Escena animada: equipo, impresora y cajón -->
+                        <controls:EscenaConfiguracionAnimada x:Name="EscenaConfiguracion"
+                                                             Grid.Column="1"
+                                                             MaxWidth="420"
+                                                             VerticalAlignment="Center"/>
+
+                        <!-- Estado rápido -->
+                        <Border Grid.Column="2"
+                                VerticalAlignment="Center"
+                                Padding="18,14"
+                                CornerRadius="18"
+                                Background="#12FFFFFF"
+                                BorderBrush="#22FFFFFF"
+                                BorderThickness="1">
+                            <Grid>
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="12"
+                                            IsVisible="{Binding HayImpresoraConfigurada}">
+                                    <Border Width="40" Height="40"
+                                            CornerRadius="20"
+                                            Background="#22C55E">
+                                        <PathIcon Width="18" Height="18"
+                                                  Foreground="White"
+                                                  Data="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                                        <TextBlock Text="IMPRESORA FIJADA"
+                                                   Foreground="#86EFAC"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   LetterSpacing="1.2"/>
+                                        <TextBlock Text="{Binding ImpresoraConfigurada}"
+                                                   Foreground="White"
+                                                   FontSize="15"
+                                                   FontWeight="Bold"
+                                                   MaxWidth="260"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal"
+                                            Spacing="12"
+                                            IsVisible="{Binding NoHayImpresoraConfigurada}">
+                                    <Border Width="40" Height="40"
+                                            CornerRadius="20"
+                                            Background="#33FFFFFF">
+                                        <PathIcon Width="18" Height="18"
+                                                  Foreground="White"
+                                                  Data="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+                                    </Border>
+                                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                                        <TextBlock Text="SIN IMPRESORA"
+                                                   Foreground="#FCD34D"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   LetterSpacing="1.2"/>
+                                        <TextBlock Text="Pendiente de configurar"
+                                                   Foreground="White"
+                                                   FontSize="15"
+                                                   FontWeight="Bold"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                    </Grid>
+
+                </Panel>
 
             </Border>
 
@@ -54,245 +358,261 @@
             <!-- MENSAJES                                          -->
             <!-- ================================================= -->
 
-            <Border
-                IsVisible="{Binding HayError}"
-                Background="#FEF2F2"
-                BorderBrush="#FECACA"
-                BorderThickness="1"
-                CornerRadius="12"
-                Padding="16,12">
-
-                <TextBlock
-                    Text="{Binding MensajeError}"
-                    Foreground="#B91C1C"
-                    TextWrapping="Wrap"/>
-
+            <Border Padding="16,12"
+                    CornerRadius="14"
+                    Background="#FEF2F2"
+                    BorderBrush="#FECACA"
+                    BorderThickness="1"
+                    IsVisible="{Binding HayError}">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <PathIcon Width="18" Height="18"
+                              Foreground="#C61F2B"
+                              Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    <TextBlock Text="{Binding MensajeError}"
+                               Foreground="#9F1239"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
             </Border>
 
-            <Border
-                IsVisible="{Binding HayExito}"
-                Background="#F0FDF4"
-                BorderBrush="#BBF7D0"
-                BorderThickness="1"
-                CornerRadius="12"
-                Padding="16,12">
-
-                <TextBlock
-                    Text="{Binding MensajeExito}"
-                    Foreground="#166534"
-                    TextWrapping="Wrap"/>
-
+            <Border Padding="16,12"
+                    CornerRadius="14"
+                    Background="#EAF7EF"
+                    BorderBrush="#BFE6CD"
+                    BorderThickness="1"
+                    IsVisible="{Binding HayExito}">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <PathIcon Width="18" Height="18"
+                              Foreground="#16A34A"
+                              Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                    <TextBlock Text="{Binding MensajeExito}"
+                               Foreground="#0B6B33"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
             </Border>
 
-            <ProgressBar
-                IsVisible="{Binding EstaOcupado}"
-                IsIndeterminate="True"
-                Height="3"/>
+            <Border Padding="16,12"
+                    CornerRadius="14"
+                    Background="#EEF4FB"
+                    IsVisible="{Binding EstaOcupado}">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <PathIcon Width="16" Height="16"
+                              Foreground="#2563EB"
+                              Data="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+                    <TextBlock Text="Comunicándose con la impresora…"
+                               Foreground="#1E4F8A"
+                               FontSize="13"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                    <ProgressBar IsIndeterminate="True"
+                                 Width="80"
+                                 MinWidth="80"
+                                 Height="4"
+                                 Foreground="#2563EB"
+                                 Background="#DCE8F8"
+                                 VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
 
 
             <!-- ================================================= -->
-            <!-- IMPRESORA                                         -->
+            <!-- IMPRESORA DE TICKETS                              -->
             <!-- ================================================= -->
 
-            <Border
-                Background="White"
-                BorderBrush="#E1E8E3"
-                BorderThickness="1"
-                CornerRadius="16"
-                Padding="24">
+            <Border Classes="seccion">
 
-                <StackPanel
-                    Spacing="18">
+                <StackPanel Spacing="20">
 
-                    <StackPanel
-                        Spacing="4">
-
-                        <TextBlock
-                            Text="Impresora de tickets"
-                            Foreground="#21382A"
-                            FontSize="19"
-                            FontWeight="SemiBold"/>
-
-                        <TextBlock
-                            Text="Cada punto de venta tiene su propia impresora. Una vez fijada, se usa para tickets, pruebas y apertura del cajón hasta que se quite."
-                            Foreground="#7B8B82"
-                            FontSize="12"
-                            TextWrapping="Wrap"/>
-
+                    <StackPanel Spacing="2">
+                        <TextBlock Classes="tituloSeccion" Text="Impresora de tickets"/>
+                        <TextBlock Classes="subtituloSeccion"
+                                   Text="Cada punto de venta tiene su propia impresora. Una vez fijada, se usa para los tickets, las pruebas y la apertura del cajón hasta que se quite."/>
                     </StackPanel>
 
+                    <!-- ¿Cómo funciona? -->
+                    <Grid ColumnDefinitions="*,*,*"
+                          ColumnSpacing="12">
 
-                    <!-- ===== CON IMPRESORA FIJA ===== -->
-
-                    <StackPanel
-                        IsVisible="{Binding HayImpresoraConfigurada}"
-                        Spacing="16">
-
-                        <Border
-                            Background="#F0F7F3"
-                            BorderBrush="#CFE6D8"
-                            BorderThickness="1"
-                            CornerRadius="12"
-                            Padding="18">
-
-                            <StackPanel
-                                Spacing="4">
-
-                                <TextBlock
-                                    Text="IMPRESORA FIJA"
-                                    Foreground="#08783D"
-                                    FontSize="10"
-                                    FontWeight="Bold"/>
-
-                                <TextBlock
-                                    Text="{Binding ImpresoraConfigurada}"
-                                    Foreground="#21382A"
-                                    FontSize="20"
-                                    FontWeight="SemiBold"
-                                    TextWrapping="Wrap"/>
-
-                                <TextBlock
-                                    Text="{Binding EstadoImpresora}"
-                                    Foreground="#53665B"
-                                    FontSize="12"
-                                    TextWrapping="Wrap"/>
-
-                            </StackPanel>
-
+                        <Border Grid.Column="0" Classes="paso">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <Border Classes="numeroPaso"><TextBlock Text="1"/></Border>
+                                <StackPanel Grid.Column="1" Spacing="2">
+                                    <TextBlock Classes="tituloPaso" Text="Lee las impresoras"/>
+                                    <TextBlock Classes="detallePaso" Text="El sistema consulta las impresoras instaladas en Windows."/>
+                                </StackPanel>
+                            </Grid>
                         </Border>
 
-                        <WrapPanel
-                            Orientation="Horizontal">
-
-                            <Button
-                                Command="{Binding ImprimirPruebaCommand}"
-                                Height="40"
-                                Padding="18,0"
-                                Margin="0,0,10,10"
-                                Background="#08783D"
-                                Foreground="White"
-                                BorderThickness="0"
-                                CornerRadius="8"
-                                Cursor="Hand">
-
-                                <TextBlock
-                                    Text="Imprimir prueba"
-                                    FontWeight="SemiBold"/>
-
-                            </Button>
-
-                            <Button
-                                Command="{Binding AbrirCajonCommand}"
-                                Height="40"
-                                Padding="18,0"
-                                Margin="0,0,10,10"
-                                Background="#EEF3F0"
-                                Foreground="#385044"
-                                BorderThickness="0"
-                                CornerRadius="8"
-                                Cursor="Hand">
-
-                                <TextBlock
-                                    Text="Probar cajón"
-                                    FontWeight="SemiBold"/>
-
-                            </Button>
-
-                            <Button
-                                Command="{Binding QuitarImpresoraCommand}"
-                                Height="40"
-                                Padding="18,0"
-                                Margin="0,0,10,10"
-                                Background="#FEF2F2"
-                                Foreground="#B91C1C"
-                                BorderThickness="0"
-                                CornerRadius="8"
-                                Cursor="Hand">
-
-                                <TextBlock
-                                    Text="Quitar impresora"
-                                    FontWeight="SemiBold"/>
-
-                            </Button>
-
-                        </WrapPanel>
-
-                    </StackPanel>
-
-
-                    <!-- ===== SIN IMPRESORA: ELEGIR UNA ===== -->
-
-                    <StackPanel
-                        IsVisible="{Binding NoHayImpresoraConfigurada}"
-                        Spacing="14">
-
-                        <Border
-                            Background="#FFFBEB"
-                            BorderBrush="#FDE68A"
-                            BorderThickness="1"
-                            CornerRadius="12"
-                            Padding="16,12">
-
-                            <TextBlock
-                                Text="Este equipo todavía no tiene impresora. Elige una de la lista y presiona «Fijar impresora»."
-                                Foreground="#92400E"
-                                TextWrapping="Wrap"/>
-
+                        <Border Grid.Column="1" Classes="paso">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <Border Classes="numeroPaso"><TextBlock Text="2"/></Border>
+                                <StackPanel Grid.Column="1" Spacing="2">
+                                    <TextBlock Classes="tituloPaso" Text="Elige y fíjala"/>
+                                    <TextBlock Classes="detallePaso" Text="Se guarda en este equipo y se usa siempre para imprimir."/>
+                                </StackPanel>
+                            </Grid>
                         </Border>
 
-                        <StackPanel
-                            Spacing="6">
+                        <Border Grid.Column="2" Classes="paso">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <Border Classes="numeroPaso"><TextBlock Text="3"/></Border>
+                                <StackPanel Grid.Column="1" Spacing="2">
+                                    <TextBlock Classes="tituloPaso" Text="Pruébala"/>
+                                    <TextBlock Classes="detallePaso" Text="Imprime una prueba y abre el cajón para confirmar."/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
 
-                            <TextBlock
-                                Text="Impresoras instaladas en Windows"
-                                Foreground="#53665B"
-                                FontSize="11"
-                                FontWeight="SemiBold"/>
+                    </Grid>
 
-                            <ComboBox
-                                ItemsSource="{Binding ImpresorasDisponibles}"
-                                SelectedItem="{Binding ImpresoraSeleccionada, Mode=TwoWay}"
-                                PlaceholderText="Selecciona una impresora"
-                                HorizontalAlignment="Stretch"
-                                Height="42"/>
+
+                    <!-- ============ CON IMPRESORA FIJADA ============ -->
+
+                    <Border IsVisible="{Binding HayImpresoraConfigurada}"
+                            Padding="20,18"
+                            CornerRadius="18"
+                            Background="#F8FAFB"
+                            BorderBrush="#EEF1F4"
+                            BorderThickness="1">
+
+                        <StackPanel Spacing="18">
+
+                            <Grid ColumnDefinitions="Auto,*"
+                                  ColumnSpacing="16">
+
+                                <Border Classes="iconoImpresora"
+                                        Classes.ok="{Binding EstadoImpresoraOk}"
+                                        Width="60" Height="60"
+                                        CornerRadius="18"
+                                        VerticalAlignment="Center">
+                                    <PathIcon Width="28" Height="28"
+                                              Data="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+                                </Border>
+
+                                <StackPanel Grid.Column="1"
+                                            VerticalAlignment="Center"
+                                            Spacing="5">
+                                    <TextBlock Text="IMPRESORA FIJA DE ESTE EQUIPO"
+                                               Foreground="#94A3B8"
+                                               FontSize="10"
+                                               FontWeight="Bold"
+                                               LetterSpacing="1.2"/>
+                                    <TextBlock Text="{Binding ImpresoraConfigurada}"
+                                               Foreground="#0B1220"
+                                               FontSize="20"
+                                               FontWeight="Bold"
+                                               TextWrapping="Wrap"/>
+                                    <Border Classes="estadoImpresora"
+                                            Classes.ok="{Binding EstadoImpresoraOk}">
+                                        <StackPanel Orientation="Horizontal" Spacing="7">
+                                            <Ellipse Width="7" Height="7"
+                                                     VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding EstadoImpresora}"
+                                                       FontSize="12"
+                                                       FontWeight="SemiBold"
+                                                       TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+
+                            </Grid>
+
+                            <WrapPanel Orientation="Horizontal">
+
+                                <Button Classes="boton verde"
+                                        Command="{Binding ImprimirPruebaCommand}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <PathIcon Width="16" Height="16"
+                                                  Data="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+                                        <TextBlock Text="Imprimir prueba" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button Classes="boton gris"
+                                        Command="{Binding AbrirCajonCommand}">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <PathIcon Width="16" Height="16"
+                                                  Data="M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-6v11c0 1.1-.9 2-2 2H4v-2h17V7h2z"/>
+                                        <TextBlock Text="Probar cajón" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button Classes="boton rojo"
+                                        Command="{Binding QuitarImpresoraCommand}"
+                                        ToolTip.Tip="Requiere autorización de un administrador">
+                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                        <PathIcon Width="15" Height="15"
+                                                  Data="M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.7 1.4-3.1 3.1-3.1s3.1 1.4 3.1 3.1v2z"/>
+                                        <TextBlock Text="Quitar impresora" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+
+                            </WrapPanel>
+
+                            <TextBlock Text="Para quitar o cambiar la impresora se pide la autorización de un administrador."
+                                       Foreground="#94A3B8"
+                                       FontSize="12"
+                                       Margin="0,-8,0,0"/>
 
                         </StackPanel>
 
-                        <WrapPanel
-                            Orientation="Horizontal">
+                    </Border>
 
-                            <Button
-                                Command="{Binding GuardarImpresoraCommand}"
-                                Height="40"
-                                Padding="18,0"
-                                Margin="0,0,10,10"
-                                Background="#08783D"
-                                Foreground="White"
-                                BorderThickness="0"
-                                CornerRadius="8"
-                                Cursor="Hand">
 
-                                <TextBlock
-                                    Text="Fijar impresora"
-                                    FontWeight="SemiBold"/>
+                    <!-- ============ SIN IMPRESORA ============ -->
 
+                    <StackPanel IsVisible="{Binding NoHayImpresoraConfigurada}"
+                                Spacing="14">
+
+                        <Border Padding="14,12"
+                                CornerRadius="14"
+                                Background="#FFF7E0"
+                                BorderBrush="#FBD98A"
+                                BorderThickness="1">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <PathIcon Width="18" Height="18"
+                                          Foreground="#B7791F"
+                                          Data="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                                <TextBlock Text="Este equipo todavía no tiene impresora. Elige una de la lista y presiona «Fijar impresora»."
+                                           Foreground="#7A4E05"
+                                           FontSize="13"
+                                           TextWrapping="Wrap"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Impresoras instaladas en Windows"
+                                       Foreground="#334155"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"/>
+                            <ComboBox Classes="campo"
+                                      ItemsSource="{Binding ImpresorasDisponibles}"
+                                      SelectedItem="{Binding ImpresoraSeleccionada, Mode=TwoWay}"
+                                      PlaceholderText="Selecciona una impresora"/>
+                        </StackPanel>
+
+                        <WrapPanel Orientation="Horizontal">
+
+                            <Button Classes="boton verde"
+                                    Command="{Binding GuardarImpresoraCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Width="16" Height="16"
+                                              Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    <TextBlock Text="Fijar impresora" VerticalAlignment="Center"/>
+                                </StackPanel>
                             </Button>
 
-                            <Button
-                                Command="{Binding LeerImpresorasCommand}"
-                                Height="40"
-                                Padding="18,0"
-                                Margin="0,0,10,10"
-                                Background="#EEF3F0"
-                                Foreground="#385044"
-                                BorderThickness="0"
-                                CornerRadius="8"
-                                Cursor="Hand">
-
-                                <TextBlock
-                                    Text="Volver a leer impresoras"
-                                    FontWeight="SemiBold"/>
-
+                            <Button Classes="boton gris"
+                                    Command="{Binding LeerImpresorasCommand}">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Width="15" Height="15"
+                                              Data="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                    <TextBlock Text="Volver a leer impresoras" VerticalAlignment="Center"/>
+                                </StackPanel>
                             </Button>
 
                         </WrapPanel>
@@ -307,77 +627,9 @@
             <!-- ================================================= -->
             <!-- FORMATO DEL TICKET                                -->
             <!-- ================================================= -->
-
-           <!--  <Border
-                Background="White"
-                BorderBrush="#E1E8E3"
-                BorderThickness="1"
-                CornerRadius="16"
-                Padding="24">
-
-                <StackPanel
-                    Spacing="14">
-
-                    <StackPanel
-                        Spacing="4">
-
-                        <TextBlock
-                            Text="Formato del ticket"
-                            Foreground="#21382A"
-                            FontSize="19"
-                            FontWeight="SemiBold"/>
-
-                        <TextBlock
-                            Text="Imprime un ticket con datos de ejemplo para revisar el diseño. Para cambiar encabezado, mensaje final, ancho, QR, etc., edita el archivo de abajo con el Bloc de notas y vuelve a imprimir (no hay que reiniciar)."
-                            Foreground="#7B8B82"
-                            FontSize="12"
-                            TextWrapping="Wrap"/>
-
-                    </StackPanel>
-
-                    <Button
-                        Command="{Binding ImprimirMuestraCommand}"
-                        IsEnabled="{Binding HayImpresoraConfigurada}"
-                        Height="40"
-                        Padding="18,0"
-                        HorizontalAlignment="Left"
-                        Background="#08783D"
-                        Foreground="White"
-                        BorderThickness="0"
-                        CornerRadius="8"
-                        Cursor="Hand">
-
-                        <TextBlock
-                            Text="Imprimir ticket de muestra"
-                            FontWeight="SemiBold"/>
-
-                    </Button>
-
-                    <StackPanel
-                        Spacing="6">
-
-                        <TextBlock
-                            Text="Archivo del formato (editable)"
-                            Foreground="#53665B"
-                            FontSize="11"
-                            FontWeight="SemiBold"/>
-
-                        <TextBox
-                            Text="{Binding RutaFormatoTicket, Mode=OneWay}"
-                            IsReadOnly="True"
-                            Height="40"
-                            VerticalContentAlignment="Center"/>
-
-                        <TextBlock
-                            Text="Se crea solo la primera vez que se imprime un ticket."
-                            Foreground="#7B8B82"
-                            FontSize="11"/>
-
-                    </StackPanel>
-
-                </StackPanel>
-
-            </Border> -->
+            <!-- Sección desactivada por el autor original. Si se   -->
+            <!-- reactiva, usar ImprimirMuestraCommand y           -->
+            <!-- RutaFormatoTicket del ViewModel.                  -->
 
         </StackPanel>
 
