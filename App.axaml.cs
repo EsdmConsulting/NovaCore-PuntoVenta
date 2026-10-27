@@ -5,6 +5,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 
+using NovaCoreESDM.Controls;
 using NovaCoreESDM.Views;
 
 namespace NovaCoreESDM;
@@ -24,6 +25,10 @@ public partial class App
         if (ApplicationLifetime
             is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            // Zoom automático para pantallas chicas (solo visual).
+            AjustePantalla.Registrar();
+
+
             var splashWindow =
                 new SplashWindow();
 
