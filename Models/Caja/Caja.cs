@@ -51,6 +51,14 @@ public class Caja
 
     [JsonPropertyName("en_uso")]
     public bool EnUso { get; set; }
+
+    // Caja del POS externo ("0002", "0004"…). Solo llega con
+    // ?incluir_externas=1 (Prueba de corte); no se vende en ella.
+    [JsonPropertyName("caja_externa")]
+    public string? CajaExterna { get; set; }
+
+    [JsonPropertyName("es_externa")]
+    public bool EsExterna { get; set; }
     
     [JsonIgnore]
     public bool EstaDisponible => !EnUso;

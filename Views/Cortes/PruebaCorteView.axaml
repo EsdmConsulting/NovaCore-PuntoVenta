@@ -1,0 +1,1520 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:NovaCoreESDM.ViewModels.Cortes"
+    xmlns:controls="using:NovaCoreESDM.Controls"
+
+    x:Class="NovaCoreESDM.Views.Cortes.PruebaCorteView"
+    x:DataType="vm:PruebaCorteViewModel"
+
+    Background="#F4F6F8">
+
+
+    <!-- F5 = simular con el periodo elegido -->
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="F5" Command="{Binding SimularCommand}"/>
+    </UserControl.KeyBindings>
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <UserControl.Styles>
+
+        <!-- Que los acentos de las mayúsculas (Ó, É, Ú) no se recorten -->
+        <Style Selector="TextBlock">
+            <Setter Property="ClipToBounds" Value="False"/>
+        </Style>
+
+        <!-- Entrada suave -->
+        <Style Selector=":is(Control).entrada">
+            <Style.Animations>
+                <Animation Duration="0:0:0.5"
+                           FillMode="Forward"
+                           Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="12"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Secciones -->
+        <Style Selector="Border.seccion">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#EAEEF2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="24"/>
+            <Setter Property="BoxShadow" Value="0 1 2 0 #0A0F172A"/>
+        </Style>
+
+        <Style Selector="TextBlock.tituloSeccion">
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style Selector="TextBlock.subtituloSeccion">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="LineHeight" Value="17"/>
+        </Style>
+
+        <Style Selector="TextBlock.etiquetaCampo">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style Selector="DatePicker.campo">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        </Style>
+
+        <!-- Selector de caja -->
+        <Style Selector="ComboBox.campo">
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.etiquetaExterna">
+            <Setter Property="Padding" Value="8,2"/>
+            <Setter Property="CornerRadius" Value="999"/>
+            <Setter Property="Background" Value="#FEF7DC"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.etiquetaExterna TextBlock">
+            <Setter Property="Foreground" Value="#92600A"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="0.6"/>
+        </Style>
+
+        <!-- Comparación contra la caja externa -->
+        <Style Selector="Border.comparacion">
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="24"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#FECACA"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#FFF5F5"/>
+                    <GradientStop Offset="1" Color="#FEE9E9"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border.comparacion.cuadra">
+            <Setter Property="BorderBrush" Value="#BFE6CD"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#F0FAF4"/>
+                    <GradientStop Offset="1" Color="#E0F4E8"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border.comparacion.sinCortes">
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style Selector="Border.iconoComparacion">
+            <Setter Property="Width" Value="56"/>
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="Background" Value="#C61F2B"/>
+        </Style>
+
+        <Style Selector="Border.comparacion.cuadra Border.iconoComparacion">
+            <Setter Property="Background" Value="#16A34A"/>
+        </Style>
+
+        <Style Selector="Border.comparacion.sinCortes Border.iconoComparacion">
+            <Setter Property="Background" Value="#94A3B8"/>
+        </Style>
+
+        <Style Selector="TextBlock.tituloComparacion">
+            <Setter Property="Foreground" Value="#9F1239"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style Selector="Border.comparacion.cuadra TextBlock.tituloComparacion">
+            <Setter Property="Foreground" Value="#0B6B33"/>
+        </Style>
+
+        <Style Selector="Border.comparacion.sinCortes TextBlock.tituloComparacion">
+            <Setter Property="Foreground" Value="#334155"/>
+        </Style>
+
+        <Style Selector="Border.cifraComparacion">
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="#B3FFFFFF"/>
+        </Style>
+
+        <Style Selector="TextBlock.cifraEtiqueta">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="1"/>
+        </Style>
+
+        <Style Selector="TextBlock.cifraValor">
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,4,0,0"/>
+        </Style>
+
+        <Style Selector="Border.corteExterno">
+            <Setter Property="Padding" Value="14,10"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Background" Value="#CCFFFFFF"/>
+        </Style>
+
+        <!-- Chips de periodos rápidos -->
+        <Style Selector="Button.chip">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="CornerRadius" Value="999"/>
+            <Setter Property="Background" Value="#F4F6F8"/>
+            <Setter Property="BorderBrush" Value="#E6EAEE"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.chip:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#EAF7EF"/>
+            <Setter Property="BorderBrush" Value="#BFE6CD"/>
+            <Setter Property="Foreground" Value="#0B6B33"/>
+        </Style>
+
+        <Style Selector="Button.chip.activo /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#0B1220"/>
+            <Setter Property="BorderBrush" Value="#0B1220"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <!-- Botón Simular corte -->
+        <Style Selector="Button.simular">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Padding" Value="26,0"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22C55E"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+            <Setter Property="RenderTransform" Value="translateY(0px)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.simular /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 26 -6 #8022C55E"/>
+        </Style>
+
+        <Style Selector="Button.simular:pointerover">
+            <Setter Property="RenderTransform" Value="translateY(-2px)"/>
+        </Style>
+
+        <Style Selector="Button.simular:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#2BD268"/>
+                    <GradientStop Offset="1" Color="#11A84E"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.simular:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#CBD5E1"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BoxShadow" Value="none"/>
+        </Style>
+
+        <Style Selector="Border.tecla">
+            <Setter Property="Padding" Value="6,1"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Background" Value="#33FFFFFF"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <!-- Indicadores principales -->
+        <Style Selector="Border.kpi">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#EAEEF2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="22,20"/>
+            <Setter Property="BoxShadow" Value="0 1 2 0 #0A0F172A"/>
+            <Setter Property="RenderTransform" Value="translateY(0px)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.18"/>
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.18"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border.kpi:pointerover">
+            <Setter Property="RenderTransform" Value="translateY(-3px)"/>
+            <Setter Property="BoxShadow" Value="0 14 30 -12 #330F172A"/>
+        </Style>
+
+        <Style Selector="Border.iconoKpi">
+            <Setter Property="Width" Value="46"/>
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="CornerRadius" Value="14"/>
+        </Style>
+
+        <Style Selector="Border.iconoKpi PathIcon">
+            <Setter Property="Width" Value="22"/>
+            <Setter Property="Height" Value="22"/>
+        </Style>
+
+        <Style Selector="TextBlock.kpiEtiqueta">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="TextBlock.kpiValor">
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="-0.6"/>
+            <Setter Property="Margin" Value="0,14,0,2"/>
+        </Style>
+
+        <Style Selector="TextBlock.kpiDetalle">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <!-- Renglones de la composición -->
+        <Style Selector="Grid.renglon">
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <Style Selector="TextBlock.renglonEtiqueta">
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="TextBlock.renglonValor">
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="TextBlock.renglonValor.negativo">
+            <Setter Property="Foreground" Value="#C61F2B"/>
+        </Style>
+
+        <Style Selector="TextBlock.renglonValor.informativo">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+        </Style>
+
+        <Style Selector="Ellipse.punto">
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+        </Style>
+
+        <!-- Barras de formas de pago -->
+        <Style Selector="ProgressBar.porcentaje">
+            <Setter Property="Height" Value="10"/>
+            <Setter Property="MinHeight" Value="10"/>
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Minimum" Value="0"/>
+            <Setter Property="Maximum" Value="100"/>
+        </Style>
+
+        <!-- Barras de la gráfica: crecen desde abajo al aparecer -->
+        <Style Selector="Border.barraGrafica">
+            <Setter Property="CornerRadius" Value="6,6,2,2"/>
+            <Setter Property="VerticalAlignment" Value="Bottom"/>
+            <Setter Property="MaxWidth" Value="38"/>
+            <Setter Property="Margin" Value="3,0"/>
+            <Setter Property="RenderTransformOrigin" Value="50%,100%"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Offset="0" Color="#4ADE80"/>
+                    <GradientStop Offset="1" Color="#16A34A"/>
+                </LinearGradientBrush>
+            </Setter>
+            <Style.Animations>
+                <Animation Duration="0:0:0.7"
+                           FillMode="Forward"
+                           Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Border.barraGrafica.mejor">
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Offset="0" Color="#FDE047"/>
+                    <GradientStop Offset="1" Color="#E0A800"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border.barraGrafica:pointerover">
+            <Setter Property="Opacity" Value="0.8"/>
+        </Style>
+
+        <Style Selector="TextBlock.etiquetaBarra">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="TextBlock.etiquetaBarra.oculta">
+            <Setter Property="Opacity" Value="0"/>
+        </Style>
+
+        <!-- Simulaciones guardadas -->
+        <Style Selector="Button.simulacion">
+            <Setter Property="Padding" Value="14,12"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#EEF1F4"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.simulacion:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#CDE9D7"/>
+        </Style>
+
+        <Style Selector="Button.simulacion.actual /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F0FAF4"/>
+            <Setter Property="BorderBrush" Value="#16A34A"/>
+        </Style>
+
+        <Style Selector="Border.numeroSimulacion">
+            <Setter Property="Width" Value="46"/>
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="#EEF1F4"/>
+        </Style>
+
+        <Style Selector="Button.simulacion.actual Border.numeroSimulacion">
+            <Setter Property="Background" Value="#16A34A"/>
+        </Style>
+
+        <Style Selector="Border.numeroSimulacion TextBlock">
+            <Setter Property="Foreground" Value="#475569"/>
+        </Style>
+
+        <Style Selector="Button.simulacion.actual Border.numeroSimulacion TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style Selector="Border.diferencia">
+            <Setter Property="Padding" Value="9,3"/>
+            <Setter Property="CornerRadius" Value="999"/>
+            <Setter Property="Background" Value="#FEE2E2"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+        </Style>
+
+        <Style Selector="Border.diferencia TextBlock">
+            <Setter Property="Foreground" Value="#B91C1C"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style Selector="Border.diferencia.mayor">
+            <Setter Property="Background" Value="#EAF7EF"/>
+        </Style>
+
+        <Style Selector="Border.diferencia.mayor TextBlock">
+            <Setter Property="Foreground" Value="#0B6B33"/>
+        </Style>
+
+        <Style Selector="Button.limpiar">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Background" Value="#F4F6F8"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.limpiar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#FEF2F2"/>
+            <Setter Property="Foreground" Value="#B91C1C"/>
+        </Style>
+
+    </UserControl.Styles>
+
+
+    <ScrollViewer
+        VerticalScrollBarVisibility="Auto"
+        HorizontalScrollBarVisibility="Disabled">
+
+        <StackPanel
+            Margin="28,24,28,28"
+            Spacing="20">
+
+
+            <!-- ================================================= -->
+            <!-- BANNER                                            -->
+            <!-- ================================================= -->
+
+            <Border x:Name="BannerPruebaCorte"
+                    Classes="entrada"
+                    CornerRadius="24"
+                    ClipToBounds="True"
+                    Background="#050607"
+                    MinHeight="220">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+
+                <Panel>
+
+                    <Ellipse Width="520" Height="520"
+                             HorizontalAlignment="Left" VerticalAlignment="Top"
+                             Margin="-200,-260,0,0"
+                             IsHitTestVisible="False">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="#88F5C400"/>
+                                <GradientStop Offset="1" Color="#00F5C400"/>
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+
+                    <Ellipse Width="460" Height="460"
+                             HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                             Margin="200,0,0,-300"
+                             IsHitTestVisible="False">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="#6616A34A"/>
+                                <GradientStop Offset="1" Color="#0016A34A"/>
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+
+                    <Ellipse Width="520" Height="520"
+                             HorizontalAlignment="Right" VerticalAlignment="Top"
+                             Margin="0,-240,-180,0"
+                             IsHitTestVisible="False">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="#88C61F2B"/>
+                                <GradientStop Offset="1" Color="#00C61F2B"/>
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
+
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="28"
+                          Margin="34,30">
+
+                        <!-- TÍTULO -->
+                        <StackPanel Grid.Column="0"
+                                    MaxWidth="400"
+                                    VerticalAlignment="Center">
+
+                            <Border HorizontalAlignment="Left"
+                                    Padding="12,6"
+                                    CornerRadius="999"
+                                    Background="#1FF5C400"
+                                    BorderBrush="#40F5C400"
+                                    BorderThickness="1">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Ellipse Width="7" Height="7"
+                                             Fill="#F5C400"
+                                             VerticalAlignment="Center"/>
+                                    <TextBlock Text="MODO SIMULACIÓN  ·  NO AFECTA LA CAJA"
+                                               Foreground="#FDE68A"
+                                               FontSize="11"
+                                               FontWeight="SemiBold"
+                                               LetterSpacing="1.2"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock Text="Prueba de corte de caja"
+                                       Foreground="White"
+                                       FontSize="34"
+                                       FontWeight="Bold"
+                                       LetterSpacing="-0.8"
+                                       Margin="0,16,0,0"/>
+
+                            <TextBlock Text="Simula un corte en cualquier periodo con los tickets registrados y compara los resultados. No cierra turnos ni mueve dinero."
+                                       Foreground="#A8B4C2"
+                                       FontSize="14"
+                                       LineHeight="20"
+                                       TextWrapping="Wrap"
+                                       Margin="0,8,0,0"/>
+
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="22"
+                                        Margin="0,20,0,0">
+
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Width="15" Height="15" Foreground="#4ADE80"
+                                              Data="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
+                                    <TextBlock Text="Cualquier periodo"
+                                               Foreground="#D9E2EC" FontSize="12" FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <PathIcon Width="15" Height="15" Foreground="#FACC15"
+                                              Data="M10 18h5V5h-5v13zm-6 0h5V9H4v9zM16 5v13h5V5h-5z"/>
+                                    <TextBlock Text="Compara resultados"
+                                               Foreground="#D9E2EC" FontSize="12" FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                            </StackPanel>
+
+                        </StackPanel>
+
+                        <!-- ESCENA ANIMADA -->
+                        <controls:EscenaPruebaCorteAnimada x:Name="EscenaPruebaCorte"
+                                                           Grid.Column="1"
+                                                           MaxWidth="440"
+                                                           VerticalAlignment="Center"/>
+
+                        <!-- ÚLTIMO RESULTADO (vidrio) -->
+                        <Border Grid.Column="2"
+                                Width="320"
+                                VerticalAlignment="Center"
+                                Padding="24,22"
+                                CornerRadius="20"
+                                Background="#12FFFFFF"
+                                BorderBrush="#22FFFFFF"
+                                BorderThickness="1">
+                            <StackPanel>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <TextBlock Text="TOTAL SIMULADO"
+                                               Foreground="#A8B4C2"
+                                               FontSize="11"
+                                               FontWeight="Bold"
+                                               LetterSpacing="1.2"
+                                               VerticalAlignment="Center"/>
+                                    <Border Grid.Column="1"
+                                            Padding="8,3"
+                                            CornerRadius="999"
+                                            Background="#2622C55E"
+                                            IsVisible="{Binding TieneResultado}">
+                                        <TextBlock Foreground="#4ADE80"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   LetterSpacing="0.8">
+                                            <Run Text="#"/><Run Text="{Binding NumeroSimulacion}"/>
+                                        </TextBlock>
+                                    </Border>
+                                </Grid>
+
+                                <TextBlock Text="{Binding TotalVentasTexto}"
+                                           Foreground="White"
+                                           FontSize="34"
+                                           FontWeight="Bold"
+                                           LetterSpacing="-1"
+                                           Margin="0,6,0,4"/>
+
+                                <TextBlock Text="{Binding RangoTexto}"
+                                           Foreground="#D9E2EC"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           TextWrapping="Wrap"/>
+
+                                <Border Height="1" Background="#1FFFFFFF" Margin="0,14"/>
+
+                                <Grid ColumnDefinitions="*,*">
+                                    <StackPanel Spacing="2">
+                                        <TextBlock Text="TICKETS"
+                                                   Foreground="#7F8C9B"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   LetterSpacing="1.2"/>
+                                        <TextBlock Text="{Binding TicketsTexto}"
+                                                   Foreground="White"
+                                                   FontSize="16"
+                                                   FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Spacing="2">
+                                        <TextBlock Text="A CRÉDITO"
+                                                   Foreground="#7F8C9B"
+                                                   FontSize="10"
+                                                   FontWeight="Bold"
+                                                   LetterSpacing="1.2"/>
+                                        <TextBlock Text="{Binding VentasCreditoTexto}"
+                                                   Foreground="White"
+                                                   FontSize="16"
+                                                   FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                    </Grid>
+
+                </Panel>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- PERIODO A SIMULAR                                 -->
+            <!-- ================================================= -->
+
+            <Border Classes="seccion entrada">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+
+                <StackPanel Spacing="18">
+
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                        <Border Width="46" Height="46"
+                                CornerRadius="14"
+                                Background="#EAF7EF">
+                            <PathIcon Width="22" Height="22"
+                                      Foreground="#16A34A"
+                                      Data="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Classes="tituloSeccion" Text="Caja y periodo a simular"/>
+                            <TextBlock Classes="subtituloSeccion"
+                                       Text="Elige la caja y el periodo. Cada simulación se guarda abajo para compararla."/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Caja -->
+                    <StackPanel Spacing="7">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="etiquetaCampo" Text="Caja"/>
+                            <StackPanel Grid.Column="1"
+                                        Orientation="Horizontal"
+                                        Spacing="6"
+                                        IsVisible="{Binding CargandoCajas}">
+                                <ProgressBar IsIndeterminate="True"
+                                             Width="60" Height="3" MinHeight="3"
+                                             Foreground="#16A34A" Background="#EAF7EF"
+                                             VerticalAlignment="Center"/>
+                                <TextBlock Text="Cargando cajas…"
+                                           Foreground="#94A3B8" FontSize="12"/>
+                            </StackPanel>
+                        </Grid>
+                        <ComboBox Classes="campo"
+                                  ItemsSource="{Binding Cajas}"
+                                  SelectedItem="{Binding CajaSeleccionada}"
+                                  PlaceholderText="Selecciona una caja">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="vm:CajaSimulacionItem">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                        <Border Width="32" Height="32"
+                                                CornerRadius="10"
+                                                Background="#EAF7EF"
+                                                VerticalAlignment="Center">
+                                            <PathIcon Width="16" Height="16"
+                                                      Foreground="#16A34A"
+                                                      Data="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                                            <TextBlock Text="{Binding Nombre}"
+                                                       Foreground="#0F172A"
+                                                       FontSize="14"
+                                                       FontWeight="SemiBold"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="{Binding Detalle}"
+                                                       Foreground="#94A3B8"
+                                                       FontSize="11"
+                                                       TextTrimming="CharacterEllipsis"/>
+                                        </StackPanel>
+                                        <Border Grid.Column="2"
+                                                Classes="etiquetaExterna"
+                                                IsVisible="{Binding EsExterna}">
+                                            <TextBlock Text="TICKETS REALES · POS EXTERNO"/>
+                                        </Border>
+                                    </Grid>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Periodos rápidos -->
+                    <WrapPanel Orientation="Horizontal">
+                        <Button Classes="chip" Classes.activo="{Binding EsHoy}" Margin="0,0,8,8"
+                                Command="{Binding AplicarRangoCommand}" CommandParameter="Hoy"
+                                Content="Hoy"/>
+                        <Button Classes="chip" Classes.activo="{Binding EsSemana}" Margin="0,0,8,8"
+                                Command="{Binding AplicarRangoCommand}" CommandParameter="Semana"
+                                Content="Esta semana"/>
+                        <Button Classes="chip" Classes.activo="{Binding EsMes}" Margin="0,0,8,8"
+                                Command="{Binding AplicarRangoCommand}" CommandParameter="Mes"
+                                Content="Este mes"/>
+                        <Button Classes="chip" Classes.activo="{Binding EsMesAnterior}" Margin="0,0,8,8"
+                                Command="{Binding AplicarRangoCommand}" CommandParameter="MesAnterior"
+                                Content="Mes anterior"/>
+                        <Button Classes="chip" Classes.activo="{Binding EsTrimestre}" Margin="0,0,8,8"
+                                Command="{Binding AplicarRangoCommand}" CommandParameter="Trimestre">
+                            <TextBlock Text="Últimos 3 meses"/>
+                        </Button>
+                        <Button Classes="chip" Classes.activo="{Binding EsAnio}" Margin="0,0,8,8"
+                                Command="{Binding AplicarRangoCommand}" CommandParameter="Anio"
+                                Content="Este año"/>
+                    </WrapPanel>
+
+                    <!-- Fechas + simular -->
+                    <Grid ColumnDefinitions="*,Auto,*,Auto"
+                          ColumnSpacing="14">
+
+                        <StackPanel Grid.Column="0" Spacing="7">
+                            <TextBlock Classes="etiquetaCampo" Text="Desde"/>
+                            <DatePicker Classes="campo"
+                                        SelectedDate="{Binding FechaDesde}"
+                                        MinWidth="240"/>
+                        </StackPanel>
+
+                        <PathIcon Grid.Column="1"
+                                  Width="18" Height="18"
+                                  Margin="0,0,0,15"
+                                  VerticalAlignment="Bottom"
+                                  Foreground="#94A3B8"
+                                  Data="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+
+                        <StackPanel Grid.Column="2" Spacing="7">
+                            <TextBlock Classes="etiquetaCampo" Text="Hasta"/>
+                            <DatePicker Classes="campo"
+                                        SelectedDate="{Binding FechaHasta}"
+                                        MinWidth="240"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="3"
+                                Classes="simular"
+                                MinWidth="230"
+                                VerticalAlignment="Bottom"
+                                IsEnabled="{Binding PuedeSimular}"
+                                Command="{Binding SimularCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <PathIcon Width="18" Height="18"
+                                          Foreground="White"
+                                          Data="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/>
+                                <TextBlock Text="Simular corte"
+                                           VerticalAlignment="Center"/>
+                                <Border Classes="tecla">
+                                    <TextBlock Text="F5"/>
+                                </Border>
+                            </StackPanel>
+                        </Button>
+
+                    </Grid>
+
+                    <!-- Error de fechas -->
+                    <Border Padding="14,10"
+                            CornerRadius="12"
+                            Background="#FEF2F2"
+                            BorderBrush="#FECACA"
+                            BorderThickness="1"
+                            IsVisible="{Binding MensajeError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <PathIcon Width="16" Height="16"
+                                      Foreground="#C61F2B"
+                                      Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                            <TextBlock Text="{Binding MensajeError}"
+                                       Foreground="#9F1239"
+                                       FontSize="13"
+                                       VerticalAlignment="Center"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- SIMULANDO                                         -->
+            <!-- ================================================= -->
+
+            <Border Classes="entrada"
+                    CornerRadius="20"
+                    Background="#0B1220"
+                    Padding="28,22"
+                    IsVisible="{Binding EstaSimulando}">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="26">
+
+                    <controls:EscenaPruebaCorteAnimada Width="360"
+                                                       VerticalAlignment="Center"/>
+
+                    <StackPanel Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Spacing="8">
+                        <TextBlock Text="Simulando el corte…"
+                                   Foreground="White"
+                                   FontSize="22"
+                                   FontWeight="Bold"/>
+                        <TextBlock Text="{Binding MensajeProceso}"
+                                   Foreground="#A8B4C2"
+                                   FontSize="14"/>
+                        <ProgressBar IsIndeterminate="True"
+                                     Height="4"
+                                     MinHeight="4"
+                                     MaxWidth="360"
+                                     HorizontalAlignment="Left"
+                                     Margin="0,8,0,0"
+                                     Foreground="#22C55E"
+                                     Background="#1FFFFFFF"/>
+                    </StackPanel>
+
+                </Grid>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- SIN RESULTADO TODAVÍA                             -->
+            <!-- ================================================= -->
+
+            <Border Classes="seccion"
+                    Padding="24,40"
+                    IsVisible="{Binding MostrarVacio}">
+                <StackPanel HorizontalAlignment="Center" Spacing="10">
+                    <Border Width="76" Height="76"
+                            CornerRadius="24"
+                            Background="#EAF7EF"
+                            HorizontalAlignment="Center">
+                        <PathIcon Width="32" Height="32"
+                                  Foreground="#16A34A"
+                                  Data="M19.8 18.4L14 10.67V6.5l1.35-1.69c.26-.33.03-.81-.39-.81H9.04c-.42 0-.65.48-.39.81L10 6.5v4.17L4.2 18.4c-.49.66-.02 1.6.8 1.6h14c.82 0 1.29-.94.8-1.6z"/>
+                    </Border>
+                    <TextBlock Text="Elige la caja, el periodo y presiona «Simular corte»"
+                               Foreground="#0B1220"
+                               FontSize="17"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               Margin="0,6,0,0"/>
+                    <TextBlock Text="Por ejemplo, simula agosto – septiembre y después agosto – noviembre para comparar cuánto se vendió, cuánto fue a crédito y si cuadra con la caja externa."
+                               Foreground="#94A3B8"
+                               FontSize="13"
+                               TextAlignment="Center"
+                               TextWrapping="Wrap"
+                               MaxWidth="520"/>
+                </StackPanel>
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- RESULTADO                                         -->
+            <!-- ================================================= -->
+
+            <StackPanel Spacing="20"
+                        IsVisible="{Binding MostrarResultado}">
+
+                <!-- Encabezado del resultado -->
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                    <StackPanel Spacing="4" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <TextBlock Text="Resultado de la simulación"
+                                       Foreground="#0B1220"
+                                       FontSize="20"
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center"/>
+                            <Border Padding="10,4"
+                                    CornerRadius="999"
+                                    Background="#FEF7DC"
+                                    VerticalAlignment="Center">
+                                <TextBlock Foreground="#92600A"
+                                           FontSize="11"
+                                           FontWeight="Bold"
+                                           LetterSpacing="0.8">
+                                    <Run Text="SIMULACIÓN #"/><Run Text="{Binding NumeroSimulacion}"/>
+                                </TextBlock>
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Foreground="#64748B" FontSize="13">
+                            <Run Text="{Binding CajaTexto}" FontWeight="SemiBold" Foreground="#334155"/><Run Text="  ·  "/><Run Text="{Binding RangoTexto}" FontWeight="SemiBold" Foreground="#334155"/><Run Text="  ·  "/><Run Text="{Binding DiasTexto}"/><Run Text="  ·  "/><Run Text="{Binding TurnosTexto}"/>
+                        </TextBlock>
+                    </StackPanel>
+                </Grid>
+
+                <Border Padding="14,10"
+                        CornerRadius="12"
+                        Background="#EFF6FF"
+                        BorderBrush="#BFDBFE"
+                        BorderThickness="1"
+                        IsVisible="{Binding AvisoFuturo, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <PathIcon Width="16" Height="16"
+                                  Foreground="#2563EB"
+                                  Data="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                        <TextBlock Text="{Binding AvisoFuturo}"
+                                   Foreground="#1E40AF"
+                                   FontSize="12"
+                                   VerticalAlignment="Center"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
+
+
+                <!-- ¿CUADRA CON LA CAJA EXTERNA? -->
+                <Border Classes="comparacion entrada"
+                        Classes.cuadra="{Binding ComparacionCuadra}"
+                        Classes.sinCortes="{Binding ComparacionSinCortes}"
+                        IsVisible="{Binding TieneComparacion}">
+                    <Border.RenderTransform>
+                        <TranslateTransform/>
+                    </Border.RenderTransform>
+
+                    <Grid ColumnDefinitions="*,1.1*" ColumnSpacing="24">
+
+                        <StackPanel Spacing="16">
+
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
+                                <Border Classes="iconoComparacion">
+                                    <Panel>
+                                        <PathIcon Width="28" Height="28"
+                                                  Foreground="White"
+                                                  IsVisible="{Binding ComparacionCuadra}"
+                                                  Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                        <PathIcon Width="28" Height="28"
+                                                  Foreground="White"
+                                                  IsVisible="{Binding !ComparacionCuadra}"
+                                                  Data="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                                    </Panel>
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                    <TextBlock Classes="tituloComparacion" Text="{Binding ComparacionTitulo}"/>
+                                    <TextBlock Text="{Binding ComparacionDetalle}"
+                                               Foreground="#475569"
+                                               FontSize="13"
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10"
+                                  IsVisible="{Binding !ComparacionSinCortes}">
+                                <Border Classes="cifraComparacion">
+                                    <StackPanel>
+                                        <TextBlock Classes="cifraEtiqueta" Text="PUNTO DE VENTA"/>
+                                        <TextBlock Classes="cifraValor" Text="{Binding EfectivoSistemaTexto}"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="1" Classes="cifraComparacion">
+                                    <StackPanel>
+                                        <TextBlock Classes="cifraEtiqueta" Text="CAJA EXTERNA"/>
+                                        <TextBlock Classes="cifraValor" Text="{Binding EfectivoCajaExternaTexto}"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border Grid.Column="2" Classes="cifraComparacion">
+                                    <StackPanel>
+                                        <TextBlock Classes="cifraEtiqueta" Text="DIFERENCIA"/>
+                                        <TextBlock Classes="cifraValor" Text="{Binding DiferenciaExternaTexto}"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                        </StackPanel>
+
+                        <!-- Cortes de la caja externa en el periodo -->
+                        <StackPanel Grid.Column="1"
+                                    Spacing="8"
+                                    IsVisible="{Binding !ComparacionSinCortes}">
+                            <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="12" Margin="14,0">
+                                <TextBlock Classes="cifraEtiqueta" Text="CORTE"/>
+                                <TextBlock Grid.Column="1" Classes="cifraEtiqueta" Text="PUNTO DE VENTA" Width="104" TextAlignment="Right"/>
+                                <TextBlock Grid.Column="2" Classes="cifraEtiqueta" Text="CAJA EXTERNA" Width="104" TextAlignment="Right"/>
+                                <TextBlock Grid.Column="3" Classes="cifraEtiqueta" Text="DIFERENCIA" Width="104" TextAlignment="Right"/>
+                            </Grid>
+                            <ScrollViewer MaxHeight="190"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled">
+                                <ItemsControl ItemsSource="{Binding CortesExternos}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:CorteExternoItem">
+                                            <Border Classes="corteExterno">
+                                                <Grid ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="12">
+                                                    <StackPanel VerticalAlignment="Center" Spacing="1">
+                                                        <TextBlock Text="{Binding Folio}"
+                                                                   Foreground="#0F172A"
+                                                                   FontSize="13"
+                                                                   FontWeight="SemiBold"
+                                                                   TextTrimming="CharacterEllipsis"/>
+                                                        <TextBlock Text="{Binding Fecha}"
+                                                                   Foreground="#94A3B8"
+                                                                   FontSize="11"/>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Column="1" Width="104" TextAlignment="Right"
+                                                               VerticalAlignment="Center"
+                                                               Foreground="#334155" FontSize="13"
+                                                               Text="{Binding EfectivoSistemaTexto}"/>
+                                                    <TextBlock Grid.Column="2" Width="104" TextAlignment="Right"
+                                                               VerticalAlignment="Center"
+                                                               Foreground="#334155" FontSize="13"
+                                                               Text="{Binding EfectivoCajaExternaTexto}"/>
+                                                    <Border Grid.Column="3" Width="104"
+                                                            Classes="diferencia"
+                                                            Classes.mayor="{Binding Cuadra}"
+                                                            VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding DiferenciaTexto}"
+                                                                   HorizontalAlignment="Center"/>
+                                                    </Border>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </StackPanel>
+
+                    </Grid>
+
+                </Border>
+
+
+                <!-- INDICADORES -->
+                <Grid ColumnDefinitions="*,*,*,*"
+                      ColumnSpacing="16">
+
+                    <Border Grid.Column="0" Classes="kpi">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Classes="kpiEtiqueta" Text="Ventas totales"/>
+                                <Border Grid.Column="1" Classes="iconoKpi" Background="#EAF7EF">
+                                    <PathIcon Foreground="#16A34A"
+                                              Data="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock Classes="kpiValor" Text="{Binding TotalVentasTexto}"/>
+                            <TextBlock Classes="kpiDetalle" Text="Todas las formas de pago"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Classes="kpi">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Classes="kpiEtiqueta" Text="Tickets"/>
+                                <Border Grid.Column="1" Classes="iconoKpi" Background="#FEF7DC">
+                                    <PathIcon Foreground="#B88A00"
+                                              Data="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock Classes="kpiValor" Text="{Binding TicketsTexto}"/>
+                            <TextBlock Classes="kpiDetalle" Text="Ventas finalizadas en el periodo"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="2" Classes="kpi">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Classes="kpiEtiqueta" Text="Ticket promedio"/>
+                                <Border Grid.Column="1" Classes="iconoKpi" Background="#EAF1FE">
+                                    <PathIcon Foreground="#2563EB"
+                                              Data="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock Classes="kpiValor" Text="{Binding TicketPromedioTexto}"/>
+                            <TextBlock Classes="kpiDetalle" Text="Importe medio por venta"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="3" Classes="kpi">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Classes="kpiEtiqueta" Text="Ventas a crédito"/>
+                                <Border Grid.Column="1" Classes="iconoKpi" Background="#F1EEFE">
+                                    <PathIcon Foreground="#6D4AE0"
+                                              Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                                </Border>
+                            </Grid>
+                            <TextBlock Classes="kpiValor" Text="{Binding VentasCreditoTexto}"/>
+                            <TextBlock Classes="kpiDetalle" Text="{Binding TicketsCreditoTexto}"/>
+                        </StackPanel>
+                    </Border>
+
+                </Grid>
+
+
+                <!-- FORMAS DE PAGO + GRÁFICA -->
+                <Grid ColumnDefinitions="*,1.35*"
+                      ColumnSpacing="16">
+
+                    <Border Grid.Column="0" Classes="seccion">
+                        <StackPanel Spacing="18">
+
+                            <StackPanel Spacing="2">
+                                <TextBlock Classes="tituloSeccion" Text="Formas de pago"/>
+                                <TextBlock Classes="subtituloSeccion" Text="Cómo se cobró el total del periodo"/>
+                            </StackPanel>
+
+                            <ItemsControl ItemsSource="{Binding FormasPago}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:FormaPagoSimuladaItem">
+                                        <StackPanel Spacing="8" Margin="0,0,0,16">
+                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
+                                                <Ellipse Width="10" Height="10"
+                                                         Fill="{Binding Color}"
+                                                         VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Spacing="1">
+                                                    <TextBlock Text="{Binding Nombre}"
+                                                               Foreground="#0F172A"
+                                                               FontSize="14"
+                                                               FontWeight="SemiBold"/>
+                                                    <TextBlock Foreground="#94A3B8" FontSize="12">
+                                                        <Run Text="{Binding TicketsTexto}"/><Run Text="  ·  "/><Run Text="{Binding PorcentajeTexto}"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="2"
+                                                           Text="{Binding MontoTexto}"
+                                                           Foreground="#0F172A"
+                                                           FontSize="16"
+                                                           FontWeight="Bold"
+                                                           VerticalAlignment="Center"/>
+                                            </Grid>
+                                            <ProgressBar Classes="porcentaje"
+                                                         Value="{Binding Porcentaje}"
+                                                         Foreground="{Binding Color}"
+                                                         Background="{Binding Fondo}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Classes="seccion">
+                        <Grid RowDefinitions="Auto,*" RowSpacing="18">
+
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Classes="tituloSeccion" Text="{Binding TituloGrafica}"/>
+                                    <TextBlock Classes="subtituloSeccion" Text="Pasa el cursor sobre una barra para ver el importe"/>
+                                </StackPanel>
+                                <Border Grid.Column="1"
+                                        Padding="10,5"
+                                        CornerRadius="999"
+                                        Background="#FEF7DC"
+                                        VerticalAlignment="Top">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <PathIcon Width="12" Height="12"
+                                                  Foreground="#B88A00"
+                                                  Data="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                        <TextBlock Text="{Binding MejorPeriodoTexto}"
+                                                   Foreground="#92600A"
+                                                   FontSize="11"
+                                                   FontWeight="Bold"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <ItemsControl Grid.Row="1"
+                                          ItemsSource="{Binding Barras}"
+                                          MinHeight="200">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="1"/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:BarraPeriodoItem">
+                                        <Grid RowDefinitions="*,Auto" RowSpacing="8">
+                                            <Border Classes="barraGrafica"
+                                                    Classes.mejor="{Binding EsMejor}"
+                                                    Height="{Binding AltoBarra}"
+                                                    ToolTip.Tip="{Binding Tooltip}">
+                                                <Border.RenderTransform>
+                                                    <ScaleTransform/>
+                                                </Border.RenderTransform>
+                                            </Border>
+                                            <TextBlock Grid.Row="1"
+                                                       Classes="etiquetaBarra"
+                                                       Classes.oculta="{Binding !MostrarEtiqueta}"
+                                                       Text="{Binding Etiqueta}"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                        </Grid>
+                    </Border>
+
+                </Grid>
+
+
+                <!-- COMPOSICIÓN + COMPARAR SIMULACIONES -->
+                <Grid ColumnDefinitions="*,1.25*"
+                      ColumnSpacing="16">
+
+                    <Border x:Name="ComposicionSimuladaCard"
+                            Grid.Column="0"
+                            Classes="seccion"
+                            VerticalAlignment="Top">
+
+                        <StackPanel Spacing="18">
+
+                            <StackPanel Spacing="2">
+                                <TextBlock Classes="tituloSeccion" Text="Efectivo del periodo"/>
+                                <TextBlock Classes="subtituloSeccion" Text="Movimientos de caja, con la misma cuenta que el cierre de turno"/>
+                            </StackPanel>
+
+                            <StackPanel>
+
+                                <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                    <Ellipse Classes="punto" Fill="#94A3B8"/>
+                                    <TextBlock Grid.Column="1" Classes="renglonEtiqueta" Text="Fondo inicial de los turnos"/>
+                                    <TextBlock Grid.Column="2" Classes="renglonValor" Text="{Binding FondoInicialTexto}"/>
+                                </Grid>
+
+                                <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                    <Ellipse Classes="punto" Fill="#16A34A"/>
+                                    <TextBlock Grid.Column="1" Classes="renglonEtiqueta" Text="Ventas en efectivo"/>
+                                    <TextBlock Grid.Column="2" Classes="renglonValor" Text="{Binding VentasEfectivoTexto}"/>
+                                </Grid>
+
+                                <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                    <Ellipse Classes="punto" Fill="#16A34A"/>
+                                    <TextBlock Grid.Column="1" Classes="renglonEtiqueta" Text="Ingresos (abonos y entradas)"/>
+                                    <TextBlock Grid.Column="2" Classes="renglonValor" Text="{Binding IngresosTexto}"/>
+                                </Grid>
+
+                                <Border Height="1" Background="#EEF1F4" Margin="0,2,0,14"/>
+
+                                <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                    <Ellipse Classes="punto" Fill="#E11D48"/>
+                                    <TextBlock Grid.Column="1" Classes="renglonEtiqueta" Text="Egresos"/>
+                                    <TextBlock Grid.Column="2" Classes="renglonValor negativo" Text="{Binding EgresosTexto}"/>
+                                </Grid>
+
+                                <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                    <Ellipse Classes="punto" Fill="#E11D48"/>
+                                    <TextBlock Grid.Column="1" Classes="renglonEtiqueta" Text="Retiros"/>
+                                    <TextBlock Grid.Column="2" Classes="renglonValor negativo" Text="{Binding RetirosTexto}"/>
+                                </Grid>
+
+                                <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                    <Ellipse Classes="punto" Fill="#E11D48"/>
+                                    <TextBlock Grid.Column="1" Classes="renglonEtiqueta" Text="Devoluciones"/>
+                                    <TextBlock Grid.Column="2" Classes="renglonValor negativo" Text="{Binding DevolucionesTexto}"/>
+                                </Grid>
+
+                                <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                    <Ellipse Classes="punto" Fill="#CBD5E1"/>
+                                    <StackPanel Grid.Column="1" Spacing="1">
+                                        <TextBlock Classes="renglonEtiqueta" Text="Ventas canceladas"/>
+                                        <TextBlock Foreground="#94A3B8" FontSize="11">
+                                            <Run Text="{Binding CancelacionesDetalle}"/><Run Text=" · no se suman al total"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Classes="renglonValor informativo" Text="{Binding CancelacionesTexto}"/>
+                                </Grid>
+
+                            </StackPanel>
+
+                            <Border Padding="18,16"
+                                    CornerRadius="16"
+                                    BorderBrush="#BFE6CD"
+                                    BorderThickness="1">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                        <GradientStop Offset="0" Color="#F0FAF4"/>
+                                        <GradientStop Offset="1" Color="#E0F4E8"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                                        <TextBlock Text="Efectivo esperado"
+                                                   Foreground="#0B6B33"
+                                                   FontSize="16"
+                                                   FontWeight="Bold"/>
+                                        <TextBlock Text="Fondo + entradas − salidas"
+                                                   Foreground="#4B6A57"
+                                                   FontSize="12"/>
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding EfectivoEsperadoTexto}"
+                                               Foreground="#0B6B33"
+                                               FontSize="26"
+                                               FontWeight="Bold"
+                                               LetterSpacing="-0.8"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+
+                        </StackPanel>
+
+                    </Border>
+
+
+                    <!-- COMPARAR SIMULACIONES -->
+                    <Border Grid.Column="1"
+                            Classes="seccion"
+                            VerticalAlignment="Top"
+                            Height="{Binding #ComposicionSimuladaCard.Bounds.Height}">
+
+                        <Grid RowDefinitions="Auto,*"
+                              RowSpacing="14">
+
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Classes="tituloSeccion" Text="Comparar simulaciones"/>
+                                    <TextBlock Classes="subtituloSeccion" Text="Toca una simulación para volver a verla"/>
+                                </StackPanel>
+                                <Button Grid.Column="1"
+                                        Classes="limpiar"
+                                        VerticalAlignment="Center"
+                                        Command="{Binding LimpiarSimulacionesCommand}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <PathIcon Width="14" Height="14"
+                                                  Data="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                                        <TextBlock Text="Limpiar" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+
+                            <ScrollViewer Grid.Row="1"
+                                          VerticalScrollBarVisibility="Auto"
+                                          HorizontalScrollBarVisibility="Disabled">
+
+                                <ItemsControl ItemsSource="{Binding Simulaciones}"
+                                              Margin="0,0,10,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:SimulacionItem">
+
+                                            <Button Classes="simulacion"
+                                                    Classes.actual="{Binding EsActual}"
+                                                    Command="{Binding $parent[ItemsControl].((vm:PruebaCorteViewModel)DataContext).VolverASimularCommand}"
+                                                    CommandParameter="{Binding}">
+
+                                                <Grid ColumnDefinitions="Auto,*,Auto"
+                                                      ColumnSpacing="14">
+
+                                                    <Border Classes="numeroSimulacion"
+                                                            VerticalAlignment="Center">
+                                                        <TextBlock FontSize="16"
+                                                                   FontWeight="Bold"
+                                                                   HorizontalAlignment="Center"
+                                                                   VerticalAlignment="Center">
+                                                            <Run Text="#"/><Run Text="{Binding Numero}"/>
+                                                        </TextBlock>
+                                                    </Border>
+
+                                                    <StackPanel Grid.Column="1"
+                                                                VerticalAlignment="Center"
+                                                                Spacing="3">
+                                                        <TextBlock Text="{Binding RangoTexto}"
+                                                                   Foreground="#0F172A"
+                                                                   FontSize="14"
+                                                                   FontWeight="SemiBold"
+                                                                   TextTrimming="CharacterEllipsis"/>
+                                                        <TextBlock Foreground="#64748B"
+                                                                   FontSize="12"
+                                                                   TextTrimming="CharacterEllipsis">
+                                                            <Run Text="{Binding CajaTexto}"/><Run Text="  ·  "/><Run Text="{Binding DiasTexto}"/><Run Text="  ·  "/><Run Text="{Binding TicketsTexto}"/><Run Text="  ·  "/><Run Text="{Binding CreditoTexto}"/>
+                                                        </TextBlock>
+                                                    </StackPanel>
+
+                                                    <StackPanel Grid.Column="2"
+                                                                VerticalAlignment="Center"
+                                                                Spacing="4">
+                                                        <TextBlock Text="{Binding TotalTexto}"
+                                                                   Foreground="#0F172A"
+                                                                   FontSize="16"
+                                                                   FontWeight="Bold"
+                                                                   HorizontalAlignment="Right"/>
+                                                        <Border Classes="diferencia"
+                                                                Classes.mayor="{Binding EsMayor}"
+                                                                IsVisible="{Binding TieneComparacion}">
+                                                            <TextBlock Text="{Binding DiferenciaTexto}"/>
+                                                        </Border>
+                                                    </StackPanel>
+
+                                                </Grid>
+
+                                            </Button>
+
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                            </ScrollViewer>
+
+                        </Grid>
+
+                    </Border>
+
+                </Grid>
+
+            </StackPanel>
+
+        </StackPanel>
+
+    </ScrollViewer>
+
+</UserControl>

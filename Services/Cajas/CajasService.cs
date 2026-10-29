@@ -20,17 +20,34 @@ public class CajasService
     // OBTENER CAJAS
     // =====================================================
 
+    // incluirExternas: agrega las cajas del POS externo (solo para
+    // la Prueba de corte; en ellas no se vende).
     public async Task<CajasResponse> ObtenerCajasAsync(
-        int? idUnidadOperativa = null)
+        int? idUnidadOperativa = null,
+        bool incluirExternas = false)
     {
         try
         {
             var endpoint = "api/pos/cajas";
 
+            var parametros =
+                new System.Collections.Generic.List<string>();
+
             if (idUnidadOperativa.HasValue)
             {
+                parametros.Add(
+                    $"id_unidad_operativa={idUnidadOperativa.Value}");
+            }
+
+            if (incluirExternas)
+            {
+                parametros.Add("incluir_externas=1");
+            }
+
+            if (parametros.Count > 0)
+            {
                 endpoint +=
-                    $"?id_unidad_operativa={idUnidadOperativa.Value}";
+                    "?" + string.Join("&", parametros);
             }
 
             var response =

@@ -48,6 +48,11 @@
             <cortesViews:CortesView/>
         </DataTemplate>
 
+        <!-- PRUEBA DE CORTE (SIMULACIÓN) -->
+        <DataTemplate DataType="cortesViewModels:PruebaCorteViewModel">
+            <cortesViews:PruebaCorteView/>
+        </DataTemplate>
+
         <!-- ================================================= -->
         <!-- CANCELACIONES                                    -->
         <!-- ================================================= -->

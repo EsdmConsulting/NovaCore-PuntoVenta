@@ -32,6 +32,8 @@ public partial class MainViewModel : ViewModelBase
 
     public CortesViewModel CortesModulo { get; }
 
+    public PruebaCorteViewModel PruebaCorteModulo { get; }
+
     public CancelacionesViewModel CancelacionesModulo { get; }
 
     public ReimpresionViewModel ReimpresionModulo { get; }
@@ -88,6 +90,10 @@ public partial class MainViewModel : ViewModelBase
 
                 OnPropertyChanged(
                     nameof(EsCortes)
+                );
+
+                OnPropertyChanged(
+                    nameof(EsPruebaCorte)
                 );
 
                 OnPropertyChanged(
@@ -228,6 +234,10 @@ public partial class MainViewModel : ViewModelBase
         VistaActual is CortesViewModel;
 
 
+    public bool EsPruebaCorte =>
+        VistaActual is PruebaCorteViewModel;
+
+
     public bool EsCancelaciones =>
         VistaActual is CancelacionesViewModel;
 
@@ -260,6 +270,10 @@ public partial class MainViewModel : ViewModelBase
 
         CortesModulo =
             new CortesViewModel();
+
+
+        PruebaCorteModulo =
+            new PruebaCorteViewModel();
 
 
         CancelacionesModulo =
@@ -464,6 +478,24 @@ public partial class MainViewModel : ViewModelBase
 
                 SubtituloPagina =
                     "Consulta aperturas, cierres y resultados de caja";
+
+                break;
+
+
+            // =================================================
+            // PRUEBA DE CORTE (SIMULACIÓN)
+            // =================================================
+
+            case "PruebaCorte":
+
+                VistaActual =
+                    PruebaCorteModulo;
+
+                TituloPagina =
+                    "Prueba de corte";
+
+                SubtituloPagina =
+                    "Simula cortes de caja en cualquier periodo sin afectar la caja";
 
                 break;
 
