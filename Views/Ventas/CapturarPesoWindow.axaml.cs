@@ -89,6 +89,26 @@ public partial class CapturarPesoWindow : Window
                 ? $"Precio por gramo: ${precioUnitario:N4}"
                 : $"Precio por kg: ${precioUnitario:N2}";
 
+        var sufijo = this.FindControl<TextBlock>("UnidadSufijoTextBlock");
+        if (sufijo != null)
+            sufijo.Text = esGramos ? "g" : "kg";
+
+
+        // Pesos rápidos según la unidad
+        var rapidos = esGramos
+            ? new[] { ("100 g", "100"), ("250 g", "250"), ("500 g", "500"), ("1000 g", "1000") }
+            : new[] { ("¼ kg", "0.250"), ("½ kg", "0.500"), ("1 kg", "1"), ("2 kg", "2") };
+
+        for (var i = 0; i < rapidos.Length; i++)
+        {
+            var boton = this.FindControl<Button>($"Rapido{i + 1}Button");
+            if (boton == null)
+                continue;
+
+            boton.Content = rapidos[i].Item1;
+            boton.Tag = rapidos[i].Item2;
+        }
+
 
         // Enfocar el input al abrirse
         Opened += (_, _) =>
@@ -103,19 +123,45 @@ public partial class CapturarPesoWindow : Window
 
 
     // =========================================================
+    // PESO RÁPIDO
+    // =========================================================
+
+    private void PesoRapido_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: string valor } || _pesoTextBox == null)
+            return;
+
+        _pesoTextBox.Text = valor;
+        _pesoTextBox.Focus();
+        _pesoTextBox.CaretIndex = valor.Length;
+    }
+
+
+    // =========================================================
+    // LECTURA DEL PESO (acepta punto o coma decimal)
+    // =========================================================
+
+    private bool IntentarLeerPeso(out decimal peso)
+    {
+        var texto = (_pesoTextBox?.Text?.Trim() ?? string.Empty)
+            .Replace(',', '.');
+
+        return decimal.TryParse(
+                   texto,
+                   NumberStyles.AllowDecimalPoint,
+                   CultureInfo.InvariantCulture,
+                   out peso)
+               && peso > 0m;
+    }
+
+
+    // =========================================================
     // CAMBIO DE TEXTO — CALCULAR IMPORTE
     // =========================================================
 
     private void PesoTextBox_TextChanged(object? sender, TextChangedEventArgs e)
     {
-        var texto = _pesoTextBox?.Text?.Trim() ?? string.Empty;
-
-        if (decimal.TryParse(
-                texto,
-                NumberStyles.AllowDecimalPoint,
-                CultureInfo.InvariantCulture,
-                out var peso)
-            && peso > 0m)
+        if (IntentarLeerPeso(out var peso))
         {
             var importe = _precioUnitario * peso;
 
@@ -172,14 +218,7 @@ public partial class CapturarPesoWindow : Window
 
     private void TryConfirmar()
     {
-        var texto = _pesoTextBox?.Text?.Trim() ?? string.Empty;
-
-        if (!decimal.TryParse(
-                texto,
-                NumberStyles.AllowDecimalPoint,
-                CultureInfo.InvariantCulture,
-                out var peso)
-            || peso <= 0m)
+        if (!IntentarLeerPeso(out var peso))
         {
             return;
         }

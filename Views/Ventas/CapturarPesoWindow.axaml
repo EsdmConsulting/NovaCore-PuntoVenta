@@ -6,155 +6,392 @@
         Title="Capturar peso"
         Icon="/Assets/Brand/esdm-app-icon.ico"
 
-        Width="420"
-        Height="370"
-
-        MinWidth="360"
-        MinHeight="320"
+        Width="560"
+        SizeToContent="Height"
 
         CanResize="False"
 
         WindowStartupLocation="CenterOwner"
 
-        Background="#F5F7FA">
+        Background="#F4F6F8">
 
 
-    <!-- ========================================================= -->
-    <!-- CONTENIDO                                                   -->
-    <!-- ========================================================= -->
-
-    <Grid Margin="28" RowDefinitions="Auto,*,Auto" RowSpacing="20">
+    <StackPanel>
 
 
         <!-- ===================================================== -->
-        <!-- ENCABEZADO                                             -->
+        <!-- ENCABEZADO                                            -->
         <!-- ===================================================== -->
 
-        <StackPanel Grid.Row="0" Spacing="4">
+        <Border Padding="30,26,30,20">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Offset="0" Color="#DDF7E6"/>
+                    <GradientStop Offset="1" Color="#F4F6F8"/>
+                </LinearGradientBrush>
+            </Border.Background>
 
-            <TextBlock x:Name="TituloTextBlock"
-                       Text="Capturar peso"
-                       Foreground="#17365D"
-                       FontSize="22"
-                       FontWeight="SemiBold"/>
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="16">
 
-            <TextBlock x:Name="NombreProductoTextBlock"
-                       Foreground="#16803B"
-                       FontSize="14"
-                       FontWeight="SemiBold"
-                       TextWrapping="Wrap"
-                       MaxLines="2"/>
+                <!-- Báscula -->
+                <Border Width="64" Height="64"
+                        CornerRadius="20"
+                        VerticalAlignment="Top"
+                        BoxShadow="0 10 22 -8 #8016A34A">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Offset="0" Color="#22C55E"/>
+                            <GradientStop Offset="1" Color="#0E9A46"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <PathIcon Classes="bascula"
+                              Width="30" Height="30"
+                              Foreground="White"
+                              RenderTransformOrigin="50%,0%"
+                              Data="M12 3c-1.27 0-2.4.8-2.82 2H3v2h1.95L2 14c-.47 2 1 3 3.5 3s4.06-1 3.5-3L6.05 7h3.12c.33.85.98 1.5 1.83 1.83V20H2v2h20v-2h-9V8.82c.85-.32 1.5-.97 1.82-1.82h3.13L15 14c-.47 2 1 3 3.5 3s4.06-1 3.5-3l-2.95-7H21V5h-6.17C14.4 3.8 13.27 3 12 3zM5.53 14 6 12l.47 2H5.53zm13 0 .47-2 .47 2h-.94zM12 5c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z">
+                        <PathIcon.RenderTransform>
+                            <RotateTransform/>
+                        </PathIcon.RenderTransform>
+                    </PathIcon>
+                </Border>
 
-            <TextBlock x:Name="UnidadTextBlock"
-                       Foreground="#64748B"
-                       FontSize="11"
-                       Margin="0,2,0,0"/>
+                <StackPanel Grid.Column="1"
+                            Spacing="4"
+                            VerticalAlignment="Center">
+                    <TextBlock x:Name="TituloTextBlock"
+                               Text="Capturar peso"
+                               Foreground="#0B1220"
+                               FontSize="24"
+                               FontWeight="Bold"
+                               LetterSpacing="-0.4"/>
+                    <TextBlock x:Name="NombreProductoTextBlock"
+                               Foreground="#0B6B33"
+                               FontSize="15"
+                               FontWeight="SemiBold"
+                               TextWrapping="Wrap"
+                               MaxLines="2"/>
+                    <TextBlock x:Name="UnidadTextBlock"
+                               Foreground="#64748B"
+                               FontSize="13"/>
+                </StackPanel>
 
-        </StackPanel>
+            </Grid>
+
+        </Border>
 
 
         <!-- ===================================================== -->
-        <!-- ZONA CENTRAL: ENTRADA + RESULTADO                      -->
+        <!-- PESO E IMPORTE                                        -->
         <!-- ===================================================== -->
 
-        <StackPanel Grid.Row="1" Spacing="16" VerticalAlignment="Center">
+        <StackPanel Margin="30,4,30,22"
+                    Spacing="14">
 
-            <!-- LABEL -->
             <TextBlock x:Name="LabelPesoTextBlock"
                        Text="Peso (kg):"
-                       Foreground="#374151"
+                       Foreground="#334155"
                        FontSize="13"
                        FontWeight="SemiBold"/>
 
-            <!-- INPUT DE PESO -->
-            <TextBox x:Name="PesoTextBox"
-                     Watermark="0.000"
-                     HorizontalContentAlignment="Center"
-                     FontSize="26"
-                     FontWeight="Bold"
-                     Foreground="#17365D"
-                     Height="60"
-                     CornerRadius="12"
-                     BorderBrush="#CBD5E1"
-                     BorderThickness="2"
-                     TextChanged="PesoTextBox_TextChanged"
-                     KeyDown="PesoTextBox_KeyDown"/>
+            <!-- Campo grande con la unidad a la derecha -->
+            <Panel>
+                <TextBox x:Name="PesoTextBox"
+                         Classes="peso"
+                         PlaceholderText="0.000"
+                         TextChanged="PesoTextBox_TextChanged"
+                         KeyDown="PesoTextBox_KeyDown"/>
+                <Border HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Margin="0,0,14,0"
+                        Padding="12,6"
+                        CornerRadius="12"
+                        Background="#ECFDF3"
+                        IsHitTestVisible="False">
+                    <TextBlock x:Name="UnidadSufijoTextBlock"
+                               Text="kg"
+                               Foreground="#0B6B33"
+                               FontSize="18"
+                               FontWeight="Bold"/>
+                </Border>
+            </Panel>
 
-            <!-- RESULTADO EN TIEMPO REAL -->
-            <Border Background="#EAF6EE"
-                    CornerRadius="10"
-                    Padding="16,12">
+            <!-- Pesos rápidos (los valores los pone el código según la unidad) -->
+            <Grid ColumnDefinitions="*,*,*,*"
+                  ColumnSpacing="8">
+                <Button x:Name="Rapido1Button" Grid.Column="0" Classes="rapido" Click="PesoRapido_Click"/>
+                <Button x:Name="Rapido2Button" Grid.Column="1" Classes="rapido" Click="PesoRapido_Click"/>
+                <Button x:Name="Rapido3Button" Grid.Column="2" Classes="rapido" Click="PesoRapido_Click"/>
+                <Button x:Name="Rapido4Button" Grid.Column="3" Classes="rapido" Click="PesoRapido_Click"/>
+            </Grid>
 
-                <Grid ColumnDefinitions="*,Auto">
-
-                    <TextBlock Grid.Column="0"
-                               Text="Importe calculado:"
-                               Foreground="#374151"
-                               FontSize="13"
-                               VerticalAlignment="Center"/>
-
+            <!-- Importe en tiempo real -->
+            <Border Padding="20,16"
+                    CornerRadius="18"
+                    Background="White"
+                    BorderBrush="#EAEEF2"
+                    BorderThickness="1"
+                    BoxShadow="0 1 2 0 #0A0F172A">
+                <Grid ColumnDefinitions="*,Auto"
+                      ColumnSpacing="12">
+                    <StackPanel Spacing="4"
+                                VerticalAlignment="Center">
+                        <TextBlock Text="IMPORTE"
+                                   Foreground="#94A3B8"
+                                   FontSize="11"
+                                   FontWeight="Bold"
+                                   LetterSpacing="1.2"
+                                   LineHeight="16"/>
+                        <TextBlock x:Name="DetallePrecioTextBlock"
+                                   Foreground="#64748B"
+                                   FontSize="13"/>
+                    </StackPanel>
                     <TextBlock Grid.Column="1"
                                x:Name="ImporteTextBlock"
                                Text="$0.00"
-                               Foreground="#16803B"
-                               FontSize="22"
+                               Foreground="#16A34A"
+                               FontSize="34"
                                FontWeight="Bold"
-                               VerticalAlignment="Center"
-                               HorizontalAlignment="Right"/>
-
+                               LetterSpacing="-0.8"
+                               VerticalAlignment="Center"/>
                 </Grid>
-
             </Border>
-
-            <!-- DETALLE PRECIO/KG -->
-            <TextBlock x:Name="DetallePrecioTextBlock"
-                       Foreground="#94A3B8"
-                       FontSize="11"
-                       HorizontalAlignment="Center"/>
 
         </StackPanel>
 
 
         <!-- ===================================================== -->
-        <!-- BOTONES                                                 -->
+        <!-- BOTONES                                               -->
         <!-- ===================================================== -->
 
-        <Grid Grid.Row="2" ColumnDefinitions="*,*" ColumnSpacing="12">
+        <Border Background="White"
+                BorderBrush="#EAEEF2"
+                BorderThickness="0,1,0,0"
+                Padding="30,14,30,20">
 
-            <Button Grid.Column="0"
-                    Content="Cancelar"
-                    Click="Cancelar_Click"
-                    Height="50"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center"
-                    Background="White"
-                    Foreground="#C61F2B"
-                    BorderBrush="#F3A7AD"
-                    BorderThickness="1"
-                    CornerRadius="10"
-                    FontSize="13"
-                    FontWeight="SemiBold"/>
+            <StackPanel Spacing="12">
 
-            <Button Grid.Column="1"
-                    x:Name="AgregarButton"
-                    Content="Agregar al carrito"
-                    Click="Agregar_Click"
-                    IsEnabled="False"
-                    Height="50"
-                    HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center"
-                    Background="#16A34A"
-                    Foreground="White"
-                    BorderThickness="0"
-                    CornerRadius="10"
-                    FontSize="13"
-                    FontWeight="SemiBold"/>
+                <StackPanel Orientation="Horizontal"
+                            Spacing="18"
+                            HorizontalAlignment="Center">
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla teclaSi"><TextBlock Text="Enter ↵"/></Border>
+                        <TextBlock Text="Agregar al carrito"/>
+                    </StackPanel>
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Esc"/></Border>
+                        <TextBlock Text="Cancelar"/>
+                    </StackPanel>
+                </StackPanel>
 
-        </Grid>
+                <Grid ColumnDefinitions="*,*"
+                      ColumnSpacing="12">
 
-    </Grid>
+                    <Button Grid.Column="0"
+                            Classes="cancelar"
+                            Click="Cancelar_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <PathIcon Width="14" Height="14"
+                                      Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                            <TextBlock Text="Cancelar" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="1"
+                            x:Name="AgregarButton"
+                            Classes="agregar"
+                            IsEnabled="False"
+                            Click="Agregar_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Width="17" Height="17"
+                                      Data="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                            <TextBlock Text="Agregar al carrito" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                </Grid>
+
+            </StackPanel>
+
+        </Border>
+
+    </StackPanel>
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <Window.Styles>
+
+        <!-- La báscula se balancea suavemente -->
+        <Style Selector="PathIcon.bascula">
+            <Style.Animations>
+                <Animation Duration="0:0:2.4"
+                           IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="RotateTransform.Angle" Value="-6"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="50%">
+                        <Setter Property="RotateTransform.Angle" Value="6"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="RotateTransform.Angle" Value="-6"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Campo de peso -->
+        <Style Selector="TextBox.peso">
+            <Setter Property="Height" Value="76"/>
+            <Setter Property="FontSize" Value="36"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="90,0"/>
+            <Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DCE3EA"/>
+            <Setter Property="BorderThickness" Value="2"/>
+        </Style>
+
+        <Style Selector="TextBox.peso:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#B6C2CF"/>
+        </Style>
+
+        <Style Selector="TextBox.peso:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#22C55E"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BoxShadow" Value="0 0 0 4 #2622C55E"/>
+        </Style>
+
+        <!-- Pesos rápidos -->
+        <Style Selector="Button.rapido">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+        </Style>
+
+        <Style Selector="Button.rapido:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#ECFDF3"/>
+            <Setter Property="BorderBrush" Value="#86EFAC"/>
+            <Setter Property="Foreground" Value="#0B6B33"/>
+        </Style>
+
+        <!-- Atajos -->
+        <Style Selector="StackPanel.atajo">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Spacing" Value="6"/>
+        </Style>
+
+        <Style Selector="StackPanel.atajo > TextBlock">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla">
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="MinWidth" Value="24"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla.teclaSi">
+            <Setter Property="Background" Value="#ECFDF3"/>
+            <Setter Property="BorderBrush" Value="#A7E8BF"/>
+        </Style>
+
+        <Style Selector="Border.tecla.teclaSi TextBlock">
+            <Setter Property="Foreground" Value="#0B6B33"/>
+        </Style>
+
+        <!-- Botones -->
+        <Style Selector="Button.cancelar, Button.agregar">
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.cancelar">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style Selector="Button.cancelar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#FEF2F2"/>
+            <Setter Property="BorderBrush" Value="#F5C2C2"/>
+            <Setter Property="Foreground" Value="#B91C1C"/>
+        </Style>
+
+        <Style Selector="Button.agregar">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22C55E"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.agregar /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 24 -8 #8016A34A"/>
+        </Style>
+
+        <Style Selector="Button.agregar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#2BD468"/>
+                    <GradientStop Offset="1" Color="#10A94D"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.agregar:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#0B7A38"/>
+        </Style>
+
+        <Style Selector="Button.agregar:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#E2E8F0"/>
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="BoxShadow" Value="none"/>
+        </Style>
+
+    </Window.Styles>
 
 </Window>
-

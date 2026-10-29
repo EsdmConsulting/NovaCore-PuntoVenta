@@ -552,7 +552,7 @@ private static void AgregarLogo(
     {
         var uri =
             new Uri(
-                "avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                "avares://PuntoDeVenta/Assets/logo_grupo_luisfer.png"
             );
 
         using var stream =

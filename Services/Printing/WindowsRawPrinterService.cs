@@ -133,7 +133,7 @@ public class WindowsRawPrinterService
      */
     public Task<bool> ImprimirAsync(
         byte[] contenido,
-        string nombreDocumento = "NovaCore - Ticket")
+        string nombreDocumento = "Punto de Venta - Ticket")
     {
         return Task.Run(
             () =>
@@ -160,7 +160,7 @@ public class WindowsRawPrinterService
 
                 return ImprimirRaw( ObtenerNombreImpresoraConfigurada(),
                     contenido,
-                    "NovaCore - Prueba ESC/POS"
+                    "Punto de Venta - Prueba ESC/POS"
                 );
             });
     }
@@ -320,7 +320,7 @@ public class WindowsRawPrinterService
 
         bytes.AddRange(
             Encoding.ASCII.GetBytes(
-                "NovaCore ya se comunica con la impresora.\n"));
+                "El Punto de Venta ya se comunica con la impresora.\n"));
 
 
         bytes.AddRange(

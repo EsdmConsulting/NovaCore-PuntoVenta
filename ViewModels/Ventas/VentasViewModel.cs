@@ -175,6 +175,9 @@ public partial class VentasViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _ventaFinalizadaCorrectamente;
+
+    // Aviso que debe verse al terminar la venta (no lo borra la limpieza).
+    private string? _avisoDespuesDeVenta;
     
     
 // =========================================================
@@ -606,9 +609,36 @@ public async Task CargarProductosAsync()
         }
 
         if (EstaProcesandoVenta)
+        {
+            // Antes se ignoraba en silencio y parecía que el botón no servía.
+            MensajeError =
+                "Espera un momento: se está registrando el último producto. Vuelve a presionar Cobrar en un instante.";
+
             return;
+        }
 
         SolicitarCobro?.Invoke();
+    }
+
+
+    // =========================================================
+    // NUEVA VENTA ACTIVA
+    // =========================================================
+    //
+    // Al crear o recuperar una venta, la marca de "venta finalizada"
+    // de la venta anterior ya no aplica. Sin esto, después de la
+    // primera venta cobrada el flujo de cobro terminaba de inmediato
+    // y el botón Cobrar dejaba de responder.
+    // =========================================================
+
+    partial void OnIdVentaActualChanged(
+        int value)
+    {
+        if (value > 0)
+        {
+            VentaFinalizadaCorrectamente =
+                false;
+        }
     }
 
 
@@ -3226,6 +3256,10 @@ public async Task<bool> FinalizarVentaAsync()
                         Console.WriteLine(
                             $"No fue posible abrir WhatsApp para el ticket {ticket.FolioTicket}."
                         );
+
+                        // Antes el cajero no veía ningún aviso.
+                        _avisoDespuesDeVenta =
+                            $"La venta {ticket.FolioTicket} quedó registrada, pero no se pudo abrir WhatsApp. Instala WhatsApp o revisa que el equipo tenga un navegador (Edge o Chrome).";
                     }
                 }
                 catch (Exception exWhatsApp)
@@ -3333,8 +3367,13 @@ public async Task<bool> FinalizarVentaAsync()
         ActualizarTotales();
 
 
+        // Si algo de la entrega del ticket falló (p. ej. WhatsApp),
+        // el aviso se muestra aquí en lugar de perderse.
         MensajeError =
-            string.Empty;
+            _avisoDespuesDeVenta ?? string.Empty;
+
+        _avisoDespuesDeVenta =
+            null;
 
 
         return true;

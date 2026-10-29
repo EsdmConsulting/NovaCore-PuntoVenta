@@ -7,10 +7,12 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
 
         <!-- Identidad de la aplicación -->
-        <AssemblyName>NovaCoreESDM</AssemblyName>
+        <!-- Nombre del ejecutable: PuntoDeVenta.exe -->
+        <AssemblyName>PuntoDeVenta</AssemblyName>
         <RootNamespace>NovaCoreESDM</RootNamespace>
  
-        <Product>ESDM Punto de Venta</Product>
+        <Product>Punto de Venta</Product>
+        <AssemblyTitle>Punto de Venta</AssemblyTitle>
         <Company>ESDM Consulting</Company>
         <Authors>ESDM Consulting</Authors>
         <Description>

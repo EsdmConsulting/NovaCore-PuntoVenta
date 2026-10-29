@@ -277,7 +277,7 @@
                 </Border>
 
                 <Image Grid.Row="1"
-                       Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                       Source="avares://PuntoDeVenta/Assets/logo_grupo_luisfer.png"
                        Width="300"
                        Margin="0,26,0,0"
                        Stretch="Uniform"

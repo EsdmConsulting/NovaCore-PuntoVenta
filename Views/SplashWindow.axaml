@@ -360,7 +360,7 @@
                     </Ellipse>
 
                     <Image Classes="logo"
-                           Source="avares://NovaCoreESDM/Assets/logo_grupo_luisfer.png"
+                           Source="avares://PuntoDeVenta/Assets/logo_grupo_luisfer.png"
                            Width="400"
                            Stretch="Uniform"
                            RenderTransformOrigin="50%,50%">
