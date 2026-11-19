@@ -16,7 +16,10 @@ public static class ApiClient
 
     public static HttpClient Http { get; } = new(Handler)
     {
-        BaseAddress = new Uri(
-            "https://nubeesdm8.ddns.net:4433/Plataforma_LuisFer/")
+       /*  BaseAddress = new Uri(
+            "https://nubeesdm8.ddns.net:4433/Plataforma_LuisFer/") */
+
+             BaseAddress = new Uri(
+            "https://plataformaluisfer.com/Plataforma_LuisFer/")
     };
 }
