@@ -16,6 +16,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 
 using NovaCoreESDM.Views;
 using NovaCoreESDM.Views.Turno;
+using NovaCoreESDM.Views.Comun;
 
 namespace NovaCoreESDM.Views.Cortes;
 
@@ -56,6 +57,23 @@ public partial class CortesView
 
         AttachedToVisualTree +=
             CortesView_AttachedToVisualTree;
+
+
+        // La escena animada del banner solo se muestra cuando hay
+        // espacio suficiente; en pantallas angostas se vería diminuta.
+        var banner =
+            this.FindControl<Border>("BannerCorte");
+
+        var escena =
+            this.FindControl<Control>("EscenaCorte");
+
+        if (banner is not null && escena is not null)
+        {
+            banner.SizeChanged +=
+                (_, e) =>
+                    escena.IsVisible =
+                        e.NewSize.Width >= 1050;
+        }
     }
 
 
@@ -435,8 +453,7 @@ public partial class CortesView
     // Ventana sencilla utilizada para explicar al cajero
     // por qué no puede continuar.
     //
-    // Más adelante, si queremos, podemos convertirla en un
-    // componente reutilizable para todo NovaCore.
+    // Usa AvisoWindow (Views/Comun), reutilizable en todo NovaCore.
     // ============================================================
 
     private static async Task MostrarAvisoAsync(
@@ -444,107 +461,10 @@ public partial class CortesView
         string titulo,
         string mensaje)
     {
-        var aceptarButton =
-            new Button
-            {
-                Content = "Entendido",
-                Width = 130,
-                Height = 42,
-                HorizontalAlignment =
-                    Avalonia.Layout.HorizontalAlignment.Right,
-                Background =
-                    Avalonia.Media.Brushes.ForestGreen,
-                Foreground =
-                    Avalonia.Media.Brushes.White
-            };
-
-
         var ventanaAviso =
-            new Window
-            {
-                Title = titulo,
-
-                Width = 480,
-                Height = 260,
-
-                CanResize = false,
-
-                WindowStartupLocation =
-                    WindowStartupLocation.CenterOwner,
-
-                Background =
-                    Avalonia.Media.Brushes.White
-            };
-
-
-        aceptarButton.Click +=
-            (_, _) =>
-            {
-                ventanaAviso.Close();
-            };
-
-
-        ventanaAviso.Content =
-            new Border
-            {
-                Padding =
-                    new Thickness(
-                        28),
-
-                Child =
-                    new Grid
-                    {
-                        RowDefinitions =
-                            new RowDefinitions(
-                                "Auto,*,Auto"),
-
-                        Children =
-                        {
-                            new TextBlock
-                            {
-                                Text =
-                                    titulo,
-
-                                FontSize =
-                                    22,
-
-                                FontWeight =
-                                    Avalonia.Media.FontWeight.Bold,
-
-                                Foreground =
-                                    Avalonia.Media.Brushes.DarkSlateGray
-                            },
-
-                            new TextBlock
-                            {
-                                Text =
-                                    mensaje,
-
-                                FontSize =
-                                    14,
-
-                                TextWrapping =
-                                    Avalonia.Media.TextWrapping.Wrap,
-
-                                VerticalAlignment =
-                                    Avalonia.Layout.VerticalAlignment.Center,
-
-                                Foreground =
-                                    Avalonia.Media.Brushes.DimGray,
-
-                                [Grid.RowProperty] =
-                                    1
-                            },
-
-                            aceptarButton
-                        }
-                    }
-            };
-
-
-        Grid.SetRow(
-            aceptarButton,
-            2);
+            new AvisoWindow(
+                titulo,
+                mensaje);
 
 
         await ventanaAviso

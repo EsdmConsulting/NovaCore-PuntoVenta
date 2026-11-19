@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -153,6 +153,16 @@ public partial class VentasViewModel : ViewModelBase
     [ObservableProperty]
     private string _uuidVentaActual =
         string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SaldoPendiente))]
+    [NotifyPropertyChangedFor(nameof(TienePagosParciales))]
+    private decimal _montoPagadoActual;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(SaldoPendiente))]
+    [NotifyPropertyChangedFor(nameof(TienePagosParciales))]
+    private decimal _saldoActual;
     
     // =========================================================
     // FINALZIAR VENTA ACTUAL
@@ -165,6 +175,9 @@ public partial class VentasViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _ventaFinalizadaCorrectamente;
+
+    // Aviso que debe verse al terminar la venta (no lo borra la limpieza).
+    private string? _avisoDespuesDeVenta;
     
     
 // =========================================================
@@ -199,6 +212,12 @@ public partial class VentasViewModel : ViewModelBase
 
     public decimal Total =>
         Subtotal;
+
+    public decimal SaldoPendiente =>
+        Math.Max(0m, Total - MontoPagadoActual);
+
+    public bool TienePagosParciales =>
+        MontoPagadoActual > 0 && SaldoPendiente > 0;
 
     public string TextoCantidadProductos =>
         CantidadProductos == 1m
@@ -253,6 +272,9 @@ public partial class VentasViewModel : ViewModelBase
 
     public VentasViewModel()
     {
+        Carrito.CollectionChanged +=
+            (_, _) => ActualizarTotales();
+
         _productosService =
             new ProductosService();
 
@@ -388,6 +410,25 @@ public async Task CargarProductosAsync()
             nameof(TieneProductosDisponibles));
     }
 }
+
+
+    // =========================================================
+    // ACTUALIZAR PRODUCTOS DESDE LA API
+    // =========================================================
+
+    [RelayCommand]
+    public async Task ActualizarProductosAsync()
+    {
+        if (EstaCargandoProductos)
+            return;
+
+        await CargarProductosAsync();
+
+        if (!string.IsNullOrWhiteSpace(TextoBusqueda))
+        {
+            FiltrarProductos(TextoBusqueda);
+        }
+    }
 
 
 
@@ -568,9 +609,36 @@ public async Task CargarProductosAsync()
         }
 
         if (EstaProcesandoVenta)
+        {
+            // Antes se ignoraba en silencio y parecía que el botón no servía.
+            MensajeError =
+                "Espera un momento: se está registrando el último producto. Vuelve a presionar Cobrar en un instante.";
+
             return;
+        }
 
         SolicitarCobro?.Invoke();
+    }
+
+
+    // =========================================================
+    // NUEVA VENTA ACTIVA
+    // =========================================================
+    //
+    // Al crear o recuperar una venta, la marca de "venta finalizada"
+    // de la venta anterior ya no aplica. Sin esto, después de la
+    // primera venta cobrada el flujo de cobro terminaba de inmediato
+    // y el botón Cobrar dejaba de responder.
+    // =========================================================
+
+    partial void OnIdVentaActualChanged(
+        int value)
+    {
+        if (value > 0)
+        {
+            VentaFinalizadaCorrectamente =
+                false;
+        }
     }
 
 
@@ -625,8 +693,9 @@ public async Task AgregarPresentacionAlCarritoAsync(
      */
     if (detalleExistente is not null)
     {
-        MensajeError =
-            "Esta presentación ya se encuentra en el carrito.";
+        /* MensajeError =
+            "Esta presentación ya se encuentra en el carrito."; */
+            _ = IncrementarCantidadAsync(detalleExistente);
 
         return;
     }
@@ -683,7 +752,10 @@ public async Task AgregarPresentacionAlCarritoAsync(
                 "#EFF6FF",
 
             ColorHex =
-                "#2563EB"
+                "#2563EB",
+
+            ImagenBitmap =
+                productoCatalogo.ImagenBitmap
         };
 
 
@@ -698,6 +770,10 @@ public async Task AgregarPresentacionAlCarritoAsync(
     nuevoDetalle.UnidadMedida =
         presentacion.UnidadMedida;
 
+    // Para venta por peso, mostrar la cantidad real desde el inicio
+    if (presentacion.CantidadPeso > 0m)
+        nuevoDetalle.Cantidad = presentacion.CantidadPeso;
+
     nuevoDetalle.EstaSincronizando =
         true;
 
@@ -710,7 +786,10 @@ public async Task AgregarPresentacionAlCarritoAsync(
                     nameof(DetalleVenta.Cantidad)
                 ||
                 args.PropertyName ==
-                    nameof(DetalleVenta.Importe))
+                    nameof(DetalleVenta.Importe)
+                ||
+                args.PropertyName ==
+                    nameof(DetalleVenta.PrecioUnitario))
             {
                 ActualizarTotales();
             }
@@ -779,7 +858,9 @@ public async Task AgregarPresentacionAlCarritoAsync(
                     producto.IdPresentacion,
 
                 CantidadComercial =
-                    1m,
+                    presentacion.CantidadPeso > 0m
+                        ? presentacion.CantidadPeso
+                        : 1m,
 
                 FactorConversion =
                     producto.FactorConversion,
@@ -972,6 +1053,14 @@ private async Task CargarImagenesProductosAsync()
 
             producto.ImagenBitmap =
                 bitmap;
+
+            foreach (var item in Carrito)
+            {
+                if (item.Producto.Id == producto.Id)
+                {
+                    item.Producto.ImagenBitmap = bitmap;
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -1005,11 +1094,11 @@ private async Task CargarImagenesProductosAsync()
 // PROCESAR CÓDIGO ESCANEADO
 // =========================================================
 
-public async Task ProcesarCodigoEscaneadoAsync(
+public async Task<bool> ProcesarCodigoEscaneadoAsync(
     string codigo)
 {
     if (string.IsNullOrWhiteSpace(codigo))
-        return;
+        return false;
 
 
     codigo =
@@ -1081,7 +1170,7 @@ public async Task ProcesarCodigoEscaneadoAsync(
         );
 
 
-        return;
+        return true;
     }
 
 
@@ -1120,7 +1209,7 @@ public async Task ProcesarCodigoEscaneadoAsync(
         MensajeError =
             $"No se encontró ningún producto con el código de barras {codigo}.";
 
-        return;
+        return false;
     }
 
 
@@ -1137,7 +1226,7 @@ public async Task ProcesarCodigoEscaneadoAsync(
         MensajeError =
             $"El producto {productoEncontrado.NombreComercial} no tiene presentaciones configuradas.";
 
-        return;
+        return false;
     }
 
 
@@ -1158,7 +1247,7 @@ public async Task ProcesarCodigoEscaneadoAsync(
         MensajeError =
             $"El producto {productoEncontrado.NombreComercial} no tiene presentaciones activas.";
 
-        return;
+        return false;
     }
 
 
@@ -1179,7 +1268,7 @@ public async Task ProcesarCodigoEscaneadoAsync(
         );
 
 
-        return;
+        return true;
     }
 
 
@@ -1207,6 +1296,28 @@ public async Task ProcesarCodigoEscaneadoAsync(
     SolicitarSeleccionPresentacion?.Invoke(
         productoEncontrado
     );
+
+    return true;
+}
+
+
+private static decimal ObtenerPrecioCatalogoPresentacion(
+    PresentacionProducto presentacion)
+{
+    var precioMenudeo = presentacion.Precios?
+        .FirstOrDefault(p =>
+            string.Equals(p.TipoPrecio, "MENUDEO", StringComparison.OrdinalIgnoreCase)
+            && p.Precio > 0);
+
+    if (precioMenudeo is not null)
+        return precioMenudeo.Precio;
+
+    var precio = presentacion.Precios?
+        .Where(p => p.Precio > 0)
+        .OrderByDescending(p => p.FechaInicio)
+        .FirstOrDefault();
+
+    return precio?.Precio ?? 0m;
 }
 
 
@@ -1331,13 +1442,8 @@ private async Task AgregarPresentacionEscaneadaAsync(
             CodigoBarras =
                 presentacion.CodigoBarras,
 
-            /*
-             * Precio provisional.
-             *
-             * NO es el precio de venta definitivo.
-             */
             Precio =
-                0m,
+                ObtenerPrecioCatalogoPresentacion(presentacion),
 
             /*
              * Permitimos llegar al backend para que sea
@@ -1707,6 +1813,8 @@ public async Task CargarVentaActualAsync()
             IdVentaActual = 0;
             UuidVentaActual = string.Empty;
             FolioVentaActual = string.Empty;
+            MontoPagadoActual = 0m;
+            SaldoActual = 0m;
 
             Carrito.Clear();
 
@@ -1726,6 +1834,12 @@ public async Task CargarVentaActualAsync()
 
         FolioVentaActual =
             venta.Folio;
+
+        MontoPagadoActual =
+            venta.MontoPagado;
+
+        SaldoActual =
+            venta.Saldo;
         
         // =========================================================
 // RECUPERAR VENTA PAGADA PENDIENTE DE FINALIZAR
@@ -1800,6 +1914,10 @@ public async Task CargarVentaActualAsync()
 
         foreach (var detalle in resultado.Data.Detalles)
         {
+            var catalogo =
+                _productosCatalogoCompleto.Find(p => p.Id == detalle.IdProducto)
+                ?? System.Linq.Enumerable.FirstOrDefault(Productos, p => p.Id == detalle.IdProducto);
+
             var producto =
                 new Producto
                 {
@@ -1844,7 +1962,10 @@ public async Task CargarVentaActualAsync()
                         "#EFF6FF",
 
                     ColorHex =
-                        "#2563EB"
+                        "#2563EB",
+
+                    ImagenBitmap =
+                        catalogo?.ImagenBitmap
                 };
 
             var nuevoDetalle =
@@ -1895,7 +2016,10 @@ public async Task CargarVentaActualAsync()
                         nameof(DetalleVenta.Cantidad)
                         ||
                         args.PropertyName ==
-                        nameof(DetalleVenta.Importe))
+                        nameof(DetalleVenta.Importe)
+                        ||
+                        args.PropertyName ==
+                        nameof(DetalleVenta.PrecioUnitario))
                     {
                         ActualizarTotales();
                     }
@@ -2119,17 +2243,15 @@ public async Task<bool> RegistrarPagoEfectivoAsync(
         }
 
 
-        if (!resultado.Data.PagoCompleto)
-        {
-            MensajeError =
-                $"El pago fue registrado, pero aún queda un saldo de ${resultado.Data.Saldo:N2}.";
+        MontoPagadoActual =
+            resultado.Data.MontoPagado;
 
-            return false;
-        }
+        SaldoActual =
+            resultado.Data.Saldo;
 
 
         // =====================================================
-        // PAGO COMPLETO → ABRIR CAJÓN
+        // ABRIR CAJÓN (Siempre que se registre efectivo)
         // =====================================================
 
         try
@@ -2180,16 +2302,23 @@ public async Task<bool> RegistrarPagoEfectivoAsync(
 
 
         // =====================================================
-        // PAGO COMPLETO → FINALIZAR VENTA
+        // VALIDAR SI LA VENTA QUEDÓ TOTALMENTE PAGADA
         // =====================================================
 
-        var finalizada =
-            await FinalizarVentaAsync();
-
-
-        if (!finalizada)
+        if (resultado.Data.PagoCompleto || resultado.Data.Saldo <= 0)
         {
-            return false;
+            var finalizada =
+                await FinalizarVentaAsync();
+
+            if (!finalizada)
+            {
+                return false;
+            }
+        }
+        else
+        {
+            MensajeError =
+                string.Empty;
         }
 
 
@@ -2307,41 +2436,42 @@ public async Task<bool> RegistrarPagoTransferenciaAsync(
         }
 
 
+        MontoPagadoActual =
+            resultado.Data.MontoPagado;
+
+        SaldoActual =
+            resultado.Data.Saldo;
+
+
         // =====================================================
-        // VALIDAR QUE LA VENTA QUEDE COMPLETAMENTE PAGADA
+        // VALIDAR SI LA VENTA QUEDÓ TOTALMENTE PAGADA
         // =====================================================
 
-        if (!resultado.Data.PagoCompleto)
+        if (resultado.Data.PagoCompleto || resultado.Data.Saldo <= 0)
+        {
+            var finalizada =
+                await FinalizarVentaAsync();
+
+            if (!finalizada)
+            {
+                /*
+                 * IMPORTANTE:
+                 *
+                 * El pago YA quedó registrado.
+                 *
+                 * Si la finalización falla, NO debemos registrar
+                 * nuevamente la transferencia automáticamente.
+                 *
+                 * La venta podrá recuperarse posteriormente.
+                 */
+
+                return false;
+            }
+        }
+        else
         {
             MensajeError =
-                $"La transferencia fue registrada, pero aún queda un saldo de ${resultado.Data.Saldo:N2}.";
-
-            return false;
-        }
-
-
-        // =====================================================
-        // PAGO COMPLETO → FINALIZAR VENTA
-        // =====================================================
-
-        var finalizada =
-            await FinalizarVentaAsync();
-
-
-        if (!finalizada)
-        {
-            /*
-             * IMPORTANTE:
-             *
-             * El pago YA quedó registrado.
-             *
-             * Si la finalización falla, NO debemos registrar
-             * nuevamente la transferencia automáticamente.
-             *
-             * La venta podrá recuperarse posteriormente.
-             */
-
-            return false;
+                string.Empty;
         }
 
 
@@ -2536,7 +2666,9 @@ public async Task<bool> FinalizarVentaCreditoAsync()
 
 public async Task<bool> EstablecerPrecioManualAsync(
     DetalleVenta detalle,
-    string tipoPrecio)
+    string tipoPrecio,
+    decimal? precioPersonalizado = null
+    )
 {
     if (detalle is null)
         return false;
@@ -2579,7 +2711,8 @@ public async Task<bool> EstablecerPrecioManualAsync(
                 .EstablecerPrecioManualAsync(
                     IdVentaActual,
                     detalle.IdDetalle,
-                    tipoPrecio);
+                    tipoPrecio,
+                    precioPersonalizado);
 
 
         if (resultado.Res != 1)
@@ -2838,6 +2971,11 @@ public async Task<bool> FinalizarVentaAsync()
                 FolioTicket =
                     resultado.Data.FolioTicket,
 
+                Uuid =
+                    !string.IsNullOrWhiteSpace(resultado.Data.Uuid)
+                        ? resultado.Data.Uuid
+                        : UuidVentaActual,
+
                 Fecha =
                     DateTime.Now,
 
@@ -2866,13 +3004,17 @@ public async Task<bool> FinalizarVentaAsync()
                     resultado.Data.Transferencias,
 
                 FormaPago =
-                    resultado.Data.Efectivo > 0
-                        ? "Efectivo"
-                        : resultado.Data.Tarjetas > 0
-                            ? "Tarjeta"
-                            : resultado.Data.Transferencias > 0
-                                ? "Transferencia"
-                                : string.Empty,
+                    ((resultado.Data.Efectivo > 0 ? 1 : 0) +
+                     (resultado.Data.Tarjetas > 0 ? 1 : 0) +
+                     (resultado.Data.Transferencias > 0 ? 1 : 0)) > 1
+                        ? "PAGO MIXTO"
+                        : resultado.Data.Efectivo > 0
+                            ? "Efectivo"
+                            : resultado.Data.Tarjetas > 0
+                                ? "Tarjeta"
+                                : resultado.Data.Transferencias > 0
+                                    ? "Transferencia"
+                                    : (resultado.Data.Total > 0 && resultado.Data.MontoPagado == 0 ? "Crédito" : string.Empty),
 
                 ContenidoQr =
                     "https://plataformaluisfer.com/Plataforma_LuisFer/auth/login"
@@ -2973,47 +3115,81 @@ public async Task<bool> FinalizarVentaAsync()
 
             case "IMPRIMIR":
 
+                // =================================================
+                // 1. PRIMER TICKET (COPIA PARA EL NEGOCIO)
+                // =================================================
                 try
                 {
-                    var impreso =
+                    var impreso1 =
                         await _ticketVentaService
                             .ImprimirAsync(
                                 ticket
                             );
 
-
-                    if (impreso)
+                    if (impreso1)
                     {
                         Console.WriteLine(
                             "====================================");
-
                         Console.WriteLine(
-                            "TICKET ENVIADO A IMPRESORA:");
-
-                        Console.WriteLine(
-                            ticket.FolioTicket);
-
+                            $"TICKET 1 (NEGOCIO) ENVIADO A IMPRESORA: {ticket.FolioTicket}");
                         Console.WriteLine(
                             "====================================");
                     }
                     else
                     {
                         Console.WriteLine(
-                            $"No se pudo confirmar la impresión del ticket {ticket.FolioTicket}."
+                            $"No se pudo confirmar la impresión del ticket 1 (negocio) {ticket.FolioTicket}."
                         );
                     }
                 }
-                catch (Exception exImpresion)
+                catch (Exception exImpresion1)
                 {
                     Console.WriteLine(
                         "====================================");
-
                     Console.WriteLine(
-                        "VENTA FINALIZADA, PERO FALLÓ LA IMPRESIÓN:");
-
+                        $"VENTA FINALIZADA, PERO FALLÓ IMPRESIÓN TICKET 1: {exImpresion1.Message}");
                     Console.WriteLine(
-                        exImpresion.Message);
+                        "====================================");
+                }
 
+                // =================================================
+                // DELAY DE 5 SEGUNDOS PARA ARRANCAR EL PRIMER TICKET
+                // =================================================
+                await Task.Delay(5000);
+
+                // =================================================
+                // 2. SEGUNDO TICKET (COPIA PARA EL CLIENTE)
+                // =================================================
+                try
+                {
+                    var impreso2 =
+                        await _ticketVentaService
+                            .ImprimirAsync(
+                                ticket
+                            );
+
+                    if (impreso2)
+                    {
+                        Console.WriteLine(
+                            "====================================");
+                        Console.WriteLine(
+                            $"TICKET 2 (CLIENTE) ENVIADO A IMPRESORA: {ticket.FolioTicket}");
+                        Console.WriteLine(
+                            "====================================");
+                    }
+                    else
+                    {
+                        Console.WriteLine(
+                            $"No se pudo confirmar la impresión del ticket 2 (cliente) {ticket.FolioTicket}."
+                        );
+                    }
+                }
+                catch (Exception exImpresion2)
+                {
+                    Console.WriteLine(
+                        "====================================");
+                    Console.WriteLine(
+                        $"VENTA FINALIZADA, PERO FALLÓ IMPRESIÓN TICKET 2: {exImpresion2.Message}");
                     Console.WriteLine(
                         "====================================");
                 }
@@ -3080,6 +3256,10 @@ public async Task<bool> FinalizarVentaAsync()
                         Console.WriteLine(
                             $"No fue posible abrir WhatsApp para el ticket {ticket.FolioTicket}."
                         );
+
+                        // Antes el cajero no veía ningún aviso.
+                        _avisoDespuesDeVenta =
+                            $"La venta {ticket.FolioTicket} quedó registrada, pero no se pudo abrir WhatsApp. Instala WhatsApp o revisa que el equipo tenga un navegador (Edge o Chrome).";
                     }
                 }
                 catch (Exception exWhatsApp)
@@ -3174,6 +3354,12 @@ public async Task<bool> FinalizarVentaAsync()
         FolioVentaActual =
             string.Empty;
 
+        MontoPagadoActual =
+            0m;
+
+        SaldoActual =
+            0m;
+
 
         Carrito.Clear();
 
@@ -3181,8 +3367,13 @@ public async Task<bool> FinalizarVentaAsync()
         ActualizarTotales();
 
 
+        // Si algo de la entrega del ticket falló (p. ej. WhatsApp),
+        // el aviso se muestra aquí en lugar de perderse.
         MensajeError =
-            string.Empty;
+            _avisoDespuesDeVenta ?? string.Empty;
+
+        _avisoDespuesDeVenta =
+            null;
 
 
         return true;
@@ -5133,6 +5324,12 @@ private async Task QuitarClienteAsync()
 
         OnPropertyChanged(
             nameof(Total));
+
+        OnPropertyChanged(
+            nameof(SaldoPendiente));
+
+        OnPropertyChanged(
+            nameof(TienePagosParciales));
 
         OnPropertyChanged(
             nameof(TextoCantidadProductos));

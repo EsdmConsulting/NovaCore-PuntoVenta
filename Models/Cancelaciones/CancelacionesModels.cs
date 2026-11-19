@@ -4,6 +4,31 @@ using System.Text.Json.Serialization;
 
 namespace NovaCoreESDM.Models.Cancelaciones;
 
+// ============================================================
+// LISTAR ADMINISTRADOR
+// GET /api/consulta/consultar_administradores
+// ============================================================
+
+public class AdministradoresListResponse
+{
+    [JsonPropertyName("res")]
+    public int Res { get; set; }
+
+    [JsonPropertyName("msg")]
+    public string? Msg { get; set; }
+
+    [JsonPropertyName("data")]
+    public List<AdministradorItem> Data { get; set; } = new();
+}
+
+public class AdministradorItem
+{
+    [JsonPropertyName("usuario")]
+    public string? Usuario { get; set; }
+
+    [JsonPropertyName("nombre")]
+    public string? Nombre { get; set; }
+}
 
 // ============================================================
 // AUTORIZAR ADMINISTRADOR
@@ -99,6 +124,25 @@ public class VentaCancelacionItem
 
     [JsonPropertyName("folio")]
     public string? Folio { get; set; }
+
+    // Folio comercial del ticket (PV-001-B-00000001).
+    // Si el backend no lo devuelve, queda null y se usa "folio".
+    [JsonPropertyName("folio_ticket")]
+    public string? FolioTicket { get; set; }
+
+    [JsonIgnore]
+    public string FolioMostrar =>
+        !string.IsNullOrWhiteSpace(FolioTicket)
+            ? FolioTicket!
+            : Folio ?? string.Empty;
+
+    [JsonIgnore]
+    public bool PuedeReimprimir =>
+        string.Equals(
+            Estado,
+            "FINALIZADA",
+            StringComparison.OrdinalIgnoreCase
+        );
 
     [JsonPropertyName("id_empresa")]
     public int IdEmpresa { get; set; }
@@ -274,6 +318,9 @@ public class VentaCancelacionDetalle
 
     [JsonPropertyName("folio")]
     public string? Folio { get; set; }
+
+    [JsonPropertyName("folio_ticket")]
+    public string? FolioTicket { get; set; }
 
     [JsonPropertyName("id_empresa")]
     public int IdEmpresa { get; set; }

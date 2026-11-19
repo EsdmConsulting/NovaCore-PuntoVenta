@@ -426,7 +426,7 @@ namespace NovaCoreESDM.Desktop.Services.MercadoPago
                             "CONCILIACION",
                         Mensaje =
                             respuesta.Msg
-                            ?? "El pago requiere conciliación con NovaCore."
+                            ?? "El pago requiere conciliación con el sistema."
                     };
                 }
 

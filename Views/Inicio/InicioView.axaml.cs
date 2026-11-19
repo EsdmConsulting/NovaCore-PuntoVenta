@@ -20,6 +20,23 @@ public partial class InicioView : UserControl
 
         AttachedToVisualTree +=
             InicioView_AttachedToVisualTree;
+
+
+        // La escena animada del banner solo se muestra cuando hay
+        // espacio suficiente; en pantallas angostas se vería diminuta.
+        var banner =
+            this.FindControl<Border>("BannerBienvenida");
+
+        var escena =
+            this.FindControl<Control>("EscenaBanner");
+
+        if (banner is not null && escena is not null)
+        {
+            banner.SizeChanged +=
+                (_, e) =>
+                    escena.IsVisible =
+                        e.NewSize.Width >= 1050;
+        }
     }
 
 

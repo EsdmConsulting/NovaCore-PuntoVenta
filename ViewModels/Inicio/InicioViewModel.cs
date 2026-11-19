@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -100,6 +101,36 @@ public partial class InicioViewModel
 
     public bool NoTieneActividad =>
         !TieneActividad;
+
+
+    // =========================================================
+    // SALUDO
+    // =========================================================
+
+    public string Saludo
+    {
+        get
+        {
+            var hora =
+                DateTime.Now.Hour;
+
+            var saludo =
+                hora < 12
+                    ? "Buenos días"
+                    : hora < 19
+                        ? "Buenas tardes"
+                        : "Buenas noches";
+
+            var nombre =
+                PosSession.NombreUsuario
+                    .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                    .FirstOrDefault();
+
+            return string.IsNullOrWhiteSpace(nombre)
+                ? $"¡{saludo}!"
+                : $"¡{saludo}, {nombre}!";
+        }
+    }
 
 
     // =========================================================

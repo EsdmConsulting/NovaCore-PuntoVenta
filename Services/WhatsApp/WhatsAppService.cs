@@ -43,10 +43,78 @@ public class WhatsAppService
                 );
 
 
-            var url =
+            // =================================================
+            // 1) APLICACIÓN DE ESCRITORIO DE WHATSAPP
+            // =================================================
+            //
+            // Si está instalada, se abre directo en la app (no
+            // necesita navegador).
+
+            var urlApp =
+                $"whatsapp://send?phone={telefonoLimpio}&text={mensajeCodificado}";
+
+            if (TieneWhatsAppEscritorio() &&
+                IntentarAbrir(urlApp))
+            {
+                return Task.FromResult(true);
+            }
+
+
+            // =================================================
+            // 2) NAVEGADOR PREDETERMINADO (Edge, Chrome, etc.)
+            // =================================================
+
+            var urlWeb =
                 $"https://wa.me/{telefonoLimpio}?text={mensajeCodificado}";
 
+            if (IntentarAbrir(urlWeb))
+            {
+                return Task.FromResult(true);
+            }
 
+
+            // =================================================
+            // 3) WINDOWS SIN NAVEGADOR PREDETERMINADO
+            // =================================================
+            //
+            // Explorer abre la liga con el navegador disponible
+            // (Edge viene incluido en Windows).
+
+            if (OperatingSystem.IsWindows() &&
+                IntentarAbrirConProceso("explorer.exe", $"\"{urlWeb}\""))
+            {
+                return Task.FromResult(true);
+            }
+
+            if (OperatingSystem.IsWindows() &&
+                IntentarAbrirConProceso("msedge.exe", $"\"{urlWeb}\""))
+            {
+                return Task.FromResult(true);
+            }
+
+
+            return Task.FromResult(false);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                $"No fue posible abrir WhatsApp: {ex.Message}"
+            );
+
+            return Task.FromResult(false);
+        }
+    }
+
+
+    // =========================================================
+    // ABRIR LIGAS
+    // =========================================================
+
+    private static bool IntentarAbrir(
+        string url)
+    {
+        try
+        {
             Process.Start(
                 new ProcessStartInfo
                 {
@@ -58,16 +126,78 @@ public class WhatsAppService
                 }
             );
 
-
-            return Task.FromResult(true);
+            return true;
         }
         catch (Exception ex)
         {
             Console.WriteLine(
-                $"No fue posible abrir WhatsApp: {ex.Message}"
+                $"No fue posible abrir {url[..Math.Min(url.Length, 24)]}…: {ex.Message}"
             );
 
-            return Task.FromResult(false);
+            return false;
+        }
+    }
+
+
+    private static bool IntentarAbrirConProceso(
+        string programa,
+        string argumentos)
+    {
+        try
+        {
+            Process.Start(
+                new ProcessStartInfo
+                {
+                    FileName =
+                        programa,
+
+                    Arguments =
+                        argumentos,
+
+                    UseShellExecute =
+                        true
+                }
+            );
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                $"No fue posible abrir WhatsApp con {programa}: {ex.Message}"
+            );
+
+            return false;
+        }
+    }
+
+
+    // =========================================================
+    // ¿ESTÁ INSTALADO WHATSAPP DE ESCRITORIO?
+    // =========================================================
+    //
+    // La app registra el protocolo "whatsapp:". Solo se usa si
+    // existe; si no, Windows mostraría "buscar una aplicación".
+    // =========================================================
+
+    private static bool TieneWhatsAppEscritorio()
+    {
+        if (!OperatingSystem.IsWindows())
+        {
+            return false;
+        }
+
+        try
+        {
+            using var clave =
+                Microsoft.Win32.Registry.ClassesRoot
+                    .OpenSubKey("whatsapp");
+
+            return clave is not null;
+        }
+        catch
+        {
+            return false;
         }
     }
 

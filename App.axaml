@@ -17,6 +17,12 @@
              xmlns:cancelacionesViews="using:NovaCoreESDM.Views.Cancelaciones"
              xmlns:cancelacionesViewModels="using:NovaCoreESDM.ViewModels.Cancelaciones"
 
+             xmlns:reimpresionViews="using:NovaCoreESDM.Views.Reimpresion"
+             xmlns:reimpresionViewModels="using:NovaCoreESDM.ViewModels.Reimpresion"
+
+             xmlns:configuracionViews="using:NovaCoreESDM.Views.Configuracion"
+             xmlns:configuracionViewModels="using:NovaCoreESDM.ViewModels.Configuracion"
+
              x:Class="NovaCoreESDM.App"
              RequestedThemeVariant="Light">
 
@@ -42,12 +48,27 @@
             <cortesViews:CortesView/>
         </DataTemplate>
 
+        <!-- PRUEBA DE CORTE (SIMULACIÓN) -->
+        <DataTemplate DataType="cortesViewModels:PruebaCorteViewModel">
+            <cortesViews:PruebaCorteView/>
+        </DataTemplate>
+
         <!-- ================================================= -->
         <!-- CANCELACIONES                                    -->
         <!-- ================================================= -->
 
         <DataTemplate DataType="cancelacionesViewModels:CancelacionesViewModel">
             <cancelacionesViews:CancelacionesView/>
+        </DataTemplate>
+
+        <!-- REIMPRESIÓN DE TICKETS -->
+        <DataTemplate DataType="reimpresionViewModels:ReimpresionViewModel">
+            <reimpresionViews:ReimpresionView/>
+        </DataTemplate>
+
+        <!-- CONFIGURACIÓN DE IMPRESORA -->
+        <DataTemplate DataType="configuracionViewModels:ConfiguracionViewModel">
+            <configuracionViews:ConfiguracionView/>
         </DataTemplate>
 
     </Application.DataTemplates>

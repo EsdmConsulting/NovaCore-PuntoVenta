@@ -7,10 +7,12 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
 
         <!-- Identidad de la aplicación -->
-        <AssemblyName>NovaCoreESDM</AssemblyName>
+        <!-- Nombre del ejecutable: PuntoDeVenta.exe -->
+        <AssemblyName>PuntoDeVenta</AssemblyName>
         <RootNamespace>NovaCoreESDM</RootNamespace>
  
-        <Product>ESDM Punto de Venta</Product>
+        <Product>Punto de Venta</Product>
+        <AssemblyTitle>Punto de Venta</AssemblyTitle>
         <Company>ESDM Consulting</Company>
         <Authors>ESDM Consulting</Authors>
         <Description>
@@ -47,7 +49,7 @@
 
         <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.0" />
 
-        <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
+      <!--   <PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3">
 
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">
                 None
@@ -56,7 +58,7 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">
                 All
             </PrivateAssets>
-        </PackageReference>
+        </PackageReference> -->
 
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 

@@ -192,6 +192,137 @@ public class CortesService
 
 
     // ============================================================
+    // PRUEBA DE CORTE (SIMULACIÓN)
+    // ============================================================
+    //
+    // GET /api/pos/cortes/simular
+    //
+    // Calcula el corte de una caja en cualquier periodo, con la
+    // misma cuenta que el cierre de turno. No modifica nada.
+    // ============================================================
+
+    public async Task<SimulacionCorteResponse>
+        SimularCorteAsync(
+            int idCaja,
+            DateTime fechaDesde,
+            DateTime fechaHasta)
+    {
+        try
+        {
+            var url =
+                "api/pos/cortes/simular" +
+                $"?id_caja={idCaja}" +
+                $"&fecha_desde={fechaDesde:yyyy-MM-dd}" +
+                $"&fecha_hasta={fechaHasta:yyyy-MM-dd}";
+
+
+            Console.WriteLine(
+                "========================================");
+
+            Console.WriteLine(
+                "SIMULANDO CORTE:");
+
+            Console.WriteLine(
+                url);
+
+            Console.WriteLine(
+                "========================================");
+
+
+            var response =
+                await ApiClient.Http
+                    .GetAsync(
+                        url);
+
+
+            var contenido =
+                LimpiarRespuestaPhp(
+                    await response.Content
+                        .ReadAsStringAsync());
+
+
+            if (string.IsNullOrWhiteSpace(
+                    contenido))
+            {
+                return new SimulacionCorteResponse
+                {
+                    Res = 0,
+
+                    Msg =
+                        $"El servidor no devolvió información (HTTP {(int)response.StatusCode})."
+                };
+            }
+
+
+            SimulacionCorteResponse? resultado;
+
+            try
+            {
+                resultado =
+                    JsonSerializer.Deserialize<SimulacionCorteResponse>(
+                        contenido,
+                        JsonOptions);
+            }
+            catch (JsonException)
+            {
+                Console.WriteLine(
+                    "RESPUESTA SIMULACIÓN NO VÁLIDA:");
+
+                Console.WriteLine(
+                    contenido);
+
+                return new SimulacionCorteResponse
+                {
+                    Res = 0,
+
+                    Msg =
+                        response.StatusCode == System.Net.HttpStatusCode.NotFound
+                            ? "El servidor todavía no tiene la Prueba de corte. Hay que publicar el backend."
+                            : $"La respuesta del servidor no es válida (HTTP {(int)response.StatusCode})."
+                };
+            }
+
+
+            if (resultado is not null &&
+                resultado.Res != 1 &&
+                (resultado.Msg ?? string.Empty).Contains(
+                    "Endpoint no existe",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                resultado.Msg =
+                    "El servidor todavía no tiene la Prueba de corte. Hay que publicar el backend (api/pos/cortes/simular).";
+            }
+
+
+            return resultado
+                ?? new SimulacionCorteResponse
+                {
+                    Res = 0,
+
+                    Msg =
+                        "El servidor devolvió una respuesta vacía."
+                };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(
+                "ERROR SIMULANDO CORTE:");
+
+            Console.WriteLine(
+                ex);
+
+            return new SimulacionCorteResponse
+            {
+                Res = 0,
+
+                Msg =
+                    $"No fue posible simular el corte: {ex.Message}"
+            };
+        }
+    }
+
+
+    // ============================================================
     // LIMPIAR RESPUESTA PHP
     // ============================================================
 

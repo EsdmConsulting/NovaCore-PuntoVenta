@@ -1,0 +1,209 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Comun.AvisoWindow"
+
+        Icon="/Assets/Brand/esdm-app-icon.ico"
+
+        Width="480"
+        SizeToContent="Height"
+
+        CanResize="False"
+        WindowStartupLocation="CenterOwner"
+
+        Background="#F4F6F8">
+
+
+    <!-- ========================================================= -->
+    <!-- AVISO REUTILIZABLE                                        -->
+    <!-- ========================================================= -->
+    <!-- Ventana de advertencia con un solo botón "Entendido".     -->
+    <!-- Se ajusta al alto del mensaje.                            -->
+    <!-- ========================================================= -->
+
+    <StackPanel>
+
+
+        <!-- MENSAJE -->
+
+        <Border Padding="30,28,30,24">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Offset="0" Color="#FFF7E0"/>
+                    <GradientStop Offset="0.7" Color="#F4F6F8"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <StackPanel Spacing="14">
+
+                <!-- Ícono con pulso -->
+                <Panel Width="80" Height="80"
+                       HorizontalAlignment="Center">
+                    <Ellipse Classes="pulso"
+                             Fill="#40F59E0B"
+                             RenderTransformOrigin="50%,50%">
+                        <Ellipse.RenderTransform>
+                            <ScaleTransform/>
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
+                    <Border Width="58" Height="58"
+                            CornerRadius="29">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                <GradientStop Offset="0" Color="#FBBF24"/>
+                                <GradientStop Offset="1" Color="#D97706"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <PathIcon Width="26" Height="26"
+                                  Foreground="White"
+                                  Data="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                    </Border>
+                </Panel>
+
+                <TextBlock x:Name="TextoTitulo"
+                           Foreground="#0B1220"
+                           FontSize="22"
+                           FontWeight="Bold"
+                           LetterSpacing="-0.3"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"/>
+
+                <TextBlock x:Name="TextoMensaje"
+                           Foreground="#475569"
+                           FontSize="14"
+                           LineHeight="21"
+                           HorizontalAlignment="Center"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           MaxWidth="400"/>
+
+            </StackPanel>
+
+        </Border>
+
+
+        <!-- BOTÓN -->
+
+        <Border Background="White"
+                BorderBrush="#EAEEF2"
+                BorderThickness="0,1,0,0"
+                Padding="30,16,30,22">
+
+            <StackPanel Spacing="10">
+
+                <Button x:Name="BotonEntendido"
+                        Classes="entendido"
+                        IsDefault="True"
+                        IsCancel="True"
+                        Click="Entendido_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="9">
+                        <PathIcon Width="18" Height="18"
+                                  Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        <TextBlock Text="Entendido" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <StackPanel Orientation="Horizontal"
+                            Spacing="6"
+                            HorizontalAlignment="Center">
+                    <Border Classes="tecla"><TextBlock Text="Enter"/></Border>
+                    <TextBlock Text="o"
+                               Foreground="#64748B"
+                               FontSize="12"
+                               VerticalAlignment="Center"/>
+                    <Border Classes="tecla"><TextBlock Text="Esc"/></Border>
+                    <TextBlock Text="para cerrar"
+                               Foreground="#64748B"
+                               FontSize="12"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+            </StackPanel>
+
+        </Border>
+
+    </StackPanel>
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <Window.Styles>
+
+        <Style Selector="Ellipse.pulso">
+            <Style.Animations>
+                <Animation Duration="0:0:1.8"
+                           IterationCount="Infinite"
+                           Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="0.75"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="0.75"/>
+                        <Setter Property="Opacity" Value="0.9"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1.2"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1.2"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Border.tecla">
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style Selector="Button.entendido">
+            <Setter Property="Height" Value="54"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22C55E"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.entendido /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 24 -8 #8022C55E"/>
+        </Style>
+
+        <Style Selector="Button.entendido:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#2BD268"/>
+                    <GradientStop Offset="1" Color="#11A84E"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.entendido:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#0B7A37"/>
+        </Style>
+
+    </Window.Styles>
+
+</Window>

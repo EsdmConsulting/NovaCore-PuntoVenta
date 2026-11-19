@@ -20,6 +20,9 @@ public class FinalizarVentaData
     [JsonPropertyName("id_venta")]
     public int IdVenta { get; set; }
 
+    [JsonPropertyName("uuid")]
+    public string? Uuid { get; set; }
+
     // Folio técnico:
     // POS-20260820225237556
     [JsonPropertyName("folio")]

@@ -1,10 +1,16 @@
 using System;
+using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
 using NovaCoreESDM.Models.Turno;
 using NovaCoreESDM.ViewModels;
 using NovaCoreESDM.ViewModels.Turno;
+using System.Globalization;
+using Avalonia.Interactivity;
+using NovaCoreESDM.Views.Comun;
 
 namespace NovaCoreESDM.Views.Turno;
 
@@ -45,6 +51,12 @@ public partial class AperturaTurnoWindow : Window
 
         _viewModel.TurnoAbiertoCorrectamente +=
             OnTurnoAbiertoCorrectamente;
+
+
+        // El cursor arranca en el fondo inicial.
+        Opened +=
+            (_, _) =>
+                this.FindControl<NumericUpDown>("FondoInicialInput")?.Focus();
     }
 
 
@@ -85,28 +97,84 @@ public partial class AperturaTurnoWindow : Window
         TurnoAbierto turno,
         bool mismoUsuario)
     {
-        var confirmacion =
-            new ContinuarTurnoWindow(
+        try
+        {
+            if (turno is null)
+            {
+                await MostrarErrorAsync(
+                    "El servidor indicó que existe un turno abierto, " +
+                    "pero no devolvió los datos del turno.");
+
+                return;
+            }
+
+            var confirmacion = new ContinuarTurnoWindow(
                 turno,
                 mismoUsuario);
 
+            var resultado = await confirmacion.ShowDialog<bool>(this);
 
-        var resultado =
-            await confirmacion
-                .ShowDialog<bool>(this);
+            if (!resultado)
+                return;
 
+            await _viewModel.ContinuarTurnoExistenteAsync(turno);
 
-        if (!resultado)
-        {
-            return;
+            // Si el ViewModel no pudo continuar, la ventana permanece abierta
+            // y muestra su MensajeError enlazado en XAML.
         }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(
+                "ERROR MOSTRANDO O CONFIRMANDO TURNO EXISTENTE:");
+            Console.Error.WriteLine(ex);
 
-
-        await _viewModel
-            .ContinuarTurnoExistenteAsync(
-                turno);
+            try
+            {
+                await MostrarErrorAsync(
+                    "No fue posible mostrar o continuar el turno existente.\n\n" +
+                    ex.Message);
+            }
+            catch (Exception dialogEx)
+            {
+                // La excepción secundaria tampoco debe escapar de async void.
+                Console.Error.WriteLine(
+                    "ERROR MOSTRANDO EL MENSAJE DE ERROR:");
+                Console.Error.WriteLine(dialogEx);
+            }
+        }
     }
 
+    private async Task MostrarErrorAsync(string mensaje)
+    {
+        await new AvisoWindow(
+                "No fue posible continuar",
+                mensaje)
+            .ShowDialog(this);
+    }
+
+
+    // =========================================================
+    // MONTOS RÁPIDOS
+    // =========================================================
+    //
+    // Solo llenan el fondo inicial; la validación sigue en el
+    // ViewModel.
+    // =========================================================
+
+    private void MontoRapido_Click(
+        object? sender,
+        RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: string valor })
+            return;
+
+        _viewModel.FondoInicial =
+            decimal.Parse(
+                valor,
+                CultureInfo.InvariantCulture);
+
+        this.FindControl<NumericUpDown>("FondoInicialInput")?.Focus();
+    }
 
     // =========================================================
     // TURNO LISTO
@@ -122,9 +190,13 @@ public partial class AperturaTurnoWindow : Window
             };
 
 
+        if (Application.Current?.ApplicationLifetime
+            is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.MainWindow = mainWindow;
+        }
+
         mainWindow.Show();
-
-
         Close();
     }
 

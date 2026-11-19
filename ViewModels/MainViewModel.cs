@@ -4,10 +4,16 @@ using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
+using Avalonia.Threading;
+
+using NovaCoreESDM.Models.Session;
+
 using NovaCoreESDM.ViewModels.Cancelaciones;
+using NovaCoreESDM.ViewModels.Configuracion;
 using NovaCoreESDM.ViewModels.Cortes;
 using NovaCoreESDM.ViewModels.Credito;
 using NovaCoreESDM.ViewModels.Inicio;
+using NovaCoreESDM.ViewModels.Reimpresion;
 using NovaCoreESDM.ViewModels.Ventas;
 
 namespace NovaCoreESDM.ViewModels;
@@ -26,7 +32,27 @@ public partial class MainViewModel : ViewModelBase
 
     public CortesViewModel CortesModulo { get; }
 
+    public PruebaCorteViewModel PruebaCorteModulo { get; }
+
     public CancelacionesViewModel CancelacionesModulo { get; }
+
+    public ReimpresionViewModel ReimpresionModulo { get; }
+
+    public ConfiguracionViewModel ConfiguracionModulo { get; }
+
+
+    // =========================================================
+    // AUTORIZACIÓN DE ADMINISTRADOR
+    // =========================================================
+    //
+    // La asigna MainWindow (abre la ventana de usuario/contraseña).
+    //
+    //   parámetros: título y descripción de la ventana
+    //   resultado : nombre del administrador, o null si canceló
+    // =========================================================
+
+    public Func<string, string, Task<string?>>?
+        SolicitarAutorizacionAdministradorAsync { get; set; }
 
 
     // =========================================================
@@ -67,7 +93,19 @@ public partial class MainViewModel : ViewModelBase
                 );
 
                 OnPropertyChanged(
+                    nameof(EsPruebaCorte)
+                );
+
+                OnPropertyChanged(
                     nameof(EsCancelaciones)
+                );
+
+                OnPropertyChanged(
+                    nameof(EsReimpresion)
+                );
+
+                OnPropertyChanged(
+                    nameof(EsConfiguracion)
                 );
             }
         }
@@ -106,6 +144,77 @@ public partial class MainViewModel : ViewModelBase
 
 
     // =========================================================
+    // TARJETA DE USUARIO (MENÚ LATERAL)
+    // =========================================================
+
+    public string UsuarioActual =>
+        string.IsNullOrWhiteSpace(PosSession.NombreUsuario)
+            ? "Usuario"
+            : PosSession.NombreUsuario;
+
+
+    public string InicialesUsuario
+    {
+        get
+        {
+            var partes =
+                UsuarioActual.Split(
+                    ' ',
+                    StringSplitOptions.RemoveEmptyEntries);
+
+            return partes.Length >= 2
+                ? $"{char.ToUpper(partes[0][0])}{char.ToUpper(partes[1][0])}"
+                : char.ToUpper(partes[0][0]).ToString();
+        }
+    }
+
+
+    public string DetalleUsuario
+    {
+        get
+        {
+            var caja =
+                string.IsNullOrWhiteSpace(PosSession.NombreCaja)
+                    ? PosSession.CodigoCaja
+                    : PosSession.NombreCaja;
+
+            var estadoTurno =
+                PosSession.TieneTurnoActivo
+                    ? "Turno abierto"
+                    : "Sin turno";
+
+            return string.IsNullOrWhiteSpace(caja)
+                ? estadoTurno
+                : $"{caja} · {estadoTurno}";
+        }
+    }
+
+
+    public bool TurnoAbierto =>
+        PosSession.TieneTurnoActivo;
+
+
+    public string CajaActual =>
+        string.IsNullOrWhiteSpace(PosSession.NombreCaja)
+            ? string.IsNullOrWhiteSpace(PosSession.CodigoCaja)
+                ? "Sin caja"
+                : PosSession.CodigoCaja
+            : PosSession.NombreCaja;
+
+
+    // =========================================================
+    // RELOJ DEL ENCABEZADO
+    // =========================================================
+
+    [ObservableProperty]
+    private string _horaActual =
+        DateTime.Now.ToString("HH:mm");
+
+
+    private readonly DispatcherTimer _reloj;
+
+
+    // =========================================================
     // ESTADOS DEL MENÚ
     // =========================================================
 
@@ -125,8 +234,20 @@ public partial class MainViewModel : ViewModelBase
         VistaActual is CortesViewModel;
 
 
+    public bool EsPruebaCorte =>
+        VistaActual is PruebaCorteViewModel;
+
+
     public bool EsCancelaciones =>
         VistaActual is CancelacionesViewModel;
+
+
+    public bool EsReimpresion =>
+        VistaActual is ReimpresionViewModel;
+
+
+    public bool EsConfiguracion =>
+        VistaActual is ConfiguracionViewModel;
 
 
     // =========================================================
@@ -151,8 +272,37 @@ public partial class MainViewModel : ViewModelBase
             new CortesViewModel();
 
 
+        PruebaCorteModulo =
+            new PruebaCorteViewModel();
+
+
         CancelacionesModulo =
             new CancelacionesViewModel();
+
+
+        ReimpresionModulo =
+            new ReimpresionViewModel();
+
+
+        ConfiguracionModulo =
+            new ConfiguracionViewModel();
+
+
+        // Salir de Reimpresión = volver a Inicio (cierra el acceso admin)
+        ReimpresionModulo.Salir =
+            () => NavegarCommand.Execute(
+                "Inicio"
+            );
+
+
+        // Configuración usa la misma ventana de administrador
+        ConfiguracionModulo.SolicitarAutorizacionAdministradorAsync =
+            (titulo, descripcion) =>
+                SolicitarAutorizacionAdministradorAsync is null
+                    ? Task.FromResult<string?>(null)
+                    : SolicitarAutorizacionAdministradorAsync(
+                        titulo,
+                        descripcion);
 
 
         // =====================================================
@@ -177,6 +327,30 @@ public partial class MainViewModel : ViewModelBase
 
         _vistaActual =
             InicioModulo;
+
+
+        // =====================================================
+        // RELOJ
+        // =====================================================
+
+        _reloj =
+            new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(15)
+            };
+
+        _reloj.Tick +=
+            (_, _) =>
+            {
+                HoraActual =
+                    DateTime.Now.ToString("HH:mm");
+
+                FechaActual =
+                    DateTime.Now.ToString(
+                        "dddd, dd 'de' MMMM 'de' yyyy");
+            };
+
+        _reloj.Start();
     }
 
 
@@ -216,6 +390,20 @@ public partial class MainViewModel : ViewModelBase
         )
         {
             await CancelacionesModulo
+                .CerrarAutorizacionAsync();
+        }
+
+
+        // =====================================================
+        // CERRAR AUTORIZACIÓN DE REIMPRESIÓN AL SALIR
+        // =====================================================
+
+        if (
+            VistaActual is ReimpresionViewModel &&
+            seccion != "Reimpresion"
+        )
+        {
+            await ReimpresionModulo
                 .CerrarAutorizacionAsync();
         }
 
@@ -295,6 +483,24 @@ public partial class MainViewModel : ViewModelBase
 
 
             // =================================================
+            // PRUEBA DE CORTE (SIMULACIÓN)
+            // =================================================
+
+            case "PruebaCorte":
+
+                VistaActual =
+                    PruebaCorteModulo;
+
+                TituloPagina =
+                    "Prueba de corte";
+
+                SubtituloPagina =
+                    "Simula cortes de caja en cualquier periodo sin afectar la caja";
+
+                break;
+
+
+            // =================================================
             // CANCELACIONES
             // =================================================
 
@@ -308,6 +514,70 @@ public partial class MainViewModel : ViewModelBase
 
                 SubtituloPagina =
                     "Consulta y cancela ventas finalizadas con autorización administrativa";
+
+                break;
+
+
+            // =================================================
+            // REIMPRESIÓN DE TICKETS (requiere administrador)
+            // =================================================
+
+            case "Reimpresion":
+
+                // Ya estamos dentro: no volver a pedir contraseña.
+                if (VistaActual is ReimpresionViewModel)
+                {
+                    break;
+                }
+
+
+                var administrador =
+                    SolicitarAutorizacionAdministradorAsync is null
+                        ? null
+                        : await SolicitarAutorizacionAdministradorAsync(
+                            "Autorizar reimpresión de tickets",
+                            "Selecciona un administrador e ingresa su contraseña para reimprimir tickets."
+                        );
+
+
+                // Canceló o no pasó la validación: nos quedamos donde estábamos.
+                if (string.IsNullOrWhiteSpace(administrador))
+                {
+                    return;
+                }
+
+
+                VistaActual =
+                    ReimpresionModulo;
+
+                TituloPagina =
+                    "Reimpresión de tickets";
+
+                SubtituloPagina =
+                    "Reimprime tickets de ventas finalizadas con autorización administrativa";
+
+                await ReimpresionModulo
+                    .IniciarAsync(administrador);
+
+                break;
+
+
+            // =================================================
+            // CONFIGURACIÓN
+            // =================================================
+
+            case "Configuracion":
+
+                ConfiguracionModulo.Cargar();
+
+                VistaActual =
+                    ConfiguracionModulo;
+
+                TituloPagina =
+                    "Configuración";
+
+                SubtituloPagina =
+                    "Impresora, formato de ticket y ajustes de este equipo";
 
                 break;
         }

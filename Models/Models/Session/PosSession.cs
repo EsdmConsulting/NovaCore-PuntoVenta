@@ -57,6 +57,20 @@ public static class PosSession
     }
 
 
+    // Limpia únicamente el contexto operativo de la caja actual.
+    // Conserva la sesión del usuario autenticado para permitir
+    // seleccionar otra caja sin volver a iniciar sesión.
+    public static void LimpiarContextoCaja()
+    {
+        IdEmpresa = 0;
+        IdUnidadOperativa = 0;
+        IdCaja = 0;
+        IdTurno = 0;
+        CodigoCaja = string.Empty;
+        NombreCaja = string.Empty;
+    }
+
+
     public static void LimpiarSesion()
     {
         IdUsuario = 0;

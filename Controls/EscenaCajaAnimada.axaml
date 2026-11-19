@@ -1,0 +1,452 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NovaCoreESDM.Controls.EscenaCajaAnimada"
+             IsHitTestVisible="False">
+
+    <!-- ========================================================= -->
+    <!-- ESCENA ANIMADA DE CAJA                                    -->
+    <!-- ========================================================= -->
+    <!-- Productos que avanzan por una banda, pasan por el         -->
+    <!-- escáner y caen al carrito. Todo es vectorial y se escala  -->
+    <!-- con el Viewbox (lienzo de diseño de 560 x 170).           -->
+    <!--                                                           -->
+    <!-- Ritmo: cada producto tarda 6 s; hay 4 escalonados cada    -->
+    <!-- 1.5 s, así que el escáner y el carrito laten cada 1.5 s.  -->
+    <!-- ========================================================= -->
+
+    <UserControl.Styles>
+
+        <!-- Producto avanzando por la banda -->
+        <Style Selector="Border.producto">
+            <Setter Property="Width" Value="46"/>
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Opacity" Value="0"/>
+            <Setter Property="BoxShadow" Value="0 8 18 -6 #80000000"/>
+            <Setter Property="RenderTransformOrigin" Value="50%,50%"/>
+        </Style>
+
+        <Style Selector="Border.producto PathIcon">
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style Selector="Border.p1">
+            <Style.Animations>
+                <Animation Duration="0:0:6"
+                           IterationCount="Infinite"
+                           FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="8%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="80%">
+                        <Setter Property="TranslateTransform.X" Value="380"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="90%">
+                        <Setter Property="TranslateTransform.X" Value="430"/>
+                        <Setter Property="TranslateTransform.Y" Value="-14"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="462"/>
+                        <Setter Property="TranslateTransform.Y" Value="22"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Escalonado de los productos -->
+        <Style Selector="Border.p2">
+            <Style.Animations>
+                <Animation Duration="0:0:6"
+                           Delay="0:0:1.5"
+                           IterationCount="Infinite"
+                           FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="8%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="80%">
+                        <Setter Property="TranslateTransform.X" Value="380"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="90%">
+                        <Setter Property="TranslateTransform.X" Value="430"/>
+                        <Setter Property="TranslateTransform.Y" Value="-14"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="462"/>
+                        <Setter Property="TranslateTransform.Y" Value="22"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Border.p3">
+            <Style.Animations>
+                <Animation Duration="0:0:6"
+                           Delay="0:0:3"
+                           IterationCount="Infinite"
+                           FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="8%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="80%">
+                        <Setter Property="TranslateTransform.X" Value="380"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="90%">
+                        <Setter Property="TranslateTransform.X" Value="430"/>
+                        <Setter Property="TranslateTransform.Y" Value="-14"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="462"/>
+                        <Setter Property="TranslateTransform.Y" Value="22"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Border.p4">
+            <Style.Animations>
+                <Animation Duration="0:0:6"
+                           Delay="0:0:4.5"
+                           IterationCount="Infinite"
+                           FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="8%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="80%">
+                        <Setter Property="TranslateTransform.X" Value="380"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="90%">
+                        <Setter Property="TranslateTransform.X" Value="430"/>
+                        <Setter Property="TranslateTransform.Y" Value="-14"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="462"/>
+                        <Setter Property="TranslateTransform.Y" Value="22"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Rayitas de la banda avanzando -->
+        <Style Selector="Line.banda">
+            <Style.Animations>
+                <Animation Duration="0:0:0.6"
+                           IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="StrokeDashOffset" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="StrokeDashOffset" Value="-14"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Láser del escáner: destello cada 1.5 s al pasar un producto -->
+        <Style Selector="Border.laser">
+            <Style.Animations>
+                <Animation Duration="0:0:1.5"
+                           Delay="0:0:2.5"
+                           IterationCount="Infinite"
+                           FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.35"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="12%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="35%">
+                        <Setter Property="Opacity" Value="0.35"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.35"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <Style Selector="Ellipse.luzEscaner">
+            <Style.Animations>
+                <Animation Duration="0:0:1.5"
+                           Delay="0:0:2.5"
+                           IterationCount="Infinite"
+                           FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.3"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="12%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="40%">
+                        <Setter Property="Opacity" Value="0.3"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.3"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Carrito: brinquito cada vez que cae un producto -->
+        <Style Selector="Panel.carrito">
+            <Style.Animations>
+                <Animation Duration="0:0:1.5"
+                           Delay="0:0:0.1"
+                           IterationCount="Infinite"
+                           FillMode="Both"
+                           Easing="SineEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="10%">
+                        <Setter Property="TranslateTransform.Y" Value="-7"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="25%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Etiqueta "+ Vendido" que sube del carrito -->
+        <Style Selector="Border.vendido">
+            <Style.Animations>
+                <Animation Duration="0:0:1.5"
+                           Delay="0:0:0.1"
+                           IterationCount="Infinite"
+                           FillMode="Both"
+                           Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.Y" Value="10"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="15%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="60%">
+                        <Setter Property="TranslateTransform.Y" Value="-18"/>
+                        <Setter Property="Opacity" Value="0.9"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.Y" Value="-26"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+    </UserControl.Styles>
+
+
+    <Viewbox Stretch="Uniform">
+
+        <Canvas Width="560" Height="170">
+
+            <!-- ============ BANDA ============ -->
+
+            <Border Canvas.Left="10" Canvas.Top="120"
+                    Width="470" Height="16"
+                    CornerRadius="8"
+                    Background="#1FFFFFFF"
+                    BorderBrush="#2EFFFFFF"
+                    BorderThickness="1"/>
+
+            <Line Classes="banda"
+                  StartPoint="22,128" EndPoint="468,128"
+                  Stroke="#4DFFFFFF"
+                  StrokeThickness="2"
+                  StrokeDashArray="3,4"/>
+
+            <!-- Rodillos -->
+            <Ellipse Canvas.Left="22" Canvas.Top="138" Width="10" Height="10" Fill="#26FFFFFF"/>
+            <Ellipse Canvas.Left="140" Canvas.Top="138" Width="10" Height="10" Fill="#26FFFFFF"/>
+            <Ellipse Canvas.Left="258" Canvas.Top="138" Width="10" Height="10" Fill="#26FFFFFF"/>
+            <Ellipse Canvas.Left="376" Canvas.Top="138" Width="10" Height="10" Fill="#26FFFFFF"/>
+
+
+            <!-- ============ ESCÁNER ============ -->
+
+            <!-- Brazo -->
+            <Border Canvas.Left="215" Canvas.Top="14"
+                    Width="70" Height="26"
+                    CornerRadius="10"
+                    Background="#1AFFFFFF"
+                    BorderBrush="#33FFFFFF"
+                    BorderThickness="1">
+                <StackPanel Orientation="Horizontal"
+                            Spacing="5"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+                    <Ellipse Classes="luzEscaner" Width="7" Height="7" Fill="#22C55E"/>
+                    <PathIcon Width="16" Height="16"
+                              Foreground="#D9E2EC"
+                              Data="M2 6h2v12H2V6zm3 0h1v12H5V6zm2 0h3v12H7V6zm4 0h1v12h-1V6zm3 0h2v12h-2V6zm3 0h3v12h-3V6zm4 0h1v12h-1V6z"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Rayo láser -->
+            <Border Classes="laser"
+                    Canvas.Left="248" Canvas.Top="40"
+                    Width="4" Height="80"
+                    CornerRadius="2">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Offset="0" Color="#00EF4444"/>
+                        <GradientStop Offset="0.6" Color="#CCEF4444"/>
+                        <GradientStop Offset="1" Color="#FFF87171"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+            </Border>
+
+            <Border Classes="laser"
+                    Canvas.Left="226" Canvas.Top="114"
+                    Width="48" Height="6"
+                    CornerRadius="3"
+                    Background="#66EF4444"/>
+
+
+            <!-- ============ PRODUCTOS ============ -->
+
+            <!-- Huevo (café) -->
+            <Border Classes="producto p1"
+                    Canvas.Left="12" Canvas.Top="72">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Offset="0" Color="#C27A2C"/>
+                        <GradientStop Offset="1" Color="#8A4A12"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <PathIcon Data="M12 2C9 2 5 7 5 13c0 5 3 9 7 9s7-4 7-9c0-6-4-11-7-11z"/>
+            </Border>
+
+            <!-- Maíz (amarillo) -->
+            <Border Classes="producto p2"
+                    Canvas.Left="12" Canvas.Top="72">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Offset="0" Color="#FACC15"/>
+                        <GradientStop Offset="1" Color="#D9A400"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <PathIcon Data="M12 2c-2.2 0-4 1.6-4 4v8c0 3.3 1.8 6.4 4 8 2.2-1.6 4-4.7 4-8V6c0-2.4-1.8-4-4-4zm-1.5 4h1v1h-1V6zm2 0h1v1h-1V6zm-2 3h1v1h-1V9zm2 0h1v1h-1V9zm-2 3h1v1h-1v-1zm2 0h1v1h-1v-1zm-2 3h1v1h-1v-1zm2 0h1v1h-1v-1z"/>
+            </Border>
+
+            <!-- Papel (verde) -->
+            <Border Classes="producto p3"
+                    Canvas.Left="12" Canvas.Top="72">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Offset="0" Color="#22C55E"/>
+                        <GradientStop Offset="1" Color="#0B8A3E"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <PathIcon Data="M7 4h9a4 4 0 0 1 0 8v8H7V4zm9 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+            </Border>
+
+            <!-- Bolsa (roja) -->
+            <Border Classes="producto p4"
+                    Canvas.Left="12" Canvas.Top="72">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                        <GradientStop Offset="0" Color="#EF4444"/>
+                        <GradientStop Offset="1" Color="#B91C1C"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <PathIcon Data="M18 6h-2c0-2.21-1.79-4-4-4S8 3.79 8 6H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-6-2c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2z"/>
+            </Border>
+
+
+            <!-- ============ CARRITO ============ -->
+
+            <Panel Classes="carrito"
+                   Canvas.Left="470" Canvas.Top="78"
+                   Width="80" Height="72">
+                <Panel.RenderTransform>
+                    <TranslateTransform/>
+                </Panel.RenderTransform>
+                <Ellipse Width="80" Height="80"
+                         Margin="0,-6,0,0">
+                    <Ellipse.Fill>
+                        <RadialGradientBrush>
+                            <GradientStop Offset="0" Color="#4022C55E"/>
+                            <GradientStop Offset="1" Color="#0022C55E"/>
+                        </RadialGradientBrush>
+                    </Ellipse.Fill>
+                </Ellipse>
+                <PathIcon Width="58" Height="58"
+                          Foreground="White"
+                          Data="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+            </Panel>
+
+            <!-- "+ Vendido" -->
+            <Border Classes="vendido"
+                    Canvas.Left="466" Canvas.Top="44"
+                    Padding="9,3"
+                    CornerRadius="999"
+                    Background="#22C55E">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
+                <TextBlock Text="+ Vendido"
+                           Foreground="White"
+                           FontSize="12"
+                           FontWeight="Bold"/>
+            </Border>
+
+        </Canvas>
+
+    </Viewbox>
+
+</UserControl>

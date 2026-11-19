@@ -52,6 +52,7 @@ public partial class DetalleVenta : ObservableObject
     // =========================================================
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Importe))]
     private decimal _cantidad = 1m;
 
 
@@ -70,6 +71,7 @@ public partial class DetalleVenta : ObservableObject
     // =========================================================
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Importe))]
     private decimal _precioUnitario;
 
 

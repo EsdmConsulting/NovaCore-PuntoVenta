@@ -1,6 +1,8 @@
 using System;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using Avalonia.Media;
 
 namespace NovaCoreESDM.Views.Cortes;
@@ -88,6 +90,40 @@ public partial class ConfirmarCierreCorteWindow
                 new SolidColorBrush(
                     Color.Parse("#C61F2B"));
         }
+
+
+        // Por seguridad el foco arranca en "Volver": el Enter que abrió
+        // esta ventana (o uno de más) nunca cierra el turno.
+        Opened +=
+            (_, _) =>
+                Dispatcher.UIThread.Post(
+                    () => BotonVolver.Focus(),
+                    DispatcherPriority.Input);
+    }
+
+
+    // =========================================================
+    // TECLADO
+    // =========================================================
+    //
+    // S     : cierra el turno (tecla deliberada).
+    // Esc   : vuelve (botón con IsCancel).
+    // Enter : acciona el botón enfocado (por defecto, volver).
+    // =========================================================
+
+    protected override void OnKeyDown(
+        KeyEventArgs e)
+    {
+        if (e.Key == Key.S)
+        {
+            e.Handled = true;
+
+            Close(true);
+
+            return;
+        }
+
+        base.OnKeyDown(e);
     }
 
 

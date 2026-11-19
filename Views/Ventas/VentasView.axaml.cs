@@ -1,10 +1,15 @@
+using Avalonia;
 using System;
 using System.Threading.Tasks;
+
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
 
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using Avalonia.Interactivity;
 
 using NovaCoreESDM.Models;
 using NovaCoreESDM.Models.Productos;
@@ -18,15 +23,15 @@ using Avalonia.VisualTree;
 using NovaCoreESDM.Desktop.Services.MercadoPago;
 using NovaCoreESDM.Desktop.Views.MercadoPago;
 
-using NovaCoreESDM.Desktop.Services.MercadoPago;
-using NovaCoreESDM.Desktop.Views.MercadoPago;
 
 namespace NovaCoreESDM.Views.Ventas;
 
 
-
 public partial class VentasView : UserControl
 {
+    
+    public ICommand EnfocarControlCommand { get; }
+    
     private readonly TerminalConfigurationService
         _terminalConfigurationService;
 
@@ -39,24 +44,31 @@ public partial class VentasView : UserControl
 
     private bool
         _productosCargados;
+    
+    private Window? _parentWindow;
+
+    // =========================================================
+    // CHECADORA / ESCÁNER DE CÓDIGO DE BARRAS (TECLADO HID)
+    // =========================================================
+
+    private readonly System.Text.StringBuilder _scannerBuffer = new();
+    private DateTime _ultimoTiempoTeclaScanner = DateTime.MinValue;
+    private const int ScannerMaxDelayMs = 70;
+    private readonly System.Threading.SemaphoreSlim _semaforoEscaneo = new(1, 1);
 
 
     public VentasView()
     {
         AvaloniaXamlLoader.Load(this);
-
+        
 
         _terminalConfigurationService =
             new TerminalConfigurationService();
-        
         _mercadoPagoService =
             new MercadoPagoService();
 
-
         AttachedToVisualTree +=
             OnAttachedToVisualTree;
-
-
         DetachedFromVisualTree +=
             OnDetachedFromVisualTree;
     }
@@ -71,6 +83,14 @@ public partial class VentasView : UserControl
         object? sender,
         Avalonia.VisualTreeAttachmentEventArgs e)
     {
+        
+        _parentWindow = TopLevel.GetTopLevel(this) as Window;
+                if (_parentWindow != null)
+                {
+                    //_parentWindow.KeyDown += ParentWindow_KeyDown;
+                    _parentWindow.AddHandler(InputElement.KeyDownEvent, ParentWindow_KeyDown, RoutingStrategies.Tunnel);
+                }
+        
         if (DataContext is not VentasViewModel viewModel)
             return;
         
@@ -182,35 +202,51 @@ public partial class VentasView : UserControl
 
 
 // =========================================================
-// ESCÁNER / ENTER
+// PROCESAMIENTO CENTRALIZADO DE CÓDIGO DE BARRAS / CHECADORA
 // =========================================================
 
-    private async void BuscadorProductosTextBox_KeyDown(
-        object? sender,
-        KeyEventArgs e)
+    private async Task ProcesarCodigoBarrasEscaneadoAsync(string codigo)
     {
-        if (e.Key != Key.Enter)
+        if (_viewModel is null || string.IsNullOrWhiteSpace(codigo))
             return;
 
-        e.Handled = true;
-
-        if (_viewModel is null)
-            return;
-
-        var codigo =
-            BuscadorProductosTextBox
-                ?.Text
-                ?.Trim();
-
-        if (string.IsNullOrWhiteSpace(codigo))
-            return;
-
+        await _semaforoEscaneo.WaitAsync();
         try
         {
-            await _viewModel
-                .ProcesarCodigoEscaneadoAsync(
-                    codigo
-                );
+            // Limpiamos cualquier texto que haya podido entrar al buscador
+            _viewModel.TextoBusqueda = string.Empty;
+            if (BuscadorProductosTextBox != null)
+            {
+                BuscadorProductosTextBox.Text = string.Empty;
+            }
+
+            // Si el buscador de clientes tenía foco y le cayó el carácter inicial, lo restauramos
+            if (BuscadorClienteTextBox != null && BuscadorClienteTextBox.IsFocused && !string.IsNullOrEmpty(BuscadorClienteTextBox.Text))
+            {
+                if (BuscadorClienteTextBox.Text.Length > 0 && BuscadorClienteTextBox.Text[^1] == codigo[0])
+                {
+                    BuscadorClienteTextBox.Text = BuscadorClienteTextBox.Text[..^1];
+                }
+            }
+
+            // Consultar producto por código de barras y agregar automáticamente al carrito
+            var encontrado = await _viewModel.ProcesarCodigoEscaneadoAsync(codigo);
+
+            if (!encontrado)
+            {
+                // En caso de no ser encontrado: queda listo en el buscador para revisión o búsqueda manual
+                _viewModel.TextoBusqueda = codigo;
+                if (BuscadorProductosTextBox != null)
+                {
+                    BuscadorProductosTextBox.Text = codigo;
+                    EnfocarBuscadorProductos();
+                }
+            }
+            else
+            {
+                // Producto agregado con éxito al carrito
+                EnfocarBuscadorProductos();
+            }
         }
         catch (Exception ex)
         {
@@ -219,31 +255,73 @@ public partial class VentasView : UserControl
         }
         finally
         {
-            // =====================================================
-            // LIMPIAR BÚSQUEDA
-            // =====================================================
+            _semaforoEscaneo.Release();
+        }
+    }
 
-            _viewModel.TextoBusqueda =
-                string.Empty;
-
-            BuscadorProductosTextBox.Text =
-                string.Empty;
-
-
-            // =====================================================
-            // DEJAR ESCÁNER LISTO PARA EL SIGUIENTE PRODUCTO
-            // =====================================================
-
-            EnfocarBuscadorProductos();
+    private static char? ObtenerCaracterDeTecla(KeyEventArgs e)
+    {
+        // 1. Si Avalonia proporciona KeySymbol imprimible
+        if (!string.IsNullOrEmpty(e.KeySymbol) && e.KeySymbol.Length == 1)
+        {
+            char c = e.KeySymbol[0];
+            if (!char.IsControl(c) && c >= 32 && c <= 126)
+                return c;
         }
 
-        // NO reenfocar por ahora
+        // 2. Mapeo por Key enum para compatibilidad universal con lectores USB HID
+        if (e.Key >= Key.D0 && e.Key <= Key.D9)
+            return (char)('0' + (e.Key - Key.D0));
+
+        if (e.Key >= Key.NumPad0 && e.Key <= Key.NumPad9)
+            return (char)('0' + (e.Key - Key.NumPad0));
+
+        if (e.Key >= Key.A && e.Key <= Key.Z)
+        {
+            char c = (char)('A' + (e.Key - Key.A));
+            return e.KeyModifiers.HasFlag(KeyModifiers.Shift) ? c : char.ToLower(c);
+        }
+
+        if (e.Key == Key.OemMinus || e.Key == Key.Subtract)
+            return '-';
+
+        return null;
+    }
+
+// =========================================================
+// ESCÁNER / ENTER DESDE EL INPUT MANUAL
+// =========================================================
+
+    private async void BuscadorProductosTextBox_KeyDown(object? sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Down || e.Key == Key.Right)
+        {
+            var listBox = this.FindControl<ListBox>("CatalogoProductosListBox");
+            if (listBox != null && listBox.IsVisible && listBox.ItemCount > 0)
+            {
+                e.Handled = true;
+                listBox.Focus();
+                if (listBox.SelectedIndex < 0) listBox.SelectedIndex = 0;
+            }
+            return;
+        }
+
+        if (e.Key != Key.Enter)
+            return;
+
+        e.Handled = true;
+
+        var codigo = BuscadorProductosTextBox?.Text?.Trim();
+        if (string.IsNullOrWhiteSpace(codigo))
+            return;
+
+        await ProcesarCodigoBarrasEscaneadoAsync(codigo);
     }
     
     
     // =========================================================
-// SELECCIONAR PRESENTACIÓN
-// =========================================================
+    // SELECCIONAR PRESENTACIÓN
+    // =========================================================
 
     private async void OnSolicitarSeleccionPresentacion(
         ProductoCatalogo producto)
@@ -301,10 +379,46 @@ public partial class VentasView : UserControl
                 return;
 
 
+            // ================================================
+            // VENTA POR PESO (KG / GRA)
+            // ================================================
+            var presentacionSel = selector.PresentacionSeleccionada;
+            var esKg = presentacionSel.UnidadMedida.Equals("KG", StringComparison.OrdinalIgnoreCase)
+                    || presentacionSel.UnidadMedida.Equals("GRA", StringComparison.OrdinalIgnoreCase)
+                    || presentacionSel.UnidadMedida.Equals("GR", StringComparison.OrdinalIgnoreCase);
+
+            if (esKg)
+            {
+                var pesoWindow = new CapturarPesoWindow(
+                    producto.NombreComercial,
+                    presentacionSel.NombrePresentacion,
+                    presentacionSel.UnidadMedida,
+                    presentacionSel.Precio);
+
+                var confirmado = await pesoWindow.ShowDialog<bool>(parentWindow);
+
+                if (!confirmado || pesoWindow.PesoIngresado <= 0m)
+                    return;
+
+                // Ajustar la cantidad comercial al peso real
+                presentacionSel = new PresentacionVentaItem
+                {
+                    IdPresentacion    = selector.PresentacionSeleccionada.IdPresentacion,
+                    NombrePresentacion= selector.PresentacionSeleccionada.NombrePresentacion,
+                    UnidadMedida      = selector.PresentacionSeleccionada.UnidadMedida,
+                    FactorConversion  = selector.PresentacionSeleccionada.FactorConversion,
+                    CodigoBarras      = selector.PresentacionSeleccionada.CodigoBarras,
+                    EsBase            = selector.PresentacionSeleccionada.EsBase,
+                    Precio            = selector.PresentacionSeleccionada.Precio,
+                    TienePrecio       = selector.PresentacionSeleccionada.TienePrecio,
+                    CantidadPeso      = pesoWindow.PesoIngresado
+                };
+            }
+
             await _viewModel
                 .AgregarPresentacionAlCarritoAsync(
                     producto,
-                    selector.PresentacionSeleccionada
+                    presentacionSel
                 );
         }
         catch (Exception ex)
@@ -370,10 +484,11 @@ public partial class VentasView : UserControl
             }
 
 
-            await _viewModel
+           await _viewModel
                 .EstablecerPrecioManualAsync(
                     detalle,
-                    resultado.TipoPrecio
+                    resultado.TipoPrecio,
+                    resultado.PrecioPersonalizado 
                 );
         }
         catch (Exception ex)
@@ -501,13 +616,19 @@ public partial class VentasView : UserControl
 
             while (true)
             {
+                var saldoACobrar =
+                    _viewModel.SaldoPendiente;
+
+                if (saldoACobrar <= 0 || _viewModel.VentaFinalizadaCorrectamente)
+                    return;
+
                 // =====================================================
                 // SELECTOR DE MÉTODO DE PAGO
                 // =====================================================
 
                 var ventana =
                     new CobroWindow(
-                        _viewModel.Total,
+                        saldoACobrar,
                         _viewModel
                     );
 
@@ -538,7 +659,7 @@ public partial class VentasView : UserControl
                 {
                     var pagoEfectivo =
                         new PagoEfectivoWindow(
-                            _viewModel.Total
+                            saldoACobrar
                         );
 
 
@@ -567,7 +688,7 @@ public partial class VentasView : UserControl
                     var pagoRegistrado =
                         await _viewModel
                             .RegistrarPagoEfectivoAsync(
-                                _viewModel.Total,
+                                pagoEfectivo.ImporteAplicado,
                                 pagoEfectivo.CantidadRecibida,
                                 pagoEfectivo.Cambio
                             );
@@ -578,10 +699,14 @@ public partial class VentasView : UserControl
 
 
                     // =================================================
-                    // PAGO TERMINADO
+                    // VALIDAR SI LA VENTA TERMINÓ O QUEDA SALDO
                     // =================================================
 
-                    return;
+                    if (_viewModel.SaldoPendiente <= 0 || _viewModel.VentaFinalizadaCorrectamente)
+                        return;
+
+                    // Queda saldo restante (pago mixto) -> continuar cobrando
+                    continue;
                 }
                 
                 
@@ -613,7 +738,7 @@ public partial class VentasView : UserControl
 
                     var pagoTransferencia =
                         new PagoTransferenciaWindow(
-                            _viewModel.Total
+                            saldoACobrar
                         );
 
 
@@ -642,7 +767,7 @@ public partial class VentasView : UserControl
                     var pagoRegistrado =
                         await _viewModel
                             .RegistrarPagoTransferenciaAsync(
-                                _viewModel.Total
+                                saldoACobrar
                             );
 
 
@@ -660,11 +785,15 @@ public partial class VentasView : UserControl
                     }
 
 
-            // =================================================
-            // PAGO TERMINADO
-            // =================================================
+                    // =================================================
+                    // VALIDAR SI LA VENTA TERMINÓ O QUEDA SALDO
+                    // =================================================
 
-                    return;
+                    if (_viewModel.SaldoPendiente <= 0 || _viewModel.VentaFinalizadaCorrectamente)
+                        return;
+
+                    // Queda saldo restante (pago mixto) -> continuar cobrando
+                    continue;
                 }
 
 
@@ -803,7 +932,7 @@ public partial class VentasView : UserControl
                         {
                             var selectorTerminal =
                                 new MercadoPagoTerminalWindow(
-                                    _viewModel.Total,
+                                    saldoACobrar,
                                     terminales
                                 );
 
@@ -844,7 +973,7 @@ public partial class VentasView : UserControl
                             new MercadoPagoPagoWindow(
                                 _viewModel.IdVentaActual,
                                 terminalSeleccionada.IdTpvBancaria,
-                                _viewModel.Total,
+                                saldoACobrar,
                                 terminalSeleccionada.NombreVisual
                             );
 
@@ -910,11 +1039,7 @@ public partial class VentasView : UserControl
                         // 7. PAGO APROBADO Y REGISTRADO
                         // =================================================
 
-                        if (
-                            resultadoMercadoPago.PagoRegistrado
-                            &&
-                            resultadoMercadoPago.PagoCompleto
-                        )
+                        if (resultadoMercadoPago.PagoRegistrado)
                         {
                             /*
                              * IMPORTANTE:
@@ -923,43 +1048,47 @@ public partial class VentasView : UserControl
                              *
                              * tr_pos_ventas_pagos
                              *
-                             * Por lo tanto NO llamamos:
-                             *
-                             * RegistrarPagoAsync()
-                             *
-                             * ni RegistrarPagoEfectivoAsync().
-                             *
-                             * Solamente finalizamos la venta.
+                             * Recargamos la venta actual para reflejar
+                             * el nuevo monto pagado y saldo en memoria.
                              */
 
-                            var finalizada =
-                                await _viewModel
-                                    .FinalizarVentaAsync();
+                            await _viewModel
+                                .CargarVentaActualAsync();
 
-
-                            if (!finalizada)
+                            if (
+                                resultadoMercadoPago.PagoCompleto
+                                ||
+                                _viewModel.SaldoPendiente <= 0
+                            )
                             {
-                                /*
-                                 * El dinero YA fue cobrado.
-                                 *
-                                 * Si falla la finalización:
-                                 *
-                                 * NO volver a cobrar.
-                                 *
-                                 * CargarVentaActualAsync() podrá recuperar
-                                 * posteriormente la venta pagada pendiente
-                                 * de finalizar.
-                                 */
+                                var finalizada =
+                                    await _viewModel
+                                        .FinalizarVentaAsync();
+
+                                if (!finalizada)
+                                {
+                                    /*
+                                     * El dinero YA fue cobrado.
+                                     *
+                                     * Si falla la finalización:
+                                     *
+                                     * NO volver a cobrar.
+                                     *
+                                     * CargarVentaActualAsync() podrá recuperar
+                                     * posteriormente la venta pagada pendiente
+                                     * de finalizar.
+                                     */
+
+                                    return;
+                                }
 
                                 return;
                             }
-
-
-                            // =================================================
-                            // VENTA TERMINADA
-                            // =================================================
-
-                            return;
+                            else
+                            {
+                                // Queda saldo restante (pago mixto) -> continuar cobrando
+                                continue;
+                            }
                         }
 
 
@@ -1130,27 +1259,49 @@ public partial class VentasView : UserControl
     }
 
 
-    // =========================================================
+// =========================================================
     // CONFIRMACIÓN DE VENTA FINALIZADA
     // =========================================================
 
     private async Task OnSolicitarConfirmacionVentaFinalizada(
         string folioTicket)
     {
+
+        if (_viewModel is not null)
+        {
+            _viewModel.TextoBusqueda = string.Empty;
+            _viewModel.TextoBusquedaCliente = string.Empty;
+
+
+            if (_viewModel.QuitarClienteCommand != null && _viewModel.QuitarClienteCommand.CanExecute(null))
+            {
+                _viewModel.QuitarClienteCommand.Execute(null);
+            }
+        }
+
+        var buscadorCliente = this.FindControl<TextBox>("BuscadorClienteTextBox");
+        if (buscadorCliente != null)
+        {
+            buscadorCliente.Text = string.Empty;
+        }
+
+        var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+        if (buscadorProductos != null)
+        {
+            buscadorProductos.Text = string.Empty;
+        }
+
         var owner =
             TopLevel.GetTopLevel(this)
             as Window;
 
-
         if (owner is null)
             return;
-
 
         var ventana =
             new VentaFinalizadaWindow(
                 folioTicket
             );
-
 
         await ventana
             .ShowDialog(
@@ -1191,6 +1342,14 @@ public partial class VentasView : UserControl
         object? sender,
         Avalonia.VisualTreeAttachmentEventArgs e)
     {
+        
+        if (_parentWindow != null)
+        {
+            //_parentWindow.KeyDown -= ParentWindow_KeyDown;
+            _parentWindow.RemoveHandler(InputElement.KeyDownEvent, ParentWindow_KeyDown);
+            _parentWindow = null;
+        }
+        
         if (_viewModel is not null)
         {
             
@@ -1225,4 +1384,302 @@ public partial class VentasView : UserControl
         _viewModel =
             null;
     }
+    
+   private void ParentWindow_KeyDown(object? sender, KeyEventArgs e)
+{
+    var ahora = DateTime.UtcNow;
+    var diff = (ahora - _ultimoTiempoTeclaScanner).TotalMilliseconds;
+
+    // =================================================
+    // DETECCIÓN DE CHECADORA / PISTOLA DE CÓDIGO DE BARRAS
+    // =================================================
+
+    // 1. Detectar ENTER (fin de lectura de la checadora)
+    if (e.Key == Key.Enter || e.Key == Key.Return)
+    {
+        if (_scannerBuffer.Length >= 3 && diff <= 95)
+        {
+            e.Handled = true;
+            var codigoEscaneado = _scannerBuffer.ToString().Trim();
+            _scannerBuffer.Clear();
+
+            _ = ProcesarCodigoBarrasEscaneadoAsync(codigoEscaneado);
+            return;
+        }
+
+        _scannerBuffer.Clear();
+    }
+    else
+    {
+        var caracter = ObtenerCaracterDeTecla(e);
+        if (caracter.HasValue)
+        {
+            if (diff > ScannerMaxDelayMs)
+            {
+                _scannerBuffer.Clear();
+            }
+
+            _scannerBuffer.Append(caracter.Value);
+            _ultimoTiempoTeclaScanner = ahora;
+
+            // Si ya van 2 o más teclas en ráfaga rápida (< 70ms),
+            // corresponde indiscutiblemente a la checadora.
+            // Consumimos el evento para evitar que contamine controles con foco.
+            if (_scannerBuffer.Length >= 2 && diff <= ScannerMaxDelayMs)
+            {
+                e.Handled = true;
+                return;
+            }
+        }
+        else
+        {
+            // Teclas de control (flechas, escape, etc.) que no sean modificadores
+            if (e.Key != Key.LeftShift && e.Key != Key.RightShift &&
+                e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl &&
+                e.Key != Key.LeftAlt && e.Key != Key.RightAlt)
+            {
+                _scannerBuffer.Clear();
+            }
+        }
+    }
+
+
+    // =================================================
+    // F5 - CONSULTAR PRODUCTO SELECCIONADO
+    // =================================================
+    if (e.Key == Key.F5)
+    {
+        e.Handled = true;
+        var listBox = this.FindControl<ListBox>("CatalogoProductosListBox");
+        
+        if (listBox != null && listBox.SelectedItem != null)
+        {
+            if (DataContext is VentasViewModel viewModel)
+            {
+                viewModel.SeleccionarProductoCommand.Execute(listBox.SelectedItem);
+            }
+        }
+    }
+
+    // =================================================
+    // F9 - ENFOCAR BUSCADOR DE CLIENTES
+    // =================================================
+    else if (e.Key == Key.F9)
+    {
+        e.Handled = true;
+        var buscadorCliente = this.FindControl<TextBox>("BuscadorClienteTextBox");
+        
+        if (buscadorCliente != null)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                buscadorCliente.Focus();
+                buscadorCliente.SelectAll();
+            }, DispatcherPriority.Input);
+        }
+    }
+
+    // =================================================
+    // F10 - COBRAR VENTA
+    // =================================================
+    else if (e.Key == Key.F10)
+    {
+        e.Handled = true;
+        if (DataContext is VentasViewModel viewModel)
+        {
+            if (viewModel.CobrarCommand.CanExecute(null))
+            {
+                viewModel.CobrarCommand.Execute(null);
+            }
+        }
+    }
+    
+    // =================================================
+    // F11 - ENFOCAR BUSCADOR DE PRODUCTOS
+    // =================================================
+    else if (e.Key == Key.F11)
+    {
+        e.Handled = true;
+        var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+                   
+        if (buscadorProductos != null)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                buscadorProductos.Focus();
+                buscadorProductos.SelectAll();
+            }, DispatcherPriority.Input);
+        }
+    }
+    
+    
+    // =================================================
+    // F12 - ELIMINAR ÚLTIMO REGISTRO
+    // =================================================
+    else if (e.Key == Key.F12)
+    {
+        e.Handled = true;
+        if (DataContext is VentasViewModel viewModel)
+        {
+            var ultimoProducto = System.Linq.Enumerable.LastOrDefault(viewModel.Carrito);
+            
+            if (ultimoProducto != null && viewModel.EliminarProductoCommand.CanExecute(ultimoProducto))
+            {
+                if (!ultimoProducto.EstaSincronizando)
+                {
+                    viewModel.EliminarProductoCommand.Execute(ultimoProducto);
+                }
+                else
+                {
+                    viewModel.MensajeError = "El último producto aún se está registrando, espera un momento.";
+                }
+            }
+        }
+    }
+
+
+
+
+}
+        
+private void BuscadorClienteTextBox_KeyDown(object? sender, KeyEventArgs e)
+{
+    var listBox = this.FindControl<ListBox>("SugerenciasClientesListBox");
+
+    if (listBox == null || !listBox.IsVisible || listBox.ItemCount == 0)
+        return;
+
+    if (e.Key == Key.Down)
+    {
+        e.Handled = true;
+        if (listBox.SelectedIndex < listBox.ItemCount - 1)
+        {
+            listBox.SelectedIndex++;
+        }
+    }
+    else if (e.Key == Key.Up)
+    {
+        e.Handled = true;
+        if (listBox.SelectedIndex > 0)
+        {
+            listBox.SelectedIndex--;
+        }
+    }
+
+    else if (e.Key == Key.Enter)
+    {
+        if (listBox.SelectedItem != null)
+        {
+            e.Handled = true;
+            
+            if (DataContext is VentasViewModel viewModel)
+            {
+                viewModel.SeleccionarClienteCommand.Execute(listBox.SelectedItem);
+
+                var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+                if (buscadorProductos != null)
+                {
+                    Dispatcher.UIThread.Post(() => 
+                    {
+                        buscadorProductos.Focus();
+                        buscadorProductos.SelectAll();
+                    }, DispatcherPriority.Input);
+                }
+            }
+        }
+    }
+}
+
+// Un clic sobre un cliente sugerido lo selecciona (igual que ↓ + Enter).
+private void SugerenciasClientesListBox_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
+{
+    var item = (e.Source as Visual)?.FindAncestorOfType<ListBoxItem>(true);
+    if (item?.DataContext == null) return;
+
+    if (DataContext is VentasViewModel viewModel)
+    {
+        viewModel.SeleccionarClienteCommand.Execute(item.DataContext);
+
+        var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+        if (buscadorProductos != null)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                buscadorProductos.Focus();
+                buscadorProductos.SelectAll();
+            }, DispatcherPriority.Input);
+        }
+    }
+}
+
+private void CatalogoProductosListBox_Tapped(object? sender, Avalonia.Input.TappedEventArgs e)
+    {
+        // Un solo clic sobre una tarjeta abre el producto.
+        // Se toma el producto de la tarjeta tocada para que un clic
+        // en un espacio vacío no vuelva a abrir el último seleccionado.
+        var item = (e.Source as Visual)?.FindAncestorOfType<ListBoxItem>(true);
+        if (item?.DataContext == null) return;
+
+        if (DataContext is VentasViewModel viewModel)
+        {
+            viewModel.SeleccionarProductoCommand.Execute(item.DataContext);
+
+            var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+            if (buscadorProductos != null)
+            {
+                Dispatcher.UIThread.Post(() =>
+                {
+                    buscadorProductos.Focus();
+                    buscadorProductos.SelectAll();
+                }, DispatcherPriority.Input);
+            }
+        }
+    }
+
+    private void CatalogoProductosListBox_KeyDown(object? sender, KeyEventArgs e)
+    {
+        var listBox = sender as ListBox;
+        if (listBox == null) return;
+
+        if (e.Key == Key.F5 || e.Key == Key.Enter)
+        {
+            if (listBox.SelectedItem != null)
+            {
+                e.Handled = true;
+                
+                if (DataContext is VentasViewModel viewModel)
+                {
+                    viewModel.SeleccionarProductoCommand.Execute(listBox.SelectedItem);
+
+                    var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+                    if (buscadorProductos != null)
+                    {
+                        Dispatcher.UIThread.Post(() => 
+                        {
+                            buscadorProductos.Focus();
+                            buscadorProductos.SelectAll();
+                        }, DispatcherPriority.Input);
+                    }
+                }
+            }
+        }
+
+        else if ((e.Key == Key.Up || e.Key == Key.Left) && listBox.SelectedIndex == 0)
+        {
+            e.Handled = true;
+            var buscadorProductos = this.FindControl<TextBox>("BuscadorProductosTextBox");
+            if (buscadorProductos != null)
+            {
+                Dispatcher.UIThread.Post(() => 
+                {
+                    buscadorProductos.Focus();
+                    buscadorProductos.CaretIndex = buscadorProductos.Text?.Length ?? 0;
+                }, DispatcherPriority.Input);
+            }
+        }
+    }
+
+    
+
+    
 }

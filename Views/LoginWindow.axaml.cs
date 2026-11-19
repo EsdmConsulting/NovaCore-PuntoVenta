@@ -1,7 +1,11 @@
-using System;
+﻿using System;
+using System.Globalization;
+using Avalonia;
 
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 
 using NovaCoreESDM.Models.Session;
 
@@ -55,6 +59,53 @@ public partial class LoginWindow : Window
 
         _viewModel.InicioSesionExitoso +=
             OnInicioSesionExitoso;
+
+
+        IniciarReloj();
+
+
+        Opened += (_, _) =>
+            CampoUsuario.Focus();
+    }
+
+
+    // =========================================================
+    // RELOJ DEL PANEL DE MARCA
+    // =========================================================
+
+    private void IniciarReloj()
+    {
+        var cultura =
+            new CultureInfo("es-MX");
+
+        void Actualizar()
+        {
+            var ahora =
+                DateTime.Now;
+
+            TextoHora.Text =
+                ahora.ToString("HH:mm", cultura);
+
+            var fecha =
+                ahora.ToString("dddd, d 'de' MMMM 'de' yyyy", cultura);
+
+            TextoFecha.Text =
+                char.ToUpper(fecha[0], cultura) + fecha[1..];
+        }
+
+        Actualizar();
+
+        var reloj =
+            new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+
+        reloj.Tick += (_, _) => Actualizar();
+
+        reloj.Start();
+
+        Closed += (_, _) => reloj.Stop();
     }
 
 
@@ -97,10 +148,13 @@ public partial class LoginWindow : Window
                 var seleccionarCajaWindow =
                     new SeleccionarCajaWindow();
 
+              if (Application.Current?.ApplicationLifetime
+                    is IClassicDesktopStyleApplicationLifetime desktopLifetime)
+                {
+                    desktopLifetime.MainWindow = seleccionarCajaWindow;
+                }
 
                 seleccionarCajaWindow.Show();
-
-
                 Close();
 
                 return;
@@ -314,9 +368,13 @@ public partial class LoginWindow : Window
                     };
 
 
+              if (Application.Current?.ApplicationLifetime
+                        is IClassicDesktopStyleApplicationLifetime desktopLifetime)
+                    {
+                        desktopLifetime.MainWindow = mainWindow;
+                    }
+
                 mainWindow.Show();
-
-
                 Close();
 
                 return;
@@ -372,10 +430,13 @@ public partial class LoginWindow : Window
             var aperturaTurnoWindow =
                 new AperturaTurnoWindow();
 
+            if (Application.Current?.ApplicationLifetime
+                is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.MainWindow = aperturaTurnoWindow;
+            }
 
             aperturaTurnoWindow.Show();
-
-
             Close();
         }
         catch (Exception ex)

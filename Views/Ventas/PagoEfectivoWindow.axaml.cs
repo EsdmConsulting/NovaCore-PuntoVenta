@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 
@@ -10,6 +11,8 @@ public partial class PagoEfectivoWindow : Window
     public decimal TotalVenta { get; }
 
     public decimal CantidadRecibida { get; private set; }
+
+    public decimal ImporteAplicado { get; private set; }
 
     public decimal Cambio { get; private set; }
 
@@ -39,6 +42,30 @@ public partial class PagoEfectivoWindow : Window
         object? sender,
         TextChangedEventArgs e)
     {
+
+        if (sender is TextBox textBox)
+        {
+            var textoOriginal = textBox.Text ?? string.Empty;
+
+            var textoLimpio = Regex.Replace(textoOriginal, "[^0-9.]", "");
+
+            // 2. Controlar que no haya múltiples puntos
+            int primerPunto = textoLimpio.IndexOf('.');
+            if (primerPunto >= 0)
+            {
+                textoLimpio = textoLimpio.Substring(0, primerPunto + 1) + 
+                              textoLimpio.Substring(primerPunto + 1).Replace(".", "");
+            }
+
+            if (textoOriginal != textoLimpio)
+            {
+                var posicionCursor = textBox.CaretIndex;
+                textBox.Text = textoLimpio;
+                textBox.CaretIndex = Math.Max(0, posicionCursor - (textoOriginal.Length - textoLimpio.Length));
+                return; 
+            }
+        }
+
         TextoMensaje.Text =
             string.Empty;
 
@@ -69,9 +96,11 @@ public partial class PagoEfectivoWindow : Window
         CantidadRecibida =
             recibido;
 
-
-        if (recibido < TotalVenta)
+        if (recibido <= 0)
         {
+            ImporteAplicado =
+                0;
+
             Cambio =
                 0;
 
@@ -81,24 +110,75 @@ public partial class PagoEfectivoWindow : Window
             ConfirmarButton.IsEnabled =
                 false;
 
+            return;
+        }
+
+        if (recibido < TotalVenta)
+        {
+            ImporteAplicado =
+                recibido;
+
+            Cambio =
+                0;
+
+            TextoCambio.Text =
+                "$0.00";
+
+            ConfirmarButton.IsEnabled =
+                true;
+
             TextoMensaje.Text =
-                $"Faltan ${(TotalVenta - recibido):N2}.";
+                $"Pago parcial: se aplicarán ${recibido:N2} y quedará un saldo de ${(TotalVenta - recibido):N2}.";
 
             return;
         }
 
+        ImporteAplicado =
+            TotalVenta;
 
         Cambio =
             recibido -
             TotalVenta;
 
-
         TextoCambio.Text =
             $"${Cambio:N2}";
 
-
         ConfirmarButton.IsEnabled =
             true;
+    }
+
+
+    // =========================================================
+    // MONTOS RÁPIDOS
+    // =========================================================
+    //
+    // Solo escriben el monto en el campo; el cálculo del cambio
+    // lo sigue haciendo CantidadRecibida_TextChanged.
+    // =========================================================
+
+    private void MontoRapido_Click(
+        object? sender,
+        RoutedEventArgs e)
+    {
+        if (sender is not Button { Tag: string valor })
+            return;
+
+        var monto =
+            valor == "exacto"
+                ? TotalVenta
+                : decimal.Parse(
+                    valor,
+                    CultureInfo.InvariantCulture);
+
+        CantidadRecibidaTextBox.Text =
+            monto.ToString(
+                "0.00",
+                CultureInfo.InvariantCulture);
+
+        CantidadRecibidaTextBox.Focus();
+
+        CantidadRecibidaTextBox.CaretIndex =
+            CantidadRecibidaTextBox.Text.Length;
     }
 
 
@@ -114,7 +194,7 @@ public partial class PagoEfectivoWindow : Window
         object? sender,
         RoutedEventArgs e)
     {
-        if (CantidadRecibida < TotalVenta)
+        if (CantidadRecibida <= 0)
             return;
 
 

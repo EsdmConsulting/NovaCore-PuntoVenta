@@ -199,6 +199,33 @@ public class CancelacionesService
         }
     }
 
+    // =========================================================
+    // OBTENER ADMINISTRADORES
+    // GET /api/consulta/consultar_administradores
+    // =========================================================
+    //
+    // 
+    //
+    // =========================================================
+
+    public async Task<AdministradoresListResponse> ObtenerListaAdministradoresAsync()
+    {
+        try
+        {
+            var response = await ApiClient.Http.GetAsync("api/consulta/consultar_administradores");
+            var contenido = await response.Content.ReadAsStringAsync();
+            contenido = LimpiarRespuestaPhp(contenido);
+
+            var resultado = JsonSerializer.Deserialize<AdministradoresListResponse>(contenido, JsonOptions);
+            return resultado ?? new AdministradoresListResponse { Res = 0 };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error obteniendo administradores: {ex.Message}");
+            return new AdministradoresListResponse { Res = 0, Msg = "Error de red." };
+        }
+    }
+
 
     // =========================================================
     // OBTENER VENTAS PARA CANCELACIÓN

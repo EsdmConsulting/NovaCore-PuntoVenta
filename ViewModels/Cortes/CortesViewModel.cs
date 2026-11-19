@@ -1535,4 +1535,19 @@ public class CorteHistorialItemViewModel
     public string DiferenciaTexto =>
         Diferencia.ToString(
             "C2");
+
+
+    // Solo para la vista: colorea la diferencia en el historial.
+    public bool EsFaltante =>
+        string.Equals(
+            EstadoDiferencia?.Trim(),
+            "FALTANTE",
+            StringComparison.OrdinalIgnoreCase);
+
+
+    public bool EsSobrante =>
+        string.Equals(
+            EstadoDiferencia?.Trim(),
+            "SOBRANTE",
+            StringComparison.OrdinalIgnoreCase);
 }

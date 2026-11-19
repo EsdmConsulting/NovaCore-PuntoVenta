@@ -2,11 +2,281 @@
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:NovaCoreESDM.ViewModels.Cortes"
+    xmlns:controls="using:NovaCoreESDM.Controls"
 
     x:Class="NovaCoreESDM.Views.Cortes.CortesView"
     x:DataType="vm:CortesViewModel"
 
-    Background="#F5F7F6">
+    Background="#F4F6F8">
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <UserControl.Styles>
+
+        <!-- Entrada suave -->
+        <Style Selector=":is(Control).entrada">
+            <Style.Animations>
+                <Animation Duration="0:0:0.5"
+                           FillMode="Forward"
+                           Easing="CubicEaseOut">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0"/>
+                        <Setter Property="TranslateTransform.Y" Value="12"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Botón Realizar corte -->
+        <Style Selector="Button.corte">
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22C55E"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+            <Setter Property="RenderTransform" Value="translateY(0px)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.15"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.corte /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 26 -6 #8022C55E"/>
+        </Style>
+
+        <Style Selector="Button.corte:pointerover">
+            <Setter Property="RenderTransform" Value="translateY(-2px)"/>
+        </Style>
+
+        <Style Selector="Button.corte:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#2BD268"/>
+                    <GradientStop Offset="1" Color="#11A84E"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <!-- Indicadores principales -->
+        <Style Selector="Border.kpi">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#EAEEF2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="22,20"/>
+            <Setter Property="BoxShadow" Value="0 1 2 0 #0A0F172A"/>
+            <Setter Property="RenderTransform" Value="translateY(0px)"/>
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.18"/>
+                    <BoxShadowsTransition Property="BoxShadow" Duration="0:0:0.18"/>
+                </Transitions>
+            </Setter>
+        </Style>
+
+        <Style Selector="Border.kpi:pointerover">
+            <Setter Property="RenderTransform" Value="translateY(-3px)"/>
+            <Setter Property="BoxShadow" Value="0 14 30 -12 #330F172A"/>
+        </Style>
+
+        <Style Selector="Border.iconoKpi">
+            <Setter Property="Width" Value="46"/>
+            <Setter Property="Height" Value="46"/>
+            <Setter Property="CornerRadius" Value="14"/>
+        </Style>
+
+        <Style Selector="Border.iconoKpi PathIcon">
+            <Setter Property="Width" Value="22"/>
+            <Setter Property="Height" Value="22"/>
+        </Style>
+
+        <Style Selector="TextBlock.kpiEtiqueta">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="TextBlock.kpiValor">
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="-0.6"/>
+            <Setter Property="Margin" Value="0,14,0,2"/>
+        </Style>
+
+        <Style Selector="TextBlock.kpiDetalle">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <!-- Indicadores secundarios -->
+        <Style Selector="Border.mini">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#EAEEF2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="Padding" Value="18,14"/>
+        </Style>
+
+        <Style Selector="Border.iconoMini">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.iconoMini PathIcon">
+            <Setter Property="Width" Value="18"/>
+            <Setter Property="Height" Value="18"/>
+        </Style>
+
+        <Style Selector="TextBlock.miniEtiqueta">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <Style Selector="TextBlock.miniValor">
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <!-- Secciones -->
+        <Style Selector="Border.seccion">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#EAEEF2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="Padding" Value="24"/>
+            <Setter Property="BoxShadow" Value="0 1 2 0 #0A0F172A"/>
+        </Style>
+
+        <Style Selector="TextBlock.tituloSeccion">
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style Selector="TextBlock.subtituloSeccion">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="LineHeight" Value="17"/>
+        </Style>
+
+        <!-- Renglones de la composición -->
+        <Style Selector="Grid.renglon">
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <Style Selector="TextBlock.renglonEtiqueta">
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="TextBlock.renglonValor">
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="TextBlock.renglonValor.negativo">
+            <Setter Property="Foreground" Value="#C61F2B"/>
+        </Style>
+
+        <Style Selector="Ellipse.punto">
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+        </Style>
+
+        <!-- Botón actualizar -->
+        <Style Selector="Button.actualizar">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Background" Value="#F4F6F8"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.actualizar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#EAF7EF"/>
+            <Setter Property="Foreground" Value="#0B6B33"/>
+        </Style>
+
+        <!-- Historial -->
+        <Style Selector="Border.corteHistorial">
+            <Setter Property="Padding" Value="14,12"/>
+            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#EEF1F4"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="Border.corteHistorial:pointerover">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#CDE9D7"/>
+        </Style>
+
+        <Style Selector="Border.estadoDiferencia">
+            <Setter Property="Padding" Value="9,3"/>
+            <Setter Property="CornerRadius" Value="999"/>
+            <Setter Property="Background" Value="#EAF7EF"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+        </Style>
+
+        <Style Selector="Border.estadoDiferencia TextBlock">
+            <Setter Property="Foreground" Value="#0B6B33"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="0.6"/>
+        </Style>
+
+        <Style Selector="Border.estadoDiferencia.faltante">
+            <Setter Property="Background" Value="#FEE2E2"/>
+        </Style>
+
+        <Style Selector="Border.estadoDiferencia.faltante TextBlock">
+            <Setter Property="Foreground" Value="#B91C1C"/>
+        </Style>
+
+        <Style Selector="Border.estadoDiferencia.sobrante">
+            <Setter Property="Background" Value="#FEF3C7"/>
+        </Style>
+
+        <Style Selector="Border.estadoDiferencia.sobrante TextBlock">
+            <Setter Property="Foreground" Value="#92600A"/>
+        </Style>
+
+    </UserControl.Styles>
 
 
     <ScrollViewer
@@ -14,1211 +284,596 @@
         HorizontalScrollBarVisibility="Disabled">
 
         <StackPanel
-            Margin="20"
-            Spacing="16">
+            Margin="28,24,28,28"
+            Spacing="20">
 
 
             <!-- ================================================= -->
-            <!-- HERO                                               -->
+            <!-- AVISO DE ERROR                                    -->
             <!-- ================================================= -->
 
-            <Border
-                Background="#08783D"
-                CornerRadius="18"
-                Padding="26">
-
-                <Grid
-                    x:Name="HeroGrid"
-                    ColumnDefinitions="*,245"
-                    ColumnSpacing="26">
-
-
-                    <!-- TEXTO -->
-
-                    <StackPanel
-                        Grid.Column="0"
-                        Spacing="6"
-                        VerticalAlignment="Center">
-
-                        <TextBlock
-                            Text="GRUPO LUIS FER"
-                            Foreground="#C8F3D9"
-                            FontSize="10"
-                            FontWeight="Bold"/>
+            <Border Padding="16,12"
+                    CornerRadius="14"
+                    Background="#FEF2F2"
+                    BorderBrush="#FECACA"
+                    BorderThickness="1"
+                    IsVisible="{Binding MensajeError, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <PathIcon Width="18" Height="18"
+                              Foreground="#C61F2B"
+                              Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                    <TextBlock Text="{Binding MensajeError}"
+                               Foreground="#9F1239"
+                               FontSize="13"
+                               VerticalAlignment="Center"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
 
 
-                        <TextBlock
-                            Text="Cortes y reportes"
-                            Foreground="White"
-                            FontSize="27"
-                            FontWeight="SemiBold"
-                            TextWrapping="Wrap"/>
+            <!-- ================================================= -->
+            <!-- TURNO ACTUAL + REALIZAR CORTE                     -->
+            <!-- ================================================= -->
 
+            <Border x:Name="BannerCorte"
+                    Classes="entrada"
+                    CornerRadius="24"
+                    ClipToBounds="True"
+                    Background="#050607"
+                    MinHeight="220">
+                <Border.RenderTransform>
+                    <TranslateTransform/>
+                </Border.RenderTransform>
 
-                        <TextBlock
-                            Text="Supervisa el turno activo, revisa movimientos y realiza el cierre de caja."
-                            Foreground="#D9F4E3"
-                            FontSize="13"
-                            TextWrapping="Wrap"/>
+                <Panel>
 
+                    <Ellipse Width="520" Height="520"
+                             HorizontalAlignment="Left" VerticalAlignment="Top"
+                             Margin="-200,-260,0,0"
+                             IsHitTestVisible="False">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="#8816A34A"/>
+                                <GradientStop Offset="1" Color="#0016A34A"/>
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
 
-                        <StackPanel
-                            Orientation="Horizontal"
-                            Spacing="8"
-                            Margin="0,6,0,0">
+                    <Ellipse Width="460" Height="460"
+                             HorizontalAlignment="Center" VerticalAlignment="Bottom"
+                             Margin="200,0,0,-300"
+                             IsHitTestVisible="False">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="#66F5C400"/>
+                                <GradientStop Offset="1" Color="#00F5C400"/>
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
 
-                            <Border
-                                Width="8"
-                                Height="8"
-                                CornerRadius="4"
-                                Background="#4ADE80"
-                                VerticalAlignment="Center"/>
+                    <Ellipse Width="520" Height="520"
+                             HorizontalAlignment="Right" VerticalAlignment="Top"
+                             Margin="0,-240,-180,0"
+                             IsHitTestVisible="False">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush>
+                                <GradientStop Offset="0" Color="#88C61F2B"/>
+                                <GradientStop Offset="1" Color="#00C61F2B"/>
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>
 
-                            <TextBlock
-                                Text="Control operativo de caja"
-                                Foreground="#E6F8ED"
-                                FontSize="10"
-                                VerticalAlignment="Center"/>
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="28"
+                          Margin="34,30">
+
+                        <!-- DATOS DEL TURNO -->
+                        <StackPanel Grid.Column="0"
+                                    VerticalAlignment="Center">
+
+                            <Border HorizontalAlignment="Left"
+                                    Padding="12,6"
+                                    CornerRadius="999"
+                                    Background="#14FFFFFF"
+                                    BorderBrush="#24FFFFFF"
+                                    BorderThickness="1">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Ellipse Width="7" Height="7"
+                                             Fill="#22C55E"
+                                             VerticalAlignment="Center"/>
+                                    <TextBlock Foreground="#D9E2EC"
+                                               FontSize="11"
+                                               FontWeight="SemiBold"
+                                               LetterSpacing="1.2"
+                                               VerticalAlignment="Center">
+                                        <Run Text="TURNO #"/><Run Text="{Binding IdTurno}"/><Run Text="  ·  "/><Run Text="{Binding EstadoTurno}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock Text="Corte de caja"
+                                       Foreground="White"
+                                       FontSize="34"
+                                       FontWeight="Bold"
+                                       LetterSpacing="-0.8"
+                                       Margin="0,16,0,0"/>
+
+                            <TextBlock Foreground="#A8B4C2"
+                                       FontSize="14"
+                                       TextWrapping="Wrap"
+                                       Margin="0,8,0,0">
+                                <Run Text="{Binding CajaNombre}" FontWeight="SemiBold" Foreground="White"/><Run Text="  ·  "/><Run Text="{Binding CajaCodigo}"/>
+                            </TextBlock>
+
+                            <!-- Apertura -->
+                            <StackPanel Orientation="Horizontal"
+                                        Spacing="26"
+                                        Margin="0,22,0,0">
+
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="ABIERTO POR"
+                                               Foreground="#7F8C9B"
+                                               FontSize="10"
+                                               FontWeight="Bold"
+                                               LetterSpacing="1.2"/>
+                                    <TextBlock Text="{Binding UsuarioApertura}"
+                                               Foreground="White"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"/>
+                                </StackPanel>
+
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="FECHA DE APERTURA"
+                                               Foreground="#7F8C9B"
+                                               FontSize="10"
+                                               FontWeight="Bold"
+                                               LetterSpacing="1.2"/>
+                                    <TextBlock Text="{Binding FechaApertura}"
+                                               Foreground="White"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"/>
+                                </StackPanel>
+
+                                <StackPanel Spacing="2">
+                                    <TextBlock Text="HORA"
+                                               Foreground="#7F8C9B"
+                                               FontSize="10"
+                                               FontWeight="Bold"
+                                               LetterSpacing="1.2"/>
+                                    <TextBlock Text="{Binding HoraApertura}"
+                                               Foreground="White"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"/>
+                                </StackPanel>
+
+                            </StackPanel>
 
                         </StackPanel>
 
-                    </StackPanel>
+                        <!-- ESCENA ANIMADA DE CONTEO DE CAJA -->
+                        <controls:EscenaCorteAnimada x:Name="EscenaCorte"
+                                                     Grid.Column="1"
+                                                     MaxWidth="440"
+                                                     VerticalAlignment="Center"/>
 
-
-                    <!-- BOTÓN CORTE -->
-
-                    <Button
-                        x:Name="RealizarCorteButton"
-
-                        Grid.Column="1"
-
-                        Click="RealizarCorte_Click"
-
-                        Width="235"
-                        Height="72"
-
-                        Padding="16,10"
-
-                        Background="White"
-                        Foreground="#087D3E"
-
-                        BorderBrush="#D1FAE5"
-                        BorderThickness="1"
-
-                        CornerRadius="14"
-
-                        HorizontalAlignment="Right"
-                        VerticalAlignment="Center"
-
-                        HorizontalContentAlignment="Stretch"
-                        VerticalContentAlignment="Center"
-
-                        Cursor="Hand">
-
-                        <Grid
-                            ColumnDefinitions="Auto,*,Auto"
-                            ColumnSpacing="12">
-
-                            <Border
-                                Grid.Column="0"
-
-                                Width="40"
-                                Height="40"
-
-                                CornerRadius="10"
-
-                                Background="#E8F8EF">
-
-                                <TextBlock
-                                    Text="✓"
-                                    FontSize="19"
-                                    FontWeight="Bold"
-                                    Foreground="#087D3E"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"/>
-
-                            </Border>
-
-
-                            <StackPanel
-                                Grid.Column="1"
+                        <!-- EFECTIVO ESPERADO + CORTE (vidrio) -->
+                        <Border Grid.Column="2"
+                                Width="340"
                                 VerticalAlignment="Center"
-                                Spacing="2">
-
-                                <TextBlock
-                                    Text="Realizar corte"
-                                    FontSize="15"
-                                    FontWeight="Bold"
-                                    Foreground="#123B2A"/>
-
-                                <TextBlock
-                                    Text="Cerrar turno actual"
-                                    FontSize="10"
-                                    Foreground="#6B8278"/>
-
-                            </StackPanel>
-
-
-                            <TextBlock
-                                Grid.Column="2"
-                                Text="›"
-                                FontSize="24"
-                                FontWeight="SemiBold"
-                                Foreground="#087D3E"
-                                VerticalAlignment="Center"/>
-
-                        </Grid>
-
-                    </Button>
-
-                </Grid>
-
-            </Border>
-
-
-
-            <!-- ================================================= -->
-            <!-- TURNO ACTUAL                                       -->
-            <!-- ================================================= -->
-
-            <Border Classes="sectionCard">
-
-                <Grid
-                    x:Name="TurnoGrid"
-                    ColumnDefinitions="*,Auto"
-                    ColumnSpacing="20">
-
-
-                    <!-- INFO -->
-
-                    <StackPanel
-                        Grid.Column="0"
-                        Spacing="10">
-
-                        <StackPanel
-                            Orientation="Horizontal"
-                            Spacing="9">
-
-                            <Border
-                                Width="10"
-                                Height="10"
-                                CornerRadius="5"
-                                Background="#16A34A"
-                                VerticalAlignment="Center"/>
-
-                            <TextBlock
-                                Text="{Binding EstadoTurno}"
-                                Foreground="#21382A"
-                                FontSize="18"
-                                FontWeight="SemiBold"/>
-
-                        </StackPanel>
-
-
-                        <WrapPanel>
-
-                            <TextBlock
-                                Text="{Binding CajaNombre}"
-                                Foreground="#33443A"
-                                FontSize="14"
-                                FontWeight="SemiBold"
-                                Margin="0,0,6,0"/>
-
-                            <TextBlock
-                                Text="·"
-                                Foreground="#94A39A"
-                                FontSize="14"
-                                Margin="0,0,6,0"/>
-
-                            <TextBlock
-                                Text="{Binding CajaCodigo}"
-                                Foreground="#718078"
-                                FontSize="14"/>
-
-                        </WrapPanel>
-
-
-                        <!-- DATOS -->
-
-                        <Grid
-                            x:Name="DatosTurnoGrid"
-
-                            ColumnDefinitions="Auto,22,Auto,22,Auto"
-
-                            Margin="0,3,0,0">
-
-
-                            <!-- TURNO -->
-
-                            <StackPanel
-                                Grid.Column="0"
-                                Spacing="3">
-
-                                <TextBlock
-                                    Text="TURNO"
-                                    Classes="miniLabel"/>
-
-                                <TextBlock
-                                    Text="{Binding IdTurno}"
-                                    Classes="miniValue"/>
-
-                            </StackPanel>
-
-
-                            <Border
-                                Grid.Column="1"
-                                Width="1"
-                                Background="#E3E9E5"/>
-
-
-                            <!-- USUARIO -->
-
-                            <StackPanel
-                                Grid.Column="2"
-                                Spacing="3">
-
-                                <TextBlock
-                                    Text="ABIERTO POR"
-                                    Classes="miniLabel"/>
-
-                                <TextBlock
-                                    Text="{Binding UsuarioApertura}"
-                                    Classes="miniValue"
-                                    TextWrapping="Wrap"
-                                    MaxLines="2"/>
-
-                            </StackPanel>
-
-
-                            <Border
-                                Grid.Column="3"
-                                Width="1"
-                                Background="#E3E9E5"/>
-
-
-                            <!-- FECHA -->
-
-                            <StackPanel
-                                Grid.Column="4"
-                                Spacing="3">
-
-                                <TextBlock
-                                    Text="FECHA"
-                                    Classes="miniLabel"/>
-
-                                <TextBlock
-                                    Text="{Binding FechaApertura}"
-                                    Classes="miniValue"/>
-
-                            </StackPanel>
-
-                        </Grid>
-
-                    </StackPanel>
-
-
-                    <!-- HORA -->
-
-                    <Border
-                        x:Name="HoraAperturaBorder"
-
-                        Grid.Column="1"
-
-                        Background="#F4FAF6"
-
-                        BorderBrush="#DCEDE2"
-                        BorderThickness="1"
-
-                        CornerRadius="13"
-
-                        Padding="20,13"
-
-                        VerticalAlignment="Center">
-
-                        <StackPanel Spacing="3">
-
-                            <TextBlock
-                                Text="Hora de apertura"
-                                Foreground="#7C8D82"
-                                FontSize="9"
-                                HorizontalAlignment="Right"/>
-
-                            <TextBlock
-                                Text="{Binding HoraApertura}"
-                                Foreground="#08783D"
-                                FontSize="23"
-                                FontWeight="SemiBold"
-                                HorizontalAlignment="Right"/>
-
-                        </StackPanel>
-
-                    </Border>
-
-                </Grid>
-
-            </Border>
-
-
-
-            <!-- ================================================= -->
-            <!-- KPI PRINCIPALES                                    -->
-            <!-- ================================================= -->
-
-            <Grid
-                x:Name="KpisGrid"
-
-                ColumnDefinitions="*,*,*,*"
-                RowDefinitions="Auto"
-
-                ColumnSpacing="12"
-                RowSpacing="12">
-
-
-                <!-- VENTAS -->
-
-                <Border
-                    x:Name="VentasCard"
-
-                    Grid.Row="0"
-                    Grid.Column="0"
-
-                    Classes="dashboardCard">
-
-                    <StackPanel Spacing="7">
-
-                        <Grid ColumnDefinitions="*,Auto">
-
-                            <TextBlock
-                                Text="Ventas del turno"
-                                Classes="cardLabel"
-                                TextWrapping="Wrap"/>
-
-                            <Border
-                                Grid.Column="1"
-                                Classes="greenIcon">
-
-                                <TextBlock
-                                    Text="$"
-                                    Classes="greenIconText"/>
-
-                            </Border>
-
-                        </Grid>
-
-
-                        <TextBlock
-                            Text="{Binding TotalVentasTexto}"
-                            Classes="cardValue"/>
-
-                        <TextBlock
-                            Text="Total de ventas finalizadas"
-                            Classes="cardDetail"
-                            TextWrapping="Wrap"/>
-
-                    </StackPanel>
-
-                </Border>
-
-
-
-                <!-- TICKETS -->
-
-                <Border
-                    x:Name="TicketsCard"
-
-                    Grid.Row="0"
-                    Grid.Column="1"
-
-                    Classes="dashboardCard">
-
-                    <StackPanel Spacing="7">
-
-                        <Grid ColumnDefinitions="*,Auto">
-
-                            <TextBlock
-                                Text="Tickets"
-                                Classes="cardLabel"/>
-
-                            <Border
-                                Grid.Column="1"
-                                Classes="neutralIcon">
-
-                                <TextBlock
-                                    Text="▥"
-                                    Foreground="#08783D"
-                                    FontSize="14"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"/>
-
-                            </Border>
-
-                        </Grid>
-
-
-                        <TextBlock
-                            Text="{Binding TicketsTexto}"
-                            Classes="cardValue"/>
-
-                        <TextBlock
-                            Text="Operaciones completadas"
-                            Classes="cardDetail"
-                            TextWrapping="Wrap"/>
-
-                    </StackPanel>
-
-                </Border>
-
-
-
-                <!-- EFECTIVO -->
-
-                <Border
-                    x:Name="EfectivoCard"
-
-                    Grid.Row="0"
-                    Grid.Column="2"
-
-                    Classes="dashboardCard">
-
-                    <StackPanel Spacing="7">
-
-                        <Grid ColumnDefinitions="*,Auto">
-
-                            <TextBlock
-                                Text="Ventas en efectivo"
-                                Classes="cardLabel"
-                                TextWrapping="Wrap"/>
-
-                            <Border
-                                Grid.Column="1"
-                                Classes="greenIcon">
-
-                                <TextBlock
-                                    Text="$"
-                                    Classes="greenIconText"/>
-
-                            </Border>
-
-                        </Grid>
-
-
-                        <TextBlock
-                            Text="{Binding VentasEfectivoTexto}"
-                            Classes="cardValue"/>
-
-                        <TextBlock
-                            Text="Cobros de ventas"
-                            Classes="cardDetail"/>
-
-                    </StackPanel>
-
-                </Border>
-
-
-
-                <!-- TARJETAS -->
-
-                <Border
-                    x:Name="TarjetasCard"
-
-                    Grid.Row="0"
-                    Grid.Column="3"
-
-                    Classes="dashboardCard">
-
-                    <StackPanel Spacing="7">
-
-                        <Grid ColumnDefinitions="*,Auto">
-
-                            <TextBlock
-                                Text="Tarjetas"
-                                Classes="cardLabel"/>
-
-                            <Border
-                                Grid.Column="1"
-                                Classes="orangeIcon">
-
-                                <TextBlock
-                                    Text="▰"
-                                    Foreground="#A96932"
-                                    FontSize="14"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"/>
-
-                            </Border>
-
-                        </Grid>
-
-
-                        <TextBlock
-                            Text="{Binding VentasTarjetaTexto}"
-                            Classes="cardValue"/>
-
-                        <TextBlock
-                            Text="Cobros con tarjeta"
-                            Classes="cardDetail"/>
-
-                    </StackPanel>
-
-                </Border>
-
-            </Grid>
-
-
-
-            <!-- ================================================= -->
-            <!-- INDICADORES SECUNDARIOS                            -->
-            <!-- ================================================= -->
-
-            <Grid
-                x:Name="SecundariosGrid"
-
-                ColumnDefinitions="*,*,*"
-                RowDefinitions="Auto"
-
-                ColumnSpacing="12"
-                RowSpacing="12">
-
-
-                <!-- TRANSFERENCIAS -->
-
-                <Border
-                    x:Name="TransferenciasCard"
-
-                    Grid.Row="0"
-                    Grid.Column="0"
-
-                    Classes="smallDashboardCard">
-
-                    <Grid ColumnDefinitions="*,Auto">
-
-                        <StackPanel Spacing="4">
-
-                            <TextBlock
-                                Text="Transferencias"
-                                Classes="cardLabel"/>
-
-                            <TextBlock
-                                Text="{Binding VentasTransferenciaTexto}"
-                                Classes="smallCardValue"/>
-
-                        </StackPanel>
-
-
-                        <Border
-                            Grid.Column="1"
-                            Classes="blueIcon">
-
-                            <TextBlock
-                                Text="↔"
-                                Foreground="#346995"
-                                FontSize="16"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"/>
-
-                        </Border>
-
-                    </Grid>
-
-                </Border>
-
-
-
-                <!-- CRÉDITO -->
-
-                <Border
-                    x:Name="CreditoCard"
-
-                    Grid.Row="0"
-                    Grid.Column="1"
-
-                    Classes="smallDashboardCard">
-
-                    <Grid ColumnDefinitions="*,Auto">
-
-                        <StackPanel Spacing="4">
-
-                            <TextBlock
-                                Text="Ventas a crédito"
-                                Classes="cardLabel"/>
-
-                            <TextBlock
-                                Text="{Binding VentasCreditoTexto}"
-                                Classes="smallCardValue"/>
-
-                        </StackPanel>
-
-
-                        <Border
-                            Grid.Column="1"
-                            Classes="purpleIcon">
-
-                            <TextBlock
-                                Text="C"
-                                Foreground="#7656A8"
-                                FontWeight="Bold"
-                                FontSize="13"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"/>
-
-                        </Border>
-
-                    </Grid>
-
-                </Border>
-
-
-
-                <!-- ABONOS -->
-
-                <Border
-                    x:Name="AbonosCard"
-
-                    Grid.Row="0"
-                    Grid.Column="2"
-
-                    Classes="smallDashboardCard">
-
-                    <Grid ColumnDefinitions="*,Auto">
-
-                        <StackPanel Spacing="4">
-
-                            <TextBlock
-                                Text="Abonos crédito · efectivo"
-                                Classes="cardLabel"
-                                TextWrapping="Wrap"/>
-
-                            <TextBlock
-                                Text="{Binding AbonosCreditoEfectivoTexto}"
-                                Classes="smallCardValue"/>
-
-                        </StackPanel>
-
-
-                        <Border
-                            Grid.Column="1"
-                            Classes="greenIcon">
-
-                            <TextBlock
-                                Text="+"
-                                Classes="greenIconText"/>
-
-                        </Border>
-
-                    </Grid>
-
-                </Border>
-
-            </Grid>
-
-
-
-            <!-- ================================================= -->
-            <!-- EFECTIVO + HISTORIAL                               -->
-            <!-- ================================================= -->
-
-            <Grid
-                x:Name="ResumenHistorialGrid"
-
-                ColumnDefinitions="0.85*,1.15*"
-                RowDefinitions="Auto"
-
-                ColumnSpacing="14"
-                RowSpacing="14">
-
-
-                <!-- ================================================= -->
-                <!-- COMPOSICIÓN DEL EFECTIVO                          -->
-                <!-- ================================================= -->
-
-                <Border
-                    x:Name="ComposicionCard"
-
-                    Grid.Row="0"
-                    Grid.Column="0"
-
-                    Classes="sectionCard">
-
-                    <StackPanel Spacing="14">
-
-
-                        <StackPanel Spacing="3">
-
-                            <TextBlock
-                                Text="Composición del efectivo"
-                                Classes="sectionTitle"/>
-
-                            <TextBlock
-                                Text="Movimientos que forman el efectivo físico esperado."
-                                Foreground="#94A39A"
-                                FontSize="9"
-                                TextWrapping="Wrap"/>
-
-                        </StackPanel>
-
-
-                        <Border
-                            Background="#F8FAF9"
-
-                            CornerRadius="11"
-
-                            Padding="14"
-
-                            BorderBrush="#EDF1EE"
-                            BorderThickness="1">
-
-                            <StackPanel Spacing="10">
-
-
-                                <!-- FONDO -->
-
-                                <Grid ColumnDefinitions="*,Auto">
-
-                                    <TextBlock
-                                        Text="Fondo inicial"
-                                        Classes="summaryLabel"/>
-
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        Text="{Binding FondoInicialTexto}"
-                                        Classes="summaryValue"/>
-
-                                </Grid>
-
-
-                                <!-- VENTAS -->
-
-                                <Grid ColumnDefinitions="*,Auto">
-
-                                    <TextBlock
-                                        Text="Ventas en efectivo"
-                                        Classes="summaryLabel"/>
-
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        Text="{Binding VentasEfectivoTexto}"
-                                        Classes="summaryValue"/>
-
-                                </Grid>
-
-
-                                <!-- ABONOS -->
-
-                                <Grid ColumnDefinitions="*,Auto">
-
-                                    <TextBlock
-                                        Text="Abonos de crédito en efectivo"
-                                        Classes="summaryLabel"
-                                        TextWrapping="Wrap"/>
-
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        Text="{Binding AbonosCreditoEfectivoTexto}"
-                                        Classes="summaryValue"
-                                        Margin="10,0,0,0"/>
-
-                                </Grid>
-
-
-                                <!-- INGRESOS -->
-
-                                <Grid ColumnDefinitions="*,Auto">
-
-                                    <TextBlock
-                                        Text="Otros ingresos"
-                                        Classes="summaryLabel"/>
-
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        Text="{Binding OtrosIngresosTexto}"
-                                        Classes="summaryValue"/>
-
-                                </Grid>
-
-
-                                <Border
-                                    Height="1"
-                                    Background="#E4EAE6"/>
-
-
-                                <!-- RETIROS -->
-
-                                <Grid ColumnDefinitions="*,Auto">
-
-                                    <TextBlock
-                                        Text="Retiros"
-                                        Classes="summaryLabel"/>
-
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        Text="{Binding RetirosTexto}"
-                                        Classes="summaryNegative"/>
-
-                                </Grid>
-
-
-                                <!-- EGRESOS -->
-
-                                <Grid ColumnDefinitions="*,Auto">
-
-                                    <TextBlock
-                                        Text="Egresos"
-                                        Classes="summaryLabel"/>
-
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        Text="{Binding EgresosTexto}"
-                                        Classes="summaryNegative"/>
-
-                                </Grid>
-
-
-                                <!-- DEVOLUCIONES -->
-
-                                <Grid ColumnDefinitions="*,Auto">
-
-                                    <TextBlock
-                                        Text="Devoluciones"
-                                        Classes="summaryLabel"/>
-
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        Text="{Binding DevolucionesTexto}"
-                                        Classes="summaryNegative"/>
-
-                                </Grid>
-
-
-                                <Border
-                                    Height="1"
-                                    Background="#DDE5E0"
-                                    Margin="0,3"/>
-
-
-                                <!-- ESPERADO -->
-
-                                <Grid ColumnDefinitions="*,Auto">
-
-                                    <StackPanel Spacing="2">
-
-                                        <TextBlock
-                                            Text="Efectivo esperado"
-                                            Foreground="#21382A"
-                                            FontSize="12"
-                                            FontWeight="SemiBold"/>
-
-                                        <TextBlock
-                                            Text="Importe que debería existir físicamente."
-                                            Foreground="#94A39A"
-                                            FontSize="8"
-                                            TextWrapping="Wrap"/>
-
+                                Padding="24,22"
+                                CornerRadius="20"
+                                Background="#12FFFFFF"
+                                BorderBrush="#22FFFFFF"
+                                BorderThickness="1">
+                            <StackPanel Spacing="0">
+                                <TextBlock Text="EFECTIVO ESPERADO EN CAJA"
+                                           Foreground="#A8B4C2"
+                                           FontSize="11"
+                                           FontWeight="Bold"
+                                           LetterSpacing="1.2"
+                                           LineHeight="16"/>
+                                <TextBlock Text="{Binding EfectivoEsperadoTexto}"
+                                           Foreground="White"
+                                           FontSize="36"
+                                           FontWeight="Bold"
+                                           LetterSpacing="-1"
+                                           Margin="0,6,0,18"/>
+
+                                <Button x:Name="RealizarCorteButton"
+                                        Classes="corte"
+                                        Click="RealizarCorte_Click">
+                                    <StackPanel Orientation="Horizontal" Spacing="10">
+                                        <PathIcon Width="18" Height="18"
+                                                  Foreground="White"
+                                                  Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                        <TextBlock Text="Realizar corte"
+                                                   VerticalAlignment="Center"/>
                                     </StackPanel>
+                                </Button>
 
-
-                                    <TextBlock
-                                        Grid.Column="1"
-                                        Text="{Binding EfectivoEsperadoTexto}"
-                                        Foreground="#08783D"
-                                        FontSize="19"
-                                        FontWeight="Bold"
-                                        VerticalAlignment="Center"
-                                        Margin="10,0,0,0"/>
-
-                                </Grid>
-
+                                <TextBlock Text="Cierra el turno actual"
+                                           Foreground="#7F8C9B"
+                                           FontSize="12"
+                                           HorizontalAlignment="Center"
+                                           Margin="0,8,0,0"/>
                             </StackPanel>
-
                         </Border>
 
+                    </Grid>
 
-                        <Border
-                            Background="#EFF8F2"
-                            BorderBrush="#D7EBDD"
-                            BorderThickness="1"
-                            CornerRadius="10"
-                            Padding="11">
+                </Panel>
 
-                            <TextBlock
-                                Text="El efectivo contado se capturará únicamente al realizar el corte."
-                                Foreground="#4D7359"
-                                FontSize="9"
-                                TextWrapping="Wrap"/>
+            </Border>
 
+
+            <!-- ================================================= -->
+            <!-- INDICADORES PRINCIPALES                           -->
+            <!-- ================================================= -->
+
+            <Grid ColumnDefinitions="*,*,*,*"
+                  ColumnSpacing="16">
+
+                <Border Grid.Column="0" Classes="kpi">
+                    <StackPanel>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="kpiEtiqueta" Text="Ventas del turno"/>
+                            <Border Grid.Column="1" Classes="iconoKpi" Background="#EAF7EF">
+                                <PathIcon Foreground="#16A34A"
+                                          Data="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/>
+                            </Border>
+                        </Grid>
+                        <TextBlock Classes="kpiValor" Text="{Binding TotalVentasTexto}"/>
+                        <TextBlock Classes="kpiDetalle" Text="Total de ventas finalizadas"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="1" Classes="kpi">
+                    <StackPanel>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="kpiEtiqueta" Text="Tickets"/>
+                            <Border Grid.Column="1" Classes="iconoKpi" Background="#FEF7DC">
+                                <PathIcon Foreground="#B88A00"
+                                          Data="M18 17H6v-2h12v2zm0-4H6v-2h12v2zm0-4H6V7h12v2zM3 22l1.5-1.5L6 22l1.5-1.5L9 22l1.5-1.5L12 22l1.5-1.5L15 22l1.5-1.5L18 22l1.5-1.5L21 22V2l-1.5 1.5L18 2l-1.5 1.5L15 2l-1.5 1.5L12 2l-1.5 1.5L9 2 7.5 3.5 6 2 4.5 3.5 3 2v20z"/>
+                            </Border>
+                        </Grid>
+                        <TextBlock Classes="kpiValor" Text="{Binding TicketsTexto}"/>
+                        <TextBlock Classes="kpiDetalle" Text="Operaciones completadas"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Classes="kpi">
+                    <StackPanel>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="kpiEtiqueta" Text="Ventas en efectivo"/>
+                            <Border Grid.Column="1" Classes="iconoKpi" Background="#EAF7EF">
+                                <PathIcon Foreground="#16A34A"
+                                          Data="M19 14V6c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zm-9-1c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-6v11c0 1.1-.9 2-2 2H4v-2h17V7h2z"/>
+                            </Border>
+                        </Grid>
+                        <TextBlock Classes="kpiValor" Text="{Binding VentasEfectivoTexto}"/>
+                        <TextBlock Classes="kpiDetalle" Text="Cobros de ventas"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="3" Classes="kpi">
+                    <StackPanel>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="kpiEtiqueta" Text="Tarjetas"/>
+                            <Border Grid.Column="1" Classes="iconoKpi" Background="#EAF1FE">
+                                <PathIcon Foreground="#2563EB"
+                                          Data="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                            </Border>
+                        </Grid>
+                        <TextBlock Classes="kpiValor" Text="{Binding VentasTarjetaTexto}"/>
+                        <TextBlock Classes="kpiDetalle" Text="Cobros con tarjeta"/>
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+
+
+            <!-- ================================================= -->
+            <!-- INDICADORES SECUNDARIOS                           -->
+            <!-- ================================================= -->
+
+            <Grid ColumnDefinitions="*,*,*"
+                  ColumnSpacing="16">
+
+                <Border Grid.Column="0" Classes="mini">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                        <Border Classes="iconoMini" Background="#E6F4F2">
+                            <PathIcon Foreground="#0F766E"
+                                      Data="M4 10h3v7H4zm6.5 0h3v7h-3zM2 19h20v3H2zm15-9h3v7h-3zm-5-9L2 6v2h20V6z"/>
                         </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Classes="miniEtiqueta" Text="Transferencias"/>
+                            <TextBlock Classes="miniValor" Text="{Binding VentasTransferenciaTexto}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Classes="mini">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                        <Border Classes="iconoMini" Background="#F1EEFE">
+                            <PathIcon Foreground="#6D4AE0"
+                                      Data="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Classes="miniEtiqueta" Text="Ventas a crédito"/>
+                            <TextBlock Classes="miniValor" Text="{Binding VentasCreditoTexto}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="2" Classes="mini">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                        <Border Classes="iconoMini" Background="#EAF7EF">
+                            <PathIcon Foreground="#16A34A"
+                                      Data="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Classes="miniEtiqueta" Text="Abonos de crédito · efectivo"/>
+                            <TextBlock Classes="miniValor" Text="{Binding AbonosCreditoEfectivoTexto}"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+            </Grid>
+
+
+            <!-- ================================================= -->
+            <!-- COMPOSICIÓN + HISTORIAL                           -->
+            <!-- ================================================= -->
+
+            <Grid ColumnDefinitions="*,1.25*"
+                  ColumnSpacing="16">
+
+
+                <!-- COMPOSICIÓN DEL EFECTIVO -->
+                <Border x:Name="ComposicionCard"
+                        Grid.Column="0"
+                        Classes="seccion"
+                        VerticalAlignment="Top">
+
+                    <StackPanel Spacing="18">
+
+                        <StackPanel Spacing="2">
+                            <TextBlock Classes="tituloSeccion" Text="Composición del efectivo"/>
+                            <TextBlock Classes="subtituloSeccion" Text="Movimientos que forman el efectivo físico esperado"/>
+                        </StackPanel>
+
+                        <StackPanel>
+
+                            <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                <Ellipse Classes="punto" Fill="#94A3B8"/>
+                                <TextBlock Grid.Column="1" Classes="renglonEtiqueta" Text="Fondo inicial"/>
+                                <TextBlock Grid.Column="2" Classes="renglonValor" Text="{Binding FondoInicialTexto}"/>
+                            </Grid>
+
+                            <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                <Ellipse Classes="punto" Fill="#16A34A"/>
+                                <TextBlock Grid.Column="1" Classes="renglonEtiqueta" Text="Ventas en efectivo"/>
+                                <TextBlock Grid.Column="2" Classes="renglonValor" Text="{Binding VentasEfectivoTexto}"/>
+                            </Grid>
+
+                            <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                <Ellipse Classes="punto" Fill="#16A34A"/>
+                                <TextBlock Grid.Column="1" Classes="renglonEtiqueta" Text="Abonos de crédito en efectivo"/>
+                                <TextBlock Grid.Column="2" Classes="renglonValor" Text="{Binding AbonosCreditoEfectivoTexto}"/>
+                            </Grid>
+
+                            <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                <Ellipse Classes="punto" Fill="#16A34A"/>
+                                <TextBlock Grid.Column="1" Classes="renglonEtiqueta" Text="Otros ingresos"/>
+                                <TextBlock Grid.Column="2" Classes="renglonValor" Text="{Binding OtrosIngresosTexto}"/>
+                            </Grid>
+
+                            <Border Height="1" Background="#EEF1F4" Margin="0,2,0,14"/>
+
+                            <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                <Ellipse Classes="punto" Fill="#E11D48"/>
+                                <TextBlock Grid.Column="1" Classes="renglonEtiqueta" Text="Retiros"/>
+                                <TextBlock Grid.Column="2" Classes="renglonValor negativo" Text="{Binding RetirosTexto}"/>
+                            </Grid>
+
+                            <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                <Ellipse Classes="punto" Fill="#E11D48"/>
+                                <TextBlock Grid.Column="1" Classes="renglonEtiqueta" Text="Egresos"/>
+                                <TextBlock Grid.Column="2" Classes="renglonValor negativo" Text="{Binding EgresosTexto}"/>
+                            </Grid>
+
+                            <Grid Classes="renglon" ColumnDefinitions="Auto,*,Auto">
+                                <Ellipse Classes="punto" Fill="#E11D48"/>
+                                <TextBlock Grid.Column="1" Classes="renglonEtiqueta" Text="Devoluciones"/>
+                                <TextBlock Grid.Column="2" Classes="renglonValor negativo" Text="{Binding DevolucionesTexto}"/>
+                            </Grid>
+
+                        </StackPanel>
+
+                        <!-- Efectivo esperado -->
+                        <Border Padding="18,16"
+                                CornerRadius="16"
+                                BorderBrush="#BFE6CD"
+                                BorderThickness="1">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                    <GradientStop Offset="0" Color="#F0FAF4"/>
+                                    <GradientStop Offset="1" Color="#E0F4E8"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Spacing="2" VerticalAlignment="Center">
+                                    <TextBlock Text="Efectivo esperado"
+                                               Foreground="#0B6B33"
+                                               FontSize="16"
+                                               FontWeight="Bold"/>
+                                    <TextBlock Text="Importe que debería existir físicamente"
+                                               Foreground="#4B6A57"
+                                               FontSize="12"/>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding EfectivoEsperadoTexto}"
+                                           Foreground="#0B6B33"
+                                           FontSize="28"
+                                           FontWeight="Bold"
+                                           LetterSpacing="-0.8"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Width="14" Height="14"
+                                      Foreground="#94A3B8"
+                                      Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                            <TextBlock Text="El efectivo contado se captura únicamente al realizar el corte."
+                                       Foreground="#94A3B8"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
 
                     </StackPanel>
 
                 </Border>
 
 
+                <!-- HISTORIAL DE CORTES -->
+                <!-- Mide lo mismo que la composición; los cortes se  -->
+                <!-- recorren con scroll dentro de la tarjeta.         -->
+                <Border Grid.Column="1"
+                        Classes="seccion"
+                        VerticalAlignment="Top"
+                        Height="{Binding #ComposicionCard.Bounds.Height}">
 
-                <!-- ================================================= -->
-                <!-- HISTORIAL                                         -->
-                <!-- ================================================= -->
+                    <Grid RowDefinitions="Auto,Auto,*"
+                          RowSpacing="12">
 
-                <Border
-                    x:Name="HistorialCard"
-
-                    Grid.Row="0"
-                    Grid.Column="1"
-
-                    Classes="sectionCard">
-
-                    <Grid RowDefinitions="Auto,*">
-
-
-                        <!-- HEADER -->
-
-                        <Grid
-                            Grid.Row="0"
-                            ColumnDefinitions="*,Auto"
-                            Margin="0,0,0,12">
-
-                            <StackPanel Spacing="3">
-
-                                <TextBlock
-                                    Text="Historial de cortes"
-                                    Classes="sectionTitle"/>
-
-                                <TextBlock
-                                    Text="Últimos cierres registrados en caja."
-                                    Foreground="#94A39A"
-                                    FontSize="9"/>
-
+                        <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2">
+                                <TextBlock Classes="tituloSeccion" Text="Historial de cortes"/>
+                                <TextBlock Classes="subtituloSeccion" Text="Últimos cierres registrados en caja"/>
                             </StackPanel>
-
-
-                            <Button
-                                Grid.Column="1"
-
-                                Classes="secondaryButton"
-
-                                Content="Actualizar"
-
-                                VerticalAlignment="Center"
-
-                                Click="Actualizar_Click"/>
-
+                            <Button Grid.Column="1"
+                                    Classes="actualizar"
+                                    Click="Actualizar_Click"
+                                    VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <PathIcon Width="14" Height="14"
+                                              Data="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                    <TextBlock Text="Actualizar" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
                         </Grid>
 
+                        <ProgressBar Grid.Row="1"
+                                     IsIndeterminate="True"
+                                     Height="3"
+                                     MinHeight="3"
+                                     Foreground="#16A34A"
+                                     Background="#EAF7EF"
+                                     IsVisible="{Binding EstaCargando}"/>
 
-                        <!-- LISTADO -->
+                        <ScrollViewer Grid.Row="2"
+                                      VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      IsVisible="{Binding TieneCortes}">
 
-                        <Border
-                            Grid.Row="1"
+                        <ItemsControl ItemsSource="{Binding Cortes}"
+                                      Margin="0,0,10,0">
 
-                            MinHeight="220"
+                            <ItemsControl.ItemTemplate>
 
-                            Background="#F8FAF9"
+                                <DataTemplate x:DataType="vm:CorteHistorialItemViewModel">
 
-                            BorderBrush="#EDF1EE"
-                            BorderThickness="1"
+                                    <Border Classes="corteHistorial">
 
-                            CornerRadius="11"
+                                        <Grid ColumnDefinitions="Auto,*,Auto"
+                                              ColumnSpacing="14">
 
-                            Padding="9">
-
-                            <Grid>
-
-
-                                <!-- ITEMS -->
-
-                                <ItemsControl
-                                    ItemsSource="{Binding Cortes}">
-
-                                    <ItemsControl.ItemTemplate>
-
-                                        <DataTemplate>
-
-                                            <Border
-                                                Background="White"
-
-                                                BorderBrush="#E6EBE8"
-                                                BorderThickness="1"
-
-                                                CornerRadius="10"
-
-                                                Padding="11"
-
-                                                Margin="0,0,0,7">
-
-                                                <Grid
-                                                    ColumnDefinitions="Auto,*,Auto"
-                                                    ColumnSpacing="10">
-
-
-                                                    <!-- ID -->
-
-                                                    <Border
-                                                        Width="40"
-                                                        Height="40"
-
-                                                        CornerRadius="10"
-
-                                                        Background="#EAF7EF"
-
-                                                        VerticalAlignment="Center">
-
-                                                        <TextBlock
-                                                            Text="{Binding IdCorte}"
-
-                                                            Foreground="#08783D"
-
-                                                            FontSize="12"
-                                                            FontWeight="Bold"
-
-                                                            HorizontalAlignment="Center"
-                                                            VerticalAlignment="Center"/>
-
-                                                    </Border>
-
-
-                                                    <!-- INFO -->
-
-                                                    <StackPanel
-                                                        Grid.Column="1"
-                                                        Spacing="2"
-                                                        VerticalAlignment="Center">
-
-                                                        <TextBlock
-                                                            Text="{Binding Caja}"
-                                                            Foreground="#33443A"
-                                                            FontSize="11"
-                                                            FontWeight="SemiBold"
-                                                            TextWrapping="Wrap"
-                                                            MaxLines="2"/>
-
-
-                                                        <WrapPanel>
-
-                                                            <TextBlock
-                                                                Text="{Binding Fecha}"
-                                                                Foreground="#8A9990"
-                                                                FontSize="9"
-                                                                Margin="0,0,4,0"/>
-
-                                                            <TextBlock
-                                                                Text="·"
-                                                                Foreground="#B0BAB4"
-                                                                FontSize="9"
-                                                                Margin="0,0,4,0"/>
-
-                                                            <TextBlock
-                                                                Text="{Binding Hora}"
-                                                                Foreground="#8A9990"
-                                                                FontSize="9"
-                                                                Margin="0,0,4,0"/>
-
-                                                            <TextBlock
-                                                                Text="· Turno"
-                                                                Foreground="#B0BAB4"
-                                                                FontSize="9"
-                                                                Margin="0,0,4,0"/>
-
-                                                            <TextBlock
-                                                                Text="{Binding IdTurno}"
-                                                                Foreground="#8A9990"
-                                                                FontSize="9"/>
-
-                                                        </WrapPanel>
-
-                                                    </StackPanel>
-
-
-                                                    <!-- DIFERENCIA -->
-
-                                                    <StackPanel
-                                                        Grid.Column="2"
-
-                                                        Spacing="2"
-
-                                                        HorizontalAlignment="Right"
-                                                        VerticalAlignment="Center"
-
-                                                        Margin="8,0,0,0">
-
-                                                        <TextBlock
-                                                            Text="Diferencia"
-                                                            Foreground="#9AA79F"
-                                                            FontSize="8"
-                                                            HorizontalAlignment="Right"/>
-
-                                                        <TextBlock
-                                                            Text="{Binding DiferenciaTexto}"
-                                                            Foreground="#33443A"
-                                                            FontSize="12"
-                                                            FontWeight="SemiBold"
-                                                            HorizontalAlignment="Right"/>
-
-                                                        <TextBlock
-                                                            Text="{Binding EstadoDiferencia}"
-                                                            Foreground="#08783D"
-                                                            FontSize="8"
-                                                            FontWeight="SemiBold"
-                                                            HorizontalAlignment="Right"/>
-
-                                                    </StackPanel>
-
-                                                </Grid>
-
+                                            <Border Width="50" Height="50"
+                                                    CornerRadius="15"
+                                                    Background="#EAF7EF"
+                                                    VerticalAlignment="Center">
+                                                <StackPanel VerticalAlignment="Center">
+                                                    <TextBlock Text="CORTE"
+                                                               Foreground="#4B6A57"
+                                                               FontSize="8"
+                                                               FontWeight="Bold"
+                                                               LetterSpacing="1"
+                                                               HorizontalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding IdCorte}"
+                                                               Foreground="#0B6B33"
+                                                               FontSize="17"
+                                                               FontWeight="Bold"
+                                                               HorizontalAlignment="Center"/>
+                                                </StackPanel>
                                             </Border>
 
-                                        </DataTemplate>
+                                            <StackPanel Grid.Column="1"
+                                                        VerticalAlignment="Center"
+                                                        Spacing="3">
+                                                <TextBlock Text="{Binding Caja}"
+                                                           Foreground="#0F172A"
+                                                           FontSize="14"
+                                                           FontWeight="SemiBold"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Foreground="#64748B"
+                                                           FontSize="12">
+                                                    <Run Text="{Binding Fecha}"/><Run Text="  ·  "/><Run Text="{Binding Hora}"/><Run Text="  ·  Turno "/><Run Text="{Binding IdTurno}"/>
+                                                </TextBlock>
+                                            </StackPanel>
 
-                                    </ItemsControl.ItemTemplate>
+                                            <StackPanel Grid.Column="2"
+                                                        VerticalAlignment="Center"
+                                                        Spacing="4">
+                                                <TextBlock Text="{Binding DiferenciaTexto}"
+                                                           Foreground="#0F172A"
+                                                           FontSize="16"
+                                                           FontWeight="Bold"
+                                                           HorizontalAlignment="Right"/>
+                                                <Border Classes="estadoDiferencia"
+                                                        Classes.faltante="{Binding EsFaltante}"
+                                                        Classes.sobrante="{Binding EsSobrante}">
+                                                    <TextBlock Text="{Binding EstadoDiferencia}"/>
+                                                </Border>
+                                            </StackPanel>
 
-                                </ItemsControl>
-
-
-                                <!-- VACÍO -->
-
-                                <StackPanel
-                                    IsVisible="{Binding NoTieneCortes}"
-
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-
-                                    Spacing="8"
-
-                                    Margin="20">
-
-                                    <Border
-                                        Width="54"
-                                        Height="54"
-                                        CornerRadius="17"
-                                        Background="#EAF7EF">
-
-                                        <TextBlock
-                                            Text="▥"
-                                            Foreground="#7CB88B"
-                                            FontSize="24"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"/>
+                                        </Grid>
 
                                     </Border>
 
+                                </DataTemplate>
 
-                                    <TextBlock
-                                        Text="Todavía no hay cortes registrados"
-                                        Foreground="#44534A"
-                                        FontSize="13"
-                                        FontWeight="SemiBold"
-                                        TextAlignment="Center"
-                                        TextWrapping="Wrap"/>
+                            </ItemsControl.ItemTemplate>
 
-                                    <TextBlock
-                                        Text="Los cierres realizados aparecerán aquí."
-                                        Foreground="#94A39A"
-                                        FontSize="9"
-                                        TextAlignment="Center"
-                                        TextWrapping="Wrap"/>
+                        </ItemsControl>
 
-                                </StackPanel>
+                        </ScrollViewer>
 
-                            </Grid>
-
-                        </Border>
+                        <!-- SIN CORTES -->
+                        <StackPanel Grid.Row="2"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="10"
+                                    IsVisible="{Binding NoTieneCortes}">
+                            <Border Width="68" Height="68"
+                                    CornerRadius="22"
+                                    Background="#F4F6F8"
+                                    HorizontalAlignment="Center">
+                                <PathIcon Width="28" Height="28"
+                                          Foreground="#94A3B8"
+                                          Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                            </Border>
+                            <TextBlock Text="Todavía no hay cortes registrados"
+                                       Foreground="#334155"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       HorizontalAlignment="Center"/>
+                            <TextBlock Text="Los cierres realizados aparecerán aquí."
+                                       Foreground="#94A3B8"
+                                       FontSize="12"
+                                       HorizontalAlignment="Center"/>
+                        </StackPanel>
 
                     </Grid>
 
@@ -1227,91 +882,54 @@
             </Grid>
 
 
-
             <!-- ================================================= -->
-            <!-- INFORMACIÓN ADICIONAL                              -->
+            <!-- COBROS QUE NO SON EFECTIVO                        -->
             <!-- ================================================= -->
 
-            <Border Classes="sectionCard">
+            <Border Classes="seccion"
+                    Padding="22,18">
 
-                <Grid
-                    x:Name="InformacionAdicionalGrid"
+                <Grid ColumnDefinitions="*,*,1.4*"
+                      ColumnSpacing="16">
 
-                    ColumnDefinitions="*,*,1.2*"
-                    RowDefinitions="Auto"
+                    <Grid Grid.Column="0" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Border Classes="iconoMini" Background="#EAF1FE">
+                            <PathIcon Foreground="#2563EB"
+                                      Data="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Classes="miniEtiqueta" Text="Abonos de crédito · tarjeta"/>
+                            <TextBlock Classes="miniValor" Text="{Binding AbonosCreditoTarjetaTexto}"/>
+                        </StackPanel>
+                    </Grid>
 
-                    ColumnSpacing="14"
-                    RowSpacing="12">
+                    <Grid Grid.Column="1" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <Border Classes="iconoMini" Background="#E6F4F2">
+                            <PathIcon Foreground="#0F766E"
+                                      Data="M4 10h3v7H4zm6.5 0h3v7h-3zM2 19h20v3H2zm15-9h3v7h-3zm-5-9L2 6v2h20V6z"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="1">
+                            <TextBlock Classes="miniEtiqueta" Text="Abonos de crédito · transferencia"/>
+                            <TextBlock Classes="miniValor" Text="{Binding AbonosCreditoTransferenciaTexto}"/>
+                        </StackPanel>
+                    </Grid>
 
-
-                    <!-- TARJETA -->
-
-                    <StackPanel
-                        x:Name="AbonosTarjetaPanel"
-
-                        Grid.Row="0"
-                        Grid.Column="0"
-
-                        Spacing="4">
-
-                        <TextBlock
-                            Text="Abonos crédito · tarjeta"
-                            Classes="cardLabel"
-                            TextWrapping="Wrap"/>
-
-                        <TextBlock
-                            Text="{Binding AbonosCreditoTarjetaTexto}"
-                            Classes="smallCardValue"/>
-
-                    </StackPanel>
-
-
-                    <!-- TRANSFERENCIA -->
-
-                    <StackPanel
-                        x:Name="AbonosTransferenciaPanel"
-
-                        Grid.Row="0"
-                        Grid.Column="1"
-
-                        Spacing="4">
-
-                        <TextBlock
-                            Text="Abonos crédito · transferencia"
-                            Classes="cardLabel"
-                            TextWrapping="Wrap"/>
-
-                        <TextBlock
-                            Text="{Binding AbonosCreditoTransferenciaTexto}"
-                            Classes="smallCardValue"/>
-
-                    </StackPanel>
-
-
-                    <!-- NOTA -->
-
-                    <Border
-                        x:Name="NotaCobrosBorder"
-
-                        Grid.Row="0"
-                        Grid.Column="2"
-
-                        Background="#FFF8E8"
-
-                        BorderBrush="#F3D89B"
-                        BorderThickness="1"
-
-                        CornerRadius="10"
-
-                        Padding="11">
-
-                        <TextBlock
-                            Text="Los cobros con tarjeta y transferencia no forman parte del efectivo físico de la caja."
-                            Foreground="#8A6422"
-                            FontSize="9"
-                            TextWrapping="Wrap"
-                            VerticalAlignment="Center"/>
-
+                    <Border Grid.Column="2"
+                            Padding="14,10"
+                            CornerRadius="14"
+                            Background="#F8FAFB"
+                            VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <PathIcon Width="16" Height="16"
+                                      Foreground="#64748B"
+                                      VerticalAlignment="Top"
+                                      Data="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                            <TextBlock Text="Los cobros con tarjeta y transferencia no forman parte del efectivo físico de la caja."
+                                       Foreground="#64748B"
+                                       FontSize="12"
+                                       TextWrapping="Wrap"
+                                       MaxWidth="360"/>
+                        </StackPanel>
                     </Border>
 
                 </Grid>
@@ -1321,384 +939,5 @@
         </StackPanel>
 
     </ScrollViewer>
-
-
-
-    <!-- ========================================================= -->
-    <!-- ESTILOS                                                    -->
-    <!-- ========================================================= -->
-
-    <UserControl.Styles>
-
-
-        <!-- CARDS GRANDES -->
-
-        <Style Selector="Border.dashboardCard">
-
-            <Setter Property="Background"
-                    Value="White"/>
-
-            <Setter Property="CornerRadius"
-                    Value="13"/>
-
-            <Setter Property="Padding"
-                    Value="16"/>
-
-            <Setter Property="BorderBrush"
-                    Value="#E2E8E4"/>
-
-            <Setter Property="BorderThickness"
-                    Value="1"/>
-
-            <Setter Property="MinHeight"
-                    Value="112"/>
-
-        </Style>
-
-
-        <!-- CARDS PEQUEÑAS -->
-
-        <Style Selector="Border.smallDashboardCard">
-
-            <Setter Property="Background"
-                    Value="White"/>
-
-            <Setter Property="CornerRadius"
-                    Value="12"/>
-
-            <Setter Property="Padding"
-                    Value="14"/>
-
-            <Setter Property="BorderBrush"
-                    Value="#E2E8E4"/>
-
-            <Setter Property="BorderThickness"
-                    Value="1"/>
-
-            <Setter Property="MinHeight"
-                    Value="82"/>
-
-        </Style>
-
-
-        <!-- SECCIONES -->
-
-        <Style Selector="Border.sectionCard">
-
-            <Setter Property="Background"
-                    Value="White"/>
-
-            <Setter Property="CornerRadius"
-                    Value="13"/>
-
-            <Setter Property="Padding"
-                    Value="17"/>
-
-            <Setter Property="BorderBrush"
-                    Value="#E4EAE6"/>
-
-            <Setter Property="BorderThickness"
-                    Value="1"/>
-
-        </Style>
-
-
-
-        <!-- ===================================================== -->
-        <!-- TEXTOS                                                -->
-        <!-- ===================================================== -->
-
-        <Style Selector="TextBlock.cardLabel">
-
-            <Setter Property="Foreground"
-                    Value="#718078"/>
-
-            <Setter Property="FontSize"
-                    Value="11"/>
-
-            <Setter Property="FontWeight"
-                    Value="Medium"/>
-
-        </Style>
-
-
-        <Style Selector="TextBlock.cardValue">
-
-            <Setter Property="Foreground"
-                    Value="#21382A"/>
-
-            <Setter Property="FontSize"
-                    Value="22"/>
-
-            <Setter Property="FontWeight"
-                    Value="SemiBold"/>
-
-        </Style>
-
-
-        <Style Selector="TextBlock.smallCardValue">
-
-            <Setter Property="Foreground"
-                    Value="#21382A"/>
-
-            <Setter Property="FontSize"
-                    Value="17"/>
-
-            <Setter Property="FontWeight"
-                    Value="SemiBold"/>
-
-        </Style>
-
-
-        <Style Selector="TextBlock.cardDetail">
-
-            <Setter Property="Foreground"
-                    Value="#94A39A"/>
-
-            <Setter Property="FontSize"
-                    Value="9"/>
-
-        </Style>
-
-
-        <Style Selector="TextBlock.sectionTitle">
-
-            <Setter Property="Foreground"
-                    Value="#21382A"/>
-
-            <Setter Property="FontSize"
-                    Value="15"/>
-
-            <Setter Property="FontWeight"
-                    Value="SemiBold"/>
-
-        </Style>
-
-
-        <Style Selector="TextBlock.summaryLabel">
-
-            <Setter Property="Foreground"
-                    Value="#718078"/>
-
-            <Setter Property="FontSize"
-                    Value="10"/>
-
-        </Style>
-
-
-        <Style Selector="TextBlock.summaryValue">
-
-            <Setter Property="Foreground"
-                    Value="#33443A"/>
-
-            <Setter Property="FontSize"
-                    Value="11"/>
-
-            <Setter Property="FontWeight"
-                    Value="SemiBold"/>
-
-        </Style>
-
-
-        <Style Selector="TextBlock.summaryNegative">
-
-            <Setter Property="Foreground"
-                    Value="#B54747"/>
-
-            <Setter Property="FontSize"
-                    Value="11"/>
-
-            <Setter Property="FontWeight"
-                    Value="SemiBold"/>
-
-        </Style>
-
-
-        <Style Selector="TextBlock.miniLabel">
-
-            <Setter Property="Foreground"
-                    Value="#97A39C"/>
-
-            <Setter Property="FontSize"
-                    Value="8"/>
-
-            <Setter Property="FontWeight"
-                    Value="SemiBold"/>
-
-        </Style>
-
-
-        <Style Selector="TextBlock.miniValue">
-
-            <Setter Property="Foreground"
-                    Value="#44534A"/>
-
-            <Setter Property="FontSize"
-                    Value="10"/>
-
-            <Setter Property="FontWeight"
-                    Value="SemiBold"/>
-
-        </Style>
-
-
-
-        <!-- ===================================================== -->
-        <!-- ICONOS                                                -->
-        <!-- ===================================================== -->
-
-        <Style Selector="Border.greenIcon">
-
-            <Setter Property="Width"
-                    Value="32"/>
-
-            <Setter Property="Height"
-                    Value="32"/>
-
-            <Setter Property="CornerRadius"
-                    Value="9"/>
-
-            <Setter Property="Background"
-                    Value="#EAF7EF"/>
-
-        </Style>
-
-
-        <Style Selector="TextBlock.greenIconText">
-
-            <Setter Property="Foreground"
-                    Value="#08783D"/>
-
-            <Setter Property="FontSize"
-                    Value="14"/>
-
-            <Setter Property="FontWeight"
-                    Value="Bold"/>
-
-            <Setter Property="HorizontalAlignment"
-                    Value="Center"/>
-
-            <Setter Property="VerticalAlignment"
-                    Value="Center"/>
-
-        </Style>
-
-
-        <Style Selector="Border.neutralIcon">
-
-            <Setter Property="Width"
-                    Value="32"/>
-
-            <Setter Property="Height"
-                    Value="32"/>
-
-            <Setter Property="CornerRadius"
-                    Value="9"/>
-
-            <Setter Property="Background"
-                    Value="#F4F7F5"/>
-
-        </Style>
-
-
-        <Style Selector="Border.orangeIcon">
-
-            <Setter Property="Width"
-                    Value="32"/>
-
-            <Setter Property="Height"
-                    Value="32"/>
-
-            <Setter Property="CornerRadius"
-                    Value="9"/>
-
-            <Setter Property="Background"
-                    Value="#FFF5EC"/>
-
-        </Style>
-
-
-        <Style Selector="Border.blueIcon">
-
-            <Setter Property="Width"
-                    Value="32"/>
-
-            <Setter Property="Height"
-                    Value="32"/>
-
-            <Setter Property="CornerRadius"
-                    Value="9"/>
-
-            <Setter Property="Background"
-                    Value="#EEF5FB"/>
-
-        </Style>
-
-
-        <Style Selector="Border.purpleIcon">
-
-            <Setter Property="Width"
-                    Value="32"/>
-
-            <Setter Property="Height"
-                    Value="32"/>
-
-            <Setter Property="CornerRadius"
-                    Value="9"/>
-
-            <Setter Property="Background"
-                    Value="#F4EFFA"/>
-
-        </Style>
-
-
-
-        <!-- ===================================================== -->
-        <!-- BOTÓN SECUNDARIO                                      -->
-        <!-- ===================================================== -->
-
-        <Style Selector="Button.secondaryButton">
-
-            <Setter Property="Height"
-                    Value="38"/>
-
-            <Setter Property="Padding"
-                    Value="13,0"/>
-
-            <Setter Property="HorizontalContentAlignment"
-                    Value="Center"/>
-
-            <Setter Property="Background"
-                    Value="#F1F8F3"/>
-
-            <Setter Property="Foreground"
-                    Value="#08783D"/>
-
-            <Setter Property="BorderBrush"
-                    Value="#D7E9DD"/>
-
-            <Setter Property="BorderThickness"
-                    Value="1"/>
-
-            <Setter Property="CornerRadius"
-                    Value="9"/>
-
-            <Setter Property="FontSize"
-                    Value="10"/>
-
-            <Setter Property="FontWeight"
-                    Value="SemiBold"/>
-
-        </Style>
-
-
-        <Style Selector="Button.secondaryButton:pointerover">
-
-            <Setter Property="Background"
-                    Value="#EAF7EF"/>
-
-        </Style>
-
-    </UserControl.Styles>
 
 </UserControl>

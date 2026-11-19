@@ -1,0 +1,401 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="NovaCoreESDM.Controls.EscenaConfiguracionAnimada"
+             IsHitTestVisible="False">
+
+    <!-- ========================================================= -->
+    <!-- ESCENA ANIMADA DE CONFIGURACIÓN                           -->
+    <!-- ========================================================= -->
+    <!-- El equipo (engranes girando) se conecta a la impresora,   -->
+    <!-- sale el ticket de PRUEBA y se abre el cajón. Vectorial y  -->
+    <!-- escalable (lienzo de diseño de 560 x 180). Ciclo de 5 s.  -->
+    <!-- ========================================================= -->
+
+    <UserControl.Styles>
+
+        <!-- Engrane grande -->
+        <Style Selector="PathIcon.engrane">
+            <Style.Animations>
+                <Animation Duration="0:0:6" IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="RotateTransform.Angle" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="RotateTransform.Angle" Value="360"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Engrane chico (gira al revés) -->
+        <Style Selector="PathIcon.engraneChico">
+            <Style.Animations>
+                <Animation Duration="0:0:3" IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="RotateTransform.Angle" Value="360"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="RotateTransform.Angle" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Datos viajando por los cables -->
+        <Style Selector="Line.flujo">
+            <Style.Animations>
+                <Animation Duration="0:0:0.5" IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="StrokeDashOffset" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="StrokeDashOffset" Value="-12"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Ticket de prueba saliendo de la impresora -->
+        <Style Selector="Border.prueba">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="10%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="0"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="42%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="88%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                        <Setter Property="Opacity" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Palomita de "prueba correcta" -->
+        <Style Selector="Border.palomita">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="0"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="44%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="0"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="52%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="88%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="1"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="1"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="ScaleTransform.ScaleX" Value="0"/>
+                        <Setter Property="ScaleTransform.ScaleY" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Cajón de dinero abriéndose -->
+        <Style Selector="Panel.cajon">
+            <Style.Animations>
+                <Animation Duration="0:0:5" IterationCount="Infinite" FillMode="Both">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="52%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="60%">
+                        <Setter Property="TranslateTransform.Y" Value="24"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="84%">
+                        <Setter Property="TranslateTransform.Y" Value="24"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="94%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.Y" Value="0"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- LEDs parpadeando -->
+        <Style Selector="Ellipse.led">
+            <Style.Animations>
+                <Animation Duration="0:0:0.6"
+                           IterationCount="Infinite"
+                           PlaybackDirection="Alternate">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.3"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+    </UserControl.Styles>
+
+
+    <Viewbox Stretch="Uniform">
+
+        <Canvas Width="560" Height="180">
+
+            <!-- Superficie -->
+            <Border Canvas.Left="20" Canvas.Top="162"
+                    Width="520" Height="6"
+                    CornerRadius="3"
+                    Background="#1AFFFFFF"/>
+
+
+            <!-- ============ EQUIPO (MONITOR) ============ -->
+
+            <Border Canvas.Left="70" Canvas.Top="128"
+                    Width="30" Height="22"
+                    Background="#2A313C"/>
+            <Border Canvas.Left="50" Canvas.Top="148"
+                    Width="70" Height="10"
+                    CornerRadius="5"
+                    Background="#3A4250"/>
+
+            <Border Canvas.Left="20" Canvas.Top="30"
+                    Width="130" Height="100"
+                    CornerRadius="12"
+                    Padding="7"
+                    BorderBrush="#33FFFFFF"
+                    BorderThickness="1"
+                    BoxShadow="0 10 24 -10 #CC000000">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Offset="0" Color="#3A4250"/>
+                        <GradientStop Offset="1" Color="#1E242E"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border CornerRadius="7" ClipToBounds="True">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Offset="0" Color="#0B3D20"/>
+                            <GradientStop Offset="1" Color="#07130C"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Canvas Width="114" Height="84">
+                        <PathIcon Classes="engrane"
+                                  Canvas.Left="20" Canvas.Top="14"
+                                  Width="50" Height="50"
+                                  Foreground="#22C55E"
+                                  RenderTransformOrigin="50%,50%"
+                                  Data="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z">
+                            <PathIcon.RenderTransform>
+                                <RotateTransform/>
+                            </PathIcon.RenderTransform>
+                        </PathIcon>
+                        <PathIcon Classes="engraneChico"
+                                  Canvas.Left="62" Canvas.Top="40"
+                                  Width="30" Height="30"
+                                  Foreground="#F5C400"
+                                  RenderTransformOrigin="50%,50%"
+                                  Data="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z">
+                            <PathIcon.RenderTransform>
+                                <RotateTransform/>
+                            </PathIcon.RenderTransform>
+                        </PathIcon>
+                    </Canvas>
+                </Border>
+            </Border>
+
+
+            <!-- ============ CABLES ============ -->
+
+            <!-- Equipo → impresora -->
+            <Line Classes="flujo"
+                  StartPoint="160,62" EndPoint="244,40"
+                  Stroke="#22C55E"
+                  StrokeThickness="4"
+                  StrokeLineCap="Round"
+                  StrokeDashArray="0.1,3"/>
+
+            <!-- Impresora → cajón -->
+            <Line Classes="flujo"
+                  StartPoint="396,40" EndPoint="470,94"
+                  Stroke="#F5C400"
+                  StrokeThickness="4"
+                  StrokeLineCap="Round"
+                  StrokeDashArray="0.1,3"/>
+
+
+            <!-- ============ IMPRESORA Y TICKET DE PRUEBA ============ -->
+
+            <Border Classes="prueba"
+                    Canvas.Left="272" Canvas.Top="56"
+                    Width="96" Height="100"
+                    CornerRadius="0,0,6,6"
+                    Background="#F8FAFC"
+                    Padding="10,10"
+                    RenderTransformOrigin="50%,0%">
+                <Border.RenderTransform>
+                    <ScaleTransform/>
+                </Border.RenderTransform>
+                <StackPanel Spacing="6">
+                    <Border HorizontalAlignment="Center"
+                            Padding="8,1"
+                            CornerRadius="4"
+                            Background="#FEF3C7"
+                            BorderBrush="#D97706"
+                            BorderThickness="1">
+                        <TextBlock Text="PRUEBA"
+                                   Foreground="#92400E"
+                                   FontSize="10"
+                                   FontWeight="Black"
+                                   LetterSpacing="1.5"/>
+                    </Border>
+                    <Border Height="3" CornerRadius="2" Background="#CBD5E1"/>
+                    <Border Height="3" CornerRadius="2" Background="#CBD5E1" Margin="0,0,18,0"/>
+                    <Border Height="3" CornerRadius="2" Background="#CBD5E1" Margin="0,0,8,0"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Palomita sobre el ticket -->
+            <Border Classes="palomita"
+                    Canvas.Left="304" Canvas.Top="116"
+                    Width="32" Height="32"
+                    CornerRadius="16"
+                    Background="#16A34A"
+                    BorderBrush="White"
+                    BorderThickness="2"
+                    BoxShadow="0 4 12 0 #8016A34A"
+                    RenderTransformOrigin="50%,50%">
+                <Border.RenderTransform>
+                    <ScaleTransform/>
+                </Border.RenderTransform>
+                <Path Data="M0,6 L5,11 L14,1"
+                      Stroke="White"
+                      StrokeThickness="3"
+                      StrokeLineCap="Round"
+                      StrokeJoin="Round"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"/>
+            </Border>
+
+            <!-- Cuerpo de la impresora -->
+            <Border Canvas.Left="250" Canvas.Top="14"
+                    Width="140" Height="46"
+                    CornerRadius="14"
+                    BorderBrush="#33FFFFFF"
+                    BorderThickness="1">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Offset="0" Color="#3A4250"/>
+                        <GradientStop Offset="1" Color="#1E242E"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Grid ColumnDefinitions="Auto,*" Margin="14,0">
+                    <Ellipse Classes="led"
+                             Width="9" Height="9"
+                             Fill="#22C55E"
+                             VerticalAlignment="Center"/>
+                    <PathIcon Grid.Column="1"
+                              Width="20" Height="20"
+                              Foreground="#D9E2EC"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Center"
+                              Data="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+                </Grid>
+            </Border>
+
+            <!-- Ranura -->
+            <Border Canvas.Left="266" Canvas.Top="54"
+                    Width="108" Height="5"
+                    CornerRadius="3"
+                    Background="#0B0F14"/>
+
+
+            <!-- ============ CAJÓN DE DINERO ============ -->
+
+            <!-- Charola con billetes y monedas (sale hacia el frente) -->
+            <Panel Classes="cajon"
+                   Canvas.Left="424" Canvas.Top="104"
+                   Width="112" Height="34">
+                <Panel.RenderTransform>
+                    <TranslateTransform/>
+                </Panel.RenderTransform>
+                <Border CornerRadius="5"
+                        Background="#14181F"
+                        BorderBrush="#33FFFFFF"
+                        BorderThickness="1"/>
+                <StackPanel Orientation="Horizontal"
+                            Spacing="5"
+                            Margin="8,6"
+                            VerticalAlignment="Top">
+                    <Border Width="22" Height="12" CornerRadius="2" Background="#22C55E"/>
+                    <Border Width="22" Height="12" CornerRadius="2" Background="#16A34A"/>
+                    <Border Width="22" Height="12" CornerRadius="2" Background="#3B82F6"/>
+                    <Ellipse Width="11" Height="11" Fill="#F5C400" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Panel>
+
+            <!-- Cuerpo del cajón (frente) -->
+            <Border Canvas.Left="416" Canvas.Top="94"
+                    Width="128" Height="40"
+                    CornerRadius="10,10,4,4"
+                    BorderBrush="#33FFFFFF"
+                    BorderThickness="1"
+                    BoxShadow="0 10 20 -10 #CC000000">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                        <GradientStop Offset="0" Color="#3A4250"/>
+                        <GradientStop Offset="1" Color="#252B35"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border Width="30" Height="5"
+                        CornerRadius="3"
+                        Background="#0B0F14"
+                        VerticalAlignment="Center"/>
+            </Border>
+
+            <!-- Frente de la charola (se mueve con ella) -->
+            <Panel Classes="cajon"
+                   Canvas.Left="416" Canvas.Top="132"
+                   Width="128" Height="22">
+                <Panel.RenderTransform>
+                    <TranslateTransform/>
+                </Panel.RenderTransform>
+                <Border CornerRadius="4,4,8,8"
+                        BorderBrush="#33FFFFFF"
+                        BorderThickness="1">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                            <GradientStop Offset="0" Color="#4A5363"/>
+                            <GradientStop Offset="1" Color="#2A313C"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border Width="36" Height="4"
+                            CornerRadius="2"
+                            Background="#F5C400"
+                            VerticalAlignment="Center"/>
+                </Border>
+            </Panel>
+
+        </Canvas>
+
+    </Viewbox>
+
+</UserControl>

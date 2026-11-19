@@ -18,14 +18,24 @@ public partial class CancelacionesViewModel : ViewModelBase
     private readonly CancelacionesService _cancelacionesService =
         new();
 
-
-    // =========================================================
-    // AUTORIZACIÓN ADMINISTRATIVA
-    // =========================================================
-
+    
     [ObservableProperty]
-    private string usuarioAdministrador =
-        string.Empty;
+    private AdministradorItem? administradorSeleccionado;
+
+    public ObservableCollection<AdministradorItem> ListaAdministradores { get; } = new();
+
+    public async Task CargarAdministradoresAsync()
+    {
+        var respuesta = await _cancelacionesService.ObtenerListaAdministradoresAsync();
+        if (respuesta.Res == 1 && respuesta.Data != null)
+        {
+            ListaAdministradores.Clear();
+            foreach (var admin in respuesta.Data)
+            {
+                ListaAdministradores.Add(admin);
+            }
+        }
+    }
 
 
     [ObservableProperty]
@@ -143,10 +153,11 @@ public partial class CancelacionesViewModel : ViewModelBase
         VentaDetalle is not null;
 
 
-    public bool PuedeEjecutarCancelacion =>
+   public bool PuedeEjecutarCancelacion =>
         VentaDetalle is not null &&
         PuedeCancelarVenta &&
-        !EstaCancelando;
+        !EstaCancelando &&
+        MotivoValido;
 
 
     // =========================================================
@@ -157,6 +168,8 @@ public partial class CancelacionesViewModel : ViewModelBase
     {
         EstadoSeleccionado =
             string.Empty;
+
+        _ = CargarAdministradoresAsync();
     }
 
     
@@ -188,8 +201,7 @@ public partial class CancelacionesViewModel : ViewModelBase
         NombreAdministrador =
             string.Empty;
 
-        UsuarioAdministrador =
-            string.Empty;
+        AdministradorSeleccionado = null;
 
         PasswordAdministrador =
             string.Empty;
@@ -222,89 +234,53 @@ public partial class CancelacionesViewModel : ViewModelBase
     {
         LimpiarMensajes();
 
-
-        if (string.IsNullOrWhiteSpace(
-                UsuarioAdministrador))
+        if (AdministradorSeleccionado is null || string.IsNullOrWhiteSpace(AdministradorSeleccionado.Usuario))
         {
-            MensajeError =
-                "Ingresa el usuario del administrador.";
-
+            MensajeError = "Selecciona un administrador de la lista.";
             return;
         }
 
-
-        if (string.IsNullOrWhiteSpace(
-                PasswordAdministrador))
+        if (string.IsNullOrWhiteSpace(PasswordAdministrador))
         {
-            MensajeError =
-                "Ingresa la contraseña del administrador.";
-
+            MensajeError = "Ingresa la contraseña del administrador.";
             return;
         }
-
 
         try
         {
-            EstaAutorizando =
-                true;
+            EstaAutorizando = true;
 
-
-            var respuesta =
-                await _cancelacionesService
-                    .AutorizarAdministradorAsync(
-                        UsuarioAdministrador,
-                        PasswordAdministrador
-                    );
-
+            var respuesta = await _cancelacionesService.AutorizarAdministradorAsync(
+                AdministradorSeleccionado.Usuario,
+                PasswordAdministrador
+            );
 
             if (respuesta.Res != 1)
             {
-                MensajeError =
-                    respuesta.Msg ??
-                    "No fue posible autorizar al administrador.";
-
+                MensajeError = respuesta.Msg ?? "No fue posible autorizar al administrador.";
                 return;
             }
 
+            AdministradorAutorizado = true;
 
-            AdministradorAutorizado =
-                true;
+            NombreAdministrador = respuesta.Data?.Nombre ?? 
+                                  AdministradorSeleccionado.Nombre ?? 
+                                  AdministradorSeleccionado.Usuario;
 
-
-            NombreAdministrador =
-                respuesta.Data?.Nombre ??
-                respuesta.Data?.Usuario ??
-                UsuarioAdministrador;
-
-
-            // Ya no necesitamos conservar el password
-            // en memoria después de autorizar.
-            PasswordAdministrador =
-                string.Empty;
-
-
-            MensajeExito =
-                $"Administrador {NombreAdministrador} autorizado.";
-
-
-            // =================================================
-            // CARGAR AUTOMÁTICAMENTE LAS VENTAS DE HOY
-            // =================================================
+            PasswordAdministrador = string.Empty;
+            MensajeExito = $"Administrador {NombreAdministrador} autorizado.";
 
             await BuscarVentasInternoAsync();
         }
         catch (Exception ex)
         {
-            MensajeError =
-                $"No fue posible autorizar al administrador: {ex.Message}";
+            MensajeError = $"No fue posible autorizar al administrador: {ex.Message}";
         }
         finally
         {
-            EstaAutorizando =
-                false;
+            EstaAutorizando = false;
         }
     }
-
 
     // =========================================================
     // BUSCAR VENTAS
@@ -869,4 +845,44 @@ public partial class CancelacionesViewModel : ViewModelBase
         OnPropertyChanged(
             nameof(PuedeEjecutarCancelacion));
     }
+
+    partial void OnMotivoCancelacionChanged(string value)
+    {
+        OnPropertyChanged(nameof(PuedeEjecutarCancelacion));
+        OnPropertyChanged(nameof(ContadorRestanteTexto));
+        OnPropertyChanged(nameof(MotivoValido));
+        OnPropertyChanged(nameof(TextoAyudaMotivo));
+    }
+
+    // =========================================================
+    // CONTADOR DE MOTIVO
+    // =========================================================
+
+    public const int MinimoCaracteresMotivo = 25;
+
+    public const int MaximoCaracteresMotivo = 250;
+
+
+    private int CaracteresMotivo =>
+        (MotivoCancelacion ?? string.Empty).Trim().Length;
+
+
+    public bool MotivoValido =>
+        CaracteresMotivo >= MinimoCaracteresMotivo;
+
+
+    public string ContadorRestanteTexto =>
+        $"{(MotivoCancelacion ?? string.Empty).Length}/{MaximoCaracteresMotivo}";
+
+
+    // Ayuda en vivo debajo del motivo.
+    public string TextoAyudaMotivo =>
+        MotivoValido
+            ? "Motivo válido. Ya puedes cancelar la venta."
+            : CaracteresMotivo == 0
+                ? $"Escribe un motivo claro de al menos {MinimoCaracteresMotivo} caracteres."
+                : $"Faltan {MinimoCaracteresMotivo - CaracteresMotivo} caracteres (mínimo {MinimoCaracteresMotivo}).";
+
+
+
 }

@@ -1,158 +1,329 @@
 <Window
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
     x:Class="NovaCoreESDM.Views.Sesion.CerrarSesionWindow"
-    Width="560"
-    Height="430"
+
+    Width="580"
+    SizeToContent="Height"
+
     CanResize="False"
+
     WindowStartupLocation="CenterOwner"
+
     Title="Cerrar sesión"
-    Background="#F7F9F8">
+    Icon="/Assets/Brand/esdm-app-icon.ico"
 
-    <Grid RowDefinitions="*,Auto">
-
-        <StackPanel
-            Margin="32"
-            Spacing="18">
-
-            <Border
-                Width="64"
-                Height="64"
-                CornerRadius="20"
-                Background="#FEF2F2"
-                HorizontalAlignment="Left">
-
-                <TextBlock
-                    Text="↪"
-                    Foreground="#C61F2B"
-                    FontSize="30"
-                    FontWeight="Bold"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"/>
-
-            </Border>
+    Background="#F4F6F8">
 
 
-            <StackPanel Spacing="7">
+    <StackPanel>
 
-                <TextBlock
-                    x:Name="TxtTitulo"
-                    Text="Cerrar sesión"
-                    Foreground="#21382A"
-                    FontSize="23"
-                    FontWeight="SemiBold"/>
 
-                <TextBlock
-                    x:Name="TxtDescripcion"
-                    Text="¿Deseas cerrar la sesión actual?"
-                    Foreground="#66776D"
-                    FontSize="13"
-                    TextWrapping="Wrap"/>
+        <!-- ===================================================== -->
+        <!-- ENCABEZADO Y AVISOS                                   -->
+        <!-- ===================================================== -->
+
+        <Border Padding="30,28,30,22">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="0%,100%">
+                    <GradientStop Offset="0" Color="#FDECEC"/>
+                    <GradientStop Offset="0.55" Color="#F4F6F8"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <StackPanel Spacing="14">
+
+                <!-- Ícono -->
+                <Panel Width="84" Height="84"
+                       HorizontalAlignment="Center">
+                    <Ellipse Fill="#1FE11D48"/>
+                    <Border Width="62" Height="62"
+                            CornerRadius="31"
+                            BoxShadow="0 10 22 -8 #80DC2626">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                                <GradientStop Offset="0" Color="#EF4444"/>
+                                <GradientStop Offset="1" Color="#B91C1C"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <PathIcon Classes="salida"
+                                  Width="26" Height="26"
+                                  Foreground="White"
+                                  Data="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z">
+                            <PathIcon.RenderTransform>
+                                <TranslateTransform/>
+                            </PathIcon.RenderTransform>
+                        </PathIcon>
+                    </Border>
+                </Panel>
+
+                <!-- Título (el código cambia los textos según el turno) -->
+                <StackPanel Spacing="4"
+                            HorizontalAlignment="Center">
+                    <TextBlock x:Name="TxtTitulo"
+                               Text="Cerrar sesión"
+                               Foreground="#0B1220"
+                               FontSize="25"
+                               FontWeight="Bold"
+                               LetterSpacing="-0.4"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"/>
+                    <TextBlock x:Name="TxtDescripcion"
+                               Text="¿Deseas cerrar la sesión actual?"
+                               Foreground="#64748B"
+                               FontSize="13"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Aviso de turno abierto -->
+                <Border x:Name="BorderTurnoActivo"
+                        IsVisible="False"
+                        Padding="14,12"
+                        CornerRadius="16"
+                        Background="#FFF7E0"
+                        BorderBrush="#FBD98A"
+                        BorderThickness="1"
+                        Margin="0,4,0,0">
+                    <Grid ColumnDefinitions="Auto,*"
+                          ColumnSpacing="12">
+                        <Border Width="38" Height="38"
+                                CornerRadius="12"
+                                Background="#FDE9B5"
+                                VerticalAlignment="Top">
+                            <PathIcon Width="20" Height="20"
+                                      Foreground="#B7791F"
+                                      Data="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                        </Border>
+                        <StackPanel Grid.Column="1"
+                                    Spacing="3"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="TURNO ABIERTO"
+                                       Foreground="#B7791F"
+                                       FontSize="11"
+                                       FontWeight="Bold"
+                                       LetterSpacing="1.2"
+                                       LineHeight="16"/>
+                            <TextBlock x:Name="TxtTurnoActivo"
+                                       Text="Existe un turno activo en esta caja."
+                                       Foreground="#7A4E05"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- Información -->
+                <Border Padding="14,12"
+                        CornerRadius="16"
+                        Background="White"
+                        BorderBrush="#EAEEF2"
+                        BorderThickness="1"
+                        BoxShadow="0 1 2 0 #0A0F172A">
+                    <Grid ColumnDefinitions="Auto,*"
+                          ColumnSpacing="12">
+                        <Border Width="38" Height="38"
+                                CornerRadius="12"
+                                Background="#EFF6FF"
+                                VerticalAlignment="Top">
+                            <PathIcon Width="20" Height="20"
+                                      Foreground="#2563EB"
+                                      Data="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+                        </Border>
+                        <TextBlock Grid.Column="1"
+                                   x:Name="TxtInformacion"
+                                   Text="La configuración de esta terminal y caja permanecerá guardada."
+                                   Foreground="#475569"
+                                   FontSize="13"
+                                   TextWrapping="Wrap"
+                                   VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
 
             </StackPanel>
 
-
-            <!-- AVISO DE TURNO ACTIVO -->
-
-            <Border
-                x:Name="BorderTurnoActivo"
-                IsVisible="False"
-                Background="#FFF8E8"
-                BorderBrush="#F3D89B"
-                BorderThickness="1"
-                CornerRadius="11"
-                Padding="15">
-
-                <StackPanel Spacing="5">
-
-                    <TextBlock
-                        Text="Turno abierto"
-                        Foreground="#8A641D"
-                        FontSize="12"
-                        FontWeight="SemiBold"/>
-
-                    <TextBlock
-                        x:Name="TxtTurnoActivo"
-                        Text="Existe un turno activo en esta caja."
-                        Foreground="#84611D"
-                        FontSize="11"
-                        TextWrapping="Wrap"/>
-
-                </StackPanel>
-
-            </Border>
+        </Border>
 
 
-            <!-- INFORMACIÓN -->
+        <!-- ===================================================== -->
+        <!-- BOTONES                                               -->
+        <!-- ===================================================== -->
 
-            <Border
-                Background="White"
-                BorderBrush="#E2E8E4"
-                BorderThickness="1"
-                CornerRadius="11"
-                Padding="15">
+        <Border Background="White"
+                BorderBrush="#EAEEF2"
+                BorderThickness="0,1,0,0"
+                Padding="30,18,30,22">
 
-                <TextBlock
-                    x:Name="TxtInformacion"
-                    Text="La configuración de esta terminal y caja permanecerá guardada."
-                    Foreground="#64748B"
-                    FontSize="11"
-                    TextWrapping="Wrap"/>
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="12">
 
-            </Border>
+                <Button x:Name="BotonVolver"
+                        Grid.Column="0"
+                        Classes="volver"
+                        IsCancel="True"
+                        Click="Volver_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <PathIcon Width="14" Height="14"
+                                  Data="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                        <TextBlock Text="Volver" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
 
-        </StackPanel>
+                <Grid Grid.Column="1"
+                      ColumnDefinitions="*,Auto">
 
+                    <Button x:Name="BtnIrACorte"
+                            Grid.Column="0"
+                            Classes="corte"
+                            IsVisible="False"
+                            Margin="0,0,12,0"
+                            Click="IrACorte_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Width="16" Height="16"
+                                      Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                            <TextBlock Text="Ir a realizar corte" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
 
-        <!-- BOTONES -->
+                    <Button x:Name="BtnCerrarSesion"
+                            Grid.Column="1"
+                            Classes="cerrar"
+                            Click="CerrarSesion_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <PathIcon Width="16" Height="16"
+                                      Data="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5-5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                            <TextBlock x:Name="TxtBotonCerrar"
+                                       Text="Cerrar sesión"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
 
-        <Border
-            Grid.Row="1"
-            Background="White"
-            BorderBrush="#E2E8E4"
-            BorderThickness="0,1,0,0"
-            Padding="24,18">
-
-            <Grid
-                ColumnDefinitions="Auto,*,Auto,Auto"
-                ColumnSpacing="10">
-
-                <Button
-                    Grid.Column="0"
-                    Content="Volver"
-                    Width="105"
-                    Height="42"
-                    Click="Volver_Click"/>
-
-
-                <Button
-                    Grid.Column="2"
-                    x:Name="BtnIrACorte"
-                    Content="Ir a realizar corte"
-                    Width="155"
-                    Height="42"
-                    IsVisible="False"
-                    Background="#08783D"
-                    Foreground="White"
-                    FontWeight="SemiBold"
-                    Click="IrACorte_Click"/>
-
-
-                <Button
-                    Grid.Column="3"
-                    x:Name="BtnCerrarSesion"
-                    Content="Cerrar sesión"
-                    Width="135"
-                    Height="42"
-                    Background="#C61F2B"
-                    Foreground="White"
-                    FontWeight="SemiBold"
-                    Click="CerrarSesion_Click"/>
+                </Grid>
 
             </Grid>
 
         </Border>
 
-    </Grid>
+    </StackPanel>
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <Window.Styles>
+
+        <!-- La flecha "sale" suavemente -->
+        <Style Selector="PathIcon.salida">
+            <Style.Animations>
+                <Animation Duration="0:0:1.6"
+                           IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="TranslateTransform.X" Value="-2"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="50%">
+                        <Setter Property="TranslateTransform.X" Value="3"/>
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="TranslateTransform.X" Value="-2"/>
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+
+        <!-- Base de los botones -->
+        <Style Selector="Button.volver, Button.corte, Button.cerrar">
+            <Setter Property="Height" Value="54"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <!-- Volver -->
+        <Style Selector="Button.volver">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <Style Selector="Button.volver:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+        </Style>
+
+        <!-- Ir a realizar corte (acción recomendada) -->
+        <Style Selector="Button.corte">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#22C55E"/>
+                    <GradientStop Offset="1" Color="#0E9A46"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.corte /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 24 -8 #8016A34A"/>
+        </Style>
+
+        <Style Selector="Button.corte:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#2BD468"/>
+                    <GradientStop Offset="1" Color="#10A94D"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.corte:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#0B7A38"/>
+        </Style>
+
+        <!-- Cerrar sesión -->
+        <Style Selector="Button.cerrar">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#EF4444"/>
+                    <GradientStop Offset="1" Color="#B91C1C"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.cerrar /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 24 -8 #80DC2626"/>
+        </Style>
+
+        <Style Selector="Button.cerrar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#F25555"/>
+                    <GradientStop Offset="1" Color="#C82424"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.cerrar:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#991B1B"/>
+        </Style>
+
+    </Window.Styles>
 
 </Window>

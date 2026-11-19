@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 
 namespace NovaCoreESDM.Views.Sesion;
 
@@ -33,6 +34,15 @@ public partial class CerrarSesionWindow
         ConfigurarVista(
             idTurno,
             nombreCaja);
+
+
+        // El foco arranca en "Volver": un Enter de más nunca cierra la sesión.
+        // Esc también vuelve (botón con IsCancel).
+        Opened +=
+            (_, _) =>
+                Dispatcher.UIThread.Post(
+                    () => BotonVolver.Focus(),
+                    DispatcherPriority.Input);
     }
 
 
@@ -79,7 +89,7 @@ public partial class CerrarSesionWindow
                 "Si cierras sesión sin realizar el corte, el turno permanecerá abierto y podrá recuperarse al volver a iniciar sesión en esta caja.";
 
 
-            BtnCerrarSesion.Content =
+            TxtBotonCerrar.Text =
                 "Cerrar sin corte";
 
             return;
@@ -110,7 +120,7 @@ public partial class CerrarSesionWindow
             "La configuración de esta terminal y caja permanecerá guardada.";
 
 
-        BtnCerrarSesion.Content =
+        TxtBotonCerrar.Text =
             "Cerrar sesión";
     }
 

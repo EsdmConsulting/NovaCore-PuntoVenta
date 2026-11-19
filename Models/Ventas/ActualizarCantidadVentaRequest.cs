@@ -90,6 +90,18 @@ public class ActualizarCantidadVentaRequest
 
     [JsonPropertyName("tipo_precio_maximo")]
     public string? TipoPrecioMaximo { get; set; }
+
+    // ---------------------------------------------------------
+    // PRECIO UNITARIO (PRECIO LIBRE / OTRO)
+    // ---------------------------------------------------------
+    //
+    // Digunakan saat pengguna memilih opsi "Otro" dan memasukkan
+    // harga secara manual. Jika null, properti ini tidak akan dikirim.
+    // ---------------------------------------------------------
+
+    [JsonPropertyName("precio_unitario")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public decimal? PrecioUnitario { get; set; }
 }
 
 
