@@ -876,6 +876,37 @@ public partial class VentasView : UserControl
                     try
                     {
                         // =================================================
+                        // 0. TERMINALES BANCARIAS VINCULADAS A ESTE EQUIPO
+                        // =================================================
+                        //
+                        // Si el equipo tiene terminales configuradas
+                        // (Configuración > Terminales de cobro), el cobro
+                        // con tarjeta usa esa ventana (manual o directo).
+                        // Sin terminales se conserva el flujo de
+                        // Mercado Pago de siempre.
+                        // =================================================
+
+                        var terminalesBancarias =
+                            new TerminalPagoConfigurationService()
+                                .ObtenerActivas();
+
+                        if (terminalesBancarias.Count > 0)
+                        {
+                            var volverAlSelector =
+                                await CobrarConTerminalBancariaAsync(
+                                    owner,
+                                    saldoACobrar,
+                                    terminalesBancarias
+                                );
+
+                            if (volverAlSelector)
+                                continue;
+
+                            return;
+                        }
+
+
+                        // =================================================
                         // 1. CONSULTAR TERMINALES MERCADO PAGO
                         // =================================================
                        
@@ -1181,6 +1212,83 @@ public partial class VentasView : UserControl
 
             EnfocarBuscadorProductos();
         }
+    }
+
+
+    // =========================================================
+    // COBRO CON TERMINAL BANCARIA (MANUAL O DIRECTO)
+    // =========================================================
+    //
+    // Devuelve true  -> volver al selector de método de pago
+    //                   (canceló, rechazo, o queda saldo).
+    // Devuelve false -> terminar el flujo de cobro (venta
+    //                   finalizada, error o resultado incierto).
+    //
+    // El pago se registra en el ERP SOLO si quedó aprobado.
+    // =========================================================
+
+    private async Task<bool> CobrarConTerminalBancariaAsync(
+        Window owner,
+        decimal saldoACobrar,
+        System.Collections.Generic.List<
+            NovaCoreESDM.Models.Configuration.TerminalPagoConfiguration> terminales)
+    {
+        var ventana =
+            new PagoTarjetaTerminalWindow(
+                saldoACobrar,
+                _viewModel.IdVentaActual,
+                _viewModel.FolioVentaActual,
+                terminales
+            );
+
+
+        var confirmado =
+            await ventana
+                .ShowDialog<bool>(
+                    owner
+                );
+
+
+        var resultado =
+            ventana.Resultado;
+
+
+        // Operación incierta: el cliente pudo haber pagado.
+        // No se registra nada y NO se permite cobrar de nuevo.
+        if (resultado is { RequiereVerificacion: true })
+        {
+            _viewModel.MensajeError =
+                resultado.Mensaje;
+
+            return false;
+        }
+
+
+        // Volvió atrás, rechazo o cancelación: la venta sigue igual.
+        if (!confirmado || resultado is null || !resultado.Aprobado)
+            return true;
+
+
+        var registrado =
+            await _viewModel
+                .RegistrarPagoTarjetaAsync(
+                    resultado
+                );
+
+
+        // MensajeError ya trae el motivo. Si la terminal cobró y no se
+        // pudo registrar, el reintento reanuda ese cobro (no cobra otra vez).
+        if (!registrado)
+            return false;
+
+
+        if (_viewModel.SaldoPendiente <= 0 ||
+            _viewModel.VentaFinalizadaCorrectamente)
+            return false;
+
+
+        // Pago mixto: queda saldo.
+        return true;
     }
 
 

@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:NovaCoreESDM.ViewModels.Configuracion"
     xmlns:controls="using:NovaCoreESDM.Controls"
+    xmlns:cfg="using:NovaCoreESDM.Models.Configuration"
 
     x:Class="NovaCoreESDM.Views.Configuracion.ConfiguracionView"
     x:DataType="vm:ConfiguracionViewModel"
@@ -618,6 +619,287 @@
                         </WrapPanel>
 
                     </StackPanel>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- TERMINALES DE COBRO CON TARJETA                   -->
+            <!-- ================================================= -->
+
+            <Border Classes="seccion">
+
+                <Border.Styles>
+
+                    <Style Selector="TextBox.campoT">
+                        <Setter Property="Height" Value="46"/>
+                        <Setter Property="FontSize" Value="14"/>
+                        <Setter Property="CornerRadius" Value="12"/>
+                        <Setter Property="Padding" Value="12,0"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    </Style>
+
+                    <Style Selector="TextBlock.etiquetaT">
+                        <Setter Property="Foreground" Value="#334155"/>
+                        <Setter Property="FontSize" Value="13"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="Margin" Value="0,0,0,6"/>
+                    </Style>
+
+                    <Style Selector="Border.tarjetaTerminal">
+                        <Setter Property="Padding" Value="16,14"/>
+                        <Setter Property="CornerRadius" Value="14"/>
+                        <Setter Property="Background" Value="#F8FAFB"/>
+                        <Setter Property="BorderBrush" Value="#EEF1F4"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                    </Style>
+
+                    <Style Selector="Border.insigniaTerminal">
+                        <Setter Property="Padding" Value="10,3"/>
+                        <Setter Property="CornerRadius" Value="999"/>
+                        <Setter Property="Background" Value="#E8F0FE"/>
+                        <Setter Property="HorizontalAlignment" Value="Left"/>
+                    </Style>
+
+                    <Style Selector="Border.insigniaTerminal TextBlock">
+                        <Setter Property="Foreground" Value="#1D4ED8"/>
+                        <Setter Property="FontSize" Value="11"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                    </Style>
+
+                    <Style Selector="Border.mensajeTerminal">
+                        <Setter Property="Padding" Value="14,12"/>
+                        <Setter Property="CornerRadius" Value="14"/>
+                        <Setter Property="Background" Value="#EEF4FF"/>
+                        <Setter Property="BorderBrush" Value="#C7D8F5"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                    </Style>
+                    <Style Selector="Border.mensajeTerminal TextBlock">
+                        <Setter Property="Foreground" Value="#1E4F8A"/>
+                    </Style>
+                    <Style Selector="Border.mensajeTerminal.error">
+                        <Setter Property="Background" Value="#FDECEC"/>
+                        <Setter Property="BorderBrush" Value="#F5C2C2"/>
+                    </Style>
+                    <Style Selector="Border.mensajeTerminal.error TextBlock">
+                        <Setter Property="Foreground" Value="#9B1C1C"/>
+                    </Style>
+
+                    <Style Selector="Button.chico">
+                        <Setter Property="Height" Value="38"/>
+                        <Setter Property="Padding" Value="14,0"/>
+                        <Setter Property="FontSize" Value="13"/>
+                        <Setter Property="Margin" Value="0,0,8,0"/>
+                    </Style>
+
+                </Border.Styles>
+
+                <StackPanel Spacing="18">
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                        <StackPanel Spacing="2">
+                            <TextBlock Classes="tituloSeccion" Text="Terminales de cobro con tarjeta"/>
+                            <TextBlock Classes="subtituloSeccion"
+                                       Text="Vincula las terminales bancarias de este equipo. Las inalámbricas reciben el importe por la red y devuelven el resultado solas; las alámbricas se cobran capturando las terminaciones del número de pago."/>
+                        </StackPanel>
+
+                        <Button Grid.Column="1"
+                                Classes="boton verde"
+                                Margin="0"
+                                VerticalAlignment="Top"
+                                Command="{Binding NuevaTerminalCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Width="14" Height="14"
+                                          Data="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                <TextBlock Text="Agregar terminal" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+
+                    <!-- Mensaje de la sección -->
+                    <Border Classes="mensajeTerminal"
+                            Classes.error="{Binding MensajeTerminalEsError}"
+                            IsVisible="{Binding HayMensajeTerminal}">
+                        <TextBlock Text="{Binding MensajeTerminal}"
+                                   FontSize="13"
+                                   TextWrapping="Wrap"/>
+                    </Border>
+
+
+                    <!-- Sin terminales -->
+                    <Border IsVisible="{Binding NoHayTerminalesPago}"
+                            Padding="14,12"
+                            CornerRadius="14"
+                            Background="#FFF7E0"
+                            BorderBrush="#FBD98A"
+                            BorderThickness="1">
+                        <TextBlock Text="Este equipo no tiene terminales. Mientras no agregues una, el cobro con tarjeta usa Mercado Pago."
+                                   Foreground="#7A4E05"
+                                   FontSize="13"
+                                   TextWrapping="Wrap"/>
+                    </Border>
+
+
+                    <!-- Lista -->
+                    <ItemsControl ItemsSource="{Binding TerminalesPago}"
+                                  IsVisible="{Binding HayTerminalesPago}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="cfg:TerminalPagoConfiguration">
+                                <Border Classes="tarjetaTerminal" Margin="0,0,0,10">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+
+                                        <StackPanel Spacing="4" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                                <TextBlock Text="{Binding Nombre}"
+                                                           Foreground="#0F172A"
+                                                           FontSize="15"
+                                                           FontWeight="Bold"/>
+                                                <Border Classes="insigniaTerminal">
+                                                    <TextBlock Text="{Binding TipoTexto}"/>
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock Text="{Binding Resumen}"
+                                                       Foreground="#64748B"
+                                                       FontSize="12"
+                                                       TextWrapping="Wrap"/>
+                                            <TextBlock Text="Desactivada: no se ofrece al cobrar"
+                                                       IsVisible="{Binding !Activa}"
+                                                       Foreground="#B45309"
+                                                       FontSize="12"/>
+                                        </StackPanel>
+
+                                        <StackPanel Grid.Column="1"
+                                                    Orientation="Horizontal"
+                                                    VerticalAlignment="Center">
+                                            <Button Classes="boton gris chico"
+                                                    IsVisible="{Binding EsInalambrica}"
+                                                    Command="{Binding $parent[ItemsControl].((vm:ConfiguracionViewModel)DataContext).ProbarTerminalCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Content="Probar conexión"/>
+                                            <Button Classes="boton gris chico"
+                                                    Command="{Binding $parent[ItemsControl].((vm:ConfiguracionViewModel)DataContext).EditarTerminalCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Content="Editar"/>
+                                            <Button Classes="boton rojo chico"
+                                                    Margin="0"
+                                                    Command="{Binding $parent[ItemsControl].((vm:ConfiguracionViewModel)DataContext).QuitarTerminalCommand}"
+                                                    CommandParameter="{Binding}"
+                                                    Content="Quitar"/>
+                                        </StackPanel>
+
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+
+                    <!-- Formulario alta / edición -->
+                    <Border IsVisible="{Binding FormularioTerminalVisible}"
+                            Padding="20"
+                            CornerRadius="16"
+                            Background="#FFFFFF"
+                            BorderBrush="#CBD5E1"
+                            BorderThickness="1">
+
+                        <StackPanel Spacing="16">
+
+                            <TextBlock Classes="tituloPaso"
+                                       FontSize="15"
+                                       Text="{Binding TituloFormularioTerminal}"/>
+
+                            <StackPanel>
+                                <TextBlock Classes="etiquetaT" Text="Tipo de conexión"/>
+                                <StackPanel Orientation="Horizontal" Spacing="24">
+                                    <RadioButton GroupName="TipoTerminal"
+                                                 Content="Inalámbrica (red / Wi-Fi)"
+                                                 IsChecked="{Binding FormEsInalambrica, Mode=TwoWay}"/>
+                                    <RadioButton GroupName="TipoTerminal"
+                                                 Content="Alámbrica (cobro manual)"
+                                                 IsChecked="{Binding FormEsAlambrica, Mode=TwoWay}"/>
+                                </StackPanel>
+                            </StackPanel>
+
+                            <StackPanel>
+                                <TextBlock Classes="etiquetaT" Text="Nombre de la terminal"/>
+                                <TextBox Classes="campoT"
+                                         Text="{Binding FormNombreTerminal, Mode=TwoWay}"
+                                         Watermark="Ej. Terminal caja 1"
+                                         MaxLength="60"/>
+                            </StackPanel>
+
+                            <!-- Solo inalámbricas: datos de red -->
+                            <StackPanel Spacing="16" IsVisible="{Binding FormEsInalambrica}">
+
+                                <Grid ColumnDefinitions="*,140,Auto" ColumnSpacing="12">
+                                    <StackPanel>
+                                        <TextBlock Classes="etiquetaT" Text="IP o host de la terminal"/>
+                                        <TextBox Classes="campoT"
+                                                 Text="{Binding FormHostTerminal, Mode=TwoWay}"
+                                                 Watermark="192.168.1.50"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Classes="etiquetaT" Text="Puerto"/>
+                                        <TextBox Classes="campoT"
+                                                 Text="{Binding FormPuertoTerminal, Mode=TwoWay}"
+                                                 MaxLength="5"/>
+                                    </StackPanel>
+                                    <CheckBox Grid.Column="2"
+                                              Content="Usar HTTPS"
+                                              VerticalAlignment="Bottom"
+                                              Margin="0,0,0,8"
+                                              IsChecked="{Binding FormUsarHttps, Mode=TwoWay}"/>
+                                </Grid>
+
+                                <Grid ColumnDefinitions="*,140" ColumnSpacing="12">
+                                    <StackPanel>
+                                        <TextBlock Classes="etiquetaT" Text="Código de la terminal"/>
+                                        <TextBox Classes="campoT"
+                                                 Text="{Binding FormCodigoTerminal, Mode=TwoWay}"
+                                                 Watermark="Ej. TERM-01"
+                                                 MaxLength="32"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Classes="etiquetaT" Text="Espera (seg.)"/>
+                                        <TextBox Classes="campoT"
+                                                 Text="{Binding FormTimeoutTerminal, Mode=TwoWay}"
+                                                 MaxLength="2"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <StackPanel>
+                                    <TextBlock Classes="etiquetaT" Text="Clave de acceso de la terminal"/>
+                                    <TextBox Classes="campoT"
+                                             PasswordChar="●"
+                                             Text="{Binding FormClaveTerminal, Mode=TwoWay}"
+                                             Watermark="Clave que entrega la terminal (mínimo 16 caracteres)"
+                                             MaxLength="200"/>
+                                </StackPanel>
+
+                            </StackPanel>
+
+                            <CheckBox Content="Terminal activa (se ofrece al cobrar con tarjeta)"
+                                      IsChecked="{Binding FormActivaTerminal, Mode=TwoWay}"/>
+
+                            <WrapPanel Orientation="Horizontal">
+                                <Button Classes="boton verde"
+                                        Command="{Binding GuardarTerminalCommand}"
+                                        Content="Guardar terminal"/>
+                                <Button Classes="boton gris"
+                                        IsVisible="{Binding FormEsInalambrica}"
+                                        Command="{Binding ProbarFormularioTerminalCommand}"
+                                        Content="Probar conexión"/>
+                                <Button Classes="boton gris"
+                                        Command="{Binding CancelarFormularioTerminalCommand}"
+                                        Content="Cancelar"/>
+                            </WrapPanel>
+
+                        </StackPanel>
+
+                    </Border>
 
                 </StackPanel>
 

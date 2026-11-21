@@ -2499,6 +2499,148 @@ public async Task<bool> RegistrarPagoTransferenciaAsync(
 
 
 // =========================================================
+// REGISTRO DE PAGO CON TARJETA (TERMINAL)
+// =========================================================
+//
+// Se llama SOLO cuando la terminal aprobó el cobro (directo)
+// o el cajero capturó las terminaciones (manual).
+//
+// - Directo: Referencia = referencia de la operación en la
+//            terminal, Autorizacion = código de la terminal.
+// - Manual : Referencia = terminaciones del número de pago.
+// =========================================================
+
+public async Task<bool> RegistrarPagoTarjetaAsync(
+    NovaCoreESDM.Models.TerminalPago.ResultadoCobroTarjeta cobro)
+{
+    if (IdVentaActual <= 0)
+    {
+        MensajeError =
+            "No existe una venta activa.";
+
+        return false;
+    }
+
+
+    if (!cobro.Aprobado || cobro.Importe <= 0)
+    {
+        MensajeError =
+            "El cobro con tarjeta no está aprobado.";
+
+        return false;
+    }
+
+
+    if (EstaProcesandoVenta)
+        return false;
+
+
+    EstaProcesandoVenta =
+        true;
+
+    MensajeError =
+        string.Empty;
+
+
+    try
+    {
+        var request =
+            new RegistrarPagoRequest
+            {
+                IdFormaPago =
+                    cobro.IdFormaPago,
+
+                IdBanco =
+                    null,
+
+                IdTpvBancaria =
+                    null,
+
+                Importe =
+                    cobro.Importe,
+
+                Referencia =
+                    cobro.Referencia,
+
+                Autorizacion =
+                    cobro.Autorizacion
+            };
+
+
+        var resultado =
+            await _ventasService
+                .RegistrarPagoAsync(
+                    IdVentaActual,
+                    request
+                );
+
+
+        if (
+            resultado.Res != 1 ||
+            resultado.Data is null
+        )
+        {
+            // IMPORTANTE: en cobro directo la terminal YA cobró.
+            // El mensaje lo deja claro para que no se cobre de nuevo.
+            MensajeError =
+                (cobro.EsDirecto
+                    ? $"La terminal cobró (ref. {cobro.Referencia}) pero no se pudo registrar el pago: "
+                    : "No fue posible registrar el pago con tarjeta: ") +
+                (string.IsNullOrWhiteSpace(resultado.Msg)
+                    ? "error desconocido."
+                    : resultado.Msg);
+
+            return false;
+        }
+
+
+        if (cobro.EsDirecto)
+        {
+            NovaCoreESDM.Services.TerminalPago.TerminalPagoClient
+                .MarcarRegistrada(cobro.Referencia);
+        }
+
+        MontoPagadoActual =
+            resultado.Data.MontoPagado;
+
+        SaldoActual =
+            resultado.Data.Saldo;
+
+
+        if (resultado.Data.PagoCompleto || resultado.Data.Saldo <= 0)
+        {
+            // El pago YA quedó registrado: si falla la finalización
+            // NO se vuelve a registrar ni a cobrar.
+            return await FinalizarVentaAsync();
+        }
+
+
+        MensajeError =
+            string.Empty;
+
+        return true;
+    }
+    catch (Exception ex)
+    {
+        MensajeError =
+            (cobro.EsDirecto
+                ? $"La terminal cobró (ref. {cobro.Referencia}) pero no se pudo registrar el pago: "
+                : "No fue posible registrar el pago con tarjeta: ") +
+            ex.Message;
+
+        return false;
+    }
+    finally
+    {
+        EstaProcesandoVenta =
+            false;
+    }
+}
+
+
+
+
+// =========================================================
 // FINALIZAR VENTA A CRÉDITO
 // =========================================================
 
