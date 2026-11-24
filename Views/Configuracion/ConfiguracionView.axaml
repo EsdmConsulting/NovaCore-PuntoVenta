@@ -183,6 +183,23 @@
             <Setter Property="Foreground" Value="White"/>
         </Style>
 
+        <!-- Interruptor de la báscula en verde -->
+        <Style Selector="ToggleSwitch:checked /template/ Border#SwitchKnobBounds">
+            <Setter Property="Background" Value="#16A34A"/>
+            <Setter Property="BorderBrush" Value="#16A34A"/>
+        </Style>
+
+        <Style Selector="ToggleSwitch:checked:pointerover /template/ Border#SwitchKnobBounds">
+            <Setter Property="Background" Value="#0E9A46"/>
+            <Setter Property="BorderBrush" Value="#0E9A46"/>
+        </Style>
+
+        <Style Selector="ToggleSwitch">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
         <!-- Lista de impresoras -->
         <Style Selector="ComboBox.campo">
             <Setter Property="Height" Value="52"/>
@@ -275,7 +292,7 @@
                                        LetterSpacing="-0.8"
                                        Margin="0,14,0,0"/>
 
-                            <TextBlock Text="Impresora de tickets y cajón de dinero de este punto de venta."
+                            <TextBlock Text="Impresora de tickets, cajón de dinero y báscula de este punto de venta."
                                        Foreground="#A8B4C2"
                                        FontSize="14"
                                        TextWrapping="Wrap"
@@ -618,6 +635,262 @@
                         </WrapPanel>
 
                     </StackPanel>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- BÁSCULA                                           -->
+            <!-- ================================================= -->
+
+            <Border Classes="seccion">
+
+                <StackPanel Spacing="20">
+
+                    <Grid ColumnDefinitions="Auto,*,Auto"
+                          ColumnSpacing="14">
+
+                        <Border Classes="iconoImpresora"
+                                Classes.ok="{Binding BasculaHabilitada}"
+                                Width="48" Height="48"
+                                CornerRadius="15"
+                                VerticalAlignment="Center">
+                            <PathIcon Width="24" Height="24"
+                                      Data="M12 3c-1.27 0-2.4.8-2.82 2H3v2h1.95L2 14c-.47 2 1 3 3.5 3s4.06-1 3.5-3L6.05 7h3.12c.33.85.98 1.5 1.83 1.83V20H2v2h20v-2h-9V8.82c.85-.32 1.5-.97 1.82-1.82h3.13L15 14c-.47 2 1 3 3.5 3s4.06-1 3.5-3l-2.95-7H21V5h-6.17C14.4 3.8 13.27 3 12 3zM5.53 14 6 12l.47 2H5.53zm13 0 .47-2 .47 2h-.94zM12 5c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1z"/>
+                        </Border>
+
+                        <StackPanel Grid.Column="1"
+                                    Spacing="2"
+                                    VerticalAlignment="Center">
+                            <TextBlock Classes="tituloSeccion" Text="Báscula"
+                                       ClipToBounds="False"/>
+                            <TextBlock Classes="subtituloSeccion"
+                                       Text="Báscula conectada por USB (por ejemplo Noval N40). Al vender por KG el peso aparece solo en «Capturar peso»."/>
+                        </StackPanel>
+
+                        <ToggleSwitch Grid.Column="2"
+                                      VerticalAlignment="Center"
+                                      IsVisible="{Binding HayBasculaGuardada}"
+                                      IsChecked="{Binding BasculaHabilitada, Mode=TwoWay}"
+                                      OnContent="Activa"
+                                      OffContent="Desactivada"/>
+
+                    </Grid>
+
+                    <Border Classes="estadoImpresora"
+                            Classes.ok="{Binding BasculaHabilitada}">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <Ellipse Width="7" Height="7"
+                                     VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ResumenBascula}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Border>
+
+
+                    <!-- Datos de conexión + lectura en vivo -->
+                    <Grid ColumnDefinitions="*,300"
+                          ColumnSpacing="16">
+
+                        <StackPanel Spacing="12">
+
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="Puerto de la báscula"
+                                           Foreground="#334155"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"/>
+                                <ComboBox Classes="campo"
+                                          ItemsSource="{Binding PuertosDisponibles}"
+                                          SelectedItem="{Binding PuertoSeleccionado, Mode=TwoWay}"
+                                          PlaceholderText="Conecta la báscula y elige su puerto (COM…)"/>
+                            </StackPanel>
+
+                            <Grid ColumnDefinitions="*,*"
+                                  ColumnSpacing="12">
+
+                                <StackPanel Spacing="8">
+                                    <TextBlock Text="Velocidad (baudios)"
+                                               Foreground="#334155"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"/>
+                                    <ComboBox Classes="campo"
+                                              ItemsSource="{Binding VelocidadesDisponibles}"
+                                              SelectedItem="{Binding VelocidadSeleccionada, Mode=TwoWay}"/>
+                                </StackPanel>
+
+                                <StackPanel Grid.Column="1" Spacing="8">
+                                    <TextBlock Text="Comando para pedir el peso"
+                                               Foreground="#334155"
+                                               FontSize="13"
+                                               FontWeight="SemiBold"/>
+                                    <TextBox Text="{Binding ComandoBascula, Mode=TwoWay}"
+                                             PlaceholderText="Vacío = la báscula lo manda sola"
+                                             Height="52"
+                                             FontSize="15"
+                                             CornerRadius="13"
+                                             VerticalContentAlignment="Center"
+                                             Padding="14,0"/>
+                                </StackPanel>
+
+                            </Grid>
+
+                        </StackPanel>
+
+                        <!-- Lectura en vivo -->
+                        <Border Grid.Column="1"
+                                Padding="18,16"
+                                CornerRadius="18"
+                                Background="#0B1220">
+                            <StackPanel Spacing="6"
+                                        VerticalAlignment="Center">
+                                <TextBlock Text="LECTURA DE LA BÁSCULA"
+                                       ClipToBounds="False"
+                                           Foreground="#86EFAC"
+                                           FontSize="10"
+                                           FontWeight="Bold"
+                                           LetterSpacing="1.2"/>
+                                <TextBlock Text="{Binding PesoPrueba}"
+                                           IsVisible="{Binding !NoHayLecturaBascula}"
+                                           Foreground="White"
+                                           FontSize="38"
+                                           FontWeight="Bold"
+                                           LetterSpacing="-0.8"/>
+                                <TextBlock Text="— kg"
+                                           IsVisible="{Binding NoHayLecturaBascula}"
+                                           Foreground="#475569"
+                                           FontSize="38"
+                                           FontWeight="Bold"/>
+                                <TextBlock Text="{Binding EstadoPesoPrueba}"
+                                           Foreground="#A8B4C2"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"/>
+                                <TextBlock Text="Presiona «Probar lectura» y pon algo en la báscula."
+                                           IsVisible="{Binding !ProbandoBascula}"
+                                           Foreground="#64748B"
+                                           FontSize="12"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Border>
+
+                    </Grid>
+
+
+                    <!-- Buscando la báscula -->
+                    <Border Padding="16,12"
+                            CornerRadius="14"
+                            Background="#EEF4FB"
+                            IsVisible="{Binding DetectandoBascula}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <TextBlock Text="{Binding ProgresoDeteccion}"
+                                       Foreground="#1E4F8A"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center"/>
+                            <ProgressBar IsIndeterminate="True"
+                                         Width="80"
+                                         MinWidth="80"
+                                         Height="4"
+                                         Foreground="#2563EB"
+                                         Background="#DCE8F8"
+                                         VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+
+                    <WrapPanel Orientation="Horizontal">
+
+                        <Button Classes="boton verde"
+                                Command="{Binding DetectarBasculaCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Width="16" Height="16"
+                                          Data="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                                <TextBlock Text="Detectar báscula"
+                                           IsVisible="{Binding !DetectandoBascula}"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="Cancelar búsqueda"
+                                           IsVisible="{Binding DetectandoBascula}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Classes="boton gris"
+                                IsEnabled="{Binding !DetectandoBascula}"
+                                Command="{Binding ProbarBasculaCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Width="15" Height="15"
+                                          Data="M8 5v14l11-7z"/>
+                                <TextBlock Text="Probar lectura"
+                                           IsVisible="{Binding !ProbandoBascula}"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Text="Detener prueba"
+                                           IsVisible="{Binding ProbandoBascula}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Classes="boton verde"
+                                IsEnabled="{Binding !DetectandoBascula}"
+                                Command="{Binding GuardarBasculaCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Width="16" Height="16"
+                                          Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                <TextBlock Text="Guardar báscula" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Classes="boton gris"
+                                IsEnabled="{Binding !DetectandoBascula}"
+                                Command="{Binding LeerPuertosCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Width="15" Height="15"
+                                          Data="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                <TextBlock Text="Volver a leer puertos" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Classes="boton rojo"
+                                IsVisible="{Binding HayBasculaGuardada}"
+                                Command="{Binding QuitarBasculaCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <PathIcon Width="15" Height="15"
+                                          Data="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                                <TextBlock Text="Quitar báscula" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                    </WrapPanel>
+
+
+                    <!-- Lo que manda la báscula (para diagnóstico) -->
+                    <Border IsVisible="{Binding HayTramasBascula}"
+                            Padding="16,14"
+                            CornerRadius="14"
+                            Background="#F8FAFB"
+                            BorderBrush="#EEF1F4"
+                            BorderThickness="1">
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="DATOS RECIBIDOS DE LA BÁSCULA"
+                                       ClipToBounds="False"
+                                       Foreground="#94A3B8"
+                                       FontSize="10"
+                                       FontWeight="Bold"
+                                       LetterSpacing="1.2"/>
+                            <ItemsControl ItemsSource="{Binding TramasBascula}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="x:String">
+                                        <SelectableTextBlock Text="{Binding}"
+                                                             FontFamily="Menlo, Consolas, monospace"
+                                                             FontSize="12"
+                                                             Foreground="#334155"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
 
                 </StackPanel>
 

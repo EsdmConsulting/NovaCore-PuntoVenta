@@ -1,10 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NovaCoreESDM.Models.Configuration;
 using NovaCoreESDM.Models.Session;
+using NovaCoreESDM.Services.Bascula;
 using NovaCoreESDM.Services.Cancelaciones;
 using NovaCoreESDM.Services.Configuration;
 using NovaCoreESDM.Services.Printing;
@@ -29,6 +33,7 @@ public partial class ConfiguracionViewModel : ViewModelBase
     private readonly WindowsRawPrinterService _printer = new();
     private readonly TicketVentaService _ticketService = new();
     private readonly CancelacionesService _cancelaciones = new();
+    private readonly ScaleConfigurationService _basculaConfiguracion = new();
 
 
     // La asigna MainViewModel (abre la ventana de administrador).
@@ -132,6 +137,8 @@ public partial class ConfiguracionViewModel : ViewModelBase
         // Solo se leen las impresoras si todavía no hay una fija.
         if (!HayImpresoraConfigurada)
             CargarListaImpresoras(mostrarMensaje: false);
+
+        CargarBascula();
     }
 
 
@@ -352,6 +359,400 @@ public partial class ConfiguracionViewModel : ViewModelBase
             EstaOcupado = false;
         }
     }
+
+
+    // =========================================================
+    // BÁSCULA
+    // =========================================================
+
+    public ObservableCollection<string> PuertosDisponibles { get; } = new();
+
+    public IReadOnlyList<int> VelocidadesDisponibles { get; } =
+        BasculaLector.VelocidadesComunes;
+
+    /// <summary>Últimas tramas que mandó la báscula (diagnóstico).</summary>
+    public ObservableCollection<string> TramasBascula { get; } = new();
+
+    [ObservableProperty]
+    private string? puertoSeleccionado;
+
+    [ObservableProperty]
+    private int velocidadSeleccionada = 9600;
+
+    [ObservableProperty]
+    private string comandoBascula = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ResumenBascula))]
+    private bool basculaHabilitada;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ResumenBascula))]
+    private bool hayBasculaGuardada;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NoHayLecturaBascula))]
+    private bool probandoBascula;
+
+    [ObservableProperty]
+    private bool detectandoBascula;
+
+    [ObservableProperty]
+    private string progresoDeteccion = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(NoHayLecturaBascula))]
+    private string pesoPrueba = string.Empty;
+
+    [ObservableProperty]
+    private string estadoPesoPrueba = string.Empty;
+
+    [ObservableProperty]
+    private bool pesoPruebaEstable;
+
+    public bool NoHayLecturaBascula =>
+        string.IsNullOrEmpty(PesoPrueba);
+
+    public bool HayTramasBascula => TramasBascula.Count > 0;
+
+    public string ResumenBascula =>
+        !HayBasculaGuardada
+            ? "Sin báscula: el peso se escribe a mano."
+            : BasculaHabilitada
+                ? "Activa: al vender por KG el peso se toma de la báscula."
+                : "Guardada pero desactivada: el peso se escribe a mano.";
+
+    public string RutaConfiguracionBascula =>
+        _basculaConfiguracion.ObtenerRuta();
+
+    private BasculaLector? _lectorPrueba;
+    private CancellationTokenSource? _detencionCts;
+
+
+    private void CargarBascula()
+    {
+        DetenerPruebaBascula();
+
+        CargarPuertos();
+
+        var configuracion = _basculaConfiguracion.Obtener();
+
+        HayBasculaGuardada = configuracion is not null &&
+                             !string.IsNullOrWhiteSpace(configuracion.Puerto);
+
+        if (configuracion is null)
+        {
+            BasculaHabilitada = false;
+            return;
+        }
+
+        BasculaHabilitada = configuracion.Habilitada;
+        VelocidadSeleccionada = configuracion.BaudRate > 0 ? configuracion.BaudRate : 9600;
+        ComandoBascula = configuracion.Comando ?? string.Empty;
+
+        if (!string.IsNullOrWhiteSpace(configuracion.Puerto))
+        {
+            if (!PuertosDisponibles.Contains(configuracion.Puerto))
+                PuertosDisponibles.Add(configuracion.Puerto);
+
+            PuertoSeleccionado = configuracion.Puerto;
+        }
+    }
+
+
+    private void CargarPuertos()
+    {
+        var anterior = PuertoSeleccionado;
+
+        PuertosDisponibles.Clear();
+        foreach (var puerto in BasculaLector.ListarPuertos())
+            PuertosDisponibles.Add(puerto);
+
+        PuertoSeleccionado =
+            anterior is not null && PuertosDisponibles.Contains(anterior)
+                ? anterior
+                : PuertosDisponibles.Count == 1 ? PuertosDisponibles[0] : anterior;
+    }
+
+
+    [RelayCommand]
+    private void LeerPuertos()
+    {
+        LimpiarMensajes();
+        CargarPuertos();
+
+        if (PuertosDisponibles.Count == 0)
+            MensajeError =
+                "No se encontró ningún puerto. Conecta la báscula por USB " +
+                "y verifica que el driver CH341 esté instalado.";
+        else
+            MensajeExito = $"Se encontraron {PuertosDisponibles.Count} puerto(s).";
+    }
+
+
+    // ---------- Detectar automáticamente ----------
+
+    [RelayCommand]
+    private async Task DetectarBasculaAsync()
+    {
+        LimpiarMensajes();
+
+        if (DetectandoBascula)
+        {
+            _detencionCts?.Cancel();
+            return;
+        }
+
+        DetenerPruebaBascula();
+        CargarPuertos();
+
+        if (PuertosDisponibles.Count == 0)
+        {
+            MensajeError =
+                "No hay puertos. Conecta la báscula por USB e instala el driver CH341.";
+            return;
+        }
+
+        // Si el cajero eligió un puerto, se prueba primero ese.
+        var puertos = new List<string>(PuertosDisponibles);
+        if (PuertoSeleccionado is not null && puertos.Remove(PuertoSeleccionado))
+            puertos.Insert(0, PuertoSeleccionado);
+
+        TramasBascula.Clear();
+        OnPropertyChanged(nameof(HayTramasBascula));
+
+        _detencionCts = new CancellationTokenSource();
+        DetectandoBascula = true;
+
+        try
+        {
+            var resultado = await BasculaLector.DetectarAsync(
+                puertos,
+                3,
+                new Progress<string>(m => ProgresoDeteccion = m),
+                trama => Dispatcher.UIThread.Post(() => AgregarTrama(trama)),
+                _detencionCts.Token);
+
+            if (resultado is null)
+            {
+                MensajeError =
+                    "No se encontró la báscula. Verifica el cable USB, que esté " +
+                    "encendida y con algo encima. Si abajo aparecen datos, mándamelos.";
+                return;
+            }
+
+            PuertoSeleccionado = resultado.Puerto;
+            VelocidadSeleccionada = resultado.BaudRate;
+            ComandoBascula = resultado.Comando;
+
+            MensajeExito =
+                $"Báscula encontrada en {resultado.Puerto} a {resultado.BaudRate} baudios " +
+                $"({BasculaLector.DescribirComando(resultado.Comando).ToLowerInvariant()}). " +
+                $"Leyó {resultado.Muestra.PesoKg:0.000} kg. Presiona «Guardar báscula».";
+        }
+        catch (OperationCanceledException)
+        {
+            MensajeError = "Búsqueda cancelada.";
+        }
+        catch (Exception ex)
+        {
+            MensajeError = $"No fue posible buscar la báscula: {ex.Message}";
+        }
+        finally
+        {
+            DetectandoBascula = false;
+            ProgresoDeteccion = string.Empty;
+            _detencionCts?.Dispose();
+            _detencionCts = null;
+        }
+    }
+
+
+    // ---------- Probar lectura en vivo ----------
+
+    [RelayCommand]
+    private void ProbarBascula()
+    {
+        LimpiarMensajes();
+
+        if (ProbandoBascula)
+        {
+            DetenerPruebaBascula();
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(PuertoSeleccionado))
+        {
+            MensajeError = "Elige el puerto de la báscula o usa «Detectar báscula».";
+            return;
+        }
+
+        TramasBascula.Clear();
+        OnPropertyChanged(nameof(HayTramasBascula));
+        PesoPrueba = string.Empty;
+        EstadoPesoPrueba = "Esperando datos de la báscula…";
+        PesoPruebaEstable = false;
+
+        var lector = new BasculaLector(ConfiguracionBasculaActual());
+
+        lector.PesoLeido += lectura => Dispatcher.UIThread.Post(() =>
+        {
+            if (_lectorPrueba != lector)
+                return;
+
+            PesoPrueba = $"{lectura.PesoKg:0.000} kg";
+            PesoPruebaEstable = lectura.Estable;
+            EstadoPesoPrueba = lectura.Estable ? "Estable" : "Pesando…";
+        });
+
+        lector.TramaRecibida += trama =>
+            Dispatcher.UIThread.Post(() => AgregarTrama(trama));
+
+        lector.Fallo += mensaje => Dispatcher.UIThread.Post(() =>
+        {
+            if (_lectorPrueba != lector)
+                return;
+
+            MensajeError = mensaje;
+            DetenerPruebaBascula();
+        });
+
+        if (!lector.Iniciar(out var error))
+        {
+            MensajeError = error;
+            lector.Dispose();
+            return;
+        }
+
+        _lectorPrueba = lector;
+        ProbandoBascula = true;
+    }
+
+
+    /// <summary>
+    /// Se llama al salir de la pantalla para liberar el puerto.
+    /// </summary>
+    public void DetenerPruebaBascula()
+    {
+        _detencionCts?.Cancel();
+
+        var lector = _lectorPrueba;
+        _lectorPrueba = null;
+        ProbandoBascula = false;
+        PesoPrueba = string.Empty;
+        EstadoPesoPrueba = string.Empty;
+
+        if (lector is not null)
+            Task.Run(lector.Dispose);
+    }
+
+
+    private void AgregarTrama(string trama)
+    {
+        TramasBascula.Insert(0, trama);
+
+        while (TramasBascula.Count > 8)
+            TramasBascula.RemoveAt(TramasBascula.Count - 1);
+
+        OnPropertyChanged(nameof(HayTramasBascula));
+    }
+
+
+    // ---------- Guardar / quitar ----------
+
+    [RelayCommand]
+    private void GuardarBascula()
+    {
+        LimpiarMensajes();
+
+        if (string.IsNullOrWhiteSpace(PuertoSeleccionado))
+        {
+            MensajeError = "Elige el puerto de la báscula o usa «Detectar báscula».";
+            return;
+        }
+
+        DetenerPruebaBascula();
+
+        try
+        {
+            var configuracion = ConfiguracionBasculaActual();
+            configuracion.Habilitada = true;
+
+            _basculaConfiguracion.Guardar(configuracion);
+        }
+        catch (Exception ex)
+        {
+            MensajeError = $"No fue posible guardar la báscula: {ex.Message}";
+            return;
+        }
+
+        HayBasculaGuardada = true;
+        BasculaHabilitada = true;
+
+        MensajeExito =
+            $"Báscula guardada en {PuertoSeleccionado}. " +
+            "Al vender por KG el peso se tomará automáticamente.";
+    }
+
+
+    partial void OnBasculaHabilitadaChanged(bool value)
+    {
+        // Solo el interruptor: guarda el cambio si ya hay báscula.
+        if (!HayBasculaGuardada)
+            return;
+
+        var configuracion = _basculaConfiguracion.Obtener();
+        if (configuracion is null || configuracion.Habilitada == value)
+            return;
+
+        try
+        {
+            configuracion.Habilitada = value;
+            _basculaConfiguracion.Guardar(configuracion);
+        }
+        catch (Exception ex)
+        {
+            MensajeError = $"No fue posible guardar el cambio: {ex.Message}";
+        }
+    }
+
+
+    [RelayCommand]
+    private void QuitarBascula()
+    {
+        LimpiarMensajes();
+        DetenerPruebaBascula();
+
+        try
+        {
+            _basculaConfiguracion.Quitar();
+        }
+        catch (Exception ex)
+        {
+            MensajeError = $"No fue posible quitar la báscula: {ex.Message}";
+            return;
+        }
+
+        HayBasculaGuardada = false;
+        BasculaHabilitada = false;
+        ComandoBascula = string.Empty;
+        VelocidadSeleccionada = 9600;
+
+        MensajeExito = "Báscula quitada. El peso se escribirá a mano.";
+    }
+
+
+    private ScaleConfiguration ConfiguracionBasculaActual() =>
+        new()
+        {
+            Habilitada = BasculaHabilitada,
+            Puerto = PuertoSeleccionado ?? string.Empty,
+            BaudRate = VelocidadSeleccionada > 0 ? VelocidadSeleccionada : 9600,
+            Comando = ComandoBascula?.Trim() ?? string.Empty,
+            DecimalesSinPunto = 3,
+            FechaConfiguracion = DateTime.Now,
+            ConfiguradaPor = PosSession.NombreUsuario
+        };
 
 
     // =========================================================

@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using NovaCoreESDM.ViewModels.Configuracion;
 
 namespace NovaCoreESDM.Views.Configuracion;
 
@@ -16,5 +17,9 @@ public partial class ConfiguracionView : UserControl
         {
             banner.SizeChanged += (_, e) => escena.IsVisible = e.NewSize.Width >= 1050;
         }
+
+        // Al salir de Configuración se libera el puerto de la báscula.
+        DetachedFromVisualTree += (_, _) =>
+            (DataContext as ConfiguracionViewModel)?.DetenerPruebaBascula();
     }
 }
