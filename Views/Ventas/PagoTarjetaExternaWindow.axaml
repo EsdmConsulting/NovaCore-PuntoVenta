@@ -1,0 +1,448 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Ventas.PagoTarjetaExternaWindow"
+
+        Title="Pago con terminal externa"
+
+        Icon="/Assets/Brand/esdm-app-icon.ico"
+
+        Width="620"
+        Height="820"
+
+        MinWidth="540"
+        MinHeight="620"
+
+        CanResize="True"
+
+        WindowStartupLocation="CenterOwner"
+
+        Background="#F4F6F8">
+
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+
+        <!-- ===================================================== -->
+        <!-- SALDO                                                 -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Row="0"
+                Padding="28,24,28,22"
+                BorderBrush="#D6E2FB"
+                BorderThickness="0,0,0,1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#F2F6FF"/>
+                    <GradientStop Offset="1" Color="#E3ECFD"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Grid ColumnDefinitions="Auto,*,Auto"
+                  ColumnSpacing="16">
+
+                <Border Grid.Column="0"
+                        Width="56"
+                        Height="56"
+                        CornerRadius="17"
+                        VerticalAlignment="Center">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Offset="0" Color="#3B82F6"/>
+                            <GradientStop Offset="1" Color="#1D4ED8"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <PathIcon Width="26" Height="26"
+                              Foreground="White"
+                              Data="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                </Border>
+
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="3">
+                    <TextBlock x:Name="TextoEncabezado"
+                               Text="TARJETA · TERMINAL EXTERNA"
+                               Foreground="#1D4ED8"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               LetterSpacing="1.6"
+                               LineHeight="16"/>
+                    <TextBlock Text="Saldo a cobrar"
+                               Foreground="#0B1220"
+                               FontSize="19"
+                               FontWeight="Bold"/>
+                </StackPanel>
+
+                <TextBlock Grid.Column="2"
+                           x:Name="TextoSaldo"
+                           Foreground="#0B1220"
+                           FontSize="42"
+                           FontWeight="Bold"
+                           LetterSpacing="-1.2"
+                           VerticalAlignment="Center"/>
+
+            </Grid>
+
+        </Border>
+
+
+        <!-- ===================================================== -->
+        <!-- DATOS DEL VOUCHER                                     -->
+        <!-- ===================================================== -->
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <StackPanel Margin="28,22,28,10"
+                        Spacing="16">
+
+
+                <!-- INSTRUCCIONES -->
+
+                <Border Padding="16,14"
+                        CornerRadius="16"
+                        Background="#FFF7E0"
+                        BorderBrush="#FBD98A"
+                        BorderThickness="1">
+                    <Grid ColumnDefinitions="Auto,*"
+                          ColumnSpacing="12">
+                        <Border Width="36" Height="36"
+                                CornerRadius="11"
+                                Background="#FDEBB5"
+                                VerticalAlignment="Top">
+                            <PathIcon Width="18" Height="18"
+                                      Foreground="#B7791F"
+                                      Data="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" Spacing="3">
+                            <TextBlock Text="Primero cobra en la terminal"
+                                       Foreground="#7A4E05"
+                                       FontSize="14"
+                                       FontWeight="Bold"/>
+                            <TextBlock x:Name="TextoInstrucciones"
+                                       Text="Cobra directo en la terminal bancaria y, cuando el pago salga aprobado, captura aquí los datos del voucher."
+                                       Foreground="#92600A"
+                                       FontSize="13"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+
+                <Border Classes="tarjeta">
+
+                    <StackPanel Margin="20,16,20,20"
+                                Spacing="16">
+
+                        <TextBlock Text="Datos del voucher"
+                                   Foreground="#0B1220"
+                                   FontSize="16"
+                                   FontWeight="Bold"/>
+
+                        <!-- Importe -->
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="etiqueta" Text="IMPORTE COBRADO EN LA TERMINAL"/>
+                            <TextBox x:Name="ImporteTextBox"
+                                     Classes="campo importe"/>
+                            <TextBlock Classes="ayuda"
+                                       Text="Si el cliente paga una parte con tarjeta, escribe solo esa parte; el resto se cobra después."/>
+                        </StackPanel>
+
+                        <!-- Tipo -->
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="etiqueta" Text="TIPO DE TARJETA"/>
+                            <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                                <RadioButton x:Name="CreditoRadio"
+                                             Grid.Column="0"
+                                             Classes="tipo"
+                                             GroupName="TipoTarjeta"
+                                             IsChecked="True"
+                                             Content="Crédito"/>
+                                <RadioButton x:Name="DebitoRadio"
+                                             Grid.Column="1"
+                                             Classes="tipo"
+                                             GroupName="TipoTarjeta"
+                                             Content="Débito"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Autorización -->
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="etiqueta" Text="NÚMERO DE AUTORIZACIÓN *"/>
+                            <TextBox x:Name="AutorizacionTextBox"
+                                     Classes="campo"
+                                     MaxLength="12"
+                                     Watermark="Ej. 123456"/>
+                        </StackPanel>
+
+                        <!-- Últimos dígitos -->
+                        <StackPanel Spacing="6">
+                            <TextBlock Classes="etiqueta" Text="ÚLTIMOS 4 DÍGITOS DE LA TARJETA (OPCIONAL)"/>
+                            <TextBox x:Name="DigitosTextBox"
+                                     Classes="campo"
+                                     MaxLength="4"
+                                     Watermark="Ej. 4821"/>
+                        </StackPanel>
+
+                    </StackPanel>
+
+                </Border>
+
+
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+
+        <!-- ===================================================== -->
+        <!-- ACCIONES                                              -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Row="2"
+                Background="White"
+                BorderBrush="#EAEEF2"
+                BorderThickness="0,1,0,0"
+                Padding="28,14,28,20">
+
+            <StackPanel Spacing="12">
+
+                <Border Padding="12,9"
+                        CornerRadius="12"
+                        Background="#FEF2F2"
+                        BorderBrush="#FECACA"
+                        BorderThickness="1"
+                        IsVisible="{Binding #TextoMensaje.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <TextBlock x:Name="TextoMensaje"
+                               Text=""
+                               FontSize="13"
+                               Foreground="#9F1239"
+                               TextWrapping="Wrap"/>
+                </Border>
+
+                <StackPanel Orientation="Horizontal"
+                            Spacing="18"
+                            HorizontalAlignment="Center">
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Enter"/></Border>
+                        <TextBlock Text="Registrar pago"/>
+                    </StackPanel>
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Esc"/></Border>
+                        <TextBlock Text="Regresar"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="*,2*"
+                      ColumnSpacing="12">
+
+                    <Button Grid.Column="0"
+                            Classes="regresar"
+                            IsCancel="True"
+                            Click="Cancelar_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <PathIcon Width="14" Height="14"
+                                      Data="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                            <TextBlock Text="Regresar" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Grid.Column="1"
+                            Classes="confirmar"
+                            IsDefault="True"
+                            Click="Confirmar_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="9">
+                            <PathIcon Width="18" Height="18"
+                                      Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            <TextBlock Text="Registrar pago con tarjeta" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                </Grid>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <Window.Styles>
+
+        <Style Selector="Border.tarjeta">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#EAEEF2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="BoxShadow" Value="0 1 2 0 #0A0F172A"/>
+        </Style>
+
+        <Style Selector="TextBlock.etiqueta">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="1.2"/>
+            <Setter Property="LineHeight" Value="16"/>
+        </Style>
+
+        <Style Selector="TextBlock.ayuda">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style Selector="TextBox.campo">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="Foreground" Value="#0B1220"/>
+        </Style>
+
+        <Style Selector="TextBox.campo:focus /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush" Value="#2563EB"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style Selector="TextBox.importe">
+            <Setter Property="FontSize" Value="22"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <!-- Crédito / Débito -->
+        <Style Selector="RadioButton.tipo">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border x:Name="Fondo"
+                            CornerRadius="12"
+                            Background="#F8FAFC"
+                            BorderBrush="#E2E8F0"
+                            BorderThickness="1.5">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="RadioButton.tipo:pointerover /template/ Border#Fondo">
+            <Setter Property="BorderBrush" Value="#93B4F5"/>
+        </Style>
+
+        <Style Selector="RadioButton.tipo:checked /template/ Border#Fondo">
+            <Setter Property="Background" Value="#EAF1FE"/>
+            <Setter Property="BorderBrush" Value="#2563EB"/>
+        </Style>
+
+        <Style Selector="RadioButton.tipo:checked">
+            <Setter Property="Foreground" Value="#1D4ED8"/>
+        </Style>
+
+        <!-- Atajos -->
+        <Style Selector="StackPanel.atajo">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Spacing" Value="6"/>
+        </Style>
+
+        <Style Selector="StackPanel.atajo > TextBlock">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla">
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <!-- Botones -->
+        <Style Selector="Button.regresar">
+            <Setter Property="Height" Value="58"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.regresar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+        </Style>
+
+        <Style Selector="Button.confirmar">
+            <Setter Property="Height" Value="58"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#3B82F6"/>
+                    <GradientStop Offset="1" Color="#1D4ED8"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.confirmar /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 10 24 -8 #801D4ED8"/>
+        </Style>
+
+        <Style Selector="Button.confirmar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#60A5FA"/>
+                    <GradientStop Offset="1" Color="#2563EB"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.confirmar:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#1E40AF"/>
+        </Style>
+
+    </Window.Styles>
+
+</Window>

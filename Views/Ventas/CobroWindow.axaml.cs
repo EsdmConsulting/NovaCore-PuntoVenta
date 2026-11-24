@@ -15,7 +15,7 @@ public partial class CobroWindow : Window
 
     public decimal TotalVenta { get; }
 
-    public string? MetodoSeleccionado { get; private set; }
+    public string? MetodoSeleccionado { get; set; }
 
 
     // =========================================================
@@ -62,17 +62,19 @@ public partial class CobroWindow : Window
         }
 
 
-        // Sin internet solo se puede cobrar en efectivo.
+        // Sin internet: efectivo, o tarjeta cobrada en la terminal y
+        // capturada a mano (autorización del voucher).
         if (_viewModel.EsVentaSinConexion ||
             !NovaCoreESDM.Services.Offline.ConexionService.EstaEnLinea)
         {
-            BotonTarjeta.IsEnabled = false;
             BotonTransferencia.IsEnabled = false;
             BotonCredito.IsEnabled = false;
 
+            TextoDetalleTarjeta.Text = "Terminal externa (datos del voucher)";
+
             Opened += (_, _) =>
                 MostrarMensaje(
-                    "Sin conexión: solo efectivo. La venta se guarda en la caja y se envía sola cuando regrese el internet.",
+                    "Sin conexión: efectivo o tarjeta (capturando la autorización del voucher). La venta se guarda en la caja y se envía sola cuando regrese el internet.",
                     esInformativo: true);
         }
 

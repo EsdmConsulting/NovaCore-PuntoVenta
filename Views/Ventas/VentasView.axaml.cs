@@ -652,7 +652,63 @@ public partial class VentasView : UserControl
 
 
                 // =====================================================
-                // SIN INTERNET: SOLO EFECTIVO
+                // TARJETA: ELEGIR TERMINAL (MERCADO PAGO O EXTERNA)
+                // =====================================================
+
+                if (ventana.MetodoSeleccionado == "TARJETA")
+                {
+                    var sinConexion =
+                        _viewModel.EsVentaSinConexion ||
+                        !ConexionService.EstaEnLinea;
+
+                    var selectorTerminal =
+                        new SeleccionarTerminalWindow(
+                            saldoACobrar,
+                            sinConexion);
+
+                    // Regresó: vuelve al selector de método de pago.
+                    if (!await selectorTerminal.ShowDialog<bool>(owner))
+                        continue;
+
+                    if (selectorTerminal.TerminalSeleccionada == SeleccionarTerminalWindow.MercadoPago)
+                        ventana.MetodoSeleccionado = "TARJETA_MERCADOPAGO";
+                }
+
+                if (ventana.MetodoSeleccionado == "TARJETA")
+                {
+                    var pagoTarjeta =
+                        new PagoTarjetaExternaWindow(
+                            saldoACobrar,
+                            _viewModel.EsVentaSinConexion ||
+                            !ConexionService.EstaEnLinea);
+
+                    var tarjetaCapturada =
+                        await pagoTarjeta.ShowDialog<bool>(owner);
+
+                    // Regresó: vuelve al selector de método de pago.
+                    if (!tarjetaCapturada)
+                        continue;
+
+                    var pagoRegistrado =
+                        await _viewModel.RegistrarPagoTarjetaExternaAsync(
+                            pagoTarjeta.Importe,
+                            pagoTarjeta.EsDebito,
+                            pagoTarjeta.Autorizacion,
+                            pagoTarjeta.UltimosDigitos);
+
+                    if (!pagoRegistrado)
+                        return;
+
+                    if (_viewModel.SaldoPendiente <= 0 || _viewModel.VentaFinalizadaCorrectamente)
+                        return;
+
+                    // Queda saldo (pago mixto): se sigue cobrando.
+                    continue;
+                }
+
+
+                // =====================================================
+                // SIN INTERNET: SOLO EFECTIVO O TARJETA
                 // =====================================================
 
                 if (
@@ -877,7 +933,7 @@ public partial class VentasView : UserControl
 
                 if (
                     ventana.MetodoSeleccionado ==
-                    "TARJETA"
+                    "TARJETA_MERCADOPAGO"
                 )
                 {
                     // =================================================

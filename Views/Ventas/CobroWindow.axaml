@@ -179,7 +179,7 @@
                             </Grid>
                             <StackPanel Grid.Row="2" Spacing="3" Margin="0,16,0,0">
                                 <TextBlock Classes="tituloMetodo" Text="Tarjeta"/>
-                                <TextBlock Classes="detalleMetodo" Text="Cobrar con terminal Mercado Pago"/>
+                                <TextBlock Classes="detalleMetodo" x:Name="TextoDetalleTarjeta" Text="Mercado Pago o terminal externa"/>
                             </StackPanel>
                         </Grid>
                     </Button>

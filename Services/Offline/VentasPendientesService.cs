@@ -149,10 +149,11 @@ public static class VentasPendientesService
             .ToList();
 
 
-    public static int ContarPorEnviar(int? idTurno = null) =>
+    public static int ContarPorEnviar(int? idTurno = null, int? idCaja = null) =>
         ObtenerPendientes().Count(v =>
             v.Estado == VentaOffline.EstadoPendiente &&
-            (idTurno is null || v.IdTurno == idTurno));
+            (idTurno is null || v.IdTurno == idTurno) &&
+            (idCaja is null || v.IdCaja == idCaja));
 
 
     public static int ContarRechazadas() =>

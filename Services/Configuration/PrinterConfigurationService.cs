@@ -12,11 +12,14 @@ public class PrinterConfigurationService
 {
     // Carpeta donde NovaCore guarda sus archivos locales:
     // C:\Users\<usuario>\AppData\Local\NovaCoreESDM
+    // NOVACORE_DATOS permite usar otra carpeta (pruebas) sin tocar la de la caja.
     public static string DirectorioDatos { get; } =
-        Path.Combine(
-            Environment.GetFolderPath(
-                Environment.SpecialFolder.LocalApplicationData),
-            "NovaCoreESDM");
+        Environment.GetEnvironmentVariable("NOVACORE_DATOS") is { Length: > 0 } carpeta
+            ? carpeta
+            : Path.Combine(
+                Environment.GetFolderPath(
+                    Environment.SpecialFolder.LocalApplicationData),
+                "NovaCoreESDM");
 
     private static readonly string ArchivoConfiguracion =
         Path.Combine(DirectorioDatos, "printer-config.json");

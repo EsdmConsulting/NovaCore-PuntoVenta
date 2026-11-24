@@ -22,7 +22,7 @@ namespace NovaCoreESDM.ViewModels.Ventas;
 public partial class VentasViewModel
 {
     public const string MensajeSoloEfectivo =
-        "Sin conexión solo se puede cobrar en efectivo.";
+        "Sin conexión solo se puede cobrar en efectivo o con tarjeta (capturando el voucher).";
 
     private VentaOffline? _ventaLocal;
 
@@ -102,7 +102,7 @@ public partial class VentasViewModel
             var partes = new List<string>();
 
             if (SinConexion)
-                partes.Add("Solo efectivo. Las ventas se guardan en esta caja y se envían solas al volver el internet.");
+                partes.Add("Efectivo o tarjeta con captura manual. Las ventas se guardan en esta caja y se envían solas al volver el internet.");
 
             if (VentasPorEnviar > 0)
                 partes.Add($"{VentasPorEnviar} por enviar.");
@@ -326,8 +326,9 @@ public partial class VentasViewModel
         IdVentaActual = 0;
         UuidVentaActual = borrador.Uuid;
         FolioVentaActual = borrador.Folio;
-        MontoPagadoActual = 0m;
-        SaldoActual = 0m;
+        // Pagos que alcanzaron a registrarse antes del apagón (pago mixto).
+        MontoPagadoActual = borrador.Pagado;
+        SaldoActual = Math.Max(0m, borrador.Total - borrador.Pagado);
 
         Carrito.Clear();
 
@@ -417,12 +418,13 @@ public partial class VentasViewModel
             local.Estado != VentaOffline.EstadoBorrador ||
             local.IdTurno != PosSession.IdTurno ||
             local.Lineas.Count == 0 ||
+            local.Pagos.Count > 0 ||
             local.Uuid == _uuidNoPasable)
             return;
 
         try
         {
-            if (VentasPendientesService.ContarPorEnviar() > 0)
+            if (VentasPendientesService.ContarPorEnviar(idCaja: PosSession.IdCaja) > 0)
                 return;
         }
         catch
@@ -490,7 +492,7 @@ public partial class VentasViewModel
                 {
                     _uuidNoPasable = local.Uuid;
                     MensajeError =
-                        $"Esta venta sigue sin conexión (solo efectivo): {linea.Nombre} — " +
+                        $"Esta venta sigue sin conexión (efectivo o tarjeta manual): {linea.Nombre} — " +
                         (string.IsNullOrWhiteSpace(agregado.Msg) ? "el servidor no aceptó el producto." : agregado.Msg);
                 }
 
@@ -533,6 +535,13 @@ public partial class VentasViewModel
     /// <summary>Agrega al carrito una línea nueva de la venta sin conexión.</summary>
     private bool AgregarLineaLocal(DetalleVenta nuevoDetalle)
     {
+        if (BloquearPorPagosLocales())
+        {
+            Carrito.Remove(nuevoDetalle);
+            ActualizarTotales();
+            return false;
+        }
+
         var precio = PrecioMenudeoLocal(
             nuevoDetalle.Producto.Id,
             nuevoDetalle.Producto.IdPresentacion);
@@ -573,6 +582,9 @@ public partial class VentasViewModel
 
     private bool CambiarCantidadLocal(DetalleVenta detalle, decimal cantidadNueva)
     {
+        if (BloquearPorPagosLocales())
+            return false;
+
         if (cantidadNueva <= 0)
         {
             MensajeError = "La cantidad debe ser mayor a cero.";
@@ -596,6 +608,9 @@ public partial class VentasViewModel
 
     private void EliminarLineaLocal(DetalleVenta detalle)
     {
+        if (BloquearPorPagosLocales())
+            return;
+
         Carrito.Remove(detalle);
 
         if (Carrito.Count == 0)
@@ -746,7 +761,62 @@ public partial class VentasViewModel
     // COBRO Y TICKET
     // =========================================================
 
-    private async Task<bool> CobrarEfectivoLocalAsync(decimal importeAplicado, decimal recibido, decimal cambio)
+    private Task<bool> CobrarEfectivoLocalAsync(decimal importeAplicado, decimal recibido, decimal cambio) =>
+        RegistrarPagoLocalAsync(
+            new PagoVentaOffline { IdFormaPago = FormasPagoPos.Efectivo, Importe = importeAplicado },
+            recibido,
+            cambio);
+
+
+    /// <summary>
+    /// Tarjeta cobrada en la terminal bancaria sin internet: el cajero captura
+    /// la autorización del voucher y el pago se envía con la venta.
+    /// </summary>
+    public async Task<bool> RegistrarPagoTarjetaLocalAsync(
+        decimal importe, bool esDebito, string autorizacion, string ultimosDigitos)
+    {
+        if (EstaProcesandoVenta)
+            return false;
+
+        // Venta del servidor y se fue el internet: pasa a la caja.
+        if (!EsVentaSinConexion && !PasarVentaASinConexion())
+            return false;
+
+        EstaProcesandoVenta = true;
+
+        try
+        {
+            return await RegistrarPagoLocalAsync(
+                new PagoVentaOffline
+                {
+                    IdFormaPago = esDebito ? FormasPagoPos.TarjetaDebito : FormasPagoPos.TarjetaCredito,
+                    Importe = importe,
+                    Autorizacion = autorizacion.Trim(),
+                    Referencia = ReferenciaTarjetaExterna(ultimosDigitos, sinConexion: true)
+                },
+                0m,
+                0m);
+        }
+        finally
+        {
+            EstaProcesandoVenta = false;
+        }
+    }
+
+
+    /// <summary>Ya hay pagos en la venta sin conexión: el carrito no se puede cambiar.</summary>
+    private bool BloquearPorPagosLocales()
+    {
+        if (_ventaLocal is null || _ventaLocal.Pagos.Count == 0)
+            return false;
+
+        MensajeError =
+            "Esta venta ya tiene un pago registrado: termina de cobrarla antes de cambiar los productos.";
+        return true;
+    }
+
+
+    private async Task<bool> RegistrarPagoLocalAsync(PagoVentaOffline pago, decimal recibido, decimal cambio)
     {
         if (_ventaLocal is null || Carrito.Count == 0)
         {
@@ -757,24 +827,66 @@ public partial class VentasViewModel
         GuardarBorradorLocal();
 
         var total = _ventaLocal.Total;
+        var saldo = Math.Round(total - _ventaLocal.Pagado, 2);
 
-        if (importeAplicado + 0.005m < total)
+        pago.Importe = Math.Round(pago.Importe, 2);
+
+        if (pago.Importe <= 0m)
         {
-            // Sin conexión no se aceptan pagos parciales ni mixtos.
-            MensajeError = "Sin conexión el pago en efectivo debe cubrir todo el total.";
+            MensajeError = "El importe del pago debe ser mayor a cero.";
             return false;
         }
 
-        _ventaLocal.Pagos = new List<PagoVentaOffline>
+        if (pago.Importe > saldo + 0.005m)
         {
-            new() { IdFormaPago = FormasPagoPos.Efectivo, Importe = total }
-        };
-        _ventaLocal.Recibido = recibido;
-        _ventaLocal.Cambio = cambio;
-        _ventaLocal.FechaCobro = DateTime.Now;
+            MensajeError = $"El pago (${pago.Importe:N2}) es mayor al saldo pendiente (${saldo:N2}).";
+            return false;
+        }
 
-        UltimoMontoRecibido = recibido;
-        UltimoCambio = cambio;
+        // Se guarda el pago antes de seguir: si se va la luz no se pierde.
+        _ventaLocal.Pagos.Add(pago);
+
+        if (pago.IdFormaPago == FormasPagoPos.Efectivo)
+        {
+            _ventaLocal.Recibido += recibido;
+            _ventaLocal.Cambio = cambio;
+        }
+
+        try
+        {
+            VentasPendientesService.GuardarBorrador(_ventaLocal);
+        }
+        catch (Exception ex)
+        {
+            _ventaLocal.Pagos.Remove(pago);
+            MensajeError = $"No se pudo guardar el pago en la caja: {ex.Message}";
+            return false;
+        }
+
+        MontoPagadoActual = _ventaLocal.Pagado;
+        SaldoActual = Math.Max(0m, total - _ventaLocal.Pagado);
+
+        if (pago.IdFormaPago == FormasPagoPos.Efectivo)
+        {
+            UltimoMontoRecibido = recibido;
+            UltimoCambio = cambio;
+        }
+
+        // Pago mixto: falta saldo, la ventana de cobro sigue abierta.
+        if (total - _ventaLocal.Pagado > 0.005m)
+            return true;
+
+        return await TerminarVentaLocalAsync();
+    }
+
+
+    private async Task<bool> TerminarVentaLocalAsync()
+    {
+        if (_ventaLocal is null)
+            return false;
+
+        var total = _ventaLocal.Total;
+        _ventaLocal.FechaCobro = DateTime.Now;
 
         // Folio con el mismo formato que los demás tickets (UO-SERIE-00000000).
         if (string.IsNullOrWhiteSpace(_ventaLocal.FolioTicket) &&
@@ -800,14 +912,25 @@ public partial class VentasViewModel
         _ventaLocal = null;
         OnPropertyChanged(nameof(EsVentaSinConexion));
 
-        // 2. Cajón.
-        try
+        var efectivo = venta.Pagos
+            .Where(p => p.IdFormaPago == FormasPagoPos.Efectivo)
+            .Sum(p => p.Importe);
+
+        var tarjeta = venta.Pagos
+            .Where(p => p.IdFormaPago is FormasPagoPos.TarjetaCredito or FormasPagoPos.TarjetaDebito)
+            .Sum(p => p.Importe);
+
+        // 2. Cajón (solo si entró efectivo).
+        if (efectivo > 0)
         {
-            await _printerService.AbrirCajonAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Venta sin conexión guardada, pero falló el cajón: {ex.Message}");
+            try
+            {
+                await _printerService.AbrirCajonAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Venta sin conexión guardada, pero falló el cajón: {ex.Message}");
+            }
         }
 
         MontoPagadoActual = total;
@@ -841,11 +964,14 @@ public partial class VentasViewModel
             }).ToList(),
             Subtotal = total,
             Total = total,
-            Efectivo = total,
-            Recibido = recibido,
-            Cambio = cambio,
+            Efectivo = efectivo,
+            Tarjeta = tarjeta,
+            Recibido = efectivo > 0 ? venta.Recibido : 0m,
+            Cambio = efectivo > 0 ? venta.Cambio : 0m,
             Pagado = total,
-            FormaPago = "Efectivo",
+            FormaPago = efectivo > 0 && tarjeta > 0
+                ? "PAGO MIXTO"
+                : tarjeta > 0 ? "Tarjeta" : "Efectivo",
             ContenidoQr = "https://plataformaluisfer.com/Plataforma_LuisFer/auth/login"
         };
 

@@ -1,0 +1,368 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Ventas.SeleccionarTerminalWindow"
+
+        Title="Pago con tarjeta"
+
+        Icon="/Assets/Brand/esdm-app-icon.ico"
+
+        Width="760"
+        Height="450"
+
+        MinWidth="620"
+        MinHeight="420"
+
+        CanResize="True"
+
+        WindowStartupLocation="CenterOwner"
+
+        Background="#F4F6F8">
+
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+
+        <!-- ===================================================== -->
+        <!-- SALDO                                                 -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Row="0"
+                Padding="28,24,28,22"
+                BorderBrush="#D6E2FB"
+                BorderThickness="0,0,0,1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#F2F6FF"/>
+                    <GradientStop Offset="1" Color="#E3ECFD"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Grid ColumnDefinitions="Auto,*,Auto"
+                  ColumnSpacing="16">
+
+                <Border Grid.Column="0"
+                        Width="56"
+                        Height="56"
+                        CornerRadius="17"
+                        VerticalAlignment="Center">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Offset="0" Color="#3B82F6"/>
+                            <GradientStop Offset="1" Color="#1D4ED8"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <PathIcon Width="26" Height="26"
+                              Foreground="White"
+                              Data="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                </Border>
+
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="3">
+                    <TextBlock Text="PAGO CON TARJETA"
+                               Foreground="#1D4ED8"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               LetterSpacing="1.6"
+                               LineHeight="16"/>
+                    <TextBlock Text="¿Con qué terminal se cobra?"
+                               Foreground="#0B1220"
+                               FontSize="19"
+                               FontWeight="Bold"/>
+                </StackPanel>
+
+                <TextBlock Grid.Column="2"
+                           x:Name="TextoSaldo"
+                           Foreground="#0B1220"
+                           FontSize="40"
+                           FontWeight="Bold"
+                           LetterSpacing="-1.2"
+                           VerticalAlignment="Center"/>
+
+            </Grid>
+
+        </Border>
+
+
+        <!-- ===================================================== -->
+        <!-- TERMINALES                                            -->
+        <!-- ===================================================== -->
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <StackPanel Margin="28,22,28,10"
+                        Spacing="14">
+
+                <!-- Para agregar otra terminal (por ejemplo BBVA) basta con
+                     otro botón aquí y su caso en el código. -->
+                <UniformGrid x:Name="PanelTerminales"
+                             Columns="2"
+                             ColumnSpacing="14">
+
+                    <!-- MERCADO PAGO -->
+                    <Button x:Name="BotonMercadoPago"
+                            Classes="terminal"
+                            Click="MercadoPago_Click">
+                        <Grid RowDefinitions="Auto,*,Auto">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Border Classes="icono mp">
+                                    <PathIcon Data="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14zm-5-5.5l3-3-1.06-1.06L12 11.38l-1.94-1.94L9 10.5l3 3z"/>
+                                </Border>
+                                <Border Grid.Column="1" Classes="numero">
+                                    <TextBlock Text="1"/>
+                                </Border>
+                            </Grid>
+                            <StackPanel Grid.Row="2" Spacing="3" Margin="0,16,0,0">
+                                <TextBlock Classes="titulo" Text="Mercado Pago"/>
+                                <TextBlock x:Name="TextoDetalleMercadoPago"
+                                           Classes="detalle"
+                                           Text="Terminal conectada: el cobro se confirma solo"/>
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+
+                    <!-- TERMINAL EXTERNA -->
+                    <Button x:Name="BotonExterna"
+                            Classes="terminal"
+                            Click="Externa_Click">
+                        <Grid RowDefinitions="Auto,*,Auto">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Border Classes="icono externa">
+                                    <PathIcon Data="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                                </Border>
+                                <Border Grid.Column="1" Classes="numero">
+                                    <TextBlock Text="2"/>
+                                </Border>
+                            </Grid>
+                            <StackPanel Grid.Row="2" Spacing="3" Margin="0,16,0,0">
+                                <TextBlock Classes="titulo" Text="Terminal externa"/>
+                                <TextBlock Classes="detalle"
+                                           Text="Otra terminal bancaria: capturas los datos del voucher"/>
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+
+                </UniformGrid>
+
+                <!-- AVISO -->
+                <Border x:Name="BannerAviso"
+                        IsVisible="False"
+                        Padding="14,10"
+                        CornerRadius="12"
+                        Background="#FFF7E0"
+                        BorderBrush="#FBD98A"
+                        BorderThickness="1">
+                    <TextBlock x:Name="TextoAviso"
+                               Foreground="#7A4E05"
+                               FontSize="13"
+                               TextWrapping="Wrap"/>
+                </Border>
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+
+        <!-- ===================================================== -->
+        <!-- PIE                                                   -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Row="2"
+                Background="White"
+                BorderBrush="#EAEEF2"
+                BorderThickness="0,1,0,0"
+                Padding="28,14,28,18">
+
+            <Grid ColumnDefinitions="*,Auto">
+
+                <StackPanel Orientation="Horizontal"
+                            Spacing="18"
+                            VerticalAlignment="Center">
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="1-2"/></Border>
+                        <TextBlock Text="Elegir terminal"/>
+                    </StackPanel>
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Esc"/></Border>
+                        <TextBlock Text="Regresar"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Button Grid.Column="1"
+                        Classes="regresar"
+                        IsCancel="True"
+                        Click="Regresar_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <PathIcon Width="14" Height="14"
+                                  Data="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+                        <TextBlock Text="Regresar" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+            </Grid>
+
+        </Border>
+
+    </Grid>
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <Window.Styles>
+
+        <Style Selector="Button.terminal">
+            <Setter Property="MinHeight" Value="170"/>
+            <Setter Property="Padding" Value="20,18"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E6EAEE"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="CornerRadius" Value="22"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FocusAdorner" Value="{x:Null}"/>
+        </Style>
+
+        <Style Selector="Button.terminal /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BoxShadow" Value="0 1 2 0 #0A0F172A"/>
+        </Style>
+
+        <Style Selector="Button.terminal:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                         Button.terminal:focus /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F5F8FF"/>
+            <Setter Property="BorderBrush" Value="#2563EB"/>
+            <Setter Property="BoxShadow" Value="0 0 0 4 #222563EB, 0 16 30 -14 #552563EB"/>
+        </Style>
+
+        <Style Selector="Button.terminal:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="BorderBrush" Value="#E6EAEE"/>
+            <Setter Property="BoxShadow" Value="none"/>
+        </Style>
+
+        <Style Selector="Button.terminal:disabled">
+            <Setter Property="Opacity" Value="0.55"/>
+        </Style>
+
+        <Style Selector="Border.icono">
+            <Setter Property="Width" Value="56"/>
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="CornerRadius" Value="17"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Background" Value="#EAF1FE"/>
+        </Style>
+
+        <Style Selector="Border.icono PathIcon">
+            <Setter Property="Width" Value="26"/>
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Foreground" Value="#2563EB"/>
+        </Style>
+
+        <Style Selector="Border.icono.mp">
+            <Setter Property="Background" Value="#E6F4FB"/>
+        </Style>
+        <Style Selector="Border.icono.mp PathIcon">
+            <Setter Property="Foreground" Value="#0284C7"/>
+        </Style>
+
+        <Style Selector="Button.terminal:pointerover Border.icono, Button.terminal:focus Border.icono">
+            <Setter Property="Background" Value="#2563EB"/>
+        </Style>
+        <Style Selector="Button.terminal:pointerover Border.icono PathIcon, Button.terminal:focus Border.icono PathIcon">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style Selector="Border.numero">
+            <Setter Property="Width" Value="34"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+        </Style>
+
+        <Style Selector="Border.numero TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Button.terminal:focus Border.numero">
+            <Setter Property="Background" Value="#0B1220"/>
+            <Setter Property="BorderBrush" Value="#0B1220"/>
+        </Style>
+        <Style Selector="Button.terminal:focus Border.numero TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style Selector="TextBlock.titulo">
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="FontSize" Value="21"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style Selector="TextBlock.detalle">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style Selector="StackPanel.atajo">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Spacing" Value="6"/>
+        </Style>
+
+        <Style Selector="StackPanel.atajo > TextBlock">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla">
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style Selector="Button.regresar">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Padding" Value="22,0"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.regresar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+        </Style>
+
+    </Window.Styles>
+
+</Window>

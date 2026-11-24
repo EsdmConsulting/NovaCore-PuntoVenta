@@ -498,7 +498,7 @@ public async Task CargarProductosAsync()
         // También mientras queden ventas sin conexión por enviar: así sus
         // números de ticket (ya impresos) no chocan con los de una venta nueva.
         if (!ConexionService.EstaEnLinea ||
-            VentasPendientesService.ContarPorEnviar() > 0)
+            VentasPendientesService.ContarPorEnviar(idCaja: PosSession.IdCaja) > 0)
         {
             IniciarVentaLocal();
             return true;
@@ -2650,6 +2650,170 @@ public async Task<bool> RegistrarPagoTransferenciaAsync(
 
 
 // =========================================================
+// PAGO CON TERMINAL EXTERNA (CAPTURA DEL VOUCHER)
+// =========================================================
+//
+// Terminal bancaria no conectada al punto de venta: el cajero cobra en
+// ella y captura la autorización. Con internet se registra en el
+// servidor; sin internet se guarda en la caja y se envía con la venta.
+// =========================================================
+
+public static string ReferenciaTarjetaExterna(string ultimosDigitos, bool sinConexion)
+{
+    var origen = sinConexion ? "TERMINAL EXTERNA, SIN CONEXION" : "TERMINAL EXTERNA";
+
+    return string.IsNullOrWhiteSpace(ultimosDigitos)
+        ? origen
+        : $"TARJETA ****{ultimosDigitos.Trim()} ({origen})";
+}
+
+
+public async Task<bool> RegistrarPagoTarjetaExternaAsync(
+    decimal importe,
+    bool esDebito,
+    string autorizacion,
+    string ultimosDigitos)
+{
+    if (EsVentaSinConexion || !ConexionService.EstaEnLinea)
+    {
+        return await RegistrarPagoTarjetaLocalAsync(
+            importe,
+            esDebito,
+            autorizacion,
+            ultimosDigitos);
+    }
+
+
+    if (_pagoSinConfirmar)
+    {
+        MensajeError =
+            "El último pago no se pudo confirmar. Espera a que la venta se recupere antes de volver a cobrar.";
+
+        return false;
+    }
+
+
+    if (IdVentaActual <= 0)
+    {
+        MensajeError =
+            "No existe una venta activa.";
+
+        return false;
+    }
+
+
+    if (importe <= 0)
+    {
+        MensajeError =
+            "El importe del pago no es válido.";
+
+        return false;
+    }
+
+
+    if (EstaProcesandoVenta)
+        return false;
+
+
+    EstaProcesandoVenta =
+        true;
+
+    MensajeError =
+        string.Empty;
+
+
+    try
+    {
+        var resultado =
+            await _ventasService
+                .RegistrarPagoAsync(
+                    IdVentaActual,
+                    new RegistrarPagoRequest
+                    {
+                        IdFormaPago =
+                            esDebito
+                                ? FormasPagoPos.TarjetaDebito
+                                : FormasPagoPos.TarjetaCredito,
+
+                        IdBanco =
+                            null,
+
+                        IdTpvBancaria =
+                            null,
+
+                        Importe =
+                            importe,
+
+                        Referencia =
+                            ReferenciaTarjetaExterna(ultimosDigitos, sinConexion: false),
+
+                        Autorizacion =
+                            autorizacion.Trim()
+                    });
+
+
+        if (
+            resultado.Res != 1 ||
+            resultado.Data is null
+        )
+        {
+            if (!ConexionService.EstaEnLinea)
+            {
+                // No se sabe si el servidor alcanzó a registrar el pago.
+                _pagoSinConfirmar =
+                    true;
+
+                MensajeError =
+                    "Se fue el internet al registrar el pago con tarjeta y no se pudo confirmar. No lo vuelvas a capturar: cuando regrese la conexión la venta se recupera sola.";
+
+                return false;
+            }
+
+            MensajeError =
+                string.IsNullOrWhiteSpace(resultado.Msg)
+                    ? "No fue posible registrar el pago con tarjeta."
+                    : resultado.Msg;
+
+            return false;
+        }
+
+
+        _pagoSinConfirmar =
+            false;
+
+        MontoPagadoActual =
+            resultado.Data.MontoPagado;
+
+        SaldoActual =
+            resultado.Data.Saldo;
+
+
+        // Pago completo: se termina la venta (si falla, el pago ya quedó
+        // y la venta se recupera; no se vuelve a cobrar).
+        if (resultado.Data.PagoCompleto || resultado.Data.Saldo <= 0)
+            return await FinalizarVentaAsync();
+
+
+        return true;
+    }
+    catch (Exception ex)
+    {
+        MensajeError =
+            $"No fue posible registrar el pago con tarjeta: {ex.Message}";
+
+        return false;
+    }
+    finally
+    {
+        EstaProcesandoVenta =
+            false;
+    }
+}
+
+
+
+
+// =========================================================
 // FINALIZAR VENTA A CRÉDITO
 // =========================================================
 
@@ -4268,6 +4432,9 @@ private async Task CancelarVentaAsync()
 
     if (EsVentaSinConexion)
     {
+        if (BloquearPorPagosLocales())
+            return;
+
         DescartarVentaLocal();
         return;
     }
