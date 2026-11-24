@@ -28,4 +28,11 @@ public class PresentacionProducto
 
     [JsonPropertyName("Precios")]
     public List<PrecioProducto> Precios { get; set; } = new();
+
+    // Inventario de la presentación (lo usa el modo sin conexión).
+    [JsonPropertyName("TieneInventarioConfigurado")]
+    public bool TieneInventarioConfigurado { get; set; }
+
+    [JsonPropertyName("ExistenciaDisponible")]
+    public decimal ExistenciaDisponible { get; set; }
 }

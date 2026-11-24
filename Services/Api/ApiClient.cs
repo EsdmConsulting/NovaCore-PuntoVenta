@@ -17,6 +17,10 @@ public static class ApiClient
     public static HttpClient Http { get; } = new(Handler)
     {
         BaseAddress = new Uri(
-            "https://nubeesdm8.ddns.net:4433/Plataforma_LuisFer/")
+            "https://nubeesdm8.ddns.net:4433/Plataforma_LuisFer/"),
+
+        // Antes 100 s (valor por defecto): con un internet "a medias" el
+        // cajero se quedaba esperando. A los 30 s se pasa a modo sin conexión.
+        Timeout = TimeSpan.FromSeconds(30)
     };
 }

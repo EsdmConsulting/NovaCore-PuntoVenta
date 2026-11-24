@@ -62,6 +62,20 @@ public partial class CobroWindow : Window
         }
 
 
+        // Sin internet solo se puede cobrar en efectivo.
+        if (_viewModel.EsVentaSinConexion ||
+            !NovaCoreESDM.Services.Offline.ConexionService.EstaEnLinea)
+        {
+            BotonTarjeta.IsEnabled = false;
+            BotonTransferencia.IsEnabled = false;
+            BotonCredito.IsEnabled = false;
+
+            Opened += (_, _) =>
+                MostrarMensaje(
+                    "Sin conexión: solo efectivo. La venta se guarda en la caja y se envía sola cuando regrese el internet.",
+                    esInformativo: true);
+        }
+
         // Arranca con Efectivo enfocado para cobrar solo con teclado.
         Opened +=
             (_, _) =>
@@ -104,6 +118,12 @@ public partial class CobroWindow : Window
                 _ => -1
             };
 
+
+        if (indiceNumero >= 0 && !metodos[indiceNumero].IsEnabled)
+        {
+            e.Handled = true;
+            return;
+        }
 
         if (indiceNumero >= 0)
         {

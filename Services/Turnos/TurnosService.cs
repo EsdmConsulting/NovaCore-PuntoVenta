@@ -150,6 +150,9 @@ public class TurnosService
         }
         catch (Exception ex)
         {
+            if (NovaCoreESDM.Services.Offline.ConexionService.EsErrorDeRed(ex))
+                NovaCoreESDM.Services.Offline.ConexionService.ReportarFalloDeRed();
+
             Console.WriteLine(
                 "====================================");
 

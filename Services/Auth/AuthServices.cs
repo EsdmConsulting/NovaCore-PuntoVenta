@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using NovaCoreESDM.Models.Auth;
 using NovaCoreESDM.Services.Api;
+using NovaCoreESDM.Services.Offline;
 
 namespace NovaCoreESDM.Services.Auth;
 
@@ -162,11 +163,14 @@ public async Task<LoginResponse> LoginAsync(
                 $"La respuesta del servidor no tiene un formato válido: {ex.Message}"
         };
     }
-    catch (HttpRequestException)
+    catch (Exception ex) when (ConexionService.EsErrorDeRed(ex))
     {
+        ConexionService.ReportarFalloDeRed();
+
         return new LoginResponse
         {
             Res = 0,
+            SinConexion = true,
             Msg =
                 "No fue posible conectarse con el servidor."
         };

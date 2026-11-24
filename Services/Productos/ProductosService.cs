@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using NovaCoreESDM.Models.Productos;
 using NovaCoreESDM.Services.Api;
+using NovaCoreESDM.Services.Offline;
 
 namespace NovaCoreESDM.Services.Productos;
 
@@ -124,6 +125,12 @@ public class ProductosService
                         });
 
 
+            if (resultado is { Status: 1 })
+            {
+                // Copia para poder seguir vendiendo si se va el internet.
+                CatalogoLocal.Guardar(idUnidadOperativa, contenido);
+            }
+
             return resultado ??
                    new CatalogoProductosResponse
                    {
@@ -143,6 +150,22 @@ public class ProductosService
         }
         catch (Exception ex)
         {
+            if (ConexionService.EsErrorDeRed(ex))
+            {
+                ConexionService.ReportarFalloDeRed();
+
+                var copia = CatalogoLocal.Obtener(idUnidadOperativa);
+                if (copia is not null)
+                    return copia;
+
+                return new CatalogoProductosResponse
+                {
+                    Status = 0,
+                    Message =
+                        "No hay internet y esta caja todavía no tiene una copia del catálogo. Conéctate una vez para descargarlo."
+                };
+            }
+
             return new CatalogoProductosResponse
             {
                 Status = 0,

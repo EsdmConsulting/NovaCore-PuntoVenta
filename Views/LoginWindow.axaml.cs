@@ -17,6 +17,7 @@ using NovaCoreESDM.ViewModels;
 
 using NovaCoreESDM.Views.Caja;
 using NovaCoreESDM.Views.Turno;
+using NovaCoreESDM.Services.Offline;
 
 namespace NovaCoreESDM.Views;
 
@@ -112,6 +113,26 @@ public partial class LoginWindow : Window
     // =========================================================
     // INICIO DE SESIÓN CORRECTO
     // =========================================================
+
+    private void AbrirVentanaPrincipal()
+    {
+        var mainWindow =
+            new MainWindow
+            {
+                DataContext =
+                    new MainViewModel()
+            };
+
+        if (Application.Current?.ApplicationLifetime
+            is IClassicDesktopStyleApplicationLifetime desktopLifetime)
+        {
+            desktopLifetime.MainWindow = mainWindow;
+        }
+
+        mainWindow.Show();
+        Close();
+    }
+
 
     private async void OnInicioSesionExitoso()
     {
@@ -252,9 +273,29 @@ public partial class LoginWindow : Window
              * nos quedamos en Login.
              */
 
+            if (resultadoTurno.Res != 1 &&
+                !ConexionService.EstaEnLinea &&
+                configuracion.IdTurnoActivo is > 0)
+            {
+                // Sin internet: se continúa con el último turno abierto
+                // de esta caja. Las ventas se enviarán al regresar la conexión.
+                PosSession.IdTurno =
+                    configuracion.IdTurnoActivo.Value;
+
+                AbrirVentanaPrincipal();
+                return;
+            }
+
             if (resultadoTurno.Res != 1)
             {
                 PosSession.LimpiarTurno();
+
+                if (!ConexionService.EstaEnLinea)
+                {
+                    _viewModel.MensajeError =
+                        "No hay internet y esta caja no tiene un turno abierto. Para abrir turno se necesita conexión.";
+                    return;
+                }
 
 
                 _viewModel.MensajeError =
@@ -360,22 +401,7 @@ public partial class LoginWindow : Window
                 // ENTRAR DIRECTAMENTE AL POS
                 // =============================================
 
-                var mainWindow =
-                    new MainWindow
-                    {
-                        DataContext =
-                            new MainViewModel()
-                    };
-
-
-              if (Application.Current?.ApplicationLifetime
-                        is IClassicDesktopStyleApplicationLifetime desktopLifetime)
-                    {
-                        desktopLifetime.MainWindow = mainWindow;
-                    }
-
-                mainWindow.Show();
-                Close();
+                AbrirVentanaPrincipal();
 
                 return;
             }

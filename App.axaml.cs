@@ -40,6 +40,10 @@ public partial class App
             splashWindow.Show();
 
 
+            // Vigila el internet y envía solas las ventas hechas sin conexión.
+            NovaCoreESDM.Services.Offline.VentasPendientesService.Iniciar();
+
+
             DispatcherTimer.RunOnce(
                 () =>
                 {

@@ -12,6 +12,10 @@ public class LoginResponse
 
     [JsonPropertyName("data")]
     public LoginData? Data { get; set; }
+
+    /// <summary>True cuando no se pudo llegar al servidor (sin internet).</summary>
+    [JsonIgnore]
+    public bool SinConexion { get; set; }
 }
 
 public class LoginData

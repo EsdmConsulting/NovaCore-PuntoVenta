@@ -21,6 +21,7 @@ using NovaCoreESDM.ViewModels.Ventas;
 using Avalonia.VisualTree;
 
 using NovaCoreESDM.Desktop.Services.MercadoPago;
+using NovaCoreESDM.Services.Offline;
 using NovaCoreESDM.Desktop.Views.MercadoPago;
 
 
@@ -594,6 +595,8 @@ public partial class VentasView : UserControl
             return;
 
 
+        _viewModel.CobroEnCurso = true;
+
         try
         {
             var owner =
@@ -646,6 +649,23 @@ public partial class VentasView : UserControl
 
                 if (!resultado)
                     return;
+
+
+                // =====================================================
+                // SIN INTERNET: SOLO EFECTIVO
+                // =====================================================
+
+                if (
+                    ventana.MetodoSeleccionado != "EFECTIVO" &&
+                    (_viewModel.EsVentaSinConexion ||
+                     !ConexionService.EstaEnLinea)
+                )
+                {
+                    _viewModel.MensajeError =
+                        VentasViewModel.MensajeSoloEfectivo;
+
+                    return;
+                }
 
 
                 // =====================================================
@@ -1178,6 +1198,9 @@ public partial class VentasView : UserControl
              * siempre dejamos el POS preparado
              * para el siguiente escaneo.
              */
+
+            _viewModel.CobroEnCurso = false;
+            _viewModel.IntentarPasarVentaAlServidor();
 
             EnfocarBuscadorProductos();
         }

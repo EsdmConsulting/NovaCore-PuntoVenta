@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using NovaCoreESDM.Models.Session;
 using NovaCoreESDM.Services.Auth;
+using NovaCoreESDM.Services.Offline;
 
 namespace NovaCoreESDM.ViewModels;
 
@@ -64,6 +65,26 @@ public partial class LoginViewModel : ViewModelBase
                     Contrasena
                 );
 
+            if (resultado.SinConexion)
+            {
+                // Sin internet: se valida contra el último acceso guardado en esta caja.
+                var datosLocales =
+                    SesionLocal.Validar(Usuario, Contrasena, out var motivo);
+
+                if (datosLocales is null)
+                {
+                    MensajeError = motivo;
+                    return;
+                }
+
+                resultado.Res = 1;
+                resultado.Data = datosLocales;
+            }
+            else if (resultado.Res == 1 && resultado.Data is not null)
+            {
+                SesionLocal.Recordar(Usuario, Contrasena, resultado.Data);
+            }
+
             if (resultado.Res != 1)
             {
                 MensajeError =
@@ -81,6 +102,8 @@ public partial class LoginViewModel : ViewModelBase
 
                 return;
             }
+
+            SesionLocal.RecordarEnMemoria(Usuario, Contrasena);
 
             // =================================================
             // GUARDAR SESIÓN DEL USUARIO

@@ -13,6 +13,7 @@ using NovaCoreESDM.Models.Ventas;
 using NovaCoreESDM.Services.Configuration;
 using NovaCoreESDM.Services.Productos;
 using NovaCoreESDM.Services.Ventas;
+using NovaCoreESDM.Services.Offline;
 using NovaCoreESDM.Services.Printing;
 namespace NovaCoreESDM.ViewModels.Ventas;
 using NovaCoreESDM.Services.WhatsApp;
@@ -301,6 +302,8 @@ public partial class VentasViewModel : ViewModelBase
         
         _creditoService =
             new CreditoService();
+
+        InicializarSinConexion();
     }
 
 
@@ -354,6 +357,14 @@ public async Task CargarProductosAsync()
          * - Configurados para el Punto de Venta
          *   correspondiente a esta terminal.
          */
+        _fechaCatalogo =
+            resultado.DesdeCopiaLocal
+                ? resultado.FechaCopiaLocal ?? DateTime.Now
+                : DateTime.Now;
+
+        if (!resultado.DesdeCopiaLocal)
+            _ = AprenderConsecutivoDelServidorAsync();
+
         var productosPuntoVenta =
             resultado.Data
                 .Where(p =>
@@ -463,7 +474,7 @@ public async Task CargarProductosAsync()
          * Si ya tenemos una venta actual,
          * no creamos otra.
          */
-        if (IdVentaActual > 0)
+        if (IdVentaActual > 0 || EsVentaSinConexion)
             return true;
 
 
@@ -477,6 +488,20 @@ public async Task CargarProductosAsync()
                 "No existe un turno activo para realizar la venta.";
 
             return false;
+        }
+
+
+        // =====================================================
+        // SIN INTERNET: LA VENTA SE HACE EN LA CAJA
+        // =====================================================
+
+        // También mientras queden ventas sin conexión por enviar: así sus
+        // números de ticket (ya impresos) no chocan con los de una venta nueva.
+        if (!ConexionService.EstaEnLinea ||
+            VentasPendientesService.ContarPorEnviar() > 0)
+        {
+            IniciarVentaLocal();
+            return true;
         }
 
 
@@ -558,6 +583,13 @@ public async Task CargarProductosAsync()
         if (resultado.Res != 1 ||
             resultado.Data is null)
         {
+            // Se cayó el internet justo al crear la venta.
+            if (!ConexionService.EstaEnLinea)
+            {
+                IniciarVentaLocal();
+                return true;
+            }
+
             MensajeError =
                 string.IsNullOrWhiteSpace(
                     resultado.Msg)
@@ -600,7 +632,7 @@ public async Task CargarProductosAsync()
             return;
         }
 
-        if (IdVentaActual <= 0)
+        if (!HayVentaActiva)
         {
             MensajeError =
                 "No existe una venta activa.";
@@ -845,6 +877,22 @@ public async Task AgregarPresentacionAlCarritoAsync(
 
 
         // =====================================================
+        // VENTA SIN CONEXIÓN
+        // =====================================================
+
+        if (UsarVentaLocal())
+        {
+            if (!Carrito.Contains(nuevoDetalle))
+                Carrito.Add(nuevoDetalle);
+
+            AgregarLineaLocal(
+                nuevoDetalle);
+
+            return;
+        }
+
+
+        // =====================================================
         // REQUEST DEL DETALLE
         // =====================================================
 
@@ -890,6 +938,21 @@ public async Task AgregarPresentacionAlCarritoAsync(
         // =====================================================
         // ERROR
         // =====================================================
+
+        if ((resultadoDetalle.Res != 1 ||
+             resultadoDetalle.Data is null) &&
+            !ConexionService.EstaEnLinea &&
+            PasarVentaASinConexion())
+        {
+            // Se fue el internet al agregar: se continúa en la caja.
+            if (!Carrito.Contains(nuevoDetalle))
+                Carrito.Add(nuevoDetalle);
+
+            AgregarLineaLocal(
+                nuevoDetalle);
+
+            return;
+        }
 
         if (resultadoDetalle.Res != 1 ||
             resultadoDetalle.Data is null)
@@ -1689,7 +1752,7 @@ private async Task IncrementarCantidadAsync(
         return;
 
     if (detalle.IdDetalle <= 0 ||
-        IdVentaActual <= 0)
+        !HayVentaActiva)
     {
         MensajeError =
             "El producto todavía no está listo para modificar.";
@@ -1700,6 +1763,16 @@ private async Task IncrementarCantidadAsync(
 
     MensajeError =
         string.Empty;
+
+
+    if (UsarVentaLocal())
+    {
+        CambiarCantidadLocal(
+            detalle,
+            detalle.Cantidad + 1);
+
+        return;
+    }
 
 
     var cantidadAnterior =
@@ -1789,6 +1862,17 @@ public async Task CargarVentaActualAsync()
     if (!PosSession.TieneTurnoActivo)
         return;
 
+    // Venta sin conexión en curso, o recuperada del disco (apagón).
+    if (EsVentaSinConexion || RecuperarVentaLocal())
+    {
+        IntentarPasarVentaAlServidor();
+        return;
+    }
+
+    // Sin internet no hay venta del servidor que recuperar.
+    if (!ConexionService.EstaEnLinea)
+        return;
+
     try
     {
         var resultado =
@@ -1807,8 +1891,15 @@ public async Task CargarVentaActualAsync()
             return;
         }
 
-        // No existe venta pendiente
-        if (resultado.Data?.Venta is null)
+        _pagoSinConfirmar =
+            false;
+
+        // No existe venta pendiente (o es un borrador que se abandonó
+        // cuando se fue el internet y está por cancelarse).
+        if (resultado.Data?.Venta is null ||
+            VentasPendientesService
+                .ObtenerBorradoresAbandonados()
+                .Contains(resultado.Data.Venta.Id))
         {
             IdVentaActual = 0;
             UuidVentaActual = string.Empty;
@@ -2058,11 +2149,21 @@ public async Task ActualizarCantidadManualAsync(
 
     if (
         detalle.IdDetalle <= 0 ||
-        IdVentaActual <= 0
+        !HayVentaActiva
     )
     {
         MensajeError =
             "El producto todavía no está listo para modificar.";
+
+        return;
+    }
+
+
+    if (UsarVentaLocal())
+    {
+        CambiarCantidadLocal(
+            detalle,
+            cantidadNueva);
 
         return;
     }
@@ -2158,6 +2259,37 @@ public async Task<bool> RegistrarPagoEfectivoAsync(
     decimal recibido,
     decimal cambio)
 {
+    if (_pagoSinConfirmar && !ConexionService.EstaEnLinea)
+    {
+        MensajeError =
+            "El último pago no se pudo confirmar porque se fue el internet. No vuelvas a cobrar: cuando regrese la conexión la venta se recupera sola.";
+
+        return false;
+    }
+
+    if (UsarVentaLocal())
+    {
+        if (EstaProcesandoVenta)
+            return false;
+
+        EstaProcesandoVenta =
+            true;
+
+        try
+        {
+            return await CobrarEfectivoLocalAsync(
+                importeAplicado,
+                recibido,
+                cambio);
+        }
+        finally
+        {
+            EstaProcesandoVenta =
+                false;
+        }
+    }
+
+
     if (IdVentaActual <= 0)
     {
         MensajeError =
@@ -2232,6 +2364,18 @@ public async Task<bool> RegistrarPagoEfectivoAsync(
             resultado.Data is null
         )
         {
+            if (!ConexionService.EstaEnLinea)
+            {
+                // No se sabe si el servidor alcanzó a registrar el pago.
+                _pagoSinConfirmar =
+                    true;
+
+                MensajeError =
+                    "Se fue el internet al registrar el pago y no se pudo confirmar. No vuelvas a cobrar: cuando regrese la conexión la venta se recupera sola.";
+
+                return false;
+            }
+
             MensajeError =
                 string.IsNullOrWhiteSpace(
                     resultado.Msg
@@ -2242,6 +2386,9 @@ public async Task<bool> RegistrarPagoEfectivoAsync(
             return false;
         }
 
+
+        _pagoSinConfirmar =
+            false;
 
         MontoPagadoActual =
             resultado.Data.MontoPagado;
@@ -2346,6 +2493,10 @@ public async Task<bool> RegistrarPagoEfectivoAsync(
 public async Task<bool> RegistrarPagoTransferenciaAsync(
     decimal importeAplicado)
 {
+    if (BloquearSinConexion("cobrar con transferencia"))
+        return false;
+
+
     if (IdVentaActual <= 0)
     {
         MensajeError =
@@ -2507,6 +2658,10 @@ public async Task<bool> FinalizarVentaCreditoAsync()
     // =====================================================
     // VALIDAR VENTA
     // =====================================================
+
+    if (BloquearSinConexion("vender a crédito"))
+        return false;
+
 
     if (IdVentaActual <= 0)
     {
@@ -2673,6 +2828,10 @@ public async Task<bool> EstablecerPrecioManualAsync(
     if (detalle is null)
         return false;
 
+    if (BloquearSinConexion("poner un precio especial"))
+        return false;
+
+
     if (IdVentaActual <= 0 ||
         detalle.IdDetalle <= 0)
     {
@@ -2766,6 +2925,10 @@ public async Task<bool> EstablecerPrecioAutomaticoAsync(
     if (detalle is null)
         return false;
 
+    if (BloquearSinConexion("cambiar el tipo de precio"))
+        return false;
+
+
     if (IdVentaActual <= 0 ||
         detalle.IdDetalle <= 0)
     {
@@ -2846,6 +3009,15 @@ public async Task<bool> EstablecerPrecioAutomaticoAsync(
 
 public async Task<bool> FinalizarVentaAsync()
 {
+    if (EsVentaSinConexion)
+    {
+        MensajeError =
+            "La venta sin conexión se termina al cobrarla en efectivo.";
+
+        return false;
+    }
+
+
     if (IdVentaActual <= 0)
     {
         MensajeError =
@@ -2946,6 +3118,15 @@ public async Task<bool> FinalizarVentaAsync()
 
         UltimoFolioTicket =
             resultado.Data.FolioTicket;
+
+        // La caja recuerda su consecutivo para seguirlo si se va el internet.
+        ConsecutivoTicketLocal.Aprender(
+            resultado.Data.IdCaja > 0
+                ? resultado.Data.IdCaja
+                : PosSession.IdCaja,
+            resultado.Data.CodigoUnidadOperativa,
+            resultado.Data.SerieTicket,
+            resultado.Data.NumeroTicket);
 
 
         VentaFinalizadaCorrectamente =
@@ -3062,6 +3243,33 @@ public async Task<bool> FinalizarVentaAsync()
             "====================================");
 
 
+        await EntregarTicketYLimpiarAsync(
+            ticket);
+
+        return true;
+    }
+    catch (Exception ex)
+    {
+        MensajeError =
+            $"No fue posible finalizar la venta: {ex.Message}";
+
+        return false;
+    }
+}
+
+
+
+
+
+// =========================================================
+// ENTREGAR TICKET Y LIMPIAR LA VENTA (con o sin conexión)
+// =========================================================
+
+private async Task EntregarTicketYLimpiarAsync(
+    TicketVenta ticket)
+{
+    try
+    {
         // =====================================================
         // SOLICITAR FORMA DE ENTREGA DEL TICKET
         // =====================================================
@@ -3376,17 +3584,13 @@ public async Task<bool> FinalizarVentaAsync()
             null;
 
 
-        return true;
     }
     catch (Exception ex)
     {
         MensajeError =
-            $"No fue posible finalizar la venta: {ex.Message}";
-
-        return false;
+            $"La venta quedó registrada, pero falló la entrega del ticket: {ex.Message}";
     }
 }
-
 
 
 // =========================================================
@@ -3595,7 +3799,7 @@ private async Task DisminuirCantidadAsync(
         return;
 
     if (detalle.IdDetalle <= 0 ||
-        IdVentaActual <= 0)
+        !HayVentaActiva)
     {
         MensajeError =
             "El producto todavía no está listo para modificar.";
@@ -3624,6 +3828,15 @@ private async Task DisminuirCantidadAsync(
     // =========================================================
     // SI ES MAYOR A 1, USAMOS PUT
     // =========================================================
+
+    if (UsarVentaLocal())
+    {
+        CambiarCantidadLocal(
+            detalle,
+            detalle.Cantidad - 1);
+
+        return;
+    }
 
     var cantidadAnterior =
         detalle.Cantidad;
@@ -3744,10 +3957,19 @@ private async Task EliminarProductoAsync(
     }
 
 
-    if (IdVentaActual <= 0)
+    if (!HayVentaActiva)
     {
         MensajeError =
             "No existe una venta activa.";
+
+        return;
+    }
+
+
+    if (UsarVentaLocal())
+    {
+        EliminarLineaLocal(
+            detalle);
 
         return;
     }
@@ -4033,7 +4255,7 @@ private async Task CancelarVentaAsync()
 
     if (
         Carrito.Count == 0 ||
-        IdVentaActual <= 0
+        !HayVentaActiva
     )
     {
         return;
@@ -4042,6 +4264,32 @@ private async Task CancelarVentaAsync()
 
     if (EstaProcesandoVenta)
         return;
+
+
+    if (EsVentaSinConexion)
+    {
+        DescartarVentaLocal();
+        return;
+    }
+
+
+    if (!ConexionService.EstaEnLinea)
+    {
+        // Venta del servidor sin internet: se vacía la caja y el borrador
+        // del servidor se cancela cuando regrese la conexión.
+        if (MontoPagadoActual > 0)
+        {
+            MensajeError =
+                "Esta venta ya tiene un pago registrado. Espera a que regrese el internet para cancelarla.";
+            return;
+        }
+
+        VentasPendientesService.RegistrarBorradorAbandonado(
+            IdVentaActual);
+
+        DescartarVentaLocal();
+        return;
+    }
 
 
     // =========================================================

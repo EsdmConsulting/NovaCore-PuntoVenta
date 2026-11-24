@@ -430,6 +430,9 @@ public partial class MainWindow
             PosSession
                 .LimpiarSesion();
 
+            NovaCoreESDM.Services.Offline.SesionLocal
+                .OlvidarEnMemoria();
+
 
             // ====================================================
             // 2. CREAR LOGIN

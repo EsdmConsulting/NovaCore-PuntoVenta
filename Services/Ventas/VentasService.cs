@@ -5,11 +5,22 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using NovaCoreESDM.Models.Ventas;
 using NovaCoreESDM.Services.Api;
+using NovaCoreESDM.Services.Offline;
 
 namespace NovaCoreESDM.Services.Ventas;
 
 public class VentasService
 {
+    // Agregar, quitar o cambiar productos debe responder rápido. Si el
+    // servidor no contesta en este tiempo se toma como "sin internet" y
+    // la venta sigue en la caja, en vez de quedarse trabada 30 segundos.
+    // (Pagos y finalizar conservan el tiempo normal.)
+    private static readonly TimeSpan TiempoMaximoRapido = TimeSpan.FromSeconds(8);
+
+    private static System.Threading.CancellationToken LimiteRapido() =>
+        new System.Threading.CancellationTokenSource(TiempoMaximoRapido).Token;
+
+
     // =========================================================
     // CONFIGURACIÓN JSON
     // =========================================================
@@ -42,7 +53,8 @@ public class VentasService
 
             var response =
                 await ApiClient.Http.GetAsync(
-                    endpoint);
+                    endpoint,
+                    LimiteRapido());
 
 
             var contenido =
@@ -136,6 +148,8 @@ public class VentasService
         }
         catch (Exception ex)
         {
+            if (ConexionService.EsErrorDeRed(ex)) ConexionService.ReportarFalloDeRed();
+
             Console.WriteLine(
                 "====================================");
 
@@ -172,7 +186,8 @@ public class VentasService
             var response =
                 await ApiClient.Http.PostAsJsonAsync(
                     "api/pos/ventas",
-                    request);
+                    request,
+                    LimiteRapido());
 
 
             var contenido =
@@ -266,6 +281,8 @@ public class VentasService
         }
         catch (Exception ex)
         {
+            if (ConexionService.EsErrorDeRed(ex)) ConexionService.ReportarFalloDeRed();
+
             Console.WriteLine(
                 "====================================");
 
@@ -375,6 +392,8 @@ public async Task<ActualizarVentaResponse>
     }
     catch (Exception ex)
     {
+        if (ConexionService.EsErrorDeRed(ex)) ConexionService.ReportarFalloDeRed();
+
         return new ActualizarVentaResponse
         {
             Res = 0,
@@ -401,7 +420,8 @@ public async Task<ActualizarVentaResponse>
             var response =
                 await ApiClient.Http.PostAsJsonAsync(
                     $"api/pos/ventas/{idVenta}/productos",
-                    request);
+                    request,
+                    LimiteRapido());
 
 
             var contenido =
@@ -495,6 +515,8 @@ public async Task<ActualizarVentaResponse>
         }
         catch (Exception ex)
         {
+            if (ConexionService.EsErrorDeRed(ex)) ConexionService.ReportarFalloDeRed();
+
             Console.WriteLine(
                 "====================================");
 
@@ -531,7 +553,8 @@ public async Task<ActualizarVentaResponse>
         {
             var response =
                 await ApiClient.Http.DeleteAsync(
-                    $"api/pos/ventas/{idVenta}/productos/{idDetalle}"
+                    $"api/pos/ventas/{idVenta}/productos/{idDetalle}",
+                    LimiteRapido()
                 );
 
             var contenido =
@@ -574,6 +597,8 @@ public async Task<ActualizarVentaResponse>
         }
         catch (Exception ex)
         {
+            if (ConexionService.EsErrorDeRed(ex)) ConexionService.ReportarFalloDeRed();
+
             return new EliminarProductoVentaResponse
             {
                 Res = 0,
@@ -611,7 +636,8 @@ public async Task<ActualizarCantidadVentaResponse>
         var response =
             await ApiClient.Http.PutAsJsonAsync(
                 $"api/pos/ventas/{idVenta}/productos/{idDetalle}",
-                request);
+                request,
+                LimiteRapido());
 
         var contenido =
             await response.Content
@@ -688,6 +714,8 @@ public async Task<ActualizarCantidadVentaResponse>
     }
     catch (Exception ex)
     {
+        if (ConexionService.EsErrorDeRed(ex)) ConexionService.ReportarFalloDeRed();
+
         Console.WriteLine(
             "====================================");
 
@@ -920,6 +948,8 @@ public async Task<CancelarVentaResponse>
     }
     catch (Exception ex)
     {
+        if (ConexionService.EsErrorDeRed(ex)) ConexionService.ReportarFalloDeRed();
+
         return new CancelarVentaResponse
         {
             Res = 0,
@@ -1011,6 +1041,8 @@ public async Task<RegistrarPagoResponse>
     }
     catch (Exception ex)
     {
+        if (ConexionService.EsErrorDeRed(ex)) ConexionService.ReportarFalloDeRed();
+
         return new RegistrarPagoResponse
         {
             Res = 0,
@@ -1104,6 +1136,8 @@ public async Task<FinalizarVentaResponse>
     }
     catch (Exception ex)
     {
+        if (ConexionService.EsErrorDeRed(ex)) ConexionService.ReportarFalloDeRed();
+
         return new FinalizarVentaResponse
         {
             Res = 0,

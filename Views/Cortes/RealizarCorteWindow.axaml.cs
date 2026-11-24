@@ -429,6 +429,26 @@ public partial class RealizarCorteWindow : Window
         }
 
 
+        // Las ventas hechas sin internet deben llegar al servidor antes
+        // del corte; si no, el corte saldría sin ellas.
+        var ventasSinEnviar =
+            NovaCoreESDM.Services.Offline.VentasPendientesService
+                .ContarPorEnviar(turno.Id);
+
+        if (ventasSinEnviar > 0)
+        {
+            if (NovaCoreESDM.Services.Offline.ConexionService.EstaEnLinea)
+                _ = NovaCoreESDM.Services.Offline.VentasPendientesService
+                    .EnviarPendientesAsync();
+
+            MostrarError(
+                $"Hay {ventasSinEnviar} venta(s) hechas sin conexión que todavía no llegan al servidor. " +
+                "Se envían solas cuando hay internet; espera unos segundos y vuelve a intentar el corte.");
+
+            return;
+        }
+
+
         var confirmar =
             new ConfirmarCierreCorteWindow(
                 _efectivoEsperado,
