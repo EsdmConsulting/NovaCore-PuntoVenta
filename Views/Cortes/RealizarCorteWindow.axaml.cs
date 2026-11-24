@@ -433,6 +433,8 @@ public partial class RealizarCorteWindow : Window
         // del corte; si no, el corte saldría sin ellas.
         var ventasSinEnviar =
             NovaCoreESDM.Services.Offline.VentasPendientesService
+                .ContarPorEnviar(turno.Id)
+            + NovaCoreESDM.Services.Offline.AbonosPendientesService
                 .ContarPorEnviar(turno.Id);
 
         if (ventasSinEnviar > 0)
@@ -442,7 +444,7 @@ public partial class RealizarCorteWindow : Window
                     .EnviarPendientesAsync();
 
             MostrarError(
-                $"Hay {ventasSinEnviar} venta(s) hechas sin conexión que todavía no llegan al servidor. " +
+                $"Hay {ventasSinEnviar} venta(s) o abono(s) hechos sin conexión que todavía no llegan al servidor. " +
                 "Se envían solas cuando hay internet; espera unos segundos y vuelve a intentar el corte.");
 
             return;

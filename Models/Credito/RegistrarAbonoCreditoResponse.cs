@@ -5,6 +5,10 @@ namespace NovaCoreESDM.Models.Credito;
 
 public class RegistrarAbonoCreditoResponse
 {
+    /// <summary>Sin internet: el abono quedó guardado en la caja y se aplica al regresar la conexión.</summary>
+    [JsonIgnore]
+    public bool GuardadoSinConexion { get; set; }
+
     [JsonPropertyName("res")]
     public int Res { get; set; }
 

@@ -5,6 +5,13 @@ namespace NovaCoreESDM.Models.Credito;
 
 public class RegistrarAbonoCreditoRequest
 {
+    /// <summary>
+    /// Identificador de la operación: el servidor no registra dos veces el
+    /// mismo abono aunque se reenvíe (reintentos, abonos sin conexión).
+    /// </summary>
+    [JsonPropertyName("uuid_operacion")]
+    public string? UuidOperacion { get; set; }
+
     [JsonPropertyName("id_cliente")]
     public int IdCliente { get; set; }
 

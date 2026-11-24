@@ -172,6 +172,17 @@ public static class VentasPendientesService
             .ToList();
 
 
+    /// <summary>Ventas a crédito sin conexión de un cliente (por enviar o enviadas).</summary>
+    public static List<VentaOffline> ObtenerCreditoLocal(int idCliente) =>
+        ObtenerPendientes()
+            .Concat(Directory.EnumerateFiles(CarpetaEnviadas, "*.json")
+                .Select(f => AlmacenLocal.Leer<VentaOffline>(f))
+                .Where(v => v is not null)
+                .Cast<VentaOffline>())
+            .Where(v => v.EsCredito && v.IdCliente == idCliente && v.Estado != VentaOffline.EstadoRechazada)
+            .ToList();
+
+
     /// <summary>Vuelve a poner en cola una venta rechazada (después de corregir el problema).</summary>
     public static void Reintentar(string uuid)
     {
@@ -194,6 +205,8 @@ public static class VentasPendientesService
     public static void Iniciar()
     {
         LimpiarEnviadasAntiguas();
+        AbonosPendientesService.LimpiarEnviadosAntiguos();
+        AbonosPendientesService.CambioCola += () => CambioCola?.Invoke();
 
         ConexionService.CambioEstado += enLinea =>
         {
@@ -242,22 +255,43 @@ public static class VentasPendientesService
             if (!await CancelarBorradoresAbandonadosAsync())
                 return;
 
+            var cortado = false;
+            var huboEnvios = false;
+
             foreach (var venta in ObtenerPendientes())
             {
                 if (venta.Estado != VentaOffline.EstadoPendiente)
                     continue;
 
                 var resultado = await EnviarAsync(venta);
+                huboEnvios |= resultado == ResultadoEnvio.Enviada;
 
                 if (resultado == ResultadoEnvio.SinConexion)
+                {
+                    cortado = true;
                     break;
+                }
 
                 if (resultado == ResultadoEnvio.SesionVencida)
                 {
                     UltimoResultado = "Inicia sesión de nuevo para enviar las ventas pendientes.";
+                    cortado = true;
                     break;
                 }
             }
+
+            // Después de las ventas (un abono puede pagar una venta a crédito
+            // hecha sin conexión), los abonos.
+            if (!cortado)
+            {
+                var abonosAntes = AbonosPendientesService.ContarPorEnviar();
+                cortado = !await AbonosPendientesService.EnviarPendientesAsync(ReautenticarAsync);
+                huboEnvios |= AbonosPendientesService.ContarPorEnviar() < abonosAntes;
+            }
+
+            // Se actualiza la copia de crédito para que refleje lo enviado.
+            if (huboEnvios && !cortado)
+                await CreditoLocal.DescargarAsync();
         }
         catch (Exception ex)
         {
@@ -364,7 +398,9 @@ public static class VentasPendientesService
             id_turno = venta.IdTurno,
             id_usuario = venta.IdUsuario,
             usuario = venta.Usuario,
-            tipo_venta = "CONTADO",
+            tipo_venta = venta.EsCredito ? "CREDITO" : "CONTADO",
+            id_cliente = venta.IdCliente,
+            tipo_cliente = venta.IdCliente is > 0 ? "FRECUENTE" : "PUBLICO_GENERAL",
             serie_ticket = venta.SerieTicket,
             numero_ticket = venta.NumeroTicket,
             fecha_hora = (venta.FechaCobro ?? venta.FechaCreacion).ToString("yyyy-MM-dd HH:mm:ss"),

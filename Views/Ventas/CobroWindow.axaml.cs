@@ -68,13 +68,12 @@ public partial class CobroWindow : Window
             !NovaCoreESDM.Services.Offline.ConexionService.EstaEnLinea)
         {
             BotonTransferencia.IsEnabled = false;
-            BotonCredito.IsEnabled = false;
 
             TextoDetalleTarjeta.Text = "Terminal externa (datos del voucher)";
 
             Opened += (_, _) =>
                 MostrarMensaje(
-                    "Sin conexión: efectivo o tarjeta (capturando la autorización del voucher). La venta se guarda en la caja y se envía sola cuando regrese el internet.",
+                    "Sin conexión: efectivo, tarjeta (capturando el voucher) o crédito (con la información de crédito guardada en la caja). La venta se guarda en la caja y se envía sola cuando regrese el internet.",
                     esInformativo: true);
         }
 

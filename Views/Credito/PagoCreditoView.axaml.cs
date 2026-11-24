@@ -268,6 +268,15 @@ private async void ViewModel_PagoSolicitado(
 
         case "TRANSFERENCIA":
         {
+            // Sin internet no se puede comprobar la transferencia.
+            if (!NovaCoreESDM.Services.Offline.ConexionService.EstaEnLinea)
+            {
+                _viewModel.MensajeError =
+                    "Sin conexión no se pueden recibir abonos por transferencia. Usa efectivo o tarjeta.";
+
+                return;
+            }
+
             // =================================================
             // ABRIR PAGO POR TRANSFERENCIA
             // =================================================

@@ -22,7 +22,7 @@ namespace NovaCoreESDM.ViewModels.Ventas;
 public partial class VentasViewModel
 {
     public const string MensajeSoloEfectivo =
-        "Sin conexión solo se puede cobrar en efectivo o con tarjeta (capturando el voucher).";
+        "Sin conexión solo se puede cobrar en efectivo, con tarjeta (capturando el voucher) o a crédito.";
 
     private VentaOffline? _ventaLocal;
 
@@ -84,13 +84,13 @@ public partial class VentasViewModel
                 return "Sin conexión · vendiendo sin internet";
 
             if (EnviandoVentas)
-                return $"Enviando ventas sin conexión… ({VentasPorEnviar})";
+                return $"Enviando operaciones sin conexión… ({VentasPorEnviar})";
 
             if (VentasPorEnviar > 0)
-                return $"{VentasPorEnviar} venta(s) sin conexión por enviar";
+                return $"{VentasPorEnviar} operación(es) sin conexión por enviar";
 
             return VentasRechazadas > 0
-                ? $"{VentasRechazadas} venta(s) sin conexión no se pudieron registrar"
+                ? $"{VentasRechazadas} operación(es) sin conexión no se pudieron registrar"
                 : string.Empty;
         }
     }
@@ -102,7 +102,7 @@ public partial class VentasViewModel
             var partes = new List<string>();
 
             if (SinConexion)
-                partes.Add("Efectivo o tarjeta con captura manual. Las ventas se guardan en esta caja y se envían solas al volver el internet.");
+                partes.Add("Efectivo, tarjeta (voucher) o crédito. Las ventas y abonos se guardan en esta caja y se envían solas al volver el internet.");
 
             if (VentasPorEnviar > 0)
                 partes.Add($"{VentasPorEnviar} por enviar.");
@@ -139,8 +139,8 @@ public partial class VentasViewModel
 
         try
         {
-            VentasPorEnviar = VentasPendientesService.ContarPorEnviar();
-            VentasRechazadas = VentasPendientesService.ContarRechazadas();
+            VentasPorEnviar = VentasPendientesService.ContarPorEnviar() + AbonosPendientesService.ContarPorEnviar();
+            VentasRechazadas = VentasPendientesService.ContarRechazadas() + AbonosPendientesService.ContarRechazados();
         }
         catch
         {
@@ -880,6 +880,73 @@ public partial class VentasViewModel
     }
 
 
+    /// <summary>
+    /// Venta a crédito sin conexión: se valida con la copia de crédito de la
+    /// caja (ya descuenta lo vendido sin conexión) y se registra en cartera
+    /// cuando el servidor la reciba.
+    /// </summary>
+    private async Task<bool> FinalizarVentaCreditoLocalAsync()
+    {
+        if (ClientePosSeleccionado is null)
+        {
+            MensajeError = "Selecciona un cliente para realizar la venta a crédito.";
+            return false;
+        }
+
+        if (EstaProcesandoVenta)
+            return false;
+
+        if (!EsVentaSinConexion && !PasarVentaASinConexion())
+            return false;
+
+        if (_ventaLocal is null || Carrito.Count == 0)
+        {
+            MensajeError = "No hay productos para vender a crédito.";
+            return false;
+        }
+
+        // Igual que en línea: a crédito no se permiten pagos previos.
+        if (_ventaLocal.Pagos.Count > 0)
+        {
+            MensajeError = "Esta venta ya tiene un pago registrado; no se puede pasar a crédito.";
+            return false;
+        }
+
+        GuardarBorradorLocal();
+
+        // Sin internet se vuelve a revisar con la copia (con internet, la
+        // ventana de crédito ya lo consultó con el servidor).
+        if (!ConexionService.EstaEnLinea)
+        {
+            var estado = NovaCoreESDM.Services.Credito.CreditoService
+                .EstadoSinConexion(ClientePosSeleccionado.Id, _ventaLocal.Total);
+
+            if (estado.Data is not { PuedeVenderCredito: true })
+            {
+                MensajeError = estado.Data is null
+                    ? estado.Msg
+                    : string.Join(" ", estado.Data.MotivosBloqueo);
+                return false;
+            }
+        }
+
+        EstaProcesandoVenta = true;
+
+        try
+        {
+            _ventaLocal.TipoVenta = "CREDITO";
+            _ventaLocal.IdCliente = ClientePosSeleccionado.Id;
+            _ventaLocal.NombreCliente = ClientePosSeleccionado.Nombre;
+
+            return await TerminarVentaLocalAsync();
+        }
+        finally
+        {
+            EstaProcesandoVenta = false;
+        }
+    }
+
+
     private async Task<bool> TerminarVentaLocalAsync()
     {
         if (_ventaLocal is null)
@@ -887,6 +954,13 @@ public partial class VentasViewModel
 
         var total = _ventaLocal.Total;
         _ventaLocal.FechaCobro = DateTime.Now;
+
+        // Cliente de la venta (también de contado, para facturar o consultar).
+        if (ClientePosSeleccionado is not null && _ventaLocal.IdCliente is null)
+        {
+            _ventaLocal.IdCliente = ClientePosSeleccionado.Id;
+            _ventaLocal.NombreCliente = ClientePosSeleccionado.Nombre;
+        }
 
         // Folio con el mismo formato que los demás tickets (UO-SERIE-00000000).
         if (string.IsNullOrWhiteSpace(_ventaLocal.FolioTicket) &&
@@ -933,7 +1007,7 @@ public partial class VentasViewModel
             }
         }
 
-        MontoPagadoActual = total;
+        MontoPagadoActual = venta.EsCredito ? 0m : total;
         SaldoActual = 0m;
         var folioImpreso =
             string.IsNullOrWhiteSpace(venta.FolioTicket) ? venta.Folio : venta.FolioTicket;
@@ -968,10 +1042,12 @@ public partial class VentasViewModel
             Tarjeta = tarjeta,
             Recibido = efectivo > 0 ? venta.Recibido : 0m,
             Cambio = efectivo > 0 ? venta.Cambio : 0m,
-            Pagado = total,
-            FormaPago = efectivo > 0 && tarjeta > 0
-                ? "PAGO MIXTO"
-                : tarjeta > 0 ? "Tarjeta" : "Efectivo",
+            Pagado = venta.EsCredito ? 0m : total,
+            FormaPago = venta.EsCredito
+                ? "Crédito"
+                : efectivo > 0 && tarjeta > 0
+                    ? "PAGO MIXTO"
+                    : tarjeta > 0 ? "Tarjeta" : "Efectivo",
             ContenidoQr = "https://plataformaluisfer.com/Plataforma_LuisFer/auth/login"
         };
 

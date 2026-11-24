@@ -363,7 +363,12 @@ public async Task CargarProductosAsync()
                 : DateTime.Now;
 
         if (!resultado.DesdeCopiaLocal)
+        {
             _ = AprenderConsecutivoDelServidorAsync();
+
+            // Clientes con crédito para vender a crédito y recibir abonos sin internet.
+            _ = CreditoLocal.DescargarAsync();
+        }
 
         var productosPuntoVenta =
             resultado.Data
@@ -2823,8 +2828,10 @@ public async Task<bool> FinalizarVentaCreditoAsync()
     // VALIDAR VENTA
     // =====================================================
 
-    if (BloquearSinConexion("vender a crédito"))
-        return false;
+    // Sin internet (o venta que ya se hace en la caja): crédito con la
+    // copia local; se registra en cartera al sincronizar.
+    if (EsVentaSinConexion || !ConexionService.EstaEnLinea)
+        return await FinalizarVentaCreditoLocalAsync();
 
 
     if (IdVentaActual <= 0)

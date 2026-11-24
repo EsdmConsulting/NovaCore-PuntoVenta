@@ -1133,7 +1133,8 @@ var documentosParaPago =
             var resultado =
                 await _pagoCreditoService
                     .RegistrarAbonoAsync(
-                        request
+                        request,
+                        ClienteSeleccionado?.Nombre ?? string.Empty
                     );
 
 

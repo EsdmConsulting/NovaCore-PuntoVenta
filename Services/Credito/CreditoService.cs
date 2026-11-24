@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using NovaCoreESDM.Models.Credito;
 using NovaCoreESDM.Services.Api;
+using NovaCoreESDM.Services.Offline;
 
 
 namespace NovaCoreESDM.Services.Credito;
@@ -61,6 +62,11 @@ public class CreditoService
                         "El importe de la venta no es válido."
                 };
             }
+
+
+            // Sin internet: con la copia de crédito de la caja.
+            if (!ConexionService.EstaEnLinea)
+                return EstadoSinConexion(idCliente, montoNuevaVenta);
 
 
             // =================================================
@@ -191,6 +197,12 @@ public class CreditoService
         }
         catch (Exception ex)
         {
+            if (ConexionService.EsErrorDeRed(ex))
+            {
+                ConexionService.ReportarFalloDeRed();
+                return EstadoSinConexion(idCliente, montoNuevaVenta);
+            }
+
             return new EstadoCreditoResponse
             {
                 Res = 0,
@@ -199,5 +211,25 @@ public class CreditoService
                     $"No fue posible consultar el crédito: {ex.Message}"
             };
         }
+    }
+
+
+    /// <summary>Estado del crédito con la copia local (ya descuenta lo vendido sin conexión).</summary>
+    public static EstadoCreditoResponse EstadoSinConexion(int idCliente, decimal montoNuevaVenta)
+    {
+        var estado = CreditoLocal.Estado(idCliente, montoNuevaVenta);
+
+        return estado is null
+            ? new EstadoCreditoResponse
+            {
+                Res = 0,
+                Msg = "Sin conexión: este cliente no está en la copia de crédito de la caja. Se necesita internet para venderle a crédito."
+            }
+            : new EstadoCreditoResponse
+            {
+                Res = 1,
+                Msg = "Crédito consultado con la copia de la caja (sin conexión).",
+                Data = estado
+            };
     }
 }

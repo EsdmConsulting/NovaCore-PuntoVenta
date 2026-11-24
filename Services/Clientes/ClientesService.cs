@@ -1,3 +1,4 @@
+using NovaCoreESDM.Services.Offline;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -40,6 +41,11 @@ public class ClientesService
                 Res = 1
             };
         }
+
+
+        // Sin internet: clientes con crédito de la copia de la caja.
+        if (!ConexionService.EstaEnLinea)
+            return BuscarSinConexion(buscar);
 
 
         try
@@ -129,6 +135,12 @@ public class ClientesService
         }
         catch (Exception ex)
         {
+            if (ConexionService.EsErrorDeRed(ex))
+            {
+                ConexionService.ReportarFalloDeRed();
+                return BuscarSinConexion(buscar);
+            }
+
             return new BuscarClientesResponse
             {
                 Res = 0,
@@ -137,4 +149,13 @@ public class ClientesService
             };
         }
     }
+
+
+    private static BuscarClientesResponse BuscarSinConexion(string buscar) =>
+        new()
+        {
+            Res = 1,
+            Msg = "Sin conexión: solo se muestran clientes con crédito guardados en esta caja.",
+            Data = CreditoLocal.Buscar(buscar)
+        };
 }

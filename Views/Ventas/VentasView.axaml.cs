@@ -713,6 +713,7 @@ public partial class VentasView : UserControl
 
                 if (
                     ventana.MetodoSeleccionado != "EFECTIVO" &&
+                    ventana.MetodoSeleccionado != "CREDITO" &&
                     (_viewModel.EsVentaSinConexion ||
                      !ConexionService.EstaEnLinea)
                 )

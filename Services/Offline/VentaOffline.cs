@@ -32,6 +32,13 @@ public sealed class VentaOffline
 
     public string Estado { get; set; } = EstadoBorrador;
 
+    /// <summary>CONTADO o CREDITO. A crédito no lleva pagos (igual que en línea).</summary>
+    public string TipoVenta { get; set; } = "CONTADO";
+    public int? IdCliente { get; set; }
+    public string NombreCliente { get; set; } = string.Empty;
+
+    public bool EsCredito => string.Equals(TipoVenta, "CREDITO", StringComparison.OrdinalIgnoreCase);
+
     public int IdEmpresa { get; set; }
     public int IdUnidadOperativa { get; set; }
     public int IdCaja { get; set; }
