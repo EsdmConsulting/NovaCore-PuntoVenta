@@ -123,6 +123,66 @@ public partial class CortesView
     }
 
 
+    // =========================================================
+    // CORTE SIN CONEXIÓN (DIFERIDO)
+    // =========================================================
+
+    private async Task RealizarCorteDiferidoAsync(Window owner)
+    {
+        if (PosSession.IdTurno <= 0)
+        {
+            await MostrarAvisoAsync(
+                owner,
+                "No hay un turno abierto",
+                "No existe un turno activo para realizar el corte.");
+            return;
+        }
+
+        // El cajón se abre para contar, igual que en el corte con internet.
+        try
+        {
+            if (OperatingSystem.IsWindows())
+                await _printerService.AbrirCajonAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"No se pudo abrir el cajón para el corte sin conexión: {ex.Message}");
+        }
+
+        var ventana = new CorteDiferidoWindow(PosSession.IdTurno);
+
+        if (!await ventana.ShowDialog<bool>(owner) || ventana.Corte is null)
+            return;
+
+        // El turno ya no se usa en esta caja: el servidor lo cierra al
+        // regresar el internet. Para vender se necesita abrir otro turno.
+        PosSession.LimpiarTurno();
+        await _terminalConfigurationService.LimpiarTurnoActivoAsync();
+        ViewModel?.EstablecerSinTurno();
+
+        await MostrarAvisoAsync(
+            owner,
+            "Corte guardado sin conexión",
+            "El corte quedó guardado en la caja y se imprimió el pre-corte provisional.\n\n" +
+            "Cuando regrese el internet se enviarán las ventas y abonos del turno y se cerrará " +
+            "el corte oficial con la hora de este conteo. Podrás consultarlo y reimprimirlo en Cortes.\n\n" +
+            "Para seguir vendiendo se necesita internet para abrir un turno nuevo.");
+
+        PosSession.LimpiarSesion();
+
+        var loginWindow = new LoginWindow();
+
+        if (Application.Current?.ApplicationLifetime
+            is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.MainWindow = loginWindow;
+        }
+
+        loginWindow.Show();
+        owner.Close();
+    }
+
+
     private async void ViewModel_RealizarCorteSolicitado(
         object? sender,
         EventArgs e)
@@ -148,6 +208,14 @@ public partial class CortesView
         }
 
 
+        // Sin internet: corte diferido (se cierra en el servidor después).
+        if (!NovaCoreESDM.Services.Offline.ConexionService.EstaEnLinea)
+        {
+            await RealizarCorteDiferidoAsync(owner);
+            return;
+        }
+
+
         // ========================================================
         // ACTUALIZAR INFORMACIÓN DEL TURNO
         // ========================================================
@@ -167,6 +235,13 @@ public partial class CortesView
 
         var resumen =
             ViewModel.ResumenActual;
+
+        // Se fue el internet al consultar el turno: corte diferido.
+        if (resumen is null && !NovaCoreESDM.Services.Offline.ConexionService.EstaEnLinea)
+        {
+            await RealizarCorteDiferidoAsync(owner);
+            return;
+        }
 
 
         // ========================================================

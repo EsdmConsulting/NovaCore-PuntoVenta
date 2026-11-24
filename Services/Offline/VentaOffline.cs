@@ -39,6 +39,12 @@ public sealed class VentaOffline
 
     public bool EsCredito => string.Equals(TipoVenta, "CREDITO", StringComparison.OrdinalIgnoreCase);
 
+    /// <summary>
+    /// Cancelada en la caja antes de enviarse (con autorización de un
+    /// administrador): se envía ya cancelada y el servidor regresa el inventario.
+    /// </summary>
+    public CancelacionVentaOffline? Cancelacion { get; set; }
+
     public int IdEmpresa { get; set; }
     public int IdUnidadOperativa { get; set; }
     public int IdCaja { get; set; }
@@ -71,6 +77,16 @@ public sealed class VentaOffline
 
     public decimal Total => Lineas.Sum(l => l.Importe);
     public decimal Pagado => Pagos.Sum(p => p.Importe);
+}
+
+
+public sealed class CancelacionVentaOffline
+{
+    public string Motivo { get; set; } = string.Empty;
+    public int IdUsuarioAutoriza { get; set; }
+    public string UsuarioAutoriza { get; set; } = string.Empty;
+    public string NombreAutoriza { get; set; } = string.Empty;
+    public DateTime Fecha { get; set; } = DateTime.Now;
 }
 
 

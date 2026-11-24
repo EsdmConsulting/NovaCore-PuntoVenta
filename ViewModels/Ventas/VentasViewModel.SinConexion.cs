@@ -139,8 +139,8 @@ public partial class VentasViewModel
 
         try
         {
-            VentasPorEnviar = VentasPendientesService.ContarPorEnviar() + AbonosPendientesService.ContarPorEnviar();
-            VentasRechazadas = VentasPendientesService.ContarRechazadas() + AbonosPendientesService.ContarRechazados();
+            VentasPorEnviar = VentasPendientesService.ContarPorEnviar() + AbonosPendientesService.ContarPorEnviar() + CorteDiferidoService.ContarPorEnviar();
+            VentasRechazadas = VentasPendientesService.ContarRechazadas() + AbonosPendientesService.ContarRechazados() + CorteDiferidoService.ContarRechazados();
         }
         catch
         {
@@ -688,7 +688,7 @@ public partial class VentasViewModel
                     venta.FechaEnvio is { } enviada &&
                     enviada <= _fechaCatalogo;
 
-                if (yaIncluida || venta.Estado == VentaOffline.EstadoRechazada)
+                if (yaIncluida || venta.Estado == VentaOffline.EstadoRechazada || venta.Cancelacion is not null)
                     continue;
 
                 vendidoSinDescontar += venta.Lineas

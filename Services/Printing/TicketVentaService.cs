@@ -55,6 +55,90 @@ public class TicketVentaService
 
 
     // =========================================================
+    // PRE-CORTE PROVISIONAL (corte hecho sin internet)
+    // =========================================================
+
+    public sealed class DatosPreCorte
+    {
+        public string Caja { get; set; } = string.Empty;
+        public string Cajero { get; set; } = string.Empty;
+        public int IdTurno { get; set; }
+        public DateTime Fecha { get; set; } = DateTime.Now;
+        public decimal EfectivoContado { get; set; }
+        public string Observaciones { get; set; } = string.Empty;
+        public int VentasSinConexion { get; set; }
+        public int VentasCanceladas { get; set; }
+        public decimal Efectivo { get; set; }
+        public decimal Tarjeta { get; set; }
+        public decimal Credito { get; set; }
+        public int Abonos { get; set; }
+        public decimal AbonosTotal { get; set; }
+    }
+
+
+    /// <summary>
+    /// Comprobante del corte hecho sin internet. No es el corte oficial: el
+    /// servidor lo cierra (y calcula esperado y diferencia) al volver la conexión.
+    /// </summary>
+    public async Task<bool> ImprimirPreCorteAsync(DatosPreCorte d)
+    {
+        var formato = _formatoService.Obtener();
+        var ancho = formato.AnchoCaracteres;
+        var bytes = new List<byte>();
+
+        bytes.AddRange(new byte[] { 0x1B, 0x40 });
+
+        Centrar(bytes);
+        Negrita(bytes, true);
+        foreach (var linea in formato.Encabezado)
+            AgregarTexto(bytes, linea + "\n");
+        AgregarTexto(bytes, "\nPRE-CORTE (SIN CONEXION)\n");
+        Negrita(bytes, false);
+        AgregarTexto(bytes, "Provisional - no es el corte oficial\n\n");
+
+        Izquierda(bytes);
+        AgregarTexto(bytes, AlinearDosColumnas("Caja:", d.Caja, ancho));
+        AgregarTexto(bytes, AlinearDosColumnas("Cajero:", d.Cajero, ancho));
+        AgregarTexto(bytes, AlinearDosColumnas("Turno:", d.IdTurno.ToString(), ancho));
+        AgregarTexto(bytes, AlinearDosColumnas("Fecha:", d.Fecha.ToString("dd/MM/yyyy HH:mm"), ancho));
+        SeparadorDoble(bytes, ancho);
+
+        Negrita(bytes, true);
+        AgregarTexto(bytes, AlinearDosColumnas("EFECTIVO CONTADO:", $"${d.EfectivoContado:N2}", ancho));
+        Negrita(bytes, false);
+        Separador(bytes, ancho);
+
+        AgregarTexto(bytes, "Operaciones sin conexion del turno\n");
+        AgregarTexto(bytes, AlinearDosColumnas("Ventas:", d.VentasSinConexion.ToString(), ancho));
+        if (d.VentasCanceladas > 0)
+            AgregarTexto(bytes, AlinearDosColumnas("Canceladas:", d.VentasCanceladas.ToString(), ancho));
+        AgregarTexto(bytes, AlinearDosColumnas("Efectivo:", $"${d.Efectivo:N2}", ancho));
+        AgregarTexto(bytes, AlinearDosColumnas("Tarjeta:", $"${d.Tarjeta:N2}", ancho));
+        AgregarTexto(bytes, AlinearDosColumnas("Credito:", $"${d.Credito:N2}", ancho));
+        AgregarTexto(bytes, AlinearDosColumnas($"Abonos ({d.Abonos}):", $"${d.AbonosTotal:N2}", ancho));
+        Separador(bytes, ancho);
+
+        if (!string.IsNullOrWhiteSpace(d.Observaciones))
+            AgregarTexto(bytes, $"Obs: {d.Observaciones}\n");
+
+        AgregarTexto(bytes,
+            "\nEl corte oficial (efectivo esperado y\ndiferencia) se cierra en el servidor\n" +
+            "cuando regrese el internet. Se puede\nreimprimir desde Cortes.\n");
+
+        AgregarTexto(bytes, "\n\n\n_____________________________\n");
+        Centrar(bytes);
+        AgregarTexto(bytes, "Firma del cajero\n");
+
+        AgregarTexto(bytes, new string('\n', Math.Max(0, formato.LineasEnBlancoAlFinal)));
+
+        if (formato.CortarPapel)
+            bytes.AddRange(new byte[] { 0x1D, 0x56, 0x01 });
+
+        return await _printerService.ImprimirAsync(bytes.ToArray(), $"Pre-corte turno {d.IdTurno}");
+    }
+
+
+    // =========================================================
     // CONSTRUIR EL TICKET
     // =========================================================
 

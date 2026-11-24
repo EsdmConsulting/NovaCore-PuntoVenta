@@ -8,6 +8,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using NovaCoreESDM.Models.Cancelaciones;
 using NovaCoreESDM.Services.Api;
+using NovaCoreESDM.Services.Offline;
 
 namespace NovaCoreESDM.Services.Cancelaciones;
 
@@ -68,6 +69,10 @@ public class CancelacionesService
                 Msg = "Debe ingresar la contraseña del administrador."
             };
         }
+
+        // Sin internet: contra la huella guardada de una autorización anterior.
+        if (!ConexionService.EstaEnLinea)
+            return CancelacionesLocal.Autorizar(usuario, password);
 
 
         try
@@ -147,6 +152,10 @@ public class CancelacionesService
                 );
 
 
+            // Autorizado con internet: se recuerda para poder autorizar sin conexión.
+            if (resultado?.Res == 1 && resultado.Data is not null)
+                AutorizacionLocal.Recordar(usuario, password, resultado.Data);
+
             return resultado ??
                    new AutorizarCancelacionResponse
                    {
@@ -175,6 +184,11 @@ public class CancelacionesService
                 Msg =
                     $"La respuesta de autorización no tiene un formato válido: {ex.Message}"
             };
+        }
+        catch (Exception ex) when (ConexionService.EsErrorDeRed(ex))
+        {
+            ConexionService.ReportarFalloDeRed();
+            return CancelacionesLocal.Autorizar(usuario, password);
         }
         catch (Exception ex)
         {
@@ -210,6 +224,9 @@ public class CancelacionesService
 
     public async Task<AdministradoresListResponse> ObtenerListaAdministradoresAsync()
     {
+        if (!ConexionService.EstaEnLinea)
+            return CancelacionesLocal.Administradores();
+
         try
         {
             var response = await ApiClient.Http.GetAsync("api/consulta/consultar_administradores");
@@ -217,7 +234,17 @@ public class CancelacionesService
             contenido = LimpiarRespuestaPhp(contenido);
 
             var resultado = JsonSerializer.Deserialize<AdministradoresListResponse>(contenido, JsonOptions);
+
+            // Se guarda para poder elegir al administrador sin internet.
+            if (resultado?.Res == 1 && resultado.Data.Count > 0)
+                AutorizacionLocal.GuardarLista(resultado.Data);
+
             return resultado ?? new AdministradoresListResponse { Res = 0 };
+        }
+        catch (Exception ex) when (ConexionService.EsErrorDeRed(ex))
+        {
+            ConexionService.ReportarFalloDeRed();
+            return CancelacionesLocal.Administradores();
         }
         catch (Exception ex)
         {
@@ -248,6 +275,10 @@ public class CancelacionesService
             string? folio = null,
             string? estado = null)
     {
+        // Sin internet: ventas sin conexión que aún no se envían.
+        if (!ConexionService.EstaEnLinea)
+            return CancelacionesLocal.Ventas(fecha, folio, estado);
+
         try
         {
             var parametros =
@@ -456,6 +487,9 @@ public class CancelacionesService
         ObtenerDetalleAsync(
             int idVenta)
     {
+        if (CancelacionesLocal.EsLocal(idVenta))
+            return CancelacionesLocal.Detalle(idVenta);
+
         if (idVenta <= 0)
         {
             return new CancelacionDetalleResponse
@@ -621,6 +655,9 @@ public class CancelacionesService
             int idVenta,
             string motivo)
     {
+        if (CancelacionesLocal.EsLocal(idVenta) && !string.IsNullOrWhiteSpace(motivo) && motivo.Trim().Length <= 500)
+            return await CancelacionesLocal.CancelarAsync(idVenta, motivo.Trim());
+
         if (idVenta <= 0)
         {
             return new CancelarVentaResponse
@@ -798,6 +835,11 @@ public class CancelacionesService
     
     public async Task<bool> CerrarAutorizacionAsync()
     {
+        AutorizacionLocal.OlvidarAutorizacion();
+
+        if (!ConexionService.EstaEnLinea)
+            return true;
+
         try
         {
             using var request =

@@ -1,0 +1,391 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+    x:Class="NovaCoreESDM.Views.Cortes.CorteDiferidoWindow"
+
+    Width="780"
+    Height="760"
+
+    MinWidth="660"
+    MinHeight="620"
+
+    CanResize="True"
+
+    WindowStartupLocation="CenterOwner"
+
+    Title="Corte sin conexión"
+    Icon="/Assets/Brand/esdm-app-icon.ico"
+
+    Background="#F4F6F8">
+
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+
+        <!-- ===================================================== -->
+        <!-- ENCABEZADO                                            -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Row="0"
+                Padding="28,22,28,20"
+                BorderBrush="#F6E3B0"
+                BorderThickness="0,0,0,1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#FFFAEB"/>
+                    <GradientStop Offset="1" Color="#FDF1D2"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="16">
+
+                <Border Grid.Column="0"
+                        Width="56"
+                        Height="56"
+                        CornerRadius="17"
+                        VerticalAlignment="Center">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Offset="0" Color="#F59E0B"/>
+                            <GradientStop Offset="1" Color="#B45309"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <PathIcon Width="26" Height="26"
+                              Foreground="White"
+                              Data="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                </Border>
+
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="3">
+                    <TextBlock Text="CIERRE DE TURNO · SIN CONEXIÓN"
+                               Foreground="#B45309"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               LetterSpacing="1.6"
+                               LineHeight="16"/>
+                    <TextBlock Text="Corte sin conexión"
+                               Foreground="#0B1220"
+                               FontSize="22"
+                               FontWeight="Bold"/>
+                    <TextBlock x:Name="TxtInformacionTurno"
+                               Foreground="#7A5A1E"
+                               FontSize="13"/>
+                </StackPanel>
+
+            </Grid>
+        </Border>
+
+
+        <!-- ===================================================== -->
+        <!-- CONTENIDO                                             -->
+        <!-- ===================================================== -->
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <StackPanel Margin="28,22,28,10"
+                        Spacing="16">
+
+                <!-- Cómo funciona -->
+                <Border Padding="16,14"
+                        CornerRadius="16"
+                        Background="#FFF7E0"
+                        BorderBrush="#FBD98A"
+                        BorderThickness="1">
+                    <Grid ColumnDefinitions="Auto,*"
+                          ColumnSpacing="12">
+                        <Border Width="36" Height="36"
+                                CornerRadius="11"
+                                Background="#FDEBB5"
+                                VerticalAlignment="Top">
+                            <PathIcon Width="18" Height="18"
+                                      Foreground="#B7791F"
+                                      Data="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                        </Border>
+                        <StackPanel Grid.Column="1" Spacing="3">
+                            <TextBlock Text="Se cierra en el servidor cuando regrese el internet"
+                                       Foreground="#7A4E05"
+                                       FontSize="14"
+                                       FontWeight="Bold"/>
+                            <TextBlock Text="Cuenta el efectivo y captúralo. Se imprime un pre-corte provisional. Al volver la conexión, primero se envían las ventas y abonos del turno y luego se cierra el corte oficial con la hora de este conteo; el efectivo esperado y la diferencia se calculan en ese momento. Después de esto, esta caja necesita internet para abrir un turno nuevo."
+                                       Foreground="#92600A"
+                                       FontSize="13"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+
+                <!-- Operaciones sin conexión -->
+                <Border Classes="tarjeta">
+                    <StackPanel Margin="20,16,20,18" Spacing="10">
+                        <TextBlock Text="Operaciones sin conexión de este turno"
+                                   Foreground="#0B1220"
+                                   FontSize="16"
+                                   FontWeight="Bold"/>
+                        <TextBlock Text="Las ventas hechas con internet ya están en el servidor y se suman en el corte oficial."
+                                   Foreground="#94A3B8"
+                                   FontSize="12"
+                                   TextWrapping="Wrap"/>
+
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                            <Border Grid.Column="0" Classes="dato">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Classes="etiqueta" Text="VENTAS"/>
+                                    <TextBlock x:Name="TxtVentas" Classes="valor"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Classes="dato">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Classes="etiqueta" Text="EFECTIVO"/>
+                                    <TextBlock x:Name="TxtEfectivo" Classes="valor"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Classes="dato">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Classes="etiqueta" Text="TARJETA"/>
+                                    <TextBlock x:Name="TxtTarjeta" Classes="valor"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                            <Border Grid.Column="0" Classes="dato">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Classes="etiqueta" Text="CRÉDITO"/>
+                                    <TextBlock x:Name="TxtCredito" Classes="valor"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Classes="dato">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Classes="etiqueta" Text="ABONOS"/>
+                                    <TextBlock x:Name="TxtAbonos" Classes="valor"/>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="2" Classes="dato">
+                                <StackPanel Spacing="2">
+                                    <TextBlock Classes="etiqueta" Text="CANCELADAS"/>
+                                    <TextBlock x:Name="TxtCanceladas" Classes="valor"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+
+                <!-- Efectivo contado -->
+                <Border Classes="tarjeta">
+                    <StackPanel Margin="20,16,20,18" Spacing="10">
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="Efectivo contado"
+                                       Foreground="#0B1220"
+                                       FontSize="16"
+                                       FontWeight="Bold"/>
+                            <TextBlock Text="Ingresa cuánto dinero hay físicamente en la caja"
+                                       Foreground="#94A3B8"
+                                       FontSize="12"/>
+                        </StackPanel>
+                        <TextBox x:Name="TxtEfectivoContado"
+                                 Classes="monto"
+                                 PlaceholderText="0.00">
+                            <TextBox.InnerLeftContent>
+                                <TextBlock Text="$"
+                                           Foreground="#94A3B8"
+                                           FontSize="26"
+                                           FontWeight="SemiBold"
+                                           VerticalAlignment="Center"
+                                           Margin="16,0,0,0"/>
+                            </TextBox.InnerLeftContent>
+                        </TextBox>
+
+                        <TextBlock Text="Observaciones (opcional)"
+                                   Foreground="#64748B"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   Margin="0,6,0,0"/>
+                        <TextBox x:Name="TxtObservaciones"
+                                 Classes="observaciones"
+                                 AcceptsReturn="True"
+                                 TextWrapping="Wrap"
+                                 MaxLength="400"
+                                 PlaceholderText="Ej. Corte sin internet por falla del proveedor…"/>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+
+        <!-- ===================================================== -->
+        <!-- ACCIONES                                              -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Row="2"
+                Background="White"
+                BorderBrush="#EAEEF2"
+                BorderThickness="0,1,0,0"
+                Padding="28,14,28,20">
+
+            <StackPanel Spacing="12">
+
+                <Border Padding="12,9"
+                        CornerRadius="12"
+                        Background="#FEF2F2"
+                        BorderBrush="#FECACA"
+                        BorderThickness="1"
+                        IsVisible="{Binding #TextoMensaje.Text, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <TextBlock x:Name="TextoMensaje"
+                               Text=""
+                               FontSize="13"
+                               Foreground="#9F1239"
+                               TextWrapping="Wrap"/>
+                </Border>
+
+                <Grid ColumnDefinitions="*,2*"
+                      ColumnSpacing="12">
+
+                    <Button x:Name="BtnCancelar"
+                            Grid.Column="0"
+                            Classes="regresar"
+                            IsCancel="True"
+                            Click="Cancelar_Click">
+                        <TextBlock Text="Cancelar" VerticalAlignment="Center"/>
+                    </Button>
+
+                    <Button x:Name="BtnConfirmar"
+                            Grid.Column="1"
+                            Classes="confirmar"
+                            IsDefault="True"
+                            Click="Confirmar_Click">
+                        <StackPanel Orientation="Horizontal" Spacing="9">
+                            <PathIcon Width="18" Height="18"
+                                      Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                            <TextBlock Text="Registrar corte sin conexión" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+
+                </Grid>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+
+
+    <Window.Styles>
+
+        <Style Selector="Border.tarjeta">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#EAEEF2"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="18"/>
+            <Setter Property="BoxShadow" Value="0 1 2 0 #0A0F172A"/>
+        </Style>
+
+        <Style Selector="Border.dato">
+            <Setter Property="Padding" Value="14,10"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="BorderBrush" Value="#EEF2F6"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="TextBlock.etiqueta">
+            <Setter Property="Foreground" Value="#94A3B8"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="LetterSpacing" Value="1.2"/>
+            <Setter Property="LineHeight" Value="16"/>
+        </Style>
+
+        <Style Selector="TextBlock.valor">
+            <Setter Property="Foreground" Value="#0B1220"/>
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <Style Selector="TextBox.monto">
+            <Setter Property="Height" Value="64"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+        </Style>
+
+        <Style Selector="TextBox.monto:focus /template/ Border#PART_BorderElement">
+            <Setter Property="BorderBrush" Value="#D97706"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style Selector="TextBox.observaciones">
+            <Setter Property="MinHeight" Value="70"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+        </Style>
+
+        <Style Selector="Button.regresar">
+            <Setter Property="Height" Value="58"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.regresar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+        </Style>
+
+        <Style Selector="Button.confirmar">
+            <Setter Property="Height" Value="58"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#F59E0B"/>
+                    <GradientStop Offset="1" Color="#B45309"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.confirmar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background">
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#FBBF24"/>
+                    <GradientStop Offset="1" Color="#C2620A"/>
+                </LinearGradientBrush>
+            </Setter>
+        </Style>
+
+        <Style Selector="Button.confirmar:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F3D9A8"/>
+        </Style>
+
+    </Window.Styles>
+
+</Window>

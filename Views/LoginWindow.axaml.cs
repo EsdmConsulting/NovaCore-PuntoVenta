@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using Avalonia;
 
 using Avalonia.Controls;
@@ -255,6 +256,24 @@ public partial class LoginWindow : Window
              * está en PostgreSQL.
              */
 
+            // Corte hecho sin conexión que aún no se cierra en el servidor: con
+            // esta sesión nueva se envía ahora (ventas, abonos y luego el corte),
+            // para no volver a entrar a un turno que ya se cortó.
+            if (ConexionService.EstaEnLinea &&
+                CorteDiferidoService.ObtenerPendientes().Any(c => c.IdCaja == configuracion.IdCaja && c.Estado == CorteDiferido.EstadoPendiente))
+            {
+                _viewModel.MensajeError = "Cerrando el corte que se hizo sin conexión…";
+
+                for (var intento = 0; intento < 20 && CorteDiferidoService.ObtenerPendientes()
+                         .Any(c => c.IdCaja == configuracion.IdCaja && c.Estado == CorteDiferido.EstadoPendiente); intento++)
+                {
+                    await VentasPendientesService.EnviarPendientesAsync();
+                    await System.Threading.Tasks.Task.Delay(1000);
+                }
+
+                _viewModel.MensajeError = string.Empty;
+            }
+
             var resultadoTurno =
                 await _turnosService
                     .ObtenerTurnoActualAsync(
@@ -335,6 +354,18 @@ public partial class LoginWindow : Window
             {
                 var turno =
                     resultadoTurno.Data;
+
+
+                if (CorteDiferidoService.TieneCortePendiente(turno.Id))
+                {
+                    var pendiente = CorteDiferidoService.ObtenerPendientes().First(c => c.IdTurno == turno.Id);
+
+                    _viewModel.MensajeError =
+                        $"El turno {turno.Id} tiene un corte hecho sin conexión que todavía no se cierra en el servidor" +
+                        (string.IsNullOrWhiteSpace(pendiente.UltimoError) ? "." : $" ({pendiente.UltimoError}).") +
+                        " Espera un momento e inicia sesión de nuevo.";
+                    return;
+                }
 
 
                 // =============================================

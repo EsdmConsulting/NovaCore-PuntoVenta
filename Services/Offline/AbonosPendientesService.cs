@@ -106,6 +106,11 @@ public static class AbonosPendientesService
             .Where(a => a.IdCliente == idCliente)
             .ToList();
 
+    public static List<AbonoOffline> ObtenerDelTurno(int idTurno) =>
+        Leer(CarpetaPendientes).Concat(Leer(CarpetaEnviados))
+            .Where(a => a.IdTurno == idTurno && a.Estado != AbonoOffline.EstadoRechazado)
+            .ToList();
+
     public static int ContarPorEnviar(int? idTurno = null) =>
         Leer(CarpetaPendientes).Count(a =>
             a.Estado == AbonoOffline.EstadoPendiente &&

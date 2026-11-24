@@ -179,8 +179,45 @@ public static class VentasPendientesService
                 .Select(f => AlmacenLocal.Leer<VentaOffline>(f))
                 .Where(v => v is not null)
                 .Cast<VentaOffline>())
-            .Where(v => v.EsCredito && v.IdCliente == idCliente && v.Estado != VentaOffline.EstadoRechazada)
+            .Where(v => v.EsCredito && v.IdCliente == idCliente && v.Estado != VentaOffline.EstadoRechazada && v.Cancelacion is null)
             .ToList();
+
+
+    /// <summary>
+    /// Cancela en la caja una venta sin conexión que todavía no se envía. Espera
+    /// a que no se esté enviando nada (para no cancelar una que va en camino).
+    /// Regresa el motivo si ya no se puede (ya llegó al servidor, etc.).
+    /// </summary>
+    public static async Task<string?> CancelarPendienteAsync(string uuid, CancelacionVentaOffline cancelacion)
+    {
+        if (!await _enviando.WaitAsync(TimeSpan.FromSeconds(40)))
+            return "Se están enviando ventas al servidor; intenta de nuevo en unos segundos.";
+
+        try
+        {
+            var venta = ObtenerPendientes().FirstOrDefault(v => v.Uuid == uuid);
+
+            if (venta is null)
+                return "La venta ya llegó al servidor: cancélala con internet desde Cancelaciones.";
+
+            if (venta.Cancelacion is not null)
+                return "La venta ya estaba cancelada.";
+
+            if (venta.Estado != VentaOffline.EstadoPendiente)
+                return "Esta venta no se puede cancelar en la caja (fue rechazada por el servidor).";
+
+            venta.Cancelacion = cancelacion;
+            AlmacenLocal.Guardar(RutaPendiente(venta), venta);
+        }
+        finally
+        {
+            _enviando.Release();
+        }
+
+        CambioCola?.Invoke();
+        _ = EnviarPendientesAsync();
+        return null;
+    }
 
 
     /// <summary>Vuelve a poner en cola una venta rechazada (después de corregir el problema).</summary>
@@ -288,6 +325,11 @@ public static class VentasPendientesService
                 cortado = !await AbonosPendientesService.EnviarPendientesAsync(ReautenticarAsync);
                 huboEnvios |= AbonosPendientesService.ContarPorEnviar() < abonosAntes;
             }
+
+            // Al final, los cortes hechos sin conexión (solo cuando ya llegó
+            // todo lo de su turno).
+            if (!cortado)
+                cortado = !await CorteDiferidoService.EnviarPendientesAsync(ReautenticarAsync);
 
             // Se actualiza la copia de crédito para que refleje lo enviado.
             if (huboEnvios && !cortado)
@@ -422,7 +464,16 @@ public static class VentasPendientesService
                 importe = p.Importe,
                 referencia = p.Referencia,
                 autorizacion = p.Autorizacion
-            })
+            }),
+            cancelacion = venta.Cancelacion is null
+                ? null
+                : new
+                {
+                    motivo = venta.Cancelacion.Motivo,
+                    id_usuario_autoriza = venta.Cancelacion.IdUsuarioAutoriza,
+                    usuario_autoriza = venta.Cancelacion.UsuarioAutoriza,
+                    fecha_hora = venta.Cancelacion.Fecha.ToString("yyyy-MM-dd HH:mm:ss")
+                }
         };
 
         using var cancelacion = new CancellationTokenSource(TimeSpan.FromSeconds(30));
