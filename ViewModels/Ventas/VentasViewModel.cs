@@ -71,8 +71,50 @@ public partial class VentasViewModel : ViewModelBase
     // COLECCIONES
     // =========================================================
 
-    public ObservableCollection<ProductoCatalogo> Productos { get; }
-        = new();
+    // Solo se dibujan las tarjetas de una página (y más al bajar con el
+    // scroll): crear las 2,000+ tarjetas juntas era lo que hacía lenta la
+    // pantalla de Nueva venta. La búsqueda sigue siendo sobre todo el catálogo.
+    public const int ProductosPorPagina = 40;
+
+    private ObservableCollection<ProductoCatalogo> _productos = new();
+
+    public ObservableCollection<ProductoCatalogo> Productos
+    {
+        get => _productos;
+        private set
+        {
+            _productos = value;
+            OnPropertyChanged();
+        }
+    }
+
+    /// <summary>Todos los productos que cumplen la búsqueda actual (o el catálogo completo).</summary>
+    private List<ProductoCatalogo> _resultadosCatalogo = new();
+
+    public int TotalResultadosCatalogo => _resultadosCatalogo.Count;
+
+    public bool HayMasProductos => Productos.Count < _resultadosCatalogo.Count;
+
+
+    /// <summary>Muestra la primera página de resultados (un solo cambio para la pantalla).</summary>
+    private void MostrarResultados(List<ProductoCatalogo> resultados)
+    {
+        _resultadosCatalogo = resultados;
+        Productos = new ObservableCollection<ProductoCatalogo>(resultados.Take(ProductosPorPagina));
+        OnPropertyChanged(nameof(TotalResultadosCatalogo));
+        OnPropertyChanged(nameof(TieneProductosDisponibles));
+    }
+
+
+    /// <summary>Agrega la siguiente página (al llegar al final del scroll).</summary>
+    public void CargarMasProductos()
+    {
+        if (!HayMasProductos)
+            return;
+
+        foreach (var producto in _resultadosCatalogo.Skip(Productos.Count).Take(ProductosPorPagina).ToList())
+            Productos.Add(producto);
+    }
 
     public ObservableCollection<DetalleVenta> Carrito { get; }
         = new();
@@ -203,7 +245,7 @@ public partial class VentasViewModel : ViewModelBase
         Carrito.Count > 0;
 
     public bool TieneProductosDisponibles =>
-        Productos.Count > 0;
+        _resultadosCatalogo.Count > 0;
 
     public decimal CantidadProductos =>
         Carrito.Sum(item => item.Cantidad);
@@ -385,11 +427,10 @@ public async Task CargarProductosAsync()
             _productosCatalogoCompleto.Add(
                 producto
             );
-
-            Productos.Add(
-                producto
-            );
         }
+
+        // Primera página (respeta la búsqueda que ya estuviera escrita).
+        FiltrarProductos(TextoBusqueda);
 
 
         // =====================================================
@@ -407,7 +448,7 @@ public async Task CargarProductosAsync()
         _ = CargarImagenesProductosAsync();
 
 
-        if (Productos.Count == 0)
+        if (_productosCatalogoCompleto.Count == 0)
         {
             MensajeError =
                 "No existen productos disponibles para este punto de venta.";
@@ -1088,7 +1129,7 @@ public async Task AgregarPresentacionAlCarritoAsync(
 
 private async Task CargarImagenesProductosAsync()
 {
-    foreach (var producto in Productos)
+    foreach (var producto in _productosCatalogoCompleto.ToList())
     {
         // =====================================================
         // PRODUCTO SIN IMAGEN
@@ -5023,19 +5064,7 @@ private void FiltrarProductos(
 
     if (string.IsNullOrWhiteSpace(texto))
     {
-        Productos.Clear();
-
-        foreach (var producto in
-                 _productosCatalogoCompleto)
-        {
-            Productos.Add(
-                producto
-            );
-        }
-
-        OnPropertyChanged(
-            nameof(TieneProductosDisponibles));
-
+        MostrarResultados(_productosCatalogoCompleto.ToList());
         return;
     }
 
@@ -5083,19 +5112,7 @@ private void FiltrarProductos(
     // ACTUALIZAR RESULTADOS VISIBLES
     // =====================================================
 
-    Productos.Clear();
-
-
-    foreach (var producto in resultados)
-    {
-        Productos.Add(
-            producto
-        );
-    }
-
-
-    OnPropertyChanged(
-        nameof(TieneProductosDisponibles));
+    MostrarResultados(resultados);
 }
 
 
@@ -5231,6 +5248,11 @@ private static int CalcularPuntajeBusqueda(
 }
 
 
+// Los nombres del catálogo se normalizan una sola vez (antes se hacía 4 veces
+// por producto en cada tecla).
+private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, string>
+    _textoNormalizado = new();
+
 private static string NormalizarTexto(
     string? texto)
 {
@@ -5239,6 +5261,20 @@ private static string NormalizarTexto(
     {
         return string.Empty;
     }
+
+    if (_textoNormalizado.TryGetValue(texto, out var guardado))
+        return guardado;
+
+    if (_textoNormalizado.Count > 50_000)
+        _textoNormalizado.Clear();
+
+    return _textoNormalizado[texto] = NormalizarTextoSinCache(texto);
+}
+
+
+private static string NormalizarTextoSinCache(
+    string texto)
+{
 
 
     var normalizado =
@@ -5352,12 +5388,39 @@ private static int CalcularDistanciaLevenshtein(
     ];
 }
 
+private System.Threading.CancellationTokenSource? _esperaBusqueda;
+
+// Se busca cuando se deja de teclear un momento (no en cada letra ni en
+// cada dígito que manda el lector de códigos de barras).
 partial void OnTextoBusquedaChanged(
     string value)
 {
-    FiltrarProductos(
-        value
-    );
+    _esperaBusqueda?.Cancel();
+
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        FiltrarProductos(value);
+        return;
+    }
+
+    var espera = _esperaBusqueda = new System.Threading.CancellationTokenSource();
+    _ = FiltrarDespuesDeTeclearAsync(value, espera.Token);
+}
+
+
+private async Task FiltrarDespuesDeTeclearAsync(string texto, System.Threading.CancellationToken cancelacion)
+{
+    try
+    {
+        await Task.Delay(150, cancelacion);
+    }
+    catch (TaskCanceledException)
+    {
+        return;
+    }
+
+    if (!cancelacion.IsCancellationRequested && texto == TextoBusqueda)
+        FiltrarProductos(texto);
 }
 
 

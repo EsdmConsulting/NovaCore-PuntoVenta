@@ -11,7 +11,10 @@ public static class ApiClient
     private static readonly HttpClientHandler Handler = new()
     {
         CookieContainer = CookieContainer,
-        UseCookies = true
+        UseCookies = true,
+
+        // Respuestas comprimidas (el catálogo baja de 3 MB a ~200 KB).
+        AutomaticDecompression = DecompressionMethods.All
     };
 
     public static HttpClient Http { get; } = new(Handler)

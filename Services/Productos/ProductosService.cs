@@ -10,6 +10,12 @@ namespace NovaCoreESDM.Services.Productos;
 
 public class ProductosService
 {
+    // Se reutilizan (crearlas en cada carga es lento).
+    private static readonly JsonSerializerOptions OpcionesJson = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     // =========================================================
     // OBTENER CATÁLOGO POS POR UNIDAD OPERATIVA
     // =========================================================
@@ -72,7 +78,7 @@ public class ProductosService
                 $"HTTP STATUS: {(int)response.StatusCode} {response.StatusCode}");
 
             Console.WriteLine(
-                contenido);
+                $"{contenido.Length:N0} caracteres");
 
             Console.WriteLine(
                 "====================================");
@@ -114,21 +120,19 @@ public class ProductosService
             // DESERIALIZAR
             // =====================================================
 
+            // El catálogo pesa varios MB: se procesa fuera de la pantalla para
+            // que no se congele en computadoras modestas.
+            var json = contenido;
+
             var resultado =
-                JsonSerializer
-                    .Deserialize<CatalogoProductosResponse>(
-                        contenido,
-                        new JsonSerializerOptions
-                        {
-                            PropertyNameCaseInsensitive =
-                                true
-                        });
+                await Task.Run(() =>
+                    JsonSerializer.Deserialize<CatalogoProductosResponse>(json, OpcionesJson));
 
 
             if (resultado is { Status: 1 })
             {
-                // Copia para poder seguir vendiendo si se va el internet.
-                CatalogoLocal.Guardar(idUnidadOperativa, contenido);
+                // Copia para poder seguir vendiendo si se va el internet (en segundo plano).
+                _ = Task.Run(() => CatalogoLocal.Guardar(idUnidadOperativa, json));
             }
 
             return resultado ??
@@ -154,7 +158,7 @@ public class ProductosService
             {
                 ConexionService.ReportarFalloDeRed();
 
-                var copia = CatalogoLocal.Obtener(idUnidadOperativa);
+                var copia = await Task.Run(() => CatalogoLocal.Obtener(idUnidadOperativa));
                 if (copia is not null)
                     return copia;
 

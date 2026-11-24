@@ -271,7 +271,7 @@
                                     CornerRadius="999"
                                     Padding="12,6"
                                     VerticalAlignment="Center">
-                                <TextBlock Text="{Binding Productos.Count, StringFormat='{}{0} productos'}"
+                                <TextBlock Text="{Binding TotalResultadosCatalogo, StringFormat='{}{0} productos'}"
                                            Foreground="#475569"
                                            FontSize="12"
                                            FontWeight="SemiBold"/>
@@ -383,6 +383,8 @@
                     <!-- CATÁLOGO -->
 
                     <ScrollViewer Grid.Row="2"
+                                  x:Name="CatalogoScrollViewer"
+                                  ScrollChanged="CatalogoScrollViewer_ScrollChanged"
                                   VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled">
 

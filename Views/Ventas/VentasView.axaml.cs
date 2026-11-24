@@ -138,6 +138,9 @@ public partial class VentasView : UserControl
 
                 _viewModel.SolicitarCambioPrecio -=
                     OnSolicitarCambioPrecio;
+
+                _viewModel.PropertyChanged -=
+                    ViewModel_PropertyChanged;
             }
 
 
@@ -173,6 +176,9 @@ public partial class VentasView : UserControl
 
             _viewModel.SolicitarCambioPrecio +=
                 OnSolicitarCambioPrecio;
+
+            _viewModel.PropertyChanged +=
+                ViewModel_PropertyChanged;
         }
 
 
@@ -1458,11 +1464,42 @@ public partial class VentasView : UserControl
             
             _viewModel.SolicitarCambioPrecio -=
                 OnSolicitarCambioPrecio;
+
+            _viewModel.PropertyChanged -=
+                ViewModel_PropertyChanged;
         }
 
 
         _viewModel =
             null;
+    }
+
+
+    // =========================================================
+    // CATÁLOGO POR PÁGINAS
+    // =========================================================
+
+    // Al llegar cerca del final del scroll se agregan más tarjetas.
+    private void CatalogoScrollViewer_ScrollChanged(object? sender, ScrollChangedEventArgs e)
+    {
+        if (sender is not ScrollViewer scroll || _viewModel is null || !_viewModel.HayMasProductos)
+            return;
+
+        if (scroll.Offset.Y + scroll.Viewport.Height >= scroll.Extent.Height - 600)
+            _viewModel.CargarMasProductos();
+    }
+
+
+    // Resultados nuevos (búsqueda o recarga): se regresa al inicio de la lista.
+    private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(VentasViewModel.Productos))
+            return;
+
+        var scroll = this.FindControl<ScrollViewer>("CatalogoScrollViewer");
+
+        if (scroll is not null)
+            scroll.Offset = new Avalonia.Vector(scroll.Offset.X, 0);
     }
     
    private void ParentWindow_KeyDown(object? sender, KeyEventArgs e)
