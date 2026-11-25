@@ -1009,7 +1009,7 @@
                             Background="#FFF7E0"
                             BorderBrush="#FBD98A"
                             BorderThickness="1">
-                        <TextBlock Text="Este equipo no tiene terminales. Mientras no agregues una, el cobro con tarjeta usa Mercado Pago."
+                        <TextBlock Text="Este equipo no tiene terminales. Al agregar una, aparece como «Terminal del equipo» al cobrar con tarjeta (junto a Mercado Pago y Terminal externa)."
                                    Foreground="#7A4E05"
                                    FontSize="13"
                                    TextWrapping="Wrap"/>
