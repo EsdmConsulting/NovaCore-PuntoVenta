@@ -482,6 +482,12 @@ public partial class VentasView : UserControl
         if (_viewModel is null)
             return;
 
+        // CHG-0004: se valida antes de pedir la contraseña al administrador.
+        if (!_viewModel.PuedeCambiarPrecio(detalle))
+            return;
+
+        NovaCoreESDM.Views.Sesion.AutorizacionAdministradorWindow? autorizacion = null;
+
         try
         {
             var parentWindow =
@@ -494,6 +500,46 @@ public partial class VentasView : UserControl
                     "No fue posible abrir el selector de precio.";
 
                 return;
+            }
+
+
+            // =================================================
+            // CHG-0004: AUTORIZACIÓN DEL ADMINISTRADOR
+            // =================================================
+            //
+            // El cajero no cambia precios sin autorización. El
+            // administrador que está cobrando no se la pide a sí
+            // mismo. El servidor lo vuelve a validar y guarda el
+            // precio anterior, el nuevo y quién autorizó.
+            // =================================================
+
+            var precioAnterior =
+                detalle.PrecioUnitario;
+
+            var autorizo =
+                NovaCoreESDM.Models.Session.PosSession.NombreUsuario;
+
+            if (!NovaCoreESDM.Models.Session.PosSession.EsAdministrador)
+            {
+                autorizacion =
+                    new NovaCoreESDM.Views.Sesion.AutorizacionAdministradorWindow(
+                        "Autorizar cambio de precio",
+                        $"Para cambiar el precio de «{detalle.Producto.Nombre}» (hoy ${precioAnterior:N2}) " +
+                        "se necesita la autorización de un administrador. La autorización es solo para este cambio.");
+
+                autorizo =
+                    await autorizacion
+                        .ShowDialog<string?>(
+                            parentWindow
+                        );
+
+                if (autorizo is null)
+                {
+                    _viewModel.MensajeError =
+                        "No se autorizó: el precio no cambió.";
+
+                    return;
+                }
             }
 
 
@@ -527,17 +573,43 @@ public partial class VentasView : UserControl
             }
 
 
-           await _viewModel
-                .EstablecerPrecioManualAsync(
-                    detalle,
-                    resultado.TipoPrecio,
-                    resultado.PrecioPersonalizado 
-                );
+            var cambiado =
+                await _viewModel
+                    .EstablecerPrecioManualAsync(
+                        detalle,
+                        resultado.TipoPrecio,
+                        resultado.PrecioPersonalizado
+                    );
+
+            if (cambiado)
+            {
+                Console.WriteLine(
+                    $"Precio de {detalle.Producto.Nombre} cambiado de ${precioAnterior:N2} a ${detalle.PrecioUnitario:N2} " +
+                    $"({resultado.TipoPrecio}), autorizó {autorizo}.");
+            }
         }
         catch (Exception ex)
         {
             _viewModel.MensajeError =
                 $"No fue posible cambiar el precio: {ex.Message}";
+        }
+        finally
+        {
+            // La autorización sirve para un solo cambio.
+            if (autorizacion is not null)
+            {
+                try
+                {
+                    await new NovaCoreESDM.Services.Cancelaciones.CancelacionesService()
+                        .CerrarAutorizacionAsync();
+                }
+                catch
+                {
+                    // El servidor la vence sola.
+                }
+            }
+
+            EnfocarBuscadorProductos();
         }
     }
 
