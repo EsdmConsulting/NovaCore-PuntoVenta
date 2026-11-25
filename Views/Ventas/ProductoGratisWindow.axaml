@@ -1,0 +1,351 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+
+        x:Class="NovaCoreESDM.Views.Ventas.ProductoGratisWindow"
+
+        Title="Producto gratis"
+
+        Icon="/Assets/Brand/esdm-app-icon.ico"
+
+        Width="640"
+        Height="560"
+
+        MinWidth="600"
+        MinHeight="520"
+
+        CanResize="True"
+
+        WindowStartupLocation="CenterOwner"
+
+        Background="#F4F6F8">
+
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+
+        <!-- ===================================================== -->
+        <!-- ENCABEZADO                                            -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Row="0"
+                Padding="26,22,26,20"
+                BorderBrush="#CDEBD8"
+                BorderThickness="0,0,0,1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Offset="0" Color="#F0FBF4"/>
+                    <GradientStop Offset="1" Color="#DDF4E6"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <Grid ColumnDefinitions="Auto,*"
+                  ColumnSpacing="16">
+
+                <Border Width="56"
+                        Height="56"
+                        CornerRadius="17"
+                        VerticalAlignment="Center">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                            <GradientStop Offset="0" Color="#22C55E"/>
+                            <GradientStop Offset="1" Color="#15803D"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <PathIcon Width="26" Height="26"
+                              Foreground="White"
+                              Data="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
+                </Border>
+
+                <StackPanel Grid.Column="1"
+                            VerticalAlignment="Center"
+                            Spacing="3">
+                    <TextBlock Text="PRODUCTO GRATIS · PROMOCIÓN"
+                               Foreground="#15803D"
+                               FontSize="11"
+                               FontWeight="Bold"
+                               LetterSpacing="1.6"/>
+                    <TextBlock x:Name="TextoProducto"
+                               Foreground="#0B1220"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               TextWrapping="Wrap"/>
+                    <TextBlock x:Name="TextoDetalleLinea"
+                               Foreground="#475569"
+                               FontSize="13"/>
+                </StackPanel>
+
+            </Grid>
+        </Border>
+
+
+        <!-- ===================================================== -->
+        <!-- CUÁNTAS + RESUMEN                                     -->
+        <!-- ===================================================== -->
+
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+
+            <StackPanel Margin="26,20,26,10"
+                        Spacing="16">
+
+                <TextBlock x:Name="TextoPregunta"
+                           Text="¿Cuántas piezas son gratis?"
+                           Foreground="#0F172A"
+                           FontSize="15"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Center"/>
+
+                <!-- Selector -->
+                <Grid ColumnDefinitions="Auto,160,Auto"
+                      ColumnSpacing="12"
+                      HorizontalAlignment="Center">
+
+                    <Button x:Name="BotonMenos"
+                            Classes="paso"
+                            Content="−"
+                            Click="Menos_Click"/>
+
+                    <TextBox x:Name="CajaCantidad"
+                             Grid.Column="1"
+                             Height="64"
+                             FontSize="30"
+                             FontWeight="Bold"
+                             HorizontalContentAlignment="Center"
+                             VerticalContentAlignment="Center"
+                             CornerRadius="16"
+                             BorderBrush="#86EFAC"
+                             BorderThickness="2"
+                             TextChanged="Cantidad_TextChanged"/>
+
+                    <Button x:Name="BotonMas"
+                            Grid.Column="2"
+                            Classes="paso"
+                            Content="+"
+                            Click="Mas_Click"/>
+
+                </Grid>
+
+                <TextBlock x:Name="TextoMaximo"
+                           Foreground="#64748B"
+                           FontSize="12"
+                           HorizontalAlignment="Center"/>
+
+                <!-- Resumen -->
+                <Border Background="White"
+                        CornerRadius="16"
+                        BorderBrush="#E6EAEE"
+                        BorderThickness="1"
+                        Padding="18,14">
+
+                    <Grid RowDefinitions="Auto,Auto,Auto,Auto"
+                          ColumnDefinitions="*,Auto"
+                          RowSpacing="8">
+
+                        <TextBlock Text="Se cobran"
+                                   Foreground="#334155"
+                                   FontSize="14"/>
+                        <TextBlock x:Name="TextoSeCobran"
+                                   Grid.Column="1"
+                                   Foreground="#0F172A"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"/>
+
+                        <TextBlock Grid.Row="1"
+                                   Text="Gratis (PROMOCIÓN)"
+                                   Foreground="#15803D"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"/>
+                        <TextBlock x:Name="TextoGratis"
+                                   Grid.Row="1"
+                                   Grid.Column="1"
+                                   Foreground="#15803D"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"/>
+
+                        <Border Grid.Row="2"
+                                Grid.ColumnSpan="2"
+                                Height="1"
+                                Background="#EEF2F6"
+                                Margin="0,2"/>
+
+                        <TextBlock Grid.Row="3"
+                                   Text="El cliente ahorra"
+                                   Foreground="#0F172A"
+                                   FontSize="16"
+                                   FontWeight="Bold"/>
+                        <TextBlock x:Name="TextoAhorro"
+                                   Grid.Row="3"
+                                   Grid.Column="1"
+                                   Foreground="#15803D"
+                                   FontSize="20"
+                                   FontWeight="Bold"/>
+                    </Grid>
+                </Border>
+
+                <!-- Aviso -->
+                <Border x:Name="BannerAviso"
+                        IsVisible="False"
+                        Padding="14,10"
+                        CornerRadius="12"
+                        Background="#FFF7E0"
+                        BorderBrush="#FBD98A"
+                        BorderThickness="1">
+                    <TextBlock x:Name="TextoAviso"
+                               Foreground="#7A4E05"
+                               FontSize="13"
+                               TextWrapping="Wrap"/>
+                </Border>
+
+            </StackPanel>
+
+        </ScrollViewer>
+
+
+        <!-- ===================================================== -->
+        <!-- PIE                                                   -->
+        <!-- ===================================================== -->
+
+        <Border Grid.Row="2"
+                Background="White"
+                BorderBrush="#EAEEF2"
+                BorderThickness="0,1,0,0"
+                Padding="26,14,26,18">
+
+            <Grid ColumnDefinitions="*,Auto,Auto"
+                  ColumnSpacing="10">
+
+                <StackPanel Orientation="Horizontal"
+                            Spacing="14"
+                            VerticalAlignment="Center">
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="↑ ↓"/></Border>
+                        <TextBlock Text="Cambiar"/>
+                    </StackPanel>
+                    <StackPanel Classes="atajo">
+                        <Border Classes="tecla"><TextBlock Text="Enter"/></Border>
+                        <TextBlock Text="Regalar"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <Button Grid.Column="1"
+                        Classes="cancelar"
+                        Content="Cancelar"
+                        IsCancel="True"
+                        Click="Cancelar_Click"/>
+
+                <Button Grid.Column="2"
+                        x:Name="BotonRegalar"
+                        Classes="regalar"
+                        IsDefault="True"
+                        Click="Regalar_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Width="16" Height="16"
+                                  Foreground="White"
+                                  Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        <TextBlock x:Name="TextoBotonRegalar"
+                                   Text="Regalar"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+            </Grid>
+
+        </Border>
+
+    </Grid>
+
+
+    <!-- ========================================================= -->
+    <!-- ESTILOS                                                   -->
+    <!-- ========================================================= -->
+
+    <Window.Styles>
+
+        <Style Selector="Button.paso">
+            <Setter Property="Width" Value="64"/>
+            <Setter Property="Height" Value="64"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.paso:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F0FBF4"/>
+            <Setter Property="BorderBrush" Value="#22C55E"/>
+        </Style>
+
+        <Style Selector="Button.paso:disabled">
+            <Setter Property="Opacity" Value="0.4"/>
+        </Style>
+
+        <Style Selector="Button.cancelar">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Padding" Value="22,0"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.regalar">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Padding" Value="22,0"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="#16A34A"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.regalar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#15803D"/>
+        </Style>
+
+        <Style Selector="Button.regalar:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#A7D7B8"/>
+        </Style>
+
+        <Style Selector="StackPanel.atajo">
+            <Setter Property="Orientation" Value="Horizontal"/>
+            <Setter Property="Spacing" Value="6"/>
+        </Style>
+
+        <Style Selector="StackPanel.atajo > TextBlock">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla">
+            <Setter Property="Padding" Value="7,2"/>
+            <Setter Property="CornerRadius" Value="7"/>
+            <Setter Property="Background" Value="#F8FAFB"/>
+            <Setter Property="BorderBrush" Value="#D5DCE4"/>
+            <Setter Property="BorderThickness" Value="1,1,1,2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="Border.tecla TextBlock">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+    </Window.Styles>
+
+</Window>

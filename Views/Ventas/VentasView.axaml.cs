@@ -500,35 +500,20 @@ public partial class VentasView : UserControl
 
 
             // ¿Cuántas piezas? (por peso: cuántos kilos)
-            decimal cantidad;
+            var ventanaGratis =
+                new ProductoGratisWindow(
+                    detalle.Producto.Nombre,
+                    detalle.Producto.NombrePresentacion,
+                    detalle.Cantidad,
+                    detalle.PrecioUnitario,
+                    _viewModel.Total,
+                    detalle.EsVentaPorPeso);
 
-            if (detalle.EsVentaPorPeso)
-            {
-                var ventanaPeso =
-                    new EditarPesoWindow(detalle.Cantidad);
+            if (!await ventanaGratis.ShowDialog<bool>(owner))
+                return;
 
-                if (!await ventanaPeso.ShowDialog<bool>(owner))
-                    return;
-
-                cantidad = ventanaPeso.PesoSeleccionado;
-            }
-            else if (detalle.Cantidad <= 1m)
-            {
-                cantidad = detalle.Cantidad;
-            }
-            else
-            {
-                var ventanaCantidad =
-                    new EditarCantidadWindow(1)
-                    {
-                        Title = "¿Cuántas piezas son gratis?"
-                    };
-
-                if (!await ventanaCantidad.ShowDialog<bool>(owner))
-                    return;
-
-                cantidad = ventanaCantidad.CantidadSeleccionada;
-            }
+            var cantidad =
+                ventanaGratis.CantidadSeleccionada;
 
             var precioNormal =
                 detalle.PrecioUnitario;
@@ -805,7 +790,11 @@ public partial class VentasView : UserControl
 
         var ventanaCantidad =
             new EditarCantidadWindow(
-                cantidadActual
+                cantidadActual,
+                detalle.Producto.Nombre,
+                detalle.Producto.NombrePresentacion,
+                detalle.PrecioUnitario,
+                detalle.MaximoLinea
             );
 
         var resultadoCantidad =
