@@ -139,6 +139,99 @@ public class TicketVentaService
 
 
     // =========================================================
+    // COMPROBANTE DE DEVOLUCIÓN (CHG-0006)
+    // =========================================================
+
+    public sealed class DatosDevolucion
+    {
+        public string FolioDevolucion { get; set; } = string.Empty;
+        public string FolioTicket { get; set; } = string.Empty;
+        public string FechaVenta { get; set; } = string.Empty;
+        public DateTime Fecha { get; set; } = DateTime.Now;
+        public string Caja { get; set; } = string.Empty;
+        public string Cajero { get; set; } = string.Empty;
+        public string Autorizo { get; set; } = string.Empty;
+        public string Motivo { get; set; } = string.Empty;
+        public decimal Importe { get; set; }
+        public List<TicketVentaDetalle> Productos { get; set; } = new();
+    }
+
+
+    public async Task<bool> ImprimirDevolucionAsync(DatosDevolucion d)
+    {
+        var formato = _formatoService.Obtener();
+        var ancho = formato.AnchoCaracteres;
+        var bytes = new List<byte>();
+
+        bytes.AddRange(new byte[] { 0x1B, 0x40 });
+
+        Centrar(bytes);
+        Negrita(bytes, true);
+        foreach (var linea in formato.Encabezado)
+            AgregarTexto(bytes, linea + "\n");
+        AgregarTexto(bytes, "\nCOMPROBANTE DE DEVOLUCION\n");
+        Negrita(bytes, false);
+        AgregarTexto(bytes, $"{d.FolioDevolucion}\n\n");
+
+        Izquierda(bytes);
+        AgregarTexto(bytes, AlinearDosColumnas("Ticket:", d.FolioTicket, ancho));
+        if (!string.IsNullOrWhiteSpace(d.FechaVenta))
+            AgregarTexto(bytes, AlinearDosColumnas("Fecha de venta:", d.FechaVenta, ancho));
+        AgregarTexto(bytes, AlinearDosColumnas("Fecha:", d.Fecha.ToString("dd/MM/yyyy HH:mm"), ancho));
+        AgregarTexto(bytes, AlinearDosColumnas("Caja:", d.Caja, ancho));
+        AgregarTexto(bytes, AlinearDosColumnas("Cajero:", d.Cajero, ancho));
+        Separador(bytes, ancho);
+
+        Negrita(bytes, true);
+        AgregarTexto(bytes, "PRODUCTOS DEVUELTOS\n");
+        Negrita(bytes, false);
+        AgregarTexto(bytes, "\n");
+
+        foreach (var producto in d.Productos)
+        {
+            AgregarTexto(bytes, $"{producto.Producto}\n");
+
+            if (!string.IsNullOrWhiteSpace(producto.Presentacion))
+                AgregarTexto(bytes, $"{producto.Presentacion}\n");
+
+            var cantidad = producto.Cantidad.ToString("0.##", CultureInfo.InvariantCulture);
+
+            AgregarTexto(
+                bytes,
+                AlinearDosColumnas(
+                    $"{cantidad} x ${producto.PrecioUnitario:N2}",
+                    $"${producto.Importe:N2}",
+                    ancho));
+
+            AgregarTexto(bytes, "\n");
+        }
+
+        SeparadorDoble(bytes, ancho);
+        Negrita(bytes, true);
+        AgregarTexto(bytes, AlinearDosColumnas("EFECTIVO DEVUELTO:", $"${d.Importe:N2}", ancho));
+        Negrita(bytes, false);
+        Separador(bytes, ancho);
+
+        if (!string.IsNullOrWhiteSpace(d.Motivo))
+            AgregarTexto(bytes, $"Motivo: {d.Motivo}\n");
+
+        if (!string.IsNullOrWhiteSpace(d.Autorizo))
+            AgregarTexto(bytes, $"Autorizo: {d.Autorizo}\n");
+
+        AgregarTexto(bytes, "\n\n\n_____________________________\n");
+        Centrar(bytes);
+        AgregarTexto(bytes, "Firma del cliente\n");
+
+        AgregarTexto(bytes, new string('\n', Math.Max(0, formato.LineasEnBlancoAlFinal)));
+
+        if (formato.CortarPapel)
+            bytes.AddRange(new byte[] { 0x1D, 0x56, 0x01 });
+
+        return await _printerService.ImprimirAsync(bytes.ToArray(), $"Devolucion {d.FolioDevolucion}");
+    }
+
+
+    // =========================================================
     // CONSTRUIR EL TICKET
     // =========================================================
 

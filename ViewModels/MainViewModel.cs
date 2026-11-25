@@ -12,6 +12,7 @@ using NovaCoreESDM.ViewModels.Cancelaciones;
 using NovaCoreESDM.ViewModels.Configuracion;
 using NovaCoreESDM.ViewModels.Cortes;
 using NovaCoreESDM.ViewModels.Credito;
+using NovaCoreESDM.ViewModels.Devoluciones;
 using NovaCoreESDM.ViewModels.Inicio;
 using NovaCoreESDM.ViewModels.Reimpresion;
 using NovaCoreESDM.ViewModels.Ventas;
@@ -35,6 +36,8 @@ public partial class MainViewModel : ViewModelBase
     public PruebaCorteViewModel PruebaCorteModulo { get; }
 
     public CancelacionesViewModel CancelacionesModulo { get; }
+
+    public DevolucionesViewModel DevolucionesModulo { get; }
 
     public ReimpresionViewModel ReimpresionModulo { get; }
 
@@ -98,6 +101,10 @@ public partial class MainViewModel : ViewModelBase
 
                 OnPropertyChanged(
                     nameof(EsCancelaciones)
+                );
+
+                OnPropertyChanged(
+                    nameof(EsDevoluciones)
                 );
 
                 OnPropertyChanged(
@@ -242,6 +249,10 @@ public partial class MainViewModel : ViewModelBase
         VistaActual is CancelacionesViewModel;
 
 
+    public bool EsDevoluciones =>
+        VistaActual is DevolucionesViewModel;
+
+
     public bool EsReimpresion =>
         VistaActual is ReimpresionViewModel;
 
@@ -278,6 +289,10 @@ public partial class MainViewModel : ViewModelBase
 
         CancelacionesModulo =
             new CancelacionesViewModel();
+
+
+        DevolucionesModulo =
+            new DevolucionesViewModel();
 
 
         ReimpresionModulo =
@@ -514,6 +529,24 @@ public partial class MainViewModel : ViewModelBase
 
                 SubtituloPagina =
                     "Consulta y cancela ventas finalizadas con autorización administrativa";
+
+                break;
+
+
+            // =================================================
+            // DEVOLUCIONES (CHG-0006)
+            // =================================================
+
+            case "Devoluciones":
+
+                VistaActual =
+                    DevolucionesModulo;
+
+                TituloPagina =
+                    "Devoluciones";
+
+                SubtituloPagina =
+                    "Devuelve productos de ventas pagadas en efectivo con autorización administrativa";
 
                 break;
 
