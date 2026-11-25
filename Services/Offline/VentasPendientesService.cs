@@ -465,6 +465,22 @@ public static class VentasPendientesService
                 referencia = p.Referencia,
                 autorizacion = p.Autorizacion
             }),
+            productos_cancelados = venta.ProductosCancelados.Select(p => new
+            {
+                id_producto = p.IdProducto,
+                id_presentacion = p.IdPresentacion,
+                descripcion = string.IsNullOrWhiteSpace(p.Presentacion)
+                    ? p.Producto
+                    : $"{p.Producto} - {p.Presentacion}",
+                cantidad = p.Cantidad,
+                precio_unitario = p.PrecioUnitario,
+                importe = p.Importe,
+                tipo = p.Tipo,
+                requirio_autorizacion = p.RequirioAutorizacion,
+                id_usuario_autoriza = p.RequirioAutorizacion ? p.IdUsuarioAutoriza : (int?)null,
+                usuario_autoriza = p.RequirioAutorizacion ? p.UsuarioAutoriza : null,
+                fecha_hora = p.Fecha.ToString("yyyy-MM-dd HH:mm:ss")
+            }),
             cancelacion = venta.Cancelacion is null
                 ? null
                 : new

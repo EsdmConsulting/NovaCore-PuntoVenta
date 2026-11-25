@@ -45,6 +45,9 @@ public sealed class VentaOffline
     /// </summary>
     public CancelacionVentaOffline? Cancelacion { get; set; }
 
+    /// <summary>Productos quitados de la venta antes de cobrarla (CHG-0002).</summary>
+    public List<ProductoCanceladoVenta> ProductosCancelados { get; set; } = new();
+
     public int IdEmpresa { get; set; }
     public int IdUnidadOperativa { get; set; }
     public int IdCaja { get; set; }
@@ -77,6 +80,31 @@ public sealed class VentaOffline
 
     public decimal Total => Lineas.Sum(l => l.Importe);
     public decimal Pagado => Pagos.Sum(p => p.Importe);
+}
+
+
+/// <summary>
+/// Producto quitado de una venta (CHG-0002). Sin conexión viaja con la venta
+/// en «productos_cancelados» para que el servidor guarde la trazabilidad.
+/// </summary>
+public sealed class ProductoCanceladoVenta
+{
+    public const string TipoLineaEliminada = "LINEA_ELIMINADA";
+    public const string TipoCantidadReducida = "CANTIDAD_REDUCIDA";
+
+    public int IdProducto { get; set; }
+    public int IdPresentacion { get; set; }
+    public string Producto { get; set; } = string.Empty;
+    public string Presentacion { get; set; } = string.Empty;
+    public decimal Cantidad { get; set; }
+    public decimal PrecioUnitario { get; set; }
+    public decimal Importe { get; set; }
+    public string Tipo { get; set; } = TipoLineaEliminada;
+    public bool RequirioAutorizacion { get; set; }
+    public int IdUsuarioAutoriza { get; set; }
+    public string UsuarioAutoriza { get; set; } = string.Empty;
+    public string NombreAutoriza { get; set; } = string.Empty;
+    public DateTime Fecha { get; set; } = DateTime.Now;
 }
 
 

@@ -34,6 +34,9 @@ public partial class AutorizacionAdministradorWindow : Window
     private Button _cancelarButton = null!;
     private bool _cargando;
 
+    /// <summary>Administrador que autorizó (id, usuario y nombre); null si no autorizó.</summary>
+    public AutorizarCancelacionData? Autorizado { get; private set; }
+
     public AutorizacionAdministradorWindow()
         : this(
             "Autorización de administrador",
@@ -148,6 +151,15 @@ public partial class AutorizacionAdministradorWindow : Window
                 respuesta.Data?.Nombre
                 ?? administrador.Nombre
                 ?? usuario;
+
+            Autorizado = new AutorizarCancelacionData
+            {
+                IdUsuario = respuesta.Data?.IdUsuario ?? 0,
+                Usuario = respuesta.Data?.Usuario ?? usuario,
+                Nombre = nombre,
+                Rol = respuesta.Data?.Rol,
+                DuracionSegundos = respuesta.Data?.DuracionSegundos ?? 0
+            };
 
             Close(nombre);
         }

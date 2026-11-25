@@ -877,6 +877,11 @@ public async Task AgregarPresentacionAlCarritoAsync(
     Carrito.Add(
         nuevoDetalle);
 
+    // CHG-0002: es el último producto escaneado (se puede quitar sin permiso).
+    RegistrarAgregado(
+        nuevoDetalle,
+        0m);
+
 
     /*
      * IMPORTANTE:
@@ -1578,6 +1583,10 @@ private async Task AgregarPresentacionEscaneadaAsync(
 // CAMBIAR PRECIO
 // =========================================================
 
+// CHG-0002: la operación en curso la autorizó un administrador con internet.
+private bool _quitarAutorizadoEnServidor;
+
+
 [RelayCommand]
 private void CambiarPrecio(
     DetalleVenta? detalle)
@@ -1794,6 +1803,26 @@ private async Task IncrementarCantidadAsync(
     if (detalle is null)
         return;
 
+    var cantidadAntes =
+        detalle.Cantidad;
+
+    await IncrementarCantidadSinRegistroAsync(
+        detalle);
+
+    // CHG-0002: las piezas recién sumadas son "lo último agregado".
+    if (detalle.Cantidad > cantidadAntes)
+        RegistrarAgregado(
+            detalle,
+            cantidadAntes);
+}
+
+
+private async Task IncrementarCantidadSinRegistroAsync(
+    DetalleVenta? detalle)
+{
+    if (detalle is null)
+        return;
+
     if (detalle.EstaSincronizando)
         return;
 
@@ -1848,7 +1877,8 @@ private async Task IncrementarCantidadAsync(
                 .ActualizarCantidadProductoAsync(
                     IdVentaActual,
                     detalle.IdDetalle,
-                    cantidadNueva);
+                    cantidadNueva,
+                    _quitarAutorizadoEnServidor);
 
 
         if (resultado.Res == 1)
@@ -2181,6 +2211,72 @@ public async Task ActualizarCantidadManualAsync(
     DetalleVenta detalle,
     decimal cantidadNueva)
 {
+    if (detalle is null || cantidadNueva <= 0)
+        return;
+
+    var cantidadAntes =
+        detalle.Cantidad;
+
+    if (cantidadNueva == cantidadAntes)
+        return;
+
+    // Subir la cantidad: las piezas nuevas son "lo último agregado".
+    if (cantidadNueva > cantidadAntes)
+    {
+        await ActualizarCantidadManualConPermisoAsync(
+            detalle,
+            cantidadNueva);
+
+        if (detalle.Cantidad == cantidadNueva)
+            RegistrarAgregado(
+                detalle,
+                cantidadAntes);
+
+        return;
+    }
+
+    // CHG-0002: bajar un producto anterior pide autorización.
+    var permiso =
+        await PedirPermisoQuitarAsync(
+            detalle,
+            cantidadNueva);
+
+    if (permiso is null)
+        return;
+
+    _quitarAutorizadoEnServidor =
+        permiso.AutorizadoEnServidor;
+
+    try
+    {
+        await ActualizarCantidadManualConPermisoAsync(
+            detalle,
+            cantidadNueva);
+
+        if (Carrito.Contains(detalle) &&
+            detalle.Cantidad < cantidadAntes)
+        {
+            RegistrarQuitado(
+                detalle,
+                cantidadAntes - detalle.Cantidad,
+                permiso);
+        }
+    }
+    finally
+    {
+        _quitarAutorizadoEnServidor =
+            false;
+
+        await CerrarPermisoAsync(
+            permiso);
+    }
+}
+
+
+private async Task ActualizarCantidadManualConPermisoAsync(
+    DetalleVenta detalle,
+    decimal cantidadNueva)
+{
     if (detalle is null)
         return;
 
@@ -2243,7 +2339,8 @@ public async Task ActualizarCantidadManualAsync(
                 .ActualizarCantidadProductoAsync(
                     IdVentaActual,
                     detalle.IdDetalle,
-                    cantidadNueva);
+                    cantidadNueva,
+                    _quitarAutorizadoEnServidor);
 
 
         if (resultado.Res == 1)
@@ -3454,6 +3551,9 @@ public async Task<bool> FinalizarVentaAsync()
                 Productos =
                     productosTicket,
 
+                ProductosCancelados =
+                    ProductosCanceladosParaTicket(),
+
                 Subtotal =
                     subtotalTicket,
 
@@ -4080,6 +4180,64 @@ private async Task DisminuirCantidadAsync(
     if (detalle is null)
         return;
 
+    // En 1 se quita la línea: EliminarProductoAsync pide su propio permiso.
+    if (detalle.Cantidad <= 1 ||
+        detalle.EstaSincronizando ||
+        detalle.IdDetalle <= 0 ||
+        !HayVentaActiva)
+    {
+        await DisminuirCantidadConPermisoAsync(
+            detalle);
+
+        return;
+    }
+
+    var cantidadAntes =
+        detalle.Cantidad;
+
+    // CHG-0002: bajar un producto anterior pide autorización.
+    var permiso =
+        await PedirPermisoQuitarAsync(
+            detalle,
+            cantidadAntes - 1);
+
+    if (permiso is null)
+        return;
+
+    _quitarAutorizadoEnServidor =
+        permiso.AutorizadoEnServidor;
+
+    try
+    {
+        await DisminuirCantidadConPermisoAsync(
+            detalle);
+
+        if (Carrito.Contains(detalle) &&
+            detalle.Cantidad < cantidadAntes)
+        {
+            RegistrarQuitado(
+                detalle,
+                cantidadAntes - detalle.Cantidad,
+                permiso);
+        }
+    }
+    finally
+    {
+        _quitarAutorizadoEnServidor =
+            false;
+
+        await CerrarPermisoAsync(
+            permiso);
+    }
+}
+
+
+private async Task DisminuirCantidadConPermisoAsync(
+    DetalleVenta? detalle)
+{
+    if (detalle is null)
+        return;
+
     if (detalle.EstaSincronizando)
         return;
 
@@ -4147,7 +4305,8 @@ private async Task DisminuirCantidadAsync(
                 .ActualizarCantidadProductoAsync(
                     IdVentaActual,
                     detalle.IdDetalle,
-                    cantidadNueva);
+                    cantidadNueva,
+                    _quitarAutorizadoEnServidor);
 
 
         if (resultado.Res == 1)
@@ -4206,6 +4365,61 @@ private async Task DisminuirCantidadAsync(
     
 [RelayCommand]
 private async Task EliminarProductoAsync(
+    DetalleVenta? detalle)
+{
+    if (detalle is null)
+        return;
+
+    if (detalle.EstaSincronizando ||
+        detalle.IdDetalle <= 0 ||
+        !HayVentaActiva)
+    {
+        await EliminarProductoConPermisoAsync(
+            detalle);
+
+        return;
+    }
+
+    var cantidadAntes =
+        detalle.Cantidad;
+
+    // CHG-0002: quitar un producto que no es el último escaneado pide autorización.
+    var permiso =
+        await PedirPermisoQuitarAsync(
+            detalle,
+            0m);
+
+    if (permiso is null)
+        return;
+
+    _quitarAutorizadoEnServidor =
+        permiso.AutorizadoEnServidor;
+
+    try
+    {
+        await EliminarProductoConPermisoAsync(
+            detalle);
+
+        if (!Carrito.Contains(detalle))
+        {
+            RegistrarQuitado(
+                detalle,
+                cantidadAntes,
+                permiso);
+        }
+    }
+    finally
+    {
+        _quitarAutorizadoEnServidor =
+            false;
+
+        await CerrarPermisoAsync(
+            permiso);
+    }
+}
+
+
+private async Task EliminarProductoConPermisoAsync(
     DetalleVenta? detalle)
 {
     if (detalle is null)
@@ -4306,7 +4520,8 @@ private async Task EliminarProductoAsync(
             await _ventasService
                 .EliminarProductoAsync(
                     idVenta,
-                    idDetalle);
+                    idDetalle,
+                    _quitarAutorizadoEnServidor);
 
 
         // =====================================================
@@ -4394,7 +4609,8 @@ if (
             await _ventasService
                 .EliminarProductoAsync(
                     idVenta,
-                    idDetalle);
+                    idDetalle,
+                    _quitarAutorizadoEnServidor);
 
 
         if (segundoIntento.Res == 1)

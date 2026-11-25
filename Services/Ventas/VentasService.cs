@@ -547,13 +547,17 @@ public async Task<ActualizarVentaResponse>
     public async Task<EliminarProductoVentaResponse>
         EliminarProductoAsync(
             int idVenta,
-            int idDetalle)
+            int idDetalle,
+            bool autorizado = false)
     {
         try
         {
+            // autorizado=1: un administrador lo autorizó (CHG-0002); el
+            // servidor lo valida con la autorización abierta.
             var response =
                 await ApiClient.Http.DeleteAsync(
-                    $"api/pos/ventas/{idVenta}/productos/{idDetalle}",
+                    $"api/pos/ventas/{idVenta}/productos/{idDetalle}" +
+                    (autorizado ? "?autorizado=1" : string.Empty),
                     LimiteRapido()
                 );
 
@@ -752,13 +756,17 @@ public async Task<ActualizarCantidadVentaResponse>
     ActualizarCantidadProductoAsync(
         int idVenta,
         int idDetalle,
-        decimal cantidadComercial)
+        decimal cantidadComercial,
+        bool autorizado = false)
 {
     var request =
         new ActualizarCantidadVentaRequest
         {
             CantidadComercial =
                 cantidadComercial,
+
+            Autorizado =
+                autorizado ? true : null,
 
             /*
              * No mandamos PrecioAutomatico.

@@ -102,6 +102,19 @@ public class ActualizarCantidadVentaRequest
     [JsonPropertyName("precio_unitario")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public decimal? PrecioUnitario { get; set; }
+
+    // ---------------------------------------------------------
+    // AUTORIZACIÓN (CHG-0002)
+    // ---------------------------------------------------------
+    //
+    // true = un administrador autorizó bajar la cantidad de un
+    // producto anterior (api/pos/cancelaciones/autorizar). El
+    // servidor lo valida con esa autorización abierta.
+    // ---------------------------------------------------------
+
+    [JsonPropertyName("autorizado")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Autorizado { get; set; }
 }
 
 

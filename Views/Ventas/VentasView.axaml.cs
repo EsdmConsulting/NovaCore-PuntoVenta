@@ -177,6 +177,9 @@ public partial class VentasView : UserControl
             _viewModel.SolicitarCambioPrecio +=
                 OnSolicitarCambioPrecio;
 
+            _viewModel.SolicitarAutorizacionQuitarProducto =
+                MostrarAutorizacionQuitarProductoAsync;
+
             _viewModel.PropertyChanged +=
                 ViewModel_PropertyChanged;
         }
@@ -439,6 +442,39 @@ public partial class VentasView : UserControl
     // =========================================================
     // SELECCIONAR PRESENTACIÓN
     // =========================================================
+
+    // =========================================================
+    // CHG-0002: AUTORIZAR QUITAR UN PRODUCTO ANTERIOR
+    // =========================================================
+
+    private async Task<VentasViewModel.AdministradorAutorizo?> MostrarAutorizacionQuitarProductoAsync(
+        string titulo,
+        string descripcion)
+    {
+        if (TopLevel.GetTopLevel(this) is not Window owner)
+            return null;
+
+        var ventana =
+            new NovaCoreESDM.Views.Sesion.AutorizacionAdministradorWindow(
+                titulo,
+                descripcion);
+
+        var nombre =
+            await ventana.ShowDialog<string?>(owner);
+
+        EnfocarBuscadorProductos();
+
+        if (nombre is null || ventana.Autorizado is null)
+            return null;
+
+        return new VentasViewModel.AdministradorAutorizo
+        {
+            IdUsuario = ventana.Autorizado.IdUsuario,
+            Usuario = ventana.Autorizado.Usuario ?? string.Empty,
+            Nombre = ventana.Autorizado.Nombre ?? nombre
+        };
+    }
+
 
     private async void OnSolicitarCambioPrecio(
         DetalleVenta detalle)
@@ -1736,26 +1772,14 @@ public partial class VentasView : UserControl
     
     
     // =================================================
-    // F12 - ELIMINAR ÚLTIMO REGISTRO
+    // F12 - QUITAR LO ÚLTIMO ESCANEADO (CHG-0002)
     // =================================================
     else if (e.Key == Key.F12)
     {
         e.Handled = true;
         if (DataContext is VentasViewModel viewModel)
         {
-            var ultimoProducto = System.Linq.Enumerable.LastOrDefault(viewModel.Carrito);
-            
-            if (ultimoProducto != null && viewModel.EliminarProductoCommand.CanExecute(ultimoProducto))
-            {
-                if (!ultimoProducto.EstaSincronizando)
-                {
-                    viewModel.EliminarProductoCommand.Execute(ultimoProducto);
-                }
-                else
-                {
-                    viewModel.MensajeError = "El último producto aún se está registrando, espera un momento.";
-                }
-            }
+            _ = viewModel.QuitarUltimoAgregadoAsync();
         }
     }
 

@@ -263,6 +263,46 @@ public class TicketVentaService
 
 
         // =====================================================
+        // PRODUCTOS CANCELADOS CON AUTORIZACIÓN (CHG-0002)
+        // =====================================================
+
+        if (ticket.ProductosCancelados.Count > 0)
+        {
+            Separador(bytes, ancho);
+
+            Negrita(bytes, true);
+            AgregarTexto(bytes, "PRODUCTOS CANCELADOS\n");
+            Negrita(bytes, false);
+            AgregarTexto(bytes, "\n");
+
+            foreach (var cancelado in ticket.ProductosCancelados)
+            {
+                AgregarTexto(bytes, $"{cancelado.Producto}\n");
+
+                if (!string.IsNullOrWhiteSpace(cancelado.Presentacion))
+                    AgregarTexto(bytes, $"{cancelado.Presentacion}\n");
+
+                var cantidad =
+                    cancelado.Cantidad.ToString(
+                        "0.##",
+                        CultureInfo.InvariantCulture);
+
+                AgregarTexto(
+                    bytes,
+                    AlinearDosColumnas(
+                        $"-{cantidad} x ${cancelado.PrecioUnitario:N2}",
+                        $"-${cancelado.Importe:N2}",
+                        ancho));
+
+                if (!string.IsNullOrWhiteSpace(cancelado.Autorizo))
+                    AgregarTexto(bytes, $"Autorizo: {cancelado.Autorizo}\n");
+
+                AgregarTexto(bytes, "\n");
+            }
+        }
+
+
+        // =====================================================
         // TOTALES
         // =====================================================
 

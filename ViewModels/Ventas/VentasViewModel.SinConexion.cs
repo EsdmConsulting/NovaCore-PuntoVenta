@@ -229,6 +229,9 @@ public partial class VentasViewModel
         VentasPendientesService.RegistrarBorradorAbandonado(idAbandonada);
         IniciarVentaLocal();
 
+        // CHG-0002: lo que ya se quitó con autorización sigue siendo de esta venta.
+        _ventaLocal?.ProductosCancelados.AddRange(_productosCancelados);
+
         foreach (var detalle in Carrito)
         {
             detalle.IdDetalle = _siguienteIdDetalleLocal++;
@@ -366,6 +369,9 @@ public partial class VentasViewModel
             ActualizarLimiteLocal(detalle);
             Carrito.Add(detalle);
         }
+
+        // CHG-0002: lo quitado con autorización vuelve para el ticket.
+        RestaurarProductosCancelados(borrador);
 
         ActualizarTotales();
         OnPropertyChanged(nameof(EsVentaSinConexion));
@@ -1051,6 +1057,17 @@ public partial class VentasViewModel
                 PrecioUnitario = l.PrecioUnitario,
                 Importe = l.Importe
             }).ToList(),
+            ProductosCancelados = venta.ProductosCancelados
+                .Where(p => p.RequirioAutorizacion)
+                .Select(p => new TicketProductoCancelado
+                {
+                    Producto = p.Producto,
+                    Presentacion = p.Presentacion,
+                    Cantidad = p.Cantidad,
+                    PrecioUnitario = p.PrecioUnitario,
+                    Importe = p.Importe,
+                    Autorizo = string.IsNullOrWhiteSpace(p.NombreAutoriza) ? p.UsuarioAutoriza : p.NombreAutoriza
+                }).ToList(),
             Subtotal = total,
             Total = total,
             Efectivo = efectivo,

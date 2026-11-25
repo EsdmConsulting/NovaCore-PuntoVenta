@@ -45,6 +45,10 @@ public class TicketVenta
     public List<TicketVentaDetalle> Productos { get; set; } =
         new();
 
+    /// <summary>Productos quitados con autorización de un administrador (CHG-0002).</summary>
+    public List<TicketProductoCancelado> ProductosCancelados { get; set; } =
+        new();
+
 
     // =========================================================
     // TOTALES
@@ -165,6 +169,18 @@ public class TicketVenta
 
             ContenidoQr = UrlPlataforma
         };
+}
+
+
+/// <summary>Producto quitado con autorización (CHG-0002): sale en el ticket.</summary>
+public class TicketProductoCancelado
+{
+    public string Producto { get; set; } = string.Empty;
+    public string Presentacion { get; set; } = string.Empty;
+    public decimal Cantidad { get; set; }
+    public decimal PrecioUnitario { get; set; }
+    public decimal Importe { get; set; }
+    public string Autorizo { get; set; } = string.Empty;
 }
 
 
