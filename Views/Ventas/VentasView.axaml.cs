@@ -139,6 +139,9 @@ public partial class VentasView : UserControl
                 _viewModel.SolicitarCambioPrecio -=
                     OnSolicitarCambioPrecio;
 
+                _viewModel.SolicitarProductoGratis -=
+                    OnSolicitarProductoGratis;
+
                 _viewModel.PropertyChanged -=
                     ViewModel_PropertyChanged;
             }
@@ -179,6 +182,12 @@ public partial class VentasView : UserControl
 
             _viewModel.SolicitarAutorizacionQuitarProducto =
                 MostrarAutorizacionQuitarProductoAsync;
+
+            _viewModel.SolicitarProductoGratis -=
+                OnSolicitarProductoGratis;
+
+            _viewModel.SolicitarProductoGratis +=
+                OnSolicitarProductoGratis;
 
             _viewModel.PropertyChanged +=
                 ViewModel_PropertyChanged;
@@ -442,6 +451,122 @@ public partial class VentasView : UserControl
     // =========================================================
     // SELECCIONAR PRESENTACIÓN
     // =========================================================
+
+    // =========================================================
+    // CHG-0005: PRODUCTO GRATIS POR PROMOCIÓN
+    // =========================================================
+    //
+    // 1. Autorización del administrador (no se la pide a sí mismo).
+    // 2. Cuántas piezas se regalan (1 si la línea tiene 1).
+    // 3. El servidor separa esas piezas a $0.00 (PROMOCIÓN).
+    // =========================================================
+
+    private async void OnSolicitarProductoGratis(
+        DetalleVenta detalle)
+    {
+        if (_viewModel is null ||
+            !_viewModel.PuedeRegalarProducto(detalle))
+            return;
+
+        if (TopLevel.GetTopLevel(this) is not Window owner)
+            return;
+
+        NovaCoreESDM.Views.Sesion.AutorizacionAdministradorWindow? autorizacion = null;
+
+        try
+        {
+            var autorizo =
+                NovaCoreESDM.Models.Session.PosSession.NombreUsuario;
+
+            if (!NovaCoreESDM.Models.Session.PosSession.EsAdministrador)
+            {
+                autorizacion =
+                    new NovaCoreESDM.Views.Sesion.AutorizacionAdministradorWindow(
+                        "Autorizar producto gratis",
+                        $"Promoción: piezas de «{detalle.Producto.Nombre}» (${detalle.PrecioUnitario:N2} c/u) " +
+                        "pasarán a $0.00 y saldrán en el ticket como PROMOCIÓN. Se necesita la autorización de un administrador.");
+
+                autorizo =
+                    await autorizacion.ShowDialog<string?>(owner);
+
+                if (autorizo is null)
+                {
+                    _viewModel.MensajeError =
+                        "No se autorizó: el producto conserva su precio.";
+
+                    return;
+                }
+            }
+
+
+            // ¿Cuántas piezas? (por peso: cuántos kilos)
+            decimal cantidad;
+
+            if (detalle.EsVentaPorPeso)
+            {
+                var ventanaPeso =
+                    new EditarPesoWindow(detalle.Cantidad);
+
+                if (!await ventanaPeso.ShowDialog<bool>(owner))
+                    return;
+
+                cantidad = ventanaPeso.PesoSeleccionado;
+            }
+            else if (detalle.Cantidad <= 1m)
+            {
+                cantidad = detalle.Cantidad;
+            }
+            else
+            {
+                var ventanaCantidad =
+                    new EditarCantidadWindow(1)
+                    {
+                        Title = "¿Cuántas piezas son gratis?"
+                    };
+
+                if (!await ventanaCantidad.ShowDialog<bool>(owner))
+                    return;
+
+                cantidad = ventanaCantidad.CantidadSeleccionada;
+            }
+
+            var precioNormal =
+                detalle.PrecioUnitario;
+
+            var nombre =
+                detalle.Producto.Nombre;
+
+            if (await _viewModel.RegistrarProductoGratisAsync(detalle, cantidad))
+            {
+                Console.WriteLine(
+                    $"Producto gratis: {nombre} x{cantidad:0.###} (precio normal ${precioNormal:N2}), autorizó {autorizo}.");
+            }
+        }
+        catch (Exception ex)
+        {
+            _viewModel.MensajeError =
+                $"No fue posible regalar el producto: {ex.Message}";
+        }
+        finally
+        {
+            // La autorización sirve para una sola promoción.
+            if (autorizacion is not null)
+            {
+                try
+                {
+                    await new NovaCoreESDM.Services.Cancelaciones.CancelacionesService()
+                        .CerrarAutorizacionAsync();
+                }
+                catch
+                {
+                    // El servidor la vence sola.
+                }
+            }
+
+            EnfocarBuscadorProductos();
+        }
+    }
+
 
     // =========================================================
     // CHG-0002: AUTORIZAR QUITAR UN PRODUCTO ANTERIOR
@@ -1677,6 +1802,9 @@ public partial class VentasView : UserControl
             
             _viewModel.SolicitarCambioPrecio -=
                 OnSolicitarCambioPrecio;
+
+            _viewModel.SolicitarProductoGratis -=
+                OnSolicitarProductoGratis;
 
             _viewModel.PropertyChanged -=
                 ViewModel_PropertyChanged;

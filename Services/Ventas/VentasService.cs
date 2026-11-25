@@ -541,6 +541,60 @@ public async Task<ActualizarVentaResponse>
     
     
     // =========================================================
+    // PRODUCTO GRATIS POR PROMOCIÓN (CHG-0005)
+    // =========================================================
+    //
+    // POST /api/pos/ventas/{id}/productos/{detalle}/promocion
+    // { "cantidad": N }  → N piezas pasan a una línea aparte a $0.00
+    // (PROMOCION). Necesita la autorización abierta de un administrador
+    // (o que el usuario del POS sea administrador); si no, 403.
+    // =========================================================
+
+    public async Task<RespuestaProductoGratis> RegistrarProductoGratisAsync(
+        int idVenta,
+        int idDetalle,
+        decimal cantidad)
+    {
+        try
+        {
+            var response =
+                await ApiClient.Http.PostAsJsonAsync(
+                    $"api/pos/ventas/{idVenta}/productos/{idDetalle}/promocion",
+                    new { cantidad },
+                    LimiteRapido());
+
+            var contenido =
+                LimpiarRespuestaPhp(
+                    await response.Content.ReadAsStringAsync());
+
+            Console.WriteLine($"RESPUESTA API PRODUCTO GRATIS ({(int)response.StatusCode}): {contenido}");
+
+            if (string.IsNullOrWhiteSpace(contenido))
+            {
+                return new RespuestaProductoGratis
+                {
+                    Res = 0,
+                    Msg = (int)response.StatusCode == 404
+                        ? "El servidor todavía no tiene «Producto gratis». Hay que publicar el backend."
+                        : "El servidor no devolvió información al regalar el producto."
+                };
+            }
+
+            return JsonSerializer.Deserialize<RespuestaProductoGratis>(contenido, JsonOptions)
+                   ?? new RespuestaProductoGratis { Res = 0, Msg = "El servidor devolvió una respuesta inválida." };
+        }
+        catch (JsonException)
+        {
+            return new RespuestaProductoGratis
+            {
+                Res = 0,
+                Msg = "El servidor todavía no tiene «Producto gratis» o respondió con un formato desconocido."
+            };
+        }
+    }
+
+
+    // =========================================================
     // ELIMINAR PRODUCTO DEL CARRITO
     // =========================================================
     
@@ -1179,4 +1233,18 @@ public async Task<FinalizarVentaResponse>
                 inicioJson)
             : contenido;
     }
+}
+
+
+/// <summary>Respuesta de api/pos/ventas/{id}/productos/{detalle}/promocion (CHG-0005).</summary>
+public class RespuestaProductoGratis
+{
+    [System.Text.Json.Serialization.JsonPropertyName("res")]
+    public int Res { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("msg")]
+    public string? Msg { get; set; }
+
+    [System.Text.Json.Serialization.JsonPropertyName("codigo")]
+    public string? Codigo { get; set; }
 }

@@ -759,7 +759,10 @@ public async Task AgregarPresentacionAlCarritoAsync(
                 productoCatalogo.Id
             &&
             item.Producto.IdPresentacion ==
-                presentacion.IdPresentacion);
+                presentacion.IdPresentacion
+            &&
+            // CHG-0005: las piezas de promoción van aparte.
+            !item.EsPromocion);
 
 
     /*
@@ -1456,6 +1459,9 @@ private async Task AgregarPresentacionEscaneadaAsync(
                     &&
                     detalle.Producto.IdPresentacion ==
                         presentacion.Id
+                    &&
+                    // CHG-0005: las piezas de promoción van aparte.
+                    !detalle.EsPromocion
             );
 
 
@@ -1802,6 +1808,15 @@ private async Task IncrementarCantidadAsync(
 {
     if (detalle is null)
         return;
+
+    // CHG-0005: a la pieza de promoción no se le suman piezas.
+    if (detalle.EsPromocion)
+    {
+        MensajeError =
+            "Para regalar más piezas usa «Producto gratis» en la línea normal.";
+
+        return;
+    }
 
     var cantidadAntes =
         detalle.Cantidad;
@@ -2223,6 +2238,15 @@ public async Task ActualizarCantidadManualAsync(
     // Subir la cantidad: las piezas nuevas son "lo último agregado".
     if (cantidadNueva > cantidadAntes)
     {
+        // CHG-0005: a la pieza de promoción no se le suman piezas.
+        if (detalle.EsPromocion)
+        {
+            MensajeError =
+                "Para regalar más piezas usa «Producto gratis» en la línea normal.";
+
+            return;
+        }
+
         await ActualizarCantidadManualConPermisoAsync(
             detalle,
             cantidadNueva);
@@ -3433,8 +3457,11 @@ public async Task<bool> FinalizarVentaAsync()
                             Producto =
                                 detalle.Producto.Nombre,
 
+                            // CHG-0005: la pieza regalada se identifica en el ticket.
                             Presentacion =
-                                detalle.Producto.NombrePresentacion,
+                                detalle.EsPromocion
+                                    ? $"{detalle.Producto.NombrePresentacion} - PROMOCION (GRATIS)"
+                                    : detalle.Producto.NombrePresentacion,
 
                             Cantidad =
                                 detalle.Cantidad,

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using CommunityToolkit.Mvvm.ComponentModel;
 using NovaCoreESDM.Models.Ventas;
@@ -199,6 +200,9 @@ public partial class DetalleVenta : ObservableObject
     {
         get
         {
+            if (EsPromocion)
+                return "PROMOCIÓN · GRATIS";
+
             if (string.IsNullOrWhiteSpace(TipoPrecioAplicado))
                 return "Precio";
 
@@ -221,7 +225,34 @@ public partial class DetalleVenta : ObservableObject
     // INVENTARIO
     // =========================================================
 
+    // =========================================================
+    // PROMOCIÓN (CHG-0005)
+    // =========================================================
+    //
+    // Pieza regalada con autorización: línea aparte a $0.00 con
+    // tipo de precio PROMOCION. No se le suben piezas ni se le
+    // cambia el precio (el servidor también lo impide).
+    // =========================================================
+
+    public const string TipoPrecioPromocion = "PROMOCION";
+
+    public bool EsPromocion =>
+        string.Equals(
+            TipoPrecioAplicado?.Trim(),
+            TipoPrecioPromocion,
+            StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>Se puede cambiar el precio de la línea (no es promoción).</summary>
+    public bool PuedeCambiarPrecioLinea =>
+        !EstaSincronizando && !EsPromocion;
+
+    /// <summary>Se pueden regalar piezas de esta línea.</summary>
+    public bool PuedeRegalar =>
+        !EstaSincronizando && !EsPromocion && Cantidad > 0;
+
+
     public bool PuedeIncrementar =>
+        !EsPromocion &&
         !EstaSincronizando &&
         (
             MaximoLinea <= 0 ||
@@ -258,6 +289,9 @@ public partial class DetalleVenta : ObservableObject
             nameof(Importe));
 
         OnPropertyChanged(
+            nameof(PuedeRegalar));
+
+        OnPropertyChanged(
             nameof(PuedeIncrementar));
     }
 
@@ -273,6 +307,18 @@ public partial class DetalleVenta : ObservableObject
     {
         OnPropertyChanged(
             nameof(TextoTipoPrecio));
+
+        OnPropertyChanged(
+            nameof(EsPromocion));
+
+        OnPropertyChanged(
+            nameof(PuedeIncrementar));
+
+        OnPropertyChanged(
+            nameof(PuedeCambiarPrecioLinea));
+
+        OnPropertyChanged(
+            nameof(PuedeRegalar));
     }
 
 
@@ -305,6 +351,12 @@ public partial class DetalleVenta : ObservableObject
     {
         OnPropertyChanged(
             nameof(PuedeIncrementar));
+
+        OnPropertyChanged(
+            nameof(PuedeCambiarPrecioLinea));
+
+        OnPropertyChanged(
+            nameof(PuedeRegalar));
     }
     
     partial void OnUnidadMedidaChanged(string value)

@@ -22,6 +22,12 @@ public partial class VentasViewModel
         if (BloquearSinConexion("cambiar el precio"))
             return false;
 
+        if (detalle.EsPromocion)
+        {
+            MensajeError = "No se puede cambiar el precio de un producto de promoción.";
+            return false;
+        }
+
         if (detalle.EstaSincronizando)
         {
             MensajeError = "Espera un momento mientras se registra el producto.";
