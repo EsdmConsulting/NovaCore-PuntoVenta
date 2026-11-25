@@ -145,6 +145,29 @@
                         </Grid>
                     </Button>
 
+                    <!-- TERMINALES BANCARIAS DEL EQUIPO (Configuración > Terminales) -->
+                    <Button x:Name="BotonBancaria"
+                            Classes="terminal"
+                            IsVisible="False"
+                            Click="Bancaria_Click">
+                        <Grid RowDefinitions="Auto,*,Auto">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <Border Classes="icono bancaria">
+                                    <PathIcon Data="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z"/>
+                                </Border>
+                                <Border Grid.Column="1" Classes="numero">
+                                    <TextBlock Text="3"/>
+                                </Border>
+                            </Grid>
+                            <StackPanel Grid.Row="2" Spacing="3" Margin="0,16,0,0">
+                                <TextBlock Classes="titulo" Text="Terminal del equipo"/>
+                                <TextBlock x:Name="TextoDetalleBancaria"
+                                           Classes="detalle"
+                                           Text="Terminal bancaria configurada en este equipo"/>
+                            </StackPanel>
+                        </Grid>
+                    </Button>
+
                 </UniformGrid>
 
                 <!-- AVISO -->
@@ -182,7 +205,7 @@
                             Spacing="18"
                             VerticalAlignment="Center">
                     <StackPanel Classes="atajo">
-                        <Border Classes="tecla"><TextBlock Text="1-2"/></Border>
+                        <Border Classes="tecla"><TextBlock x:Name="TextoTeclas" Text="1-2"/></Border>
                         <TextBlock Text="Elegir terminal"/>
                     </StackPanel>
                     <StackPanel Classes="atajo">
@@ -270,6 +293,13 @@
         </Style>
         <Style Selector="Border.icono.mp PathIcon">
             <Setter Property="Foreground" Value="#0284C7"/>
+        </Style>
+
+        <Style Selector="Border.icono.bancaria">
+            <Setter Property="Background" Value="#ECFDF3"/>
+        </Style>
+        <Style Selector="Border.icono.bancaria PathIcon">
+            <Setter Property="Foreground" Value="#047857"/>
         </Style>
 
         <Style Selector="Button.terminal:pointerover Border.icono, Button.terminal:focus Border.icono">

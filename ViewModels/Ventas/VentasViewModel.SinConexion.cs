@@ -772,8 +772,18 @@ public partial class VentasViewModel
     /// Tarjeta cobrada en la terminal bancaria sin internet: el cajero captura
     /// la autorización del voucher y el pago se envía con la venta.
     /// </summary>
-    public async Task<bool> RegistrarPagoTarjetaLocalAsync(
-        decimal importe, bool esDebito, string autorizacion, string ultimosDigitos)
+    public Task<bool> RegistrarPagoTarjetaLocalAsync(
+        decimal importe, bool esDebito, string autorizacion, string ultimosDigitos) =>
+        RegistrarPagoTarjetaLocalAsync(
+            esDebito ? FormasPagoPos.TarjetaDebito : FormasPagoPos.TarjetaCredito,
+            importe,
+            autorizacion,
+            ReferenciaTarjetaExterna(ultimosDigitos, sinConexion: true),
+            alRegistrar: null);
+
+
+    private async Task<bool> RegistrarPagoTarjetaLocalAsync(
+        int idFormaPago, decimal importe, string autorizacion, string referencia, Action? alRegistrar)
     {
         if (EstaProcesandoVenta)
             return false;
@@ -786,16 +796,21 @@ public partial class VentasViewModel
 
         try
         {
-            return await RegistrarPagoLocalAsync(
-                new PagoVentaOffline
-                {
-                    IdFormaPago = esDebito ? FormasPagoPos.TarjetaDebito : FormasPagoPos.TarjetaCredito,
-                    Importe = importe,
-                    Autorizacion = autorizacion.Trim(),
-                    Referencia = ReferenciaTarjetaExterna(ultimosDigitos, sinConexion: true)
-                },
-                0m,
-                0m);
+            var pago = new PagoVentaOffline
+            {
+                IdFormaPago = idFormaPago,
+                Importe = importe,
+                Autorizacion = (autorizacion ?? string.Empty).Trim(),
+                Referencia = referencia
+            };
+
+            var ok = await RegistrarPagoLocalAsync(pago, 0m, 0m);
+
+            // El pago quedó guardado en la caja (aunque luego falle terminar la venta).
+            if (ok || _ventaLocal?.Pagos.Contains(pago) == true)
+                alRegistrar?.Invoke();
+
+            return ok;
         }
         finally
         {

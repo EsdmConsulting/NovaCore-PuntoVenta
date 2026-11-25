@@ -667,10 +667,15 @@ public partial class VentasView : UserControl
                         _viewModel.EsVentaSinConexion ||
                         !ConexionService.EstaEnLinea;
 
+                    var terminalesBancarias =
+                        new TerminalPagoConfigurationService()
+                            .ObtenerActivas();
+
                     var selectorTerminal =
                         new SeleccionarTerminalWindow(
                             saldoACobrar,
-                            sinConexion);
+                            sinConexion,
+                            terminalesBancarias.Count > 0);
 
                     // Regresó: vuelve al selector de método de pago.
                     if (!await selectorTerminal.ShowDialog<bool>(owner))
@@ -678,6 +683,27 @@ public partial class VentasView : UserControl
 
                     if (selectorTerminal.TerminalSeleccionada == SeleccionarTerminalWindow.MercadoPago)
                         ventana.MetodoSeleccionado = "TARJETA_MERCADOPAGO";
+
+
+                    // =================================================
+                    // TERMINAL BANCARIA DEL EQUIPO (MANUAL O DIRECTO)
+                    // =================================================
+                    //
+                    // Configuración > Terminales de cobro. El cobro
+                    // directo va por la red local, así que también
+                    // funciona sin internet (el pago se guarda en la caja).
+                    // =================================================
+
+                    if (selectorTerminal.TerminalSeleccionada == SeleccionarTerminalWindow.Bancaria)
+                    {
+                        if (await CobrarConTerminalBancariaAsync(
+                                owner,
+                                saldoACobrar,
+                                terminalesBancarias))
+                            continue;
+
+                        return;
+                    }
                 }
 
                 if (ventana.MetodoSeleccionado == "TARJETA")
@@ -1267,6 +1293,85 @@ public partial class VentasView : UserControl
 
             EnfocarBuscadorProductos();
         }
+    }
+
+
+    // =========================================================
+    // COBRO CON TERMINAL BANCARIA (MANUAL O DIRECTO)
+    // =========================================================
+    //
+    // Devuelve true  -> volver al selector de método de pago
+    //                   (canceló, rechazo, o queda saldo).
+    // Devuelve false -> terminar el flujo de cobro (venta
+    //                   finalizada, error o resultado incierto).
+    //
+    // El pago se registra en el ERP SOLO si quedó aprobado.
+    // =========================================================
+
+    private async Task<bool> CobrarConTerminalBancariaAsync(
+        Window owner,
+        decimal saldoACobrar,
+        System.Collections.Generic.List<
+            NovaCoreESDM.Models.Configuration.TerminalPagoConfiguration> terminales)
+    {
+        var ventana =
+            new PagoTarjetaTerminalWindow(
+                saldoACobrar,
+                NovaCoreESDM.Services.TerminalPago.TerminalPagoClient.ClaveVenta(
+                    _viewModel.IdVentaActual,
+                    _viewModel.UuidVentaActual),
+                _viewModel.FolioVentaActual,
+                terminales
+            );
+
+
+        var confirmado =
+            await ventana
+                .ShowDialog<bool>(
+                    owner
+                );
+
+
+        var resultado =
+            ventana.Resultado;
+
+
+        // Operación incierta: el cliente pudo haber pagado.
+        // No se registra nada y NO se permite cobrar de nuevo.
+        if (resultado is { RequiereVerificacion: true })
+        {
+            _viewModel.MensajeError =
+                resultado.Mensaje;
+
+            return false;
+        }
+
+
+        // Volvió atrás, rechazo o cancelación: la venta sigue igual.
+        if (!confirmado || resultado is null || !resultado.Aprobado)
+            return true;
+
+
+        var registrado =
+            await _viewModel
+                .RegistrarPagoTarjetaAsync(
+                    resultado
+                );
+
+
+        // MensajeError ya trae el motivo. Si la terminal cobró y no se
+        // pudo registrar, el reintento reanuda ese cobro (no cobra otra vez).
+        if (!registrado)
+            return false;
+
+
+        if (_viewModel.SaldoPendiente <= 0 ||
+            _viewModel.VentaFinalizadaCorrectamente)
+            return false;
+
+
+        // Pago mixto: queda saldo.
+        return true;
     }
 
 

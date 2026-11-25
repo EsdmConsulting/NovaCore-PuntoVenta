@@ -2714,19 +2714,92 @@ public static string ReferenciaTarjetaExterna(string ultimosDigitos, bool sinCon
 }
 
 
-public async Task<bool> RegistrarPagoTarjetaExternaAsync(
+public Task<bool> RegistrarPagoTarjetaExternaAsync(
     decimal importe,
     bool esDebito,
     string autorizacion,
-    string ultimosDigitos)
+    string ultimosDigitos) =>
+    RegistrarPagoTarjetaAsync(
+        esDebito ? FormasPagoPos.TarjetaDebito : FormasPagoPos.TarjetaCredito,
+        importe,
+        ReferenciaTarjetaExterna(ultimosDigitos, sinConexion: false),
+        ReferenciaTarjetaExterna(ultimosDigitos, sinConexion: true),
+        autorizacion,
+        alRegistrar: null);
+
+
+// =========================================================
+// PAGO CON TERMINAL BANCARIA DEL EQUIPO (Configuración > Terminales)
+// =========================================================
+//
+// Se llama SOLO cuando la terminal aprobó el cobro (directo) o el
+// cajero capturó las terminaciones (manual). Usa el mismo registro que
+// la terminal externa, así que también funciona sin internet: el cobro
+// directo viaja por la red local y el pago se guarda en la caja.
+// =========================================================
+
+public async Task<bool> RegistrarPagoTarjetaAsync(
+    NovaCoreESDM.Models.TerminalPago.ResultadoCobroTarjeta cobro)
+{
+    if (!cobro.Aprobado || cobro.Importe <= 0)
+    {
+        MensajeError =
+            "El cobro con tarjeta no está aprobado.";
+
+        return false;
+    }
+
+    var nombre = string.IsNullOrWhiteSpace(cobro.NombreTerminal)
+        ? "TERMINAL"
+        : cobro.NombreTerminal.Trim().ToUpperInvariant();
+
+    var referencia = cobro.EsDirecto
+        ? $"{nombre} REF {cobro.Referencia}"
+        : $"{nombre} TERM {cobro.Referencia}";
+
+    var registrado = false;
+
+    var ok = await RegistrarPagoTarjetaAsync(
+        cobro.IdFormaPago,
+        cobro.Importe,
+        referencia,
+        $"{referencia} (SIN CONEXION)",
+        cobro.Autorizacion,
+        alRegistrar: () =>
+        {
+            registrado = true;
+
+            // El cobro aprobado ya quedó aplicado: no se reanuda otra vez.
+            if (cobro.EsDirecto)
+                NovaCoreESDM.Services.TerminalPago.TerminalPagoClient
+                    .MarcarRegistrada(cobro.Referencia);
+        });
+
+    // En cobro directo la terminal YA cobró: el mensaje lo deja claro para
+    // que no se cobre de nuevo (al reintentar se reanuda ese mismo cobro).
+    if (!ok && !registrado && cobro.EsDirecto && !string.IsNullOrWhiteSpace(MensajeError))
+        MensajeError = $"La terminal cobró (ref. {cobro.Referencia}) pero no se pudo registrar el pago: {MensajeError}";
+
+    return ok;
+}
+
+
+private async Task<bool> RegistrarPagoTarjetaAsync(
+    int idFormaPago,
+    decimal importe,
+    string referencia,
+    string referenciaSinConexion,
+    string autorizacion,
+    Action? alRegistrar)
 {
     if (EsVentaSinConexion || !ConexionService.EstaEnLinea)
     {
         return await RegistrarPagoTarjetaLocalAsync(
+            idFormaPago,
             importe,
-            esDebito,
             autorizacion,
-            ultimosDigitos);
+            referenciaSinConexion,
+            alRegistrar);
     }
 
 
@@ -2777,9 +2850,7 @@ public async Task<bool> RegistrarPagoTarjetaExternaAsync(
                     new RegistrarPagoRequest
                     {
                         IdFormaPago =
-                            esDebito
-                                ? FormasPagoPos.TarjetaDebito
-                                : FormasPagoPos.TarjetaCredito,
+                            idFormaPago,
 
                         IdBanco =
                             null,
@@ -2791,10 +2862,10 @@ public async Task<bool> RegistrarPagoTarjetaExternaAsync(
                             importe,
 
                         Referencia =
-                            ReferenciaTarjetaExterna(ultimosDigitos, sinConexion: false),
+                            referencia,
 
                         Autorizacion =
-                            autorizacion.Trim()
+                            (autorizacion ?? string.Empty).Trim()
                     });
 
 
@@ -2826,6 +2897,8 @@ public async Task<bool> RegistrarPagoTarjetaExternaAsync(
 
         _pagoSinConfirmar =
             false;
+
+        alRegistrar?.Invoke();
 
         MontoPagadoActual =
             resultado.Data.MontoPagado;

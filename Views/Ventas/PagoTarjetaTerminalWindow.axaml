@@ -1,0 +1,256 @@
+<Window
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    x:Class="NovaCoreESDM.Views.Ventas.PagoTarjetaTerminalWindow"
+    Width="560"
+    SizeToContent="Height"
+    MaxHeight="760"
+    CanResize="False"
+    WindowStartupLocation="CenterOwner"
+    ShowInTaskbar="False"
+    Background="#F4F6F8"
+    Title="Cobro con tarjeta">
+
+    <Window.Styles>
+
+        <Style Selector="TextBlock.etiqueta">
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+
+        <Style Selector="TextBox.campo">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="ComboBox.campo">
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        </Style>
+
+        <Style Selector="Button.accion">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="Padding" Value="20,0"/>
+            <Setter Property="CornerRadius" Value="13"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.verde">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#16A34A"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="Button.verde:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#128A3E"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+
+        <Style Selector="Button.gris">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#334155"/>
+        </Style>
+
+        <Style Selector="Button.modo">
+            <Setter Property="Padding" Value="16,12"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <Style Selector="Button.modo.activo">
+            <Setter Property="BorderBrush" Value="#16A34A"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Background" Value="#F0FBF4"/>
+        </Style>
+
+    </Window.Styles>
+
+
+    <Border Padding="28">
+
+        <StackPanel Spacing="18">
+
+            <!-- ENCABEZADO -->
+            <StackPanel Spacing="2" HorizontalAlignment="Center">
+                <TextBlock Text="Cobro con tarjeta"
+                           FontSize="22" FontWeight="Bold"
+                           Foreground="#0B1220"
+                           HorizontalAlignment="Center"/>
+                <TextBlock Text="Total a cobrar"
+                           FontSize="13" Foreground="#94A3B8"
+                           HorizontalAlignment="Center"/>
+                <TextBlock x:Name="TextoImporte"
+                           FontSize="38" FontWeight="Bold"
+                           Foreground="#0B1220"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+
+
+            <!-- MENSAJE -->
+            <Border x:Name="BannerMensaje"
+                    IsVisible="False"
+                    Padding="14,12"
+                    CornerRadius="14"
+                    Background="#FDECEC"
+                    BorderBrush="#F5C2C2"
+                    BorderThickness="1">
+                <TextBlock x:Name="TextoMensaje"
+                           Foreground="#9B1C1C"
+                           FontSize="13"
+                           TextWrapping="Wrap"/>
+            </Border>
+
+
+            <!-- ===================================================== -->
+            <!-- SELECCIÓN                                             -->
+            <!-- ===================================================== -->
+            <StackPanel x:Name="PanelSeleccion" Spacing="16">
+
+                <StackPanel>
+                    <TextBlock Classes="etiqueta" Text="Terminal"/>
+                    <ComboBox x:Name="ComboTerminal"
+                              Classes="campo"
+                              SelectionChanged="Terminal_Changed"/>
+                    <TextBlock x:Name="TextoDetalleTerminal"
+                               Foreground="#94A3B8" FontSize="12"
+                               Margin="2,6,0,0"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <StackPanel>
+                    <TextBlock Classes="etiqueta" Text="Tipo de tarjeta"/>
+                    <StackPanel Orientation="Horizontal" Spacing="24">
+                        <RadioButton x:Name="RadioCredito"
+                                     GroupName="TipoTarjeta"
+                                     Content="Crédito"
+                                     IsChecked="True"/>
+                        <RadioButton x:Name="RadioDebito"
+                                     GroupName="TipoTarjeta"
+                                     Content="Débito"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel>
+                    <TextBlock Classes="etiqueta" Text="¿Cómo se va a cobrar?"/>
+                    <StackPanel Spacing="10">
+
+                        <Button x:Name="BotonModoDirecto"
+                                Classes="modo"
+                                Click="ModoDirecto_Click">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="Cobro directo en la terminal"
+                                           FontWeight="Bold" FontSize="14"
+                                           Foreground="#0F172A"/>
+                                <TextBlock Text="El POS envía el importe a la pantalla de la terminal y confirma el pago automáticamente."
+                                           FontSize="12" Foreground="#64748B"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button x:Name="BotonModoManual"
+                                Classes="modo"
+                                Click="ModoManual_Click">
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="Captura manual"
+                                           FontWeight="Bold" FontSize="14"
+                                           Foreground="#0F172A"/>
+                                <TextBlock Text="Para una terminal que no está conectada al sistema: se capturan las terminaciones del número de pago."
+                                           FontSize="12" Foreground="#64748B"
+                                           TextWrapping="Wrap"/>
+                            </StackPanel>
+                        </Button>
+
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Captura manual -->
+                <StackPanel x:Name="PanelManual" Spacing="14" IsVisible="False">
+                    <StackPanel>
+                        <TextBlock Classes="etiqueta"
+                                   Text="Terminaciones del número de pago (últimos dígitos)"/>
+                        <TextBox x:Name="CajaTerminaciones"
+                                 Classes="campo"
+                                 MaxLength="8"
+                                 Watermark="Ej. 4821"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock Classes="etiqueta"
+                                   Text="Número de autorización (opcional)"/>
+                        <TextBox x:Name="CajaAutorizacion"
+                                 Classes="campo"
+                                 MaxLength="20"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Spacing="10">
+                    <Button x:Name="BotonConfirmar"
+                            Classes="accion verde"
+                            IsEnabled="False"
+                            Click="Confirmar_Click"
+                            Content="Elige cómo cobrar"/>
+                    <Button x:Name="BotonCerrar"
+                            Classes="accion gris"
+                            IsCancel="True"
+                            Click="Cerrar_Click"
+                            Content="Volver"/>
+                </StackPanel>
+
+            </StackPanel>
+
+
+            <!-- ===================================================== -->
+            <!-- PROCESANDO (cobro directo)                            -->
+            <!-- ===================================================== -->
+            <StackPanel x:Name="PanelProcesando" Spacing="16" IsVisible="False">
+
+                <ProgressBar IsIndeterminate="True"
+                             Height="8"
+                             Foreground="#16A34A"
+                             Background="#DCE8F8"/>
+
+                <TextBlock x:Name="TextoTerminalProcesando"
+                           FontSize="13" Foreground="#64748B"
+                           HorizontalAlignment="Center"/>
+
+                <TextBlock x:Name="TextoEstado"
+                           FontSize="17" FontWeight="SemiBold"
+                           Foreground="#0F172A"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"/>
+
+                <Button x:Name="BotonCancelarCobro"
+                        Classes="accion gris"
+                        Click="CancelarCobro_Click"
+                        Content="Cancelar cobro"/>
+
+                <Button x:Name="BotonCerrarIncierto"
+                        Classes="accion gris"
+                        IsVisible="False"
+                        Click="CerrarIncierto_Click"
+                        Content="Cerrar sin confirmar (verificar después)"/>
+
+            </StackPanel>
+
+        </StackPanel>
+
+    </Border>
+
+</Window>
