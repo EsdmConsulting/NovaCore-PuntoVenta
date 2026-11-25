@@ -2181,6 +2181,9 @@ public async Task CargarVentaActualAsync()
 
             nuevoDetalle.IdPrecioAplicado =
                 detalle.IdPrecioAplicado;
+
+            nuevoDetalle.PromocionNombre =
+                detalle.PromocionNombre;
             
             
             nuevoDetalle.ExistenciaDisponible =
@@ -3457,11 +3460,15 @@ public async Task<bool> FinalizarVentaAsync()
                             Producto =
                                 detalle.Producto.Nombre,
 
-                            // CHG-0005: la pieza regalada se identifica en el ticket.
+                            // CHG-0005: la pieza de promoción se identifica en el ticket.
                             Presentacion =
-                                detalle.EsPromocion
-                                    ? $"{detalle.Producto.NombrePresentacion} - PROMOCION (GRATIS)"
-                                    : detalle.Producto.NombrePresentacion,
+                                !detalle.EsPromocion
+                                    ? detalle.Producto.NombrePresentacion
+                                    : !string.IsNullOrWhiteSpace(detalle.PromocionNombre)
+                                        ? $"{detalle.Producto.NombrePresentacion} - PROMO {detalle.PromocionNombre}"
+                                        : detalle.PrecioUnitario <= 0m
+                                            ? $"{detalle.Producto.NombrePresentacion} - PROMOCION (GRATIS)"
+                                            : $"{detalle.Producto.NombrePresentacion} - PROMOCION",
 
                             Cantidad =
                                 detalle.Cantidad,
@@ -6111,6 +6118,9 @@ private async Task QuitarClienteAsync()
 
     private void ActualizarTotales()
     {
+        // CHG-0005 fase 2: ¿la venta ya cumple alguna promoción?
+        ProgramarRevisionPromociones();
+
         OnPropertyChanged(
             nameof(CarritoVacio));
 

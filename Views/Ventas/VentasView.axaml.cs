@@ -142,6 +142,9 @@ public partial class VentasView : UserControl
                 _viewModel.SolicitarProductoGratis -=
                     OnSolicitarProductoGratis;
 
+                _viewModel.SolicitarAplicarPromocion -=
+                    OnSolicitarAplicarPromocion;
+
                 _viewModel.PropertyChanged -=
                     ViewModel_PropertyChanged;
             }
@@ -188,6 +191,12 @@ public partial class VentasView : UserControl
 
             _viewModel.SolicitarProductoGratis +=
                 OnSolicitarProductoGratis;
+
+            _viewModel.SolicitarAplicarPromocion -=
+                OnSolicitarAplicarPromocion;
+
+            _viewModel.SolicitarAplicarPromocion +=
+                OnSolicitarAplicarPromocion;
 
             _viewModel.PropertyChanged +=
                 ViewModel_PropertyChanged;
@@ -451,6 +460,70 @@ public partial class VentasView : UserControl
     // =========================================================
     // SELECCIONAR PRESENTACIÓN
     // =========================================================
+
+    // =========================================================
+    // CHG-0005 FASE 2: APLICAR PROMOCIÓN CONFIGURADA
+    // =========================================================
+    //
+    // Siempre con la autorización del supervisor (el administrador
+    // que cobra no se la pide a sí mismo). El servidor vuelve a
+    // revisar que se cumpla y ajusta las piezas.
+    // =========================================================
+
+    private async void OnSolicitarAplicarPromocion(
+        NovaCoreESDM.Models.Ventas.PromocionVenta promocion)
+    {
+        if (_viewModel is null ||
+            TopLevel.GetTopLevel(this) is not Window owner)
+            return;
+
+        NovaCoreESDM.Views.Sesion.AutorizacionAdministradorWindow? autorizacion = null;
+
+        try
+        {
+            if (!NovaCoreESDM.Models.Session.PosSession.EsAdministrador)
+            {
+                autorizacion =
+                    new NovaCoreESDM.Views.Sesion.AutorizacionAdministradorWindow(
+                        "Autorizar promoción",
+                        $"Promoción «{promocion.TextoTitulo}»: {promocion.Descripcion}. " +
+                        $"El cliente ahorra ${promocion.Ahorro:N2}. Se necesita la autorización de un administrador.");
+
+                if (await autorizacion.ShowDialog<string?>(owner) is null)
+                {
+                    _viewModel.MensajeError =
+                        "No se autorizó: la promoción no se aplicó.";
+
+                    return;
+                }
+            }
+
+            await _viewModel.AplicarPromocionAutorizadaAsync(promocion);
+        }
+        catch (Exception ex)
+        {
+            _viewModel.MensajeError =
+                $"No fue posible aplicar la promoción: {ex.Message}";
+        }
+        finally
+        {
+            if (autorizacion is not null)
+            {
+                try
+                {
+                    await new NovaCoreESDM.Services.Cancelaciones.CancelacionesService()
+                        .CerrarAutorizacionAsync();
+                }
+                catch
+                {
+                    // El servidor la vence sola.
+                }
+            }
+
+            EnfocarBuscadorProductos();
+        }
+    }
+
 
     // =========================================================
     // CHG-0005: PRODUCTO GRATIS POR PROMOCIÓN

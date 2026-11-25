@@ -123,6 +123,10 @@ public partial class VentasViewModel
         if (cantidadNueva >= detalle.Cantidad || EsDeshacerUltimoAgregado(detalle, cantidadNueva))
             return PermisoQuitarProducto.Libre;
 
+        // Quitar una pieza de promoción solo sube lo que se cobra: no pide permiso.
+        if (detalle.EsPromocion)
+            return PermisoQuitarProducto.Libre;
+
         // El administrador que está cobrando no se pide permiso a sí mismo.
         if (PosSession.EsAdministrador)
         {

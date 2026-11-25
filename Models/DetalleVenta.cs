@@ -201,7 +201,11 @@ public partial class DetalleVenta : ObservableObject
         get
         {
             if (EsPromocion)
-                return "PROMOCIÓN · GRATIS";
+                return !string.IsNullOrWhiteSpace(PromocionNombre)
+                    ? $"PROMOCIÓN · {PromocionNombre}"
+                    : PrecioUnitario <= 0m
+                        ? "PROMOCIÓN · GRATIS"
+                        : "PROMOCIÓN";
 
             if (string.IsNullOrWhiteSpace(TipoPrecioAplicado))
                 return "Precio";
@@ -235,6 +239,11 @@ public partial class DetalleVenta : ObservableObject
     // =========================================================
 
     public const string TipoPrecioPromocion = "PROMOCION";
+
+    /// <summary>Promoción configurada que generó la línea (fase 2), si aplica.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TextoTipoPrecio))]
+    private string? _promocionNombre;
 
     public bool EsPromocion =>
         string.Equals(

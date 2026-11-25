@@ -541,6 +541,67 @@ public async Task<ActualizarVentaResponse>
     
     
     // =========================================================
+    // PROMOCIONES CONFIGURABLES (CHG-0005 fase 2)
+    // =========================================================
+
+    public async Task<PromocionesVentaResponse> ObtenerPromocionesVentaAsync(int idVenta)
+    {
+        try
+        {
+            using var response =
+                await ApiClient.Http.GetAsync(
+                    $"api/pos/ventas/{idVenta}/promociones",
+                    LimiteRapido());
+
+            if (!response.IsSuccessStatusCode)
+                return new PromocionesVentaResponse { Res = 0 };
+
+            var contenido =
+                LimpiarRespuestaPhp(
+                    await response.Content.ReadAsStringAsync());
+
+            return string.IsNullOrWhiteSpace(contenido)
+                ? new PromocionesVentaResponse { Res = 0 }
+                : JsonSerializer.Deserialize<PromocionesVentaResponse>(contenido, JsonOptions)
+                  ?? new PromocionesVentaResponse { Res = 0 };
+        }
+        catch (Exception)
+        {
+            // No es crítico: sin respuesta simplemente no se ofrecen promociones.
+            return new PromocionesVentaResponse { Res = 0 };
+        }
+    }
+
+
+    public async Task<AplicarPromocionResponse> AplicarPromocionAsync(int idVenta, int idPromocion)
+    {
+        try
+        {
+            using var response =
+                await ApiClient.Http.PostAsJsonAsync(
+                    $"api/pos/ventas/{idVenta}/promociones/{idPromocion}/aplicar",
+                    new { },
+                    LimiteRapido());
+
+            var contenido =
+                LimpiarRespuestaPhp(
+                    await response.Content.ReadAsStringAsync());
+
+            Console.WriteLine($"RESPUESTA API APLICAR PROMOCION ({(int)response.StatusCode}): {contenido}");
+
+            return string.IsNullOrWhiteSpace(contenido)
+                ? new AplicarPromocionResponse { Res = 0, Msg = "El servidor no devolvió información al aplicar la promoción." }
+                : JsonSerializer.Deserialize<AplicarPromocionResponse>(contenido, JsonOptions)
+                  ?? new AplicarPromocionResponse { Res = 0, Msg = "El servidor devolvió una respuesta inválida." };
+        }
+        catch (JsonException)
+        {
+            return new AplicarPromocionResponse { Res = 0, Msg = "El servidor todavía no tiene las promociones configurables." };
+        }
+    }
+
+
+    // =========================================================
     // PRODUCTO GRATIS POR PROMOCIÓN (CHG-0005)
     // =========================================================
     //

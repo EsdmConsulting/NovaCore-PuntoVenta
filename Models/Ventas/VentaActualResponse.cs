@@ -180,6 +180,10 @@ public class VentaActualDetalle
     [JsonPropertyName("id_precio_aplicado")]
     public int? IdPrecioAplicado { get; set; }
 
+    // CHG-0005 fase 2: nombre de la promoción configurada que generó la línea.
+    [JsonPropertyName("promocion_nombre")]
+    public string? PromocionNombre { get; set; }
+
 
     // =========================================================
     // ESTADO

@@ -1052,9 +1052,11 @@ public partial class VentasViewModel
             Productos = venta.Lineas.Select(l => new TicketVentaDetalle
             {
                 Producto = l.Nombre,
-                Presentacion = string.Equals(l.TipoPrecio, DetalleVenta.TipoPrecioPromocion, StringComparison.OrdinalIgnoreCase)
-                    ? $"{l.NombrePresentacion} - PROMOCION (GRATIS)"
-                    : l.NombrePresentacion,
+                Presentacion = !string.Equals(l.TipoPrecio, DetalleVenta.TipoPrecioPromocion, StringComparison.OrdinalIgnoreCase)
+                    ? l.NombrePresentacion
+                    : l.PrecioUnitario <= 0m
+                        ? $"{l.NombrePresentacion} - PROMOCION (GRATIS)"
+                        : $"{l.NombrePresentacion} - PROMOCION",
                 Cantidad = l.Cantidad,
                 PrecioUnitario = l.PrecioUnitario,
                 Importe = l.Importe
