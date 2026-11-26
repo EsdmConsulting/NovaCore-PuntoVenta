@@ -84,6 +84,7 @@ public partial class VentasViewModel
                 _ultimoAgregado = null;
                 _cantidadAntesUltimoAgregado = 0m;
                 _productosCancelados.Clear();
+                LimpiarPagosRegistrados();
             }
         };
     }

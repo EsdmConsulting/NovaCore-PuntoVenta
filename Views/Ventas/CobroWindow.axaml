@@ -8,10 +8,10 @@
         Icon="/Assets/Brand/esdm-app-icon.ico"
 
         Width="860"
-        Height="660"
+        Height="760"
 
         MinWidth="680"
-        MinHeight="560"
+        MinHeight="640"
 
         CanResize="True"
 
@@ -110,9 +110,71 @@
               Margin="24,22,24,8"
               RowDefinitions="Auto,*">
 
-            <Grid Grid.Row="0"
-                  ColumnDefinitions="*,Auto"
-                  Margin="6,0,6,8">
+            <StackPanel Grid.Row="0"
+                        Spacing="12"
+                        Margin="6,0,6,8">
+
+                <!-- PAGOS YA REGISTRADOS (cobro dividido) -->
+                <Border x:Name="PanelPagosRegistrados"
+                        IsVisible="False"
+                        Background="#F0FBF4"
+                        BorderBrush="#BBF7D0"
+                        BorderThickness="1"
+                        CornerRadius="12"
+                        Padding="14,9">
+                    <TextBlock x:Name="TextoPagosRegistrados"
+                               Foreground="#15803D"
+                               FontSize="13"
+                               FontWeight="SemiBold"
+                               TextWrapping="Wrap"/>
+                </Border>
+
+                <!-- ¿CUÁNTO CON ESTE MÉTODO? -->
+                <Border Background="White"
+                        BorderBrush="#E6EAEE"
+                        BorderThickness="1"
+                        CornerRadius="16"
+                        Padding="16,12">
+                    <StackPanel Spacing="8">
+                        <Grid ColumnDefinitions="Auto,170,*"
+                              ColumnSpacing="12">
+
+                            <TextBlock Text="¿Cuánto paga con este método?"
+                                       Foreground="#0B1220"
+                                       FontSize="15"
+                                       FontWeight="Bold"
+                                       VerticalAlignment="Center"/>
+
+                            <TextBox x:Name="CajaMonto"
+                                     Grid.Column="1"
+                                     Height="44"
+                                     FontSize="20"
+                                     FontWeight="Bold"
+                                     HorizontalContentAlignment="Right"
+                                     VerticalContentAlignment="Center"
+                                     CornerRadius="12"
+                                     BorderBrush="#86EFAC"
+                                     BorderThickness="2"
+                                     TextChanged="Monto_TextChanged"/>
+
+                            <WrapPanel Grid.Column="2"
+                                       Orientation="Horizontal"
+                                       VerticalAlignment="Center">
+                                <Button Classes="chipMonto" Content="Todo" Click="MontoTodo_Click"/>
+                                <Button Classes="chipMonto" Content="Mitad" Click="MontoMitad_Click"/>
+                                <Button Classes="chipMonto" Content="$100" Tag="100" Click="MontoFijo_Click"/>
+                                <Button Classes="chipMonto" Content="$200" Tag="200" Click="MontoFijo_Click"/>
+                                <Button Classes="chipMonto" Content="$500" Tag="500" Click="MontoFijo_Click"/>
+                            </WrapPanel>
+                        </Grid>
+
+                        <TextBlock x:Name="TextoAyudaMonto"
+                                   Text="Para dividir el pago, escribe una parte y elige el método. Lo que falte se cobra después con otro método."
+                                   Foreground="#64748B"
+                                   FontSize="12"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+                </Border>
 
                 <StackPanel Spacing="2">
                     <TextBlock Text="¿Cómo pagará el cliente?"
@@ -124,7 +186,7 @@
                                FontSize="12"/>
                 </StackPanel>
 
-            </Grid>
+            </StackPanel>
 
             <ScrollViewer Grid.Row="1"
                           VerticalScrollBarVisibility="Auto"
@@ -372,6 +434,28 @@
         <Style Selector="Border.iconoMetodo PathIcon">
             <Setter Property="Width" Value="26"/>
             <Setter Property="Height" Value="26"/>
+        </Style>
+
+        <!-- Montos rápidos (cobro dividido) -->
+        <Style Selector="Button.chipMonto">
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="Margin" Value="0,2,6,2"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Background" Value="#F0FBF4"/>
+            <Setter Property="BorderBrush" Value="#BBF7D0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#15803D"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.chipMonto:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#DCFCE7"/>
+            <Setter Property="BorderBrush" Value="#22C55E"/>
+            <Setter Property="Foreground" Value="#14532D"/>
         </Style>
 
         <!-- Número de atajo -->

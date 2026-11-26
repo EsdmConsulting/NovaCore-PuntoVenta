@@ -17,6 +17,12 @@ public partial class CobroWindow : Window
 
     public string? MetodoSeleccionado { get; set; }
 
+    /// <summary>
+    /// Cuánto se cobra con el método elegido (por defecto, todo lo que falta).
+    /// Si es menos, el resto se cobra después con otro método (pago dividido).
+    /// </summary>
+    public decimal MontoACobrar { get; private set; }
+
 
     // =========================================================
     // VIEWMODEL DE LA VENTA
@@ -62,6 +68,27 @@ public partial class CobroWindow : Window
         }
 
 
+        // =====================================================
+        // COBRO DIVIDIDO
+        // =====================================================
+
+        MontoACobrar = totalVenta;
+        PonerMonto(totalVenta);
+
+        if (_viewModel.PagosRegistrados.Count > 0)
+        {
+            PanelPagosRegistrados.IsVisible = true;
+            TextoPagosRegistrados.Text =
+                $"Pagos registrados:   {_viewModel.TextoPagosRegistrados}";
+        }
+        else if (_viewModel.TienePagosParciales)
+        {
+            PanelPagosRegistrados.IsVisible = true;
+            TextoPagosRegistrados.Text =
+                $"Ya se pagaron ${_viewModel.MontoPagadoActual:N2} de esta venta.";
+        }
+
+
         // Sin internet: efectivo, o tarjeta cobrada en la terminal y
         // capturada a mano (autorización del voucher).
         if (_viewModel.EsVentaSinConexion ||
@@ -99,6 +126,21 @@ public partial class CobroWindow : Window
     protected override void OnKeyDown(
         KeyEventArgs e)
     {
+        // Escribiendo el monto: los números son del monto, no atajos.
+        // Enter cobra con Efectivo (lo más común).
+        if (CajaMonto.IsFocused)
+        {
+            if (e.Key == Key.Enter)
+            {
+                e.Handled = true;
+                BotonEfectivo.RaiseEvent(new RoutedEventArgs(Button.ClickEvent));
+                return;
+            }
+
+            base.OnKeyDown(e);
+            return;
+        }
+
         var metodos =
             new[]
             {
@@ -194,6 +236,89 @@ public partial class CobroWindow : Window
 
 
     // =========================================================
+    // MONTO A COBRAR CON EL MÉTODO (COBRO DIVIDIDO)
+    // =========================================================
+
+    private bool _ajustandoMonto;
+
+    private void PonerMonto(decimal monto)
+    {
+        monto = Math.Clamp(Math.Round(monto, 2), 0m, TotalVenta);
+
+        _ajustandoMonto = true;
+        CajaMonto.Text = monto.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+        _ajustandoMonto = false;
+
+        Actualizar();
+    }
+
+    private bool LeerMonto(out decimal monto) =>
+        decimal.TryParse(
+            (CajaMonto.Text ?? string.Empty).Replace("$", string.Empty).Replace(",", string.Empty).Trim(),
+            System.Globalization.NumberStyles.Number,
+            System.Globalization.CultureInfo.InvariantCulture,
+            out monto);
+
+    private void Actualizar()
+    {
+        var valido = LeerMonto(out var monto) && monto > 0m && monto <= TotalVenta + 0.005m;
+
+        if (valido)
+            MontoACobrar = Math.Round(Math.Min(monto, TotalVenta), 2);
+
+        var parcial = valido && MontoACobrar < TotalVenta;
+
+        TextoAyudaMonto.Text =
+            !valido
+                ? $"Escribe un monto entre $0.01 y ${TotalVenta:N2}."
+                : parcial
+                    ? $"Pago dividido: se cobrarán ${MontoACobrar:N2} con el método que elijas y quedarán ${TotalVenta - MontoACobrar:N2} por cobrar."
+                    : "Para dividir el pago, escribe una parte y elige el método. Lo que falte se cobra después con otro método.";
+
+        TextoAyudaMonto.Foreground = Avalonia.Media.Brush.Parse(
+            !valido ? "#B91C1C" : parcial ? "#15803D" : "#64748B");
+
+        // El crédito es por toda la venta.
+        BotonCredito.IsEnabled =
+            _creditoPermitido && valido && !parcial && !_viewModel.TienePagosParciales;
+    }
+
+    private bool _creditoPermitido = true;
+
+    private void Monto_TextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (!_ajustandoMonto)
+            Actualizar();
+    }
+
+    private void MontoTodo_Click(object? sender, RoutedEventArgs e) => PonerMonto(TotalVenta);
+
+    private void MontoMitad_Click(object? sender, RoutedEventArgs e) => PonerMonto(Math.Round(TotalVenta / 2m, 2));
+
+    private void MontoFijo_Click(object? sender, RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: string tag } &&
+            decimal.TryParse(tag, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var monto))
+            PonerMonto(Math.Min(monto, TotalVenta));
+    }
+
+    /// <summary>false = el monto no es válido (se muestra el motivo).</summary>
+    private bool MontoValido()
+    {
+        if (LeerMonto(out var monto) && monto > 0m && monto <= TotalVenta + 0.005m)
+        {
+            MontoACobrar = Math.Round(Math.Min(monto, TotalVenta), 2);
+            return true;
+        }
+
+        MostrarMensaje($"Escribe cuánto se cobra con este método (de $0.01 a ${TotalVenta:N2}).");
+        CajaMonto.Focus();
+        CajaMonto.SelectAll();
+        return false;
+    }
+
+
+    // =========================================================
     // EFECTIVO
     // =========================================================
 
@@ -201,6 +326,9 @@ public partial class CobroWindow : Window
         object? sender,
         RoutedEventArgs e)
     {
+        if (!MontoValido())
+            return;
+
         MetodoSeleccionado =
             "EFECTIVO";
 
@@ -216,6 +344,9 @@ public partial class CobroWindow : Window
         object? sender,
         RoutedEventArgs e)
     {
+        if (!MontoValido())
+            return;
+
         MetodoSeleccionado =
             "TRANSFERENCIA";
 
@@ -231,6 +362,9 @@ public partial class CobroWindow : Window
         object? sender,
         RoutedEventArgs e)
     {
+        if (!MontoValido())
+            return;
+
         MetodoSeleccionado =
             "TARJETA";
 
@@ -285,6 +419,15 @@ public partial class CobroWindow : Window
         object? sender,
         RoutedEventArgs e)
     {
+        if (!MontoValido())
+            return;
+
+        if (MontoACobrar < TotalVenta || _viewModel.TienePagosParciales)
+        {
+            MostrarMensaje("El crédito es por el total de la venta: no se puede combinar con otros pagos.");
+            return;
+        }
+
         try
         {
             // =====================================================

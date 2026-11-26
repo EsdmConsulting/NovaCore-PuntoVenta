@@ -918,8 +918,24 @@ public partial class VentasView : UserControl
             // FLUJO DE COBRO
             // =========================================================
 
+            // Cobro dividido: qué método se usó en la vuelta anterior y
+            // cuánto estaba pagado antes, para anotarlo en la lista.
+            string? metodoAnterior = null;
+            var pagadoAntes = _viewModel.MontoPagadoActual;
+
             while (true)
             {
+                if (metodoAnterior is not null &&
+                    _viewModel.MontoPagadoActual > pagadoAntes)
+                {
+                    _viewModel.AgregarPagoRegistrado(
+                        VentasViewModel.NombreMetodoPago(metodoAnterior),
+                        _viewModel.MontoPagadoActual - pagadoAntes);
+                }
+
+                metodoAnterior = null;
+                pagadoAntes = _viewModel.MontoPagadoActual;
+
                 var saldoACobrar =
                     _viewModel.SaldoPendiente;
 
@@ -950,6 +966,26 @@ public partial class VentasView : UserControl
 
                 if (!resultado)
                     return;
+
+
+                // =====================================================
+                // COBRO DIVIDIDO: SE COBRA SOLO LO ELEGIDO
+                // =====================================================
+                //
+                // Por defecto es todo lo que falta. Si el cajero puso
+                // menos, ese monto es el que se cobra con el método y
+                // el resto se cobra en la siguiente vuelta.
+                // =====================================================
+
+                saldoACobrar =
+                    Math.Min(
+                        saldoACobrar,
+                        ventana.MontoACobrar > 0
+                            ? ventana.MontoACobrar
+                            : saldoACobrar);
+
+                metodoAnterior =
+                    ventana.MetodoSeleccionado;
 
 
                 // =====================================================
