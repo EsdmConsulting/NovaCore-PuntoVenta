@@ -1084,7 +1084,7 @@ public partial class VentasViewModel
                 : efectivo > 0 && tarjeta > 0
                     ? "PAGO MIXTO"
                     : tarjeta > 0 ? "Tarjeta" : "Efectivo",
-            ContenidoQr = "https://plataformaluisfer.com/Plataforma_LuisFer/auth/login"
+            ContenidoQr = TicketVenta.UrlPlataforma
         };
 
         await EntregarTicketYLimpiarAsync(ticket);

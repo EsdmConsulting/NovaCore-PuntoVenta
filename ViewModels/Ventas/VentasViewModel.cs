@@ -3617,7 +3617,7 @@ public async Task<bool> FinalizarVentaAsync()
                                     : (resultado.Data.Total > 0 && resultado.Data.MontoPagado == 0 ? "Crédito" : string.Empty),
 
                 ContenidoQr =
-                    "https://plataformaluisfer.com/Plataforma_LuisFer/auth/login"
+                    TicketVenta.UrlPlataforma
             };
 
 

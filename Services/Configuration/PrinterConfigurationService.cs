@@ -19,7 +19,7 @@ public class PrinterConfigurationService
             : Path.Combine(
                 Environment.GetFolderPath(
                     Environment.SpecialFolder.LocalApplicationData),
-                "NovaCoreESDM");
+                NovaCoreESDM.Services.Api.AmbienteServidor.CarpetaDatos);
 
     private static readonly string ArchivoConfiguracion =
         Path.Combine(DirectorioDatos, "printer-config.json");

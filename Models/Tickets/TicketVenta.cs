@@ -113,8 +113,11 @@ public class TicketVenta
     // QR POR DEFECTO
     // =========================================================
 
+    // Mismo destino que el QR del ticket de venta: la Plataforma LuisFer
+    // (producción), donde el cliente entra a facturar. Antes la reimpresión
+    // apuntaba a una página del servidor de pruebas.
     public const string UrlPlataforma =
-        "https://nubeesdm8.ddns.net:4433/LuisFerWeb/portal-de-facturacion";
+        "https://plataformaluisfer.com/Plataforma_LuisFer/auth/login";
 
 
     // =========================================================

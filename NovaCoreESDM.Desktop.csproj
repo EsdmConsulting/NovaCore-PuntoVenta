@@ -33,6 +33,13 @@
         </RuntimeIdentifiers>
     </PropertyGroup>
 
+    <!-- Ambiente del servidor: pruebas (por defecto) o producción.
+         dotnet publish ... -p:Ambiente=Produccion
+         Ver Services/Api/AmbienteServidor.cs -->
+    <PropertyGroup Condition="'$(Ambiente)' == 'Produccion'">
+        <DefineConstants>$(DefineConstants);PRODUCCION</DefineConstants>
+    </PropertyGroup>
+
     <ItemGroup>
 
         <!-- Ya incluye todos los archivos dentro de Assets,

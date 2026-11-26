@@ -39,6 +39,9 @@ public partial class MainWindow
     {
         InitializeComponent();
 
+        // La versión de pruebas lo dice en el título (no confundirla con producción).
+        Title += NovaCoreESDM.Services.Api.AmbienteServidor.SufijoTitulo;
+
         // ========================================================
         // ESTADO INICIAL
         // ========================================================

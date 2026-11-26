@@ -18,11 +18,9 @@ public class TerminalConfigurationService
                 Environment.SpecialFolder.LocalApplicationData
             );
 
+        // Misma carpeta que el resto de los datos (por ambiente).
         _directorioConfiguracion =
-            Path.Combine(
-                localAppData,
-                "NovaCoreESDM"
-            );
+            PrinterConfigurationService.DirectorioDatos;
 
         _archivoConfiguracion =
             Path.Combine(

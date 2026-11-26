@@ -19,8 +19,9 @@ public static class ApiClient
 
     public static HttpClient Http { get; } = new(Handler)
     {
+        // Pruebas o producción: se elige al compilar (ver AmbienteServidor).
         BaseAddress = new Uri(
-            "https://nubeesdm8.ddns.net:4433/Plataforma_LuisFer/"),
+            AmbienteServidor.Url),
 
         // Antes 100 s (valor por defecto): con un internet "a medias" el
         // cajero se quedaba esperando. A los 30 s se pasa a modo sin conexión.

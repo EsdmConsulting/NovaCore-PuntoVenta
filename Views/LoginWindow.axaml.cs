@@ -42,6 +42,9 @@ public partial class LoginWindow : Window
     {
         InitializeComponent();
 
+        // La versión de pruebas lo dice en el título (no confundirla con producción).
+        Title += NovaCoreESDM.Services.Api.AmbienteServidor.SufijoTitulo;
+
 
         _viewModel =
             new LoginViewModel();
