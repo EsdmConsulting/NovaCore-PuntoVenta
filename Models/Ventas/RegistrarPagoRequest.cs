@@ -31,4 +31,9 @@ public class RegistrarPagoRequest
     [JsonPropertyName("confirmar_autorizacion_duplicada")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? ConfirmarAutorizacionDuplicada { get; set; }
+
+    /// <summary>Datos del banco del cobro directo con el lector. Solo se envía si hay.</summary>
+    [JsonPropertyName("detalle_tarjeta")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public DetalleTarjetaPago? DetalleTarjeta { get; set; }
 }

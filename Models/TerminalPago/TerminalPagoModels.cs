@@ -48,6 +48,17 @@ public class CobroTerminal
     [JsonPropertyName("decline_reason")]
     public string? MotivoRechazo { get; set; }
 
+    /// <summary>
+    /// Datos del banco (solo el puente del lector BBVA o su simulador).
+    /// Una terminal de red genérica no lo manda: queda null.
+    /// </summary>
+    [JsonPropertyName("bank")]
+    public DatosBancoTerminal? Banco { get; set; }
+
+    /// <summary>Cancelación o devolución en el banco de este cobro (puente BBVA).</summary>
+    [JsonPropertyName("void")]
+    public ReversoTerminal? Reverso { get; set; }
+
     [JsonIgnore]
     public decimal Importe => ImporteCentavos / 100m;
 
@@ -75,6 +86,111 @@ public class CobroTerminal
             "PROCESANDO" => "Procesando el pago con el banco…",
             _ => "Esperando respuesta de la terminal…"
         };
+}
+
+/// <summary>
+/// Respuesta del banco tal como la entrega el puente de la caja
+/// (contrato api/v1 del puente: objeto "bank" de cada cobro).
+/// </summary>
+public class DatosBancoTerminal
+{
+    /// <summary>BBVA_TOTALPOS o SIMULADOR.</summary>
+    [JsonPropertyName("processor")]
+    public string? Procesador { get; set; }
+
+    [JsonPropertyName("affiliation")]
+    public string? Afiliacion { get; set; }
+
+    [JsonPropertyName("terminal_number")]
+    public string? NumeroTerminal { get; set; }
+
+    [JsonPropertyName("operation")]
+    public string? Operacion { get; set; }
+
+    [JsonPropertyName("transaction_name")]
+    public string? NombreTransaccion { get; set; }
+
+    [JsonPropertyName("currency")]
+    public string? Moneda { get; set; }
+
+    [JsonPropertyName("response_code")]
+    public string? CodigoRespuesta { get; set; }
+
+    [JsonPropertyName("legend")]
+    public string? Leyenda { get; set; }
+
+    [JsonPropertyName("financial_reference")]
+    public string? ReferenciaFinanciera { get; set; }
+
+    [JsonPropertyName("sequence")]
+    public string? Secuencia { get; set; }
+
+    /// <summary>CREDITO / DEBITO (o "c" / "d" como lo da el SDK).</summary>
+    [JsonPropertyName("card_product")]
+    public string? Producto { get; set; }
+
+    [JsonPropertyName("issuer")]
+    public string? Emisor { get; set; }
+
+    [JsonPropertyName("cardholder")]
+    public string? Tarjetahabiente { get; set; }
+
+    [JsonPropertyName("entry_mode")]
+    public string? ModoLectura { get; set; }
+
+    [JsonPropertyName("aid")]
+    public string? Aid { get; set; }
+
+    [JsonPropertyName("app_label")]
+    public string? Aplicacion { get; set; }
+
+    [JsonPropertyName("arqc")]
+    public string? Arqc { get; set; }
+
+    /// <summary>AUTOGRAFA / ELECTRONICA / SIN_FIRMA (o 01 / 02 / 00).</summary>
+    [JsonPropertyName("signature")]
+    public string? Firma { get; set; }
+
+    [JsonPropertyName("bank_datetime")]
+    public string? FechaHora { get; set; }
+}
+
+/// <summary>
+/// Cancelación (mismo día bancario, sin tarjeta) o devolución (con la
+/// tarjeta del cliente) de un cobro aprobado, hecha por el puente.
+/// </summary>
+public class ReversoTerminal
+{
+    /// <summary>CANCELACION o DEVOLUCION.</summary>
+    [JsonPropertyName("type")]
+    public string Tipo { get; set; } = string.Empty;
+
+    [JsonPropertyName("status")]
+    public string Estado { get; set; } = string.Empty;
+
+    [JsonPropertyName("stage")]
+    public string? Etapa { get; set; }
+
+    [JsonPropertyName("amount_cents")]
+    public long ImporteCentavos { get; set; }
+
+    [JsonPropertyName("auth_code")]
+    public string? Autorizacion { get; set; }
+
+    [JsonPropertyName("financial_reference")]
+    public string? ReferenciaFinanciera { get; set; }
+
+    [JsonPropertyName("response_code")]
+    public string? CodigoRespuesta { get; set; }
+
+    [JsonPropertyName("decline_reason")]
+    public string? Motivo { get; set; }
+
+    [JsonIgnore]
+    public bool Aprobado => Estado == EstadoCobroTerminal.Aprobado;
+
+    [JsonIgnore]
+    public bool Abierto => Estado == EstadoCobroTerminal.Pendiente || Estado == EstadoCobroTerminal.Timeout;
 }
 
 public class ResultadoTerminal<T>
@@ -117,6 +233,9 @@ public class ResultadoCobroTarjeta
     public string NombreTerminal { get; set; } = string.Empty;
 
     public string Mensaje { get; set; } = string.Empty;
+
+    /// <summary>Datos del banco (cobro directo con el lector BBVA o simulador); null en manual.</summary>
+    public NovaCoreESDM.Models.Ventas.DetalleTarjetaPago? Detalle { get; set; }
 
     /// <summary>
     /// true = quedó una operación incierta: NO volver a cobrar la venta.

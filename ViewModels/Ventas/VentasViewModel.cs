@@ -2900,13 +2900,19 @@ public async Task<bool> RegistrarPagoTarjetaAsync(
 
     var registrado = false;
 
+    var detalle = cobro.EsDirecto ? cobro.Detalle : null;
+
+    if (detalle is not null && !string.IsNullOrWhiteSpace(detalle.Ultimos4))
+        referencia += $" TARJ ****{detalle.Ultimos4}";
+
     var lineaTicket = AgregarPagoTarjetaTicket(
         null,
         cobro.Autorizacion,
-        null,
+        detalle?.Ultimos4,
         cobro.Importe,
         cobro.IdFormaPago == FormasPagoPos.TarjetaDebito,
-        nombre);
+        nombre,
+        detalle);
 
     var ok = await RegistrarPagoTarjetaAsync(
         cobro.IdFormaPago,
@@ -2914,6 +2920,7 @@ public async Task<bool> RegistrarPagoTarjetaAsync(
         referencia,
         $"{referencia} (SIN CONEXION)",
         cobro.Autorizacion,
+        detalle: detalle,
         alRegistrar: () =>
         {
             registrado = true;
@@ -2943,7 +2950,8 @@ private async Task<bool> RegistrarPagoTarjetaAsync(
     string referenciaSinConexion,
     string autorizacion,
     Action? alRegistrar,
-    int? idTpvBancaria = null)
+    int? idTpvBancaria = null,
+    DetalleTarjetaPago? detalle = null)
 {
     if (idTpvBancaria is <= 0)
         idTpvBancaria = null;
@@ -2956,7 +2964,8 @@ private async Task<bool> RegistrarPagoTarjetaAsync(
             autorizacion,
             referenciaSinConexion,
             alRegistrar,
-            idTpvBancaria);
+            idTpvBancaria,
+            detalle);
     }
 
 
@@ -3022,7 +3031,10 @@ private async Task<bool> RegistrarPagoTarjetaAsync(
                             referencia,
 
                         Autorizacion =
-                            (autorizacion ?? string.Empty).Trim()
+                            (autorizacion ?? string.Empty).Trim(),
+
+                        DetalleTarjeta =
+                            detalle
                     });
 
 
@@ -3057,7 +3069,8 @@ private async Task<bool> RegistrarPagoTarjetaAsync(
                             Importe = importe,
                             Referencia = referencia,
                             Autorizacion = (autorizacion ?? string.Empty).Trim(),
-                            ConfirmarAutorizacionDuplicada = true
+                            ConfirmarAutorizacionDuplicada = true,
+                            DetalleTarjeta = detalle
                         });
         }
 

@@ -146,4 +146,7 @@ public sealed class PagoVentaOffline
 
     /// <summary>Terminal bancaria con la que se cobró (catálogo del ERP).</summary>
     public int? IdTpvBancaria { get; set; }
+
+    /// <summary>Datos del banco si se cobró directo con el lector (null en captura manual).</summary>
+    public NovaCoreESDM.Models.Ventas.DetalleTarjetaPago? DetalleTarjeta { get; set; }
 }

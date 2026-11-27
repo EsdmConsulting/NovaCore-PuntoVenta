@@ -464,7 +464,8 @@ public static class VentasPendientesService
                 importe = p.Importe,
                 referencia = p.Referencia,
                 autorizacion = p.Autorizacion,
-                id_tpv_bancaria = p.IdTpvBancaria
+                id_tpv_bancaria = p.IdTpvBancaria,
+                detalle_tarjeta = p.DetalleTarjeta
             }),
             productos_cancelados = venta.ProductosCancelados.Select(p => new
             {

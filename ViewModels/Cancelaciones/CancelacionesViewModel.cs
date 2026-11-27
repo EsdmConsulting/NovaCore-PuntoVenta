@@ -571,6 +571,33 @@ public partial class CancelacionesViewModel : ViewModelBase
                 VentaDetalle.Id;
 
 
+            // =================================================
+            // COBROS CON EL LECTOR DEL BANCO
+            // =================================================
+            //
+            // Primero se regresa el cargo de la tarjeta del
+            // cliente (cancelación o devolución en el banco). Si
+            // no se pudo, la venta NO se cancela.
+            // =================================================
+
+            var regreso =
+                await new NovaCoreESDM.Services.TerminalPago.ReversoTarjetaService()
+                    .RegresarCargosAsync(
+                        idVenta,
+                        texto => MensajeExito = texto);
+
+            MensajeExito =
+                string.Empty;
+
+            if (!regreso.Ok)
+            {
+                MensajeError =
+                    regreso.Mensaje;
+
+                return;
+            }
+
+
             var respuesta =
                 await _cancelacionesService
                     .CancelarVentaAsync(
@@ -590,8 +617,9 @@ public partial class CancelacionesViewModel : ViewModelBase
 
 
             MensajeExito =
-                respuesta.Msg ??
-                "Venta cancelada correctamente.";
+                (respuesta.Msg ??
+                 "Venta cancelada correctamente.") +
+                (regreso.Regresados > 0 ? " " + regreso.Mensaje : string.Empty);
 
 
             // =================================================

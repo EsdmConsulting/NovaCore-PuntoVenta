@@ -217,7 +217,9 @@ public partial class PagoTarjetaTerminalWindow : Window
 
         try
         {
-            var envio = await _client.EnviarCobroAsync(terminal, _claveVenta, _folio, _importe);
+            var envio = await _client.EnviarCobroAsync(
+                terminal, _claveVenta, _folio, _importe,
+                NovaCoreESDM.Models.Session.PosSession.Usuario);
 
             if (!envio.Ok || envio.Dato is null)
             {
@@ -263,11 +265,24 @@ public partial class PagoTarjetaTerminalWindow : Window
                         ? string.Empty
                         : $" · {cobro.MarcaTarjeta} ****{cobro.Ultimos4}";
 
+                // Lector del banco: trae los datos del pagaré y si la
+                // tarjeta es de crédito o débito (manda sobre lo elegido).
+                var detalle = DetalleTarjetaPago.Desde(cobro);
+
+                var idFormaPago =
+                    detalle?.Producto switch
+                    {
+                        "DEBITO" => FormasPagoPos.TarjetaDebito,
+                        "CREDITO" => FormasPagoPos.TarjetaCredito,
+                        _ => IdFormaPagoSeleccionada
+                    };
+
                 Resultado = new ResultadoCobroTarjeta
                 {
                     Aprobado = true,
                     EsDirecto = true,
-                    IdFormaPago = IdFormaPagoSeleccionada,
+                    IdFormaPago = idFormaPago,
+                    Detalle = detalle,
                     Importe = cobro.Importe,
                     Referencia = cobro.Referencia,
                     Autorizacion = cobro.Autorizacion ?? string.Empty,
@@ -281,9 +296,14 @@ public partial class PagoTarjetaTerminalWindow : Window
 
             if (cobro.Estado == EstadoCobroTerminal.Rechazado)
             {
+                var motivo =
+                    string.IsNullOrWhiteSpace(cobro.MotivoRechazo)
+                        ? CodigosRespuestaBanco.Texto(cobro.Banco?.CodigoRespuesta)
+                        : cobro.MotivoRechazo;
+
                 SalirDeProcesando(
                     "La terminal rechazó el pago" +
-                    (string.IsNullOrWhiteSpace(cobro.MotivoRechazo) ? "." : $": {cobro.MotivoRechazo}."));
+                    (string.IsNullOrWhiteSpace(motivo) ? "." : $": {motivo.TrimEnd('.')}."));
                 return;
             }
 

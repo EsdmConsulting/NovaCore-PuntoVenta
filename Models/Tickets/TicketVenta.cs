@@ -190,6 +190,12 @@ public class TicketPagoTarjeta
     public bool EsDebito { get; set; }
 
     public decimal Importe { get; set; }
+
+    /// <summary>
+    /// Cobro directo con el lector del banco: con esto se imprime el pagaré
+    /// (copia comercio y cliente). null = voucher capturado a mano.
+    /// </summary>
+    public NovaCoreESDM.Models.Ventas.DetalleTarjetaPago? Pagare { get; set; }
 }
 
 

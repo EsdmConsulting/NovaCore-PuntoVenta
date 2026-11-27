@@ -107,7 +107,8 @@ public class TerminalPagoClient
         TerminalPagoConfiguration terminal,
         string claveVenta,
         string folio,
-        decimal importe)
+        decimal importe,
+        string? operador = null)
     {
         var invalida = Validar(terminal);
 
@@ -183,7 +184,9 @@ public class TerminalPagoClient
             ["amount_cents"] = centavos,
             ["currency"] = "MXN",
             ["external_reference"] = externa,
-            ["description"] = $"Venta POS {Recortar(folio, 60)}".Trim()
+            ["description"] = $"Venta POS {Recortar(folio, 60)}".Trim(),
+            // El puente BBVA lo manda al banco como operador (sale en el pagaré).
+            ["operator"] = Recortar(operador, 30)
         };
 
         var creado = await EnviarAsync(
@@ -238,6 +241,35 @@ public class TerminalPagoClient
             terminal, HttpMethod.Post,
             $"payments/{Uri.EscapeDataString(referencia)}/cancel",
             new JsonObject(), null);
+
+        return r.Ok
+            ? LeerCobro(r.Dato)
+            : ResultadoTerminal<CobroTerminal>.Falla(r.Mensaje, r.SinComunicacion);
+    }
+
+
+    /// <summary>
+    /// Regresa el cargo de un cobro APROBADO (solo el puente BBVA): el puente
+    /// decide CANCELACIÓN (mismo día bancario, por el total) o DEVOLUCIÓN
+    /// (pide la tarjeta del cliente). Es asíncrono: se consulta con
+    /// <see cref="ConsultarAsync"/> hasta que <c>Reverso</c> termine.
+    /// </summary>
+    public async Task<ResultadoTerminal<CobroTerminal>> ReversarAsync(
+        TerminalPagoConfiguration terminal,
+        string referencia,
+        decimal importe,
+        string? operador)
+    {
+        var cuerpo = new JsonObject
+        {
+            ["amount_cents"] = (long)Math.Round(importe * 100m, MidpointRounding.AwayFromZero),
+            ["operator"] = Recortar(operador, 30)
+        };
+
+        var r = await EnviarAsync(
+            terminal, HttpMethod.Post,
+            $"payments/{Uri.EscapeDataString(referencia)}/void",
+            cuerpo, null);
 
         return r.Ok
             ? LeerCobro(r.Dato)
@@ -370,6 +402,8 @@ public class TerminalPagoClient
             "INVALID_TRANSITION" => "La operación ya no puede cancelarse.",
             "INDETERMINATE_STATE" => "El resultado es incierto. Consulta de nuevo en unos segundos.",
             "IN_FLIGHT" => "La operación ya se está procesando en la terminal.",
+            "ALREADY_VOIDED" => "Ese cobro ya se canceló o devolvió en el banco.",
+            "INVALID_AMOUNT" => "El importe no es válido para el lector.",
             _ => string.IsNullOrWhiteSpace(mensaje)
                 ? $"La terminal respondió con error HTTP {http}."
                 : mensaje

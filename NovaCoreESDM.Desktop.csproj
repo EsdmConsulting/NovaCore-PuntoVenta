@@ -74,4 +74,10 @@
         <PackageReference Include="System.IO.Ports" Version="10.0.0" />
     </ItemGroup>
 
+    <!-- Puente del lector BBVA: proyecto Java aparte (PuenteBBVA/README.md). -->
+    <ItemGroup>
+        <None Remove="PuenteBBVA/**" />
+        <Compile Remove="PuenteBBVA/**" />
+    </ItemGroup>
+
 </Project>

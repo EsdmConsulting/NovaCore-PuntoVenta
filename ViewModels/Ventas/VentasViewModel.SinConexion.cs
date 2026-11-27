@@ -790,7 +790,7 @@ public partial class VentasViewModel
 
     private async Task<bool> RegistrarPagoTarjetaLocalAsync(
         int idFormaPago, decimal importe, string autorizacion, string referencia, Action? alRegistrar,
-        int? idTpvBancaria = null)
+        int? idTpvBancaria = null, DetalleTarjetaPago? detalle = null)
     {
         if (EstaProcesandoVenta)
             return false;
@@ -809,7 +809,8 @@ public partial class VentasViewModel
                 Importe = importe,
                 Autorizacion = (autorizacion ?? string.Empty).Trim(),
                 Referencia = referencia,
-                IdTpvBancaria = idTpvBancaria is > 0 ? idTpvBancaria : null
+                IdTpvBancaria = idTpvBancaria is > 0 ? idTpvBancaria : null,
+                DetalleTarjeta = detalle
             };
 
             var ok = await RegistrarPagoLocalAsync(pago, 0m, 0m);

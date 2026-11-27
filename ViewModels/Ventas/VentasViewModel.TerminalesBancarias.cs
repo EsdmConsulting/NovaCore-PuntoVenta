@@ -36,7 +36,8 @@ public partial class VentasViewModel
         string? ultimosDigitos,
         decimal importe,
         bool esDebito,
-        string? nombreTerminal = null)
+        string? nombreTerminal = null,
+        DetalleTarjetaPago? pagare = null)
     {
         var linea = new TicketPagoTarjeta
         {
@@ -44,7 +45,8 @@ public partial class VentasViewModel
             Autorizacion = (autorizacion ?? string.Empty).Trim(),
             UltimosDigitos = (ultimosDigitos ?? string.Empty).Trim(),
             EsDebito = esDebito,
-            Importe = importe
+            Importe = importe,
+            Pagare = pagare
         };
 
         _pagosTarjetaTicket.Add(linea);
