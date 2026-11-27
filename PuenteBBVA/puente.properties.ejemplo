@@ -1,0 +1,52 @@
+# =====================================================================
+# Puente NovaCore <-> lector BBVA (TOTAL POS SDK)
+# Copie este archivo como puente.properties junto a puente-bbva.jar.
+# =====================================================================
+
+# SIMULADOR (no cobra, para pruebas) o BBVA (cobro real con el SDK)
+puente.modo=SIMULADOR
+
+# Donde escucha el puente. 127.0.0.1 = solo esta computadora (recomendado).
+puente.host=127.0.0.1
+puente.puerto=8091
+
+# Clave que el POS manda en cada peticion. Si se deja vacia se genera una
+# la primera vez en datos/clave.txt (copiela en el POS: Configuracion ›
+# Terminales de cobro › Clave de acceso).
+puente.clave=
+
+# Codigo y nombre del lector (en el POS: Codigo de la terminal).
+terminal.codigo=BBVA
+terminal.nombre=Lector BBVA
+
+# Simulador: true = mas rapido (pruebas automaticas)
+simulador.rapido=false
+
+# ---------------------------------------------------------------------
+# BBVA (solo con puente.modo=BBVA). Datos que entrega BBVA / E-Global.
+# ---------------------------------------------------------------------
+
+# Paquete Java de las clases del SDK (Configuracion, Interfaz, Peticion...).
+# Se ve dentro del .jar del kit. Se pueden poner varios separados por coma.
+bbva.paquete=
+
+# TESTING (pruebas y certificacion), PRODUCCION o SIMULADOR (el de E-Global)
+bbva.ambiente=TESTING
+
+bbva.afiliacion=
+bbva.terminal=
+# MAC registrada en el Gestor de Terminales (vacio = la de esta computadora)
+bbva.mac=
+bbva.id_aplicacion=
+bbva.clave_secreta=
+bbva.clave_bines=
+
+# Lector: puerto COM (Windows, p. ej. COM4) o la IP del lector WiFi
+bbva.pinpad.conexion=COM4
+bbva.pinpad.puerto=1087
+bbva.pinpad.timeout=40
+bbva.pinpad.mensaje=GRUPO LUIS FER
+bbva.pinpad.contactless=true
+
+bbva.host_timeout=40
+bbva.logs=true
