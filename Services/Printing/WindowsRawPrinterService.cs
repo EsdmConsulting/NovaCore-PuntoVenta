@@ -195,14 +195,16 @@ public class WindowsRawPrinterService
                  * al puerto del cajón.
                  */
 
+                /*
+                 * Se manda a los DOS conectores del cajón (pin 2 = m 0 y
+                 * pin 5 = m 1): hay cajones cableados a uno u otro. Al
+                 * conector que no tiene cajón no le pasa nada.
+                 */
                 var comandoAbrirCajon =
                     new byte[]
                     {
-                        0x1B,
-                        0x70,
-                        0x00,
-                        0x19,
-                        0xFA
+                        0x1B, 0x70, 0x00, 0x19, 0xFA,
+                        0x1B, 0x70, 0x01, 0x19, 0xFA
                     };
 
 

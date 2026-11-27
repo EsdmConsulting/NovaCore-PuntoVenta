@@ -54,7 +54,15 @@ public partial class VentasView : UserControl
 
     private readonly System.Text.StringBuilder _scannerBuffer = new();
     private DateTime _ultimoTiempoTeclaScanner = DateTime.MinValue;
-    private const int ScannerMaxDelayMs = 70;
+
+    // Tiempo máximo entre letras para tomarlas como escáner. 100 ms deja
+    // pasar a los inalámbricos/Bluetooth, que son algo más lentos.
+    public const int ScannerMaxDelayMs = 100;
+
+    // Letras que se retuvieron pensando que era el escáner. Si no llega el
+    // Enter, era una persona tecleando rápido: se devuelven al campo.
+    private readonly System.Text.StringBuilder _scannerRetenidas = new();
+    private DispatcherTimer? _scannerTimer;
     private readonly System.Threading.SemaphoreSlim _semaforoEscaneo = new(1, 1);
 
 
@@ -289,6 +297,58 @@ public partial class VentasView : UserControl
             _semaforoEscaneo.Release();
         }
     }
+
+    // Si en un momento no llega el Enter del escáner, las letras retenidas
+    // eran de una persona: se escriben en el campo donde estaba el cursor.
+    private void ProgramarDevolucionLetras()
+    {
+        _scannerTimer ??= CrearTimerEscaner();
+        _scannerTimer.Stop();
+        _scannerTimer.Start();
+    }
+
+    private DispatcherTimer CrearTimerEscaner()
+    {
+        var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(ScannerMaxDelayMs + 80) };
+        timer.Tick += (_, _) =>
+        {
+            timer.Stop();
+            DevolverLetrasRetenidas();
+            _scannerBuffer.Clear();
+        };
+        return timer;
+    }
+
+    private void DevolverLetrasRetenidas()
+    {
+        _scannerTimer?.Stop();
+
+        if (_scannerRetenidas.Length == 0)
+            return;
+
+        var texto = _scannerRetenidas.ToString();
+        _scannerRetenidas.Clear();
+
+        if (TopLevel.GetTopLevel(this)?.FocusManager?.GetFocusedElement() is not TextBox campo || campo.IsReadOnly)
+            return;
+
+        var actual = campo.Text ?? string.Empty;
+        var inicio = Math.Min(campo.SelectionStart, campo.SelectionEnd);
+        var fin = Math.Max(campo.SelectionStart, campo.SelectionEnd);
+        inicio = Math.Clamp(inicio, 0, actual.Length);
+        fin = Math.Clamp(fin, inicio, actual.Length);
+
+        if (campo.MaxLength > 0)
+            texto = texto[..Math.Max(0, Math.Min(texto.Length, campo.MaxLength - (actual.Length - (fin - inicio))))];
+
+        if (texto.Length == 0)
+            return;
+
+        campo.Text = actual[..inicio] + texto + actual[fin..];
+        campo.CaretIndex = inicio + texto.Length;
+        campo.SelectionStart = campo.SelectionEnd = campo.CaretIndex;
+    }
+
 
     private static char? ObtenerCaracterDeTecla(KeyEventArgs e)
     {
@@ -1962,16 +2022,19 @@ public partial class VentasView : UserControl
     // 1. Detectar ENTER (fin de lectura de la checadora)
     if (e.Key == Key.Enter || e.Key == Key.Return)
     {
-        if (_scannerBuffer.Length >= 3 && diff <= 95)
+        if (_scannerBuffer.Length >= 3 && diff <= ScannerMaxDelayMs + 30)
         {
             e.Handled = true;
             var codigoEscaneado = _scannerBuffer.ToString().Trim();
             _scannerBuffer.Clear();
+            _scannerRetenidas.Clear();
+            _scannerTimer?.Stop();
 
             _ = ProcesarCodigoBarrasEscaneadoAsync(codigoEscaneado);
             return;
         }
 
+        DevolverLetrasRetenidas();
         _scannerBuffer.Clear();
     }
     else
@@ -1981,6 +2044,7 @@ public partial class VentasView : UserControl
         {
             if (diff > ScannerMaxDelayMs)
             {
+                DevolverLetrasRetenidas();
                 _scannerBuffer.Clear();
             }
 
@@ -1993,6 +2057,8 @@ public partial class VentasView : UserControl
             if (_scannerBuffer.Length >= 2 && diff <= ScannerMaxDelayMs)
             {
                 e.Handled = true;
+                _scannerRetenidas.Append(caracter.Value);
+                ProgramarDevolucionLetras();
                 return;
             }
         }
@@ -2003,6 +2069,7 @@ public partial class VentasView : UserControl
                 e.Key != Key.LeftCtrl && e.Key != Key.RightCtrl &&
                 e.Key != Key.LeftAlt && e.Key != Key.RightAlt)
             {
+                DevolverLetrasRetenidas();
                 _scannerBuffer.Clear();
             }
         }

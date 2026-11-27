@@ -76,6 +76,17 @@ public class TicketFormatConfigurationService
     }
 
 
+    /// <summary>Guarda el formato (p. ej. el ancho de papel elegido en Configuración).</summary>
+    public void Guardar(TicketFormatConfiguration formato)
+    {
+        Directory.CreateDirectory(PrinterConfigurationService.DirectorioDatos);
+
+        File.WriteAllText(
+            ArchivoFormato,
+            JsonSerializer.Serialize(Normalizar(formato), Opciones));
+    }
+
+
     // Protege la impresión de valores absurdos escritos a mano.
     private static TicketFormatConfiguration Normalizar(
         TicketFormatConfiguration formato)

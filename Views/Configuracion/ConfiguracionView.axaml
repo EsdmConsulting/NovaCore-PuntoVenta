@@ -538,6 +538,26 @@
 
                             </Grid>
 
+                            <!-- Ancho del papel -->
+                            <StackPanel Spacing="6">
+                                <TextBlock Text="Ancho del papel"
+                                           Foreground="#334155"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"/>
+                                <StackPanel Orientation="Horizontal" Spacing="24">
+                                    <RadioButton GroupName="AnchoPapel"
+                                                 Content="80 mm (el más común)"
+                                                 IsChecked="{Binding Papel80mm, Mode=TwoWay}"/>
+                                    <RadioButton GroupName="AnchoPapel"
+                                                 Content="58 mm (impresoras chicas)"
+                                                 IsChecked="{Binding Papel58mm, Mode=TwoWay}"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding MensajePapel}"
+                                           IsVisible="{Binding MensajePapel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                           Foreground="#15803D"
+                                           FontSize="12"/>
+                            </StackPanel>
+
                             <WrapPanel Orientation="Horizontal">
 
                                 <Button Classes="boton verde"
@@ -636,6 +656,43 @@
                         </WrapPanel>
 
                     </StackPanel>
+
+                </StackPanel>
+
+            </Border>
+
+
+            <!-- ================================================= -->
+            <!-- ESCÁNER DE CÓDIGO DE BARRAS                       -->
+            <!-- ================================================= -->
+
+            <Border Classes="seccion">
+
+                <StackPanel Spacing="14">
+
+                    <StackPanel Spacing="2">
+                        <TextBlock Classes="tituloSeccion" Text="Escáner de código de barras"/>
+                        <TextBlock Classes="subtituloSeccion"
+                                   Text="Sirve cualquier escáner USB en modo teclado que mande Enter al final (así vienen casi todos). Escanea un código aquí para revisar que el punto de venta lo reconozca."/>
+                    </StackPanel>
+
+                    <TextBox x:Name="CajaPruebaEscaner"
+                             Height="48"
+                             CornerRadius="12"
+                             VerticalContentAlignment="Center"
+                             FontSize="16"
+                             PlaceholderText="Pon el cursor aquí y escanea un código"/>
+
+                    <Border Padding="14,10"
+                            CornerRadius="12"
+                            Background="#F8FAFB"
+                            BorderBrush="#E2E8F0"
+                            BorderThickness="1">
+                        <TextBlock Text="{Binding ResultadoEscaner}"
+                                   Foreground="#334155"
+                                   FontSize="13"
+                                   TextWrapping="Wrap"/>
+                    </Border>
 
                 </StackPanel>
 
