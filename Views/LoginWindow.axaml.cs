@@ -69,8 +69,80 @@ public partial class LoginWindow : Window
         IniciarReloj();
 
 
-        Opened += (_, _) =>
+        // CHG-0003: con la lista de la caja se elige el nombre; sin ella,
+        // el usuario se escribe como siempre.
+        _viewModel.UsuarioElegido += EnfocarContrasena;
+        _viewModel.ListaMostrada += EnfocarBusqueda;
+
+        _viewModel.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(LoginViewModel.ModoManual) && _viewModel.ModoManual)
+                Dispatcher.UIThread.Post(() => CampoUsuario.Focus(), DispatcherPriority.Input);
+        };
+
+        Opened += async (_, _) =>
+        {
             CampoUsuario.Focus();
+
+            try
+            {
+                await _viewModel.CargarCatalogoAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"No se cargó la lista de usuarios: {ex.Message}");
+            }
+        };
+    }
+
+
+    // =========================================================
+    // LISTA DE USUARIOS (CHG-0003)
+    // =========================================================
+
+    private void EnfocarContrasena() =>
+        Dispatcher.UIThread.Post(() => CampoContrasena.Focus(), DispatcherPriority.Input);
+
+    private void EnfocarBusqueda() =>
+        Dispatcher.UIThread.Post(() => CampoBusqueda.Focus(), DispatcherPriority.Input);
+
+
+    private void Busqueda_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
+    {
+        switch (e.Key)
+        {
+            // Una sola coincidencia: Enter la elige.
+            case Avalonia.Input.Key.Enter:
+                e.Handled = true;
+                _viewModel.ElegirUnicoResultado();
+                break;
+
+            // Flecha abajo: pasar a los nombres para moverse con el teclado.
+            case Avalonia.Input.Key.Down:
+                var primero = ListaUsuarios.ContainerFromIndex(0);
+                if (primero is Avalonia.Controls.Presenters.ContentPresenter { Child: Button boton })
+                {
+                    boton.Focus(Avalonia.Input.NavigationMethod.Directional);
+                    e.Handled = true;
+                }
+                else if (primero is Button directo)
+                {
+                    directo.Focus(Avalonia.Input.NavigationMethod.Directional);
+                    e.Handled = true;
+                }
+                break;
+        }
+    }
+
+
+    private void Contrasena_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
+    {
+        // Esc regresa a la lista para elegir otro nombre.
+        if (e.Key == Avalonia.Input.Key.Escape && _viewModel.HayUsuarioSeleccionado)
+        {
+            e.Handled = true;
+            _viewModel.VolverAListaCommand.Execute(null);
+        }
     }
 
 
@@ -589,6 +661,9 @@ public partial class LoginWindow : Window
     {
         _viewModel.InicioSesionExitoso -=
             OnInicioSesionExitoso;
+
+        _viewModel.UsuarioElegido -= EnfocarContrasena;
+        _viewModel.ListaMostrada -= EnfocarBusqueda;
 
 
         base.OnClosed(e);

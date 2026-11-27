@@ -206,6 +206,51 @@
             <Setter Property="Foreground" Value="#0B8A3E"/>
         </Style>
 
+        <!-- Tarjeta de una persona en la lista -->
+        <Style Selector="Button.persona">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="14,11"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E4E7EC"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.persona:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F6FEF9"/>
+            <Setter Property="BorderBrush" Value="#16A34A"/>
+        </Style>
+
+        <Style Selector="Button.persona:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="BorderBrush" Value="#16A34A"/>
+            <Setter Property="BoxShadow" Value="0 0 0 4 #2216A34A"/>
+        </Style>
+
+        <Style Selector="Button.persona PathIcon.flecha">
+            <Setter Property="Foreground" Value="#CBD5E1"/>
+        </Style>
+
+        <Style Selector="Button.persona:pointerover PathIcon.flecha">
+            <Setter Property="Foreground" Value="#16A34A"/>
+        </Style>
+
+        <Style Selector="Button.cambiar">
+            <Setter Property="Padding" Value="14,8"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Background" Value="#F1F5F9"/>
+            <Setter Property="Foreground" Value="#334155"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.cambiar:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#E2E8F0"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+        </Style>
+
     </Window.Styles>
 
 
@@ -408,9 +453,168 @@
                 </Border>
             </Grid>
 
-            <!-- Formulario -->
-            <StackPanel Grid.Row="1"
-                        Classes="entrada"
+            <Panel Grid.Row="1">
+
+            <!-- ============================================= -->
+            <!-- LISTA DE USUARIOS DE ESTA CAJA (CHG-0003)     -->
+            <!-- ============================================= -->
+
+            <Grid Classes="entrada"
+                  IsVisible="{Binding MostrarLista}"
+                  Width="440"
+                  Margin="0,28,0,8"
+                  HorizontalAlignment="Center"
+                  RowDefinitions="Auto,Auto,Auto,*,Auto">
+                <Grid.RenderTransform>
+                    <TranslateTransform/>
+                </Grid.RenderTransform>
+
+                <StackPanel Grid.Row="0" Spacing="0">
+                    <TextBlock Text="BIENVENIDO"
+                               Foreground="#16A34A"
+                               FontSize="12"
+                               FontWeight="Bold"
+                               LetterSpacing="2.4"/>
+
+                    <TextBlock Text="¿Quién va a entrar?"
+                               Foreground="#0B1220"
+                               FontSize="34"
+                               FontWeight="Bold"
+                               LetterSpacing="-0.8"
+                               Margin="0,8,0,0"/>
+
+                    <TextBlock Text="Elige tu nombre y escribe tu contraseña."
+                               Foreground="#64748B"
+                               FontSize="14"
+                               TextWrapping="Wrap"
+                               Margin="0,6,0,0"/>
+                </StackPanel>
+
+                <!-- Caja de este equipo -->
+                <Border Grid.Row="1"
+                        HorizontalAlignment="Left"
+                        Margin="0,14,0,0"
+                        Padding="12,6"
+                        CornerRadius="999"
+                        Background="#ECFDF3"
+                        BorderBrush="#BBF7D0"
+                        BorderThickness="1"
+                        IsVisible="{Binding TextoCaja, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <PathIcon Width="13" Height="13"
+                                  Foreground="#15803D"
+                                  Data="M20 4H4c-1.1 0-2 .9-2 2v3h20V6c0-1.1-.9-2-2-2zM2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-7H2v7zm4-4h6v2H6v-2z"/>
+                        <TextBlock Text="{Binding TextoCaja}"
+                                   Foreground="#166534"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Búsqueda -->
+                <TextBox x:Name="CampoBusqueda"
+                         Grid.Row="2"
+                         Classes="campo clearButton"
+                         Margin="0,18,0,12"
+                         Text="{Binding Busqueda}"
+                         PlaceholderText="Busca tu nombre"
+                         KeyDown="Busqueda_KeyDown">
+                    <TextBox.InnerLeftContent>
+                        <PathIcon Classes="icono"
+                                  Data="M15.5 14h-.8l-.3-.3A6.5 6.5 0 1 0 9.5 16a6.5 6.5 0 0 0 4.2-1.6l.3.3v.8l5 5 1.5-1.5-5-5zm-6 0a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/>
+                    </TextBox.InnerLeftContent>
+                </TextBox>
+
+                <!-- Nombres -->
+                <Panel Grid.Row="3">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <ItemsControl x:Name="ListaUsuarios"
+                                      ItemsSource="{Binding UsuariosFiltrados}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Spacing="8" Margin="0,0,6,4"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="vm:UsuarioCatalogoItem">
+                                    <Button Classes="persona"
+                                            Command="{Binding $parent[ItemsControl].((vm:LoginViewModel)DataContext).SeleccionarUsuarioCommand}"
+                                            CommandParameter="{Binding}">
+                                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                                            <Border Width="44" Height="44"
+                                                    CornerRadius="22"
+                                                    Background="{Binding ColorAvatar}">
+                                                <TextBlock Text="{Binding Iniciales}"
+                                                           Foreground="White"
+                                                           FontSize="15"
+                                                           FontWeight="Bold"
+                                                           HorizontalAlignment="Center"
+                                                           VerticalAlignment="Center"/>
+                                            </Border>
+                                            <StackPanel Grid.Column="1"
+                                                        VerticalAlignment="Center"
+                                                        Spacing="2">
+                                                <TextBlock Text="{Binding Nombre}"
+                                                           Foreground="#0F172A"
+                                                           FontSize="15"
+                                                           FontWeight="SemiBold"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock Text="{Binding Rol}"
+                                                           Foreground="#64748B"
+                                                           FontSize="12"
+                                                           TextTrimming="CharacterEllipsis"/>
+                                            </StackPanel>
+                                            <PathIcon Grid.Column="2"
+                                                      Classes="flecha"
+                                                      Width="14" Height="14"
+                                                      VerticalAlignment="Center"
+                                                      Data="M8.6 16.6L13.2 12 8.6 7.4 10 6l6 6-6 6z"/>
+                                        </Grid>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <TextBlock IsVisible="{Binding SinResultados}"
+                               Text="No hay nadie con ese nombre en esta caja."
+                               Foreground="#94A3B8"
+                               FontSize="13"
+                               HorizontalAlignment="Center"
+                               Margin="0,24,0,0"/>
+                </Panel>
+
+                <StackPanel Grid.Row="4" Spacing="8" Margin="0,12,0,0">
+                    <Border Padding="12,8"
+                            CornerRadius="10"
+                            Background="#FFF7E0"
+                            BorderBrush="#FBD98A"
+                            BorderThickness="1"
+                            IsVisible="{Binding AvisoCatalogo, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                        <TextBlock Text="{Binding AvisoCatalogo}"
+                                   Foreground="#7A4E05"
+                                   FontSize="12"
+                                   TextWrapping="Wrap"/>
+                    </Border>
+
+                    <Button Classes="enlace"
+                            HorizontalAlignment="Center"
+                            FontSize="12"
+                            Content="¿No apareces? Entrar escribiendo el usuario"
+                            Command="{Binding EscribirUsuarioCommand}"/>
+                </StackPanel>
+
+            </Grid>
+
+
+            <!-- ============================================= -->
+            <!-- FORMULARIO                                    -->
+            <!-- ============================================= -->
+
+            <StackPanel Classes="entrada"
+                        IsVisible="{Binding MostrarFormulario}"
                         Width="400"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
@@ -436,25 +640,67 @@
                            Foreground="#64748B"
                            FontSize="14"
                            TextWrapping="Wrap"
-                           Margin="0,8,0,36"/>
+                           Margin="0,8,0,32"/>
 
 
-                <!-- Usuario -->
-                <TextBlock Text="Usuario"
-                           Foreground="#334155"
-                           FontSize="13"
-                           FontWeight="SemiBold"
-                           Margin="2,0,0,8"/>
+                <!-- Usuario elegido de la lista -->
+                <Border IsVisible="{Binding HayUsuarioSeleccionado}"
+                        Padding="14,12"
+                        CornerRadius="16"
+                        Background="White"
+                        BorderBrush="#E4E7EC"
+                        BorderThickness="1.5"
+                        Margin="0,0,0,4">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+                        <Border Width="48" Height="48"
+                                CornerRadius="24"
+                                Background="{Binding UsuarioSeleccionado.ColorAvatar, FallbackValue=#16A34A}">
+                            <TextBlock Text="{Binding UsuarioSeleccionado.Iniciales}"
+                                       Foreground="White"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Grid.Column="1"
+                                    VerticalAlignment="Center"
+                                    Spacing="2">
+                            <TextBlock Text="{Binding UsuarioSeleccionado.Nombre}"
+                                       Foreground="#0F172A"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       TextTrimming="CharacterEllipsis"/>
+                            <TextBlock Text="{Binding UsuarioSeleccionado.Rol}"
+                                       Foreground="#64748B"
+                                       FontSize="12"/>
+                        </StackPanel>
+                        <Button Grid.Column="2"
+                                Classes="cambiar"
+                                Content="Cambiar"
+                                VerticalAlignment="Center"
+                                Command="{Binding VolverAListaCommand}"/>
+                    </Grid>
+                </Border>
 
-                <TextBox x:Name="CampoUsuario"
-                         Classes="campo clearButton"
-                         Text="{Binding Usuario}"
-                         PlaceholderText="Escribe tu usuario">
-                    <TextBox.InnerLeftContent>
-                        <PathIcon Classes="icono"
-                                  Data="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.5h19.6v-2.5c0-3.3-6.5-4.9-9.8-4.9z"/>
-                    </TextBox.InnerLeftContent>
-                </TextBox>
+
+                <!-- Usuario escrito a mano -->
+                <StackPanel IsVisible="{Binding MostrarCampoUsuario}">
+                    <TextBlock Text="Usuario"
+                               Foreground="#334155"
+                               FontSize="13"
+                               FontWeight="SemiBold"
+                               Margin="2,0,0,8"/>
+
+                    <TextBox x:Name="CampoUsuario"
+                             Classes="campo clearButton"
+                             Text="{Binding Usuario}"
+                             PlaceholderText="Escribe tu usuario">
+                        <TextBox.InnerLeftContent>
+                            <PathIcon Classes="icono"
+                                      Data="M12 12c2.7 0 4.9-2.2 4.9-4.9S14.7 2.2 12 2.2 7.1 4.4 7.1 7.1 9.3 12 12 12zm0 2.4c-3.3 0-9.8 1.6-9.8 4.9v2.5h19.6v-2.5c0-3.3-6.5-4.9-9.8-4.9z"/>
+                        </TextBox.InnerLeftContent>
+                    </TextBox>
+                </StackPanel>
 
 
                 <!-- Contraseña -->
@@ -464,10 +710,12 @@
                            FontWeight="SemiBold"
                            Margin="2,22,0,8"/>
 
-                <TextBox Classes="campo revealPasswordButton"
+                <TextBox x:Name="CampoContrasena"
+                         Classes="campo revealPasswordButton"
                          Text="{Binding Contrasena}"
                          PlaceholderText="Escribe tu contraseña"
-                         PasswordChar="●">
+                         PasswordChar="●"
+                         KeyDown="Contrasena_KeyDown">
                     <TextBox.InnerLeftContent>
                         <PathIcon Classes="icono"
                                   Data="M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.7 1.4-3.1 3.1-3.1s3.1 1.4 3.1 3.1v2z"/>
@@ -561,7 +809,18 @@
                                VerticalAlignment="Center"/>
                 </StackPanel>
 
+                <!-- Regresar a la lista de nombres -->
+                <Button Classes="enlace"
+                        HorizontalAlignment="Center"
+                        Margin="0,10,0,0"
+                        FontSize="12"
+                        Content="Ver la lista de usuarios de esta caja"
+                        IsVisible="{Binding MostrarVolverALista}"
+                        Command="{Binding VolverAListaCommand}"/>
+
             </StackPanel>
+
+            </Panel>
 
             <!-- Pie -->
             <Grid Grid.Row="2"
