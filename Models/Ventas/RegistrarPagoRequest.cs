@@ -23,4 +23,12 @@ public class RegistrarPagoRequest
     [JsonPropertyName("autorizacion")]
     public string Autorizacion { get; set; }
         = string.Empty;
+
+    /// <summary>
+    /// El cajero confirmó que la autorización repetida en la misma terminal
+    /// es otro voucher (409 AUTORIZACION_DUPLICADA). Solo se envía si es true.
+    /// </summary>
+    [JsonPropertyName("confirmar_autorizacion_duplicada")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? ConfirmarAutorizacionDuplicada { get; set; }
 }

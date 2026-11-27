@@ -2838,18 +2838,35 @@ public static string ReferenciaTarjetaExterna(string ultimosDigitos, bool sinCon
 }
 
 
-public Task<bool> RegistrarPagoTarjetaExternaAsync(
+public async Task<bool> RegistrarPagoTarjetaExternaAsync(
     decimal importe,
     bool esDebito,
     string autorizacion,
-    string ultimosDigitos) =>
-    RegistrarPagoTarjetaAsync(
+    string ultimosDigitos,
+    NovaCoreESDM.Models.Ventas.TerminalBancariaCaja? terminal = null)
+{
+    // Con terminal del catálogo, la referencia lo dice ("BBVA AFIL ***8793").
+    var prefijo = terminal is null ? string.Empty : $"{terminal.TextoCorto} · ";
+
+    // El detalle va al ticket ANTES de registrar: si este pago completa la
+    // venta, el ticket se arma dentro del registro. Si no quedó, se quita.
+    var lineaTicket = AgregarPagoTarjetaTicket(terminal, autorizacion, ultimosDigitos, importe, esDebito);
+    var registrado = false;
+
+    var ok = await RegistrarPagoTarjetaAsync(
         esDebito ? FormasPagoPos.TarjetaDebito : FormasPagoPos.TarjetaCredito,
         importe,
-        ReferenciaTarjetaExterna(ultimosDigitos, sinConexion: false),
-        ReferenciaTarjetaExterna(ultimosDigitos, sinConexion: true),
+        prefijo + ReferenciaTarjetaExterna(ultimosDigitos, sinConexion: false),
+        prefijo + ReferenciaTarjetaExterna(ultimosDigitos, sinConexion: true),
         autorizacion,
-        alRegistrar: null);
+        alRegistrar: () => registrado = true,
+        idTpvBancaria: terminal?.IdTpvBancaria);
+
+    if (!registrado)
+        QuitarPagoTarjetaTicket(lineaTicket);
+
+    return ok;
+}
 
 
 // =========================================================
@@ -2883,6 +2900,14 @@ public async Task<bool> RegistrarPagoTarjetaAsync(
 
     var registrado = false;
 
+    var lineaTicket = AgregarPagoTarjetaTicket(
+        null,
+        cobro.Autorizacion,
+        null,
+        cobro.Importe,
+        cobro.IdFormaPago == FormasPagoPos.TarjetaDebito,
+        nombre);
+
     var ok = await RegistrarPagoTarjetaAsync(
         cobro.IdFormaPago,
         cobro.Importe,
@@ -2904,6 +2929,9 @@ public async Task<bool> RegistrarPagoTarjetaAsync(
     if (!ok && !registrado && cobro.EsDirecto && !string.IsNullOrWhiteSpace(MensajeError))
         MensajeError = $"La terminal cobró (ref. {cobro.Referencia}) pero no se pudo registrar el pago: {MensajeError}";
 
+    if (!registrado)
+        QuitarPagoTarjetaTicket(lineaTicket);
+
     return ok;
 }
 
@@ -2914,8 +2942,12 @@ private async Task<bool> RegistrarPagoTarjetaAsync(
     string referencia,
     string referenciaSinConexion,
     string autorizacion,
-    Action? alRegistrar)
+    Action? alRegistrar,
+    int? idTpvBancaria = null)
 {
+    if (idTpvBancaria is <= 0)
+        idTpvBancaria = null;
+
     if (EsVentaSinConexion || !ConexionService.EstaEnLinea)
     {
         return await RegistrarPagoTarjetaLocalAsync(
@@ -2923,7 +2955,8 @@ private async Task<bool> RegistrarPagoTarjetaAsync(
             importe,
             autorizacion,
             referenciaSinConexion,
-            alRegistrar);
+            alRegistrar,
+            idTpvBancaria);
     }
 
 
@@ -2980,7 +3013,7 @@ private async Task<bool> RegistrarPagoTarjetaAsync(
                             null,
 
                         IdTpvBancaria =
-                            null,
+                            idTpvBancaria,
 
                         Importe =
                             importe,
@@ -2991,6 +3024,42 @@ private async Task<bool> RegistrarPagoTarjetaAsync(
                         Autorizacion =
                             (autorizacion ?? string.Empty).Trim()
                     });
+
+
+        // La misma autorización ya se registró hoy en esta terminal: puede
+        // ser el mismo voucher capturado dos veces. El cajero decide.
+        if (resultado.Res != 1 &&
+            string.Equals(resultado.Code, "AUTORIZACION_DUPLICADA", StringComparison.OrdinalIgnoreCase))
+        {
+            var confirmar = ConfirmarAutorizacionDuplicadaAsync is not null &&
+                            await ConfirmarAutorizacionDuplicadaAsync(
+                                string.IsNullOrWhiteSpace(resultado.Msg)
+                                    ? "Esa autorización ya se registró hoy en esta terminal."
+                                    : resultado.Msg);
+
+            if (!confirmar)
+            {
+                MensajeError =
+                    "No se registró el pago: la autorización ya existe hoy en esa terminal. Revisa el voucher.";
+
+                return false;
+            }
+
+            resultado =
+                await _ventasService
+                    .RegistrarPagoAsync(
+                        IdVentaActual,
+                        new RegistrarPagoRequest
+                        {
+                            IdFormaPago = idFormaPago,
+                            IdBanco = null,
+                            IdTpvBancaria = idTpvBancaria,
+                            Importe = importe,
+                            Referencia = referencia,
+                            Autorizacion = (autorizacion ?? string.Empty).Trim(),
+                            ConfirmarAutorizacionDuplicada = true
+                        });
+        }
 
 
         if (
@@ -3599,6 +3668,9 @@ public async Task<bool> FinalizarVentaAsync()
 
                 Tarjeta =
                     resultado.Data.Tarjetas,
+
+                PagosTarjeta =
+                    PagosTarjetaParaTicket(),
 
                 Transferencia =
                     resultado.Data.Transferencias,

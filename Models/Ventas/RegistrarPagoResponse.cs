@@ -10,6 +10,10 @@ public class RegistrarPagoResponse
     [JsonPropertyName("msg")]
     public string? Msg { get; set; }
 
+    /// <summary>Código de error del servidor (p. ej. AUTORIZACION_DUPLICADA).</summary>
+    [JsonPropertyName("code")]
+    public string? Code { get; set; }
+
     [JsonPropertyName("data")]
     public RegistrarPagoData? Data { get; set; }
 }

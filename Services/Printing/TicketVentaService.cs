@@ -455,6 +455,23 @@ public class TicketVentaService
             AgregarTexto(
                 bytes,
                 AlinearDosColumnas("Tarjeta:", $"${ticket.Tarjeta:N2}", ancho));
+
+            // Detalle de cada voucher: terminal, autorización y tarjeta.
+            foreach (var pago in ticket.PagosTarjeta)
+            {
+                var tipo = pago.EsDebito ? "Debito" : "Credito";
+                var cabecera = string.IsNullOrWhiteSpace(pago.Terminal) ? tipo : $"{pago.Terminal} {tipo}";
+
+                AgregarTexto(bytes, AlinearDosColumnas($" {cabecera}", $"${pago.Importe:N2}", ancho));
+
+                var detalle = string.IsNullOrWhiteSpace(pago.Autorizacion) ? string.Empty : $" Aut. {pago.Autorizacion}";
+
+                if (!string.IsNullOrWhiteSpace(pago.UltimosDigitos))
+                    detalle += $"  Tarj. ****{pago.UltimosDigitos}";
+
+                if (detalle.Length > 0)
+                    AgregarTexto(bytes, detalle + "\n");
+            }
         }
 
         if (ticket.Transferencia > 0)

@@ -46,6 +46,8 @@ public class TicketVenta
         new();
 
     /// <summary>Productos quitados con autorización de un administrador (CHG-0002).</summary>
+    public List<TicketPagoTarjeta> PagosTarjeta { get; set; } = new();
+
     public List<TicketProductoCancelado> ProductosCancelados { get; set; } =
         new();
 
@@ -172,6 +174,22 @@ public class TicketVenta
 
             ContenidoQr = UrlPlataforma
         };
+}
+
+
+/// <summary>Pago con tarjeta: terminal, autorización y tarjeta (para aclaraciones).</summary>
+public class TicketPagoTarjeta
+{
+    /// <summary>"BBVA AFIL ***8793" o el nombre de la terminal.</summary>
+    public string Terminal { get; set; } = string.Empty;
+
+    public string Autorizacion { get; set; } = string.Empty;
+
+    public string UltimosDigitos { get; set; } = string.Empty;
+
+    public bool EsDebito { get; set; }
+
+    public decimal Importe { get; set; }
 }
 
 

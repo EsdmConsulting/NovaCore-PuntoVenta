@@ -143,4 +143,7 @@ public sealed class PagoVentaOffline
     public decimal Importe { get; set; }
     public string Referencia { get; set; } = string.Empty;
     public string Autorizacion { get; set; } = string.Empty;
+
+    /// <summary>Terminal bancaria con la que se cobró (catálogo del ERP).</summary>
+    public int? IdTpvBancaria { get; set; }
 }

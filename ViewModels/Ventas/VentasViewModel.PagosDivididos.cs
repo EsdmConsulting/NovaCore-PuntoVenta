@@ -40,6 +40,8 @@ public partial class VentasViewModel
 
     private void LimpiarPagosRegistrados()
     {
+        _pagosTarjetaTicket.Clear();
+
         if (PagosRegistrados.Count == 0)
             return;
 

@@ -186,6 +186,9 @@ public partial class VentasView : UserControl
             _viewModel.SolicitarAutorizacionQuitarProducto =
                 MostrarAutorizacionQuitarProductoAsync;
 
+            _viewModel.ConfirmarAutorizacionDuplicadaAsync =
+                ConfirmarAutorizacionDuplicadaAsync;
+
             _viewModel.SolicitarProductoGratis -=
                 OnSolicitarProductoGratis;
 
@@ -1039,11 +1042,16 @@ public partial class VentasView : UserControl
 
                 if (ventana.MetodoSeleccionado == "TARJETA")
                 {
+                    // Terminales de la caja (catálogo del ERP); vacía = como antes.
+                    var terminalesCaja =
+                        await _viewModel.ObtenerTerminalesBancariasAsync();
+
                     var pagoTarjeta =
                         new PagoTarjetaExternaWindow(
                             saldoACobrar,
                             _viewModel.EsVentaSinConexion ||
-                            !ConexionService.EstaEnLinea);
+                            !ConexionService.EstaEnLinea,
+                            terminalesCaja);
 
                     var tarjetaCapturada =
                         await pagoTarjeta.ShowDialog<bool>(owner);
@@ -1057,7 +1065,8 @@ public partial class VentasView : UserControl
                             pagoTarjeta.Importe,
                             pagoTarjeta.EsDebito,
                             pagoTarjeta.Autorizacion,
-                            pagoTarjeta.UltimosDigitos);
+                            pagoTarjeta.UltimosDigitos,
+                            pagoTarjeta.Terminal);
 
                     if (!pagoRegistrado)
                         return;
@@ -2226,4 +2235,102 @@ private void CatalogoProductosListBox_Tapped(object? sender, Avalonia.Input.Tapp
     
 
     
+    // =========================================================
+    // AUTORIZACIÓN REPETIDA EN LA MISMA TERMINAL
+    // =========================================================
+
+    private async System.Threading.Tasks.Task<bool> ConfirmarAutorizacionDuplicadaAsync(string mensaje)
+    {
+        if (TopLevel.GetTopLevel(this) is not Window owner)
+            return false;
+
+        var resultado = false;
+
+        var ventana = new Window
+        {
+            Title = "Autorización repetida",
+            Width = 480,
+            SizeToContent = SizeToContent.Height,
+            CanResize = false,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Background = Avalonia.Media.Brush.Parse("#F4F6F8")
+        };
+
+        var registrar = new Button
+        {
+            Content = "Es otro voucher, registrar",
+            Height = 46,
+            Padding = new Avalonia.Thickness(18, 0),
+            CornerRadius = new Avalonia.CornerRadius(12),
+            Background = Avalonia.Media.Brush.Parse("#D97706"),
+            Foreground = Avalonia.Media.Brushes.White,
+            FontWeight = Avalonia.Media.FontWeight.Bold,
+            VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center
+        };
+
+        // Lo seguro es no registrar: Enter y Esc cancelan.
+        var cancelar = new Button
+        {
+            Content = "No registrar",
+            Height = 46,
+            Padding = new Avalonia.Thickness(18, 0),
+            CornerRadius = new Avalonia.CornerRadius(12),
+            Background = Avalonia.Media.Brushes.White,
+            BorderBrush = Avalonia.Media.Brush.Parse("#E2E8F0"),
+            BorderThickness = new Avalonia.Thickness(1),
+            VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center,
+            IsCancel = true,
+            IsDefault = true
+        };
+
+        registrar.Click += (_, _) => { resultado = true; ventana.Close(); };
+        cancelar.Click += (_, _) => ventana.Close();
+
+        ventana.Content = new Border
+        {
+            Margin = new Avalonia.Thickness(14),
+            Padding = new Avalonia.Thickness(22),
+            CornerRadius = new Avalonia.CornerRadius(16),
+            Background = Avalonia.Media.Brushes.White,
+            Child = new StackPanel
+            {
+                Spacing = 16,
+                Children =
+                {
+                    new TextBlock
+                    {
+                        Text = "¿Es el mismo voucher?",
+                        FontSize = 19,
+                        FontWeight = Avalonia.Media.FontWeight.Bold,
+                        Foreground = Avalonia.Media.Brush.Parse("#0B1220")
+                    },
+                    new TextBlock
+                    {
+                        Text = mensaje,
+                        TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                        FontSize = 14,
+                        Foreground = Avalonia.Media.Brush.Parse("#334155")
+                    },
+                    new TextBlock
+                    {
+                        Text = "Regístralo solo si el cliente pasó la tarjeta otra vez y la terminal dio un voucher nuevo con ese mismo número.",
+                        TextWrapping = Avalonia.Media.TextWrapping.Wrap,
+                        FontSize = 13,
+                        Foreground = Avalonia.Media.Brush.Parse("#92400E")
+                    },
+                    new StackPanel
+                    {
+                        Orientation = Avalonia.Layout.Orientation.Horizontal,
+                        Spacing = 10,
+                        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Right,
+                        Children = { cancelar, registrar }
+                    }
+                }
+            }
+        };
+
+        await ventana.ShowDialog(owner);
+        return resultado;
+    }
+
 }

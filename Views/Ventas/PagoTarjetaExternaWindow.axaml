@@ -8,7 +8,7 @@
         Icon="/Assets/Brand/esdm-app-icon.ico"
 
         Width="620"
-        Height="820"
+        Height="880"
 
         MinWidth="540"
         MinHeight="620"
@@ -139,6 +139,31 @@
                                    Foreground="#0B1220"
                                    FontSize="16"
                                    FontWeight="Bold"/>
+
+                        <!-- Terminal (catálogo del ERP asignado a la caja) -->
+                        <StackPanel x:Name="PanelTerminal"
+                                    Spacing="6"
+                                    IsVisible="False">
+                            <TextBlock Classes="etiqueta" Text="¿CON QUÉ TERMINAL SE COBRÓ? *"/>
+                            <ComboBox x:Name="TerminalCombo"
+                                      Classes="terminal"
+                                      PlaceholderText="Elige la terminal"/>
+                            <Border x:Name="TarjetaTerminalUnica"
+                                    IsVisible="False"
+                                    Padding="14,11"
+                                    CornerRadius="12"
+                                    Background="#EFF6FF"
+                                    BorderBrush="#BFDBFE"
+                                    BorderThickness="1">
+                                <TextBlock x:Name="TextoTerminalUnica"
+                                           Foreground="#1E3A8A"
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           TextWrapping="Wrap"/>
+                            </Border>
+                            <TextBlock Classes="ayuda"
+                                       Text="La que está en el voucher. Así el pago queda ligado a su terminal para el corte y la conciliación con el banco."/>
+                        </StackPanel>
 
                         <!-- Importe -->
                         <StackPanel Spacing="6">
@@ -294,6 +319,22 @@
             <Setter Property="Foreground" Value="#94A3B8"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style Selector="ComboBox.terminal">
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="MinHeight" Value="48"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="14,0"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Background" Value="#F8FAFC"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="Foreground" Value="#0B1220"/>
+        </Style>
+
+        <Style Selector="ComboBox.terminal">
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
 
         <Style Selector="TextBox.campo">

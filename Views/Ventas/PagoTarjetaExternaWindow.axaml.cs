@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
+using NovaCoreESDM.Models.Ventas;
 
 namespace NovaCoreESDM.Views.Ventas;
 
@@ -22,14 +24,25 @@ public partial class PagoTarjetaExternaWindow : Window
     public string Autorizacion { get; private set; } = string.Empty;
     public string UltimosDigitos { get; private set; } = string.Empty;
 
+    /// <summary>Terminal con la que se cobró (null si la caja no tiene terminales en el catálogo).</summary>
+    public TerminalBancariaCaja? Terminal { get; private set; }
+
+    private readonly IReadOnlyList<TerminalBancariaCaja> _terminales;
+
 
     // Constructor sin parámetros para el diseñador.
     public PagoTarjetaExternaWindow() : this(0m, sinConexion: false) { }
 
 
-    public PagoTarjetaExternaWindow(decimal saldo, bool sinConexion)
+    public PagoTarjetaExternaWindow(
+        decimal saldo,
+        bool sinConexion,
+        IReadOnlyList<TerminalBancariaCaja>? terminales = null)
     {
         InitializeComponent();
+
+        _terminales = terminales ?? Array.Empty<TerminalBancariaCaja>();
+        PrepararTerminales();
 
         if (sinConexion)
         {
@@ -50,6 +63,29 @@ public partial class PagoTarjetaExternaWindow : Window
                     AutorizacionTextBox.Focus(NavigationMethod.Tab);
                 },
                 DispatcherPriority.Input);
+    }
+
+
+    // Una sola terminal: se muestra fija. Varias: se elige (la predeterminada
+    // de la caja ya viene marcada). Ninguna: como antes, sin elegir.
+    private void PrepararTerminales()
+    {
+        if (_terminales.Count == 0)
+            return;
+
+        PanelTerminal.IsVisible = true;
+
+        if (_terminales.Count == 1)
+        {
+            Terminal = _terminales[0];
+            TerminalCombo.IsVisible = false;
+            TarjetaTerminalUnica.IsVisible = true;
+            TextoTerminalUnica.Text = _terminales[0].Texto;
+            return;
+        }
+
+        TerminalCombo.ItemsSource = _terminales;
+        TerminalCombo.SelectedItem = _terminales.FirstOrDefault(t => t.EsPredeterminada);
     }
 
 
@@ -81,6 +117,21 @@ public partial class PagoTarjetaExternaWindow : Window
             return;
         }
 
+        var terminal = _terminales.Count switch
+        {
+            0 => null,
+            1 => _terminales[0],
+            _ => TerminalCombo.SelectedItem as TerminalBancariaCaja
+        };
+
+        if (_terminales.Count > 1 && terminal is null)
+        {
+            TextoMensaje.Text = "Elige con qué terminal se cobró (la que aparece en el voucher).";
+            TerminalCombo.Focus();
+            TerminalCombo.IsDropDownOpen = true;
+            return;
+        }
+
         var autorizacion = (AutorizacionTextBox.Text ?? string.Empty).Trim().ToUpperInvariant();
 
         if (autorizacion.Length < 4 || !autorizacion.All(char.IsLetterOrDigit))
@@ -101,6 +152,7 @@ public partial class PagoTarjetaExternaWindow : Window
         EsDebito = DebitoRadio.IsChecked == true;
         Autorizacion = autorizacion;
         UltimosDigitos = digitos;
+        Terminal = terminal;
 
         Close(true);
     }
