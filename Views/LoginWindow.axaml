@@ -236,6 +236,27 @@
             <Setter Property="Foreground" Value="#16A34A"/>
         </Style>
 
+        <Style Selector="Button.lista">
+            <Setter Property="Height" Value="50"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#BBF7D0"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Foreground" Value="#15803D"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style Selector="Button.lista:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F0FDF4"/>
+            <Setter Property="BorderBrush" Value="#16A34A"/>
+            <Setter Property="Foreground" Value="#166534"/>
+        </Style>
+
         <Style Selector="Button.cambiar">
             <Setter Property="Padding" Value="14,8"/>
             <Setter Property="CornerRadius" Value="10"/>
@@ -602,7 +623,7 @@
                     <Button Classes="enlace"
                             HorizontalAlignment="Center"
                             FontSize="12"
-                            Content="¿No apareces? Entrar escribiendo el usuario"
+                            Content="Regresar a escribir mi usuario"
                             Command="{Binding EscribirUsuarioCommand}"/>
                 </StackPanel>
 
@@ -810,13 +831,17 @@
                 </StackPanel>
 
                 <!-- Regresar a la lista de nombres -->
-                <Button Classes="enlace"
-                        HorizontalAlignment="Center"
-                        Margin="0,10,0,0"
-                        FontSize="12"
-                        Content="Ver la lista de usuarios de esta caja"
+                <Button Classes="lista"
+                        Margin="0,14,0,0"
                         IsVisible="{Binding MostrarVolverALista}"
-                        Command="{Binding VolverAListaCommand}"/>
+                        Command="{Binding VolverAListaCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <PathIcon Width="16" Height="16"
+                                  Data="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+                        <TextBlock Text="Elegir mi nombre de la lista"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
 
             </StackPanel>
 

@@ -93,17 +93,20 @@ public partial class LoginViewModel
 
     private UsuarioCatalogoItem[] _todos = Array.Empty<UsuarioCatalogoItem>();
 
-    /// <summary>Se pidió escribir el usuario a mano aunque haya lista.</summary>
+    /// <summary>
+    /// Formulario de usuario y contraseña (pantalla principal). La lista de
+    /// la caja se abre con el botón de abajo.
+    /// </summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(MostrarLista), nameof(MostrarFormulario), nameof(MostrarCampoUsuario))]
-    private bool _modoManual;
+    private bool _modoManual = true;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(MostrarLista), nameof(MostrarFormulario), nameof(MostrarCampoUsuario), nameof(MostrarVolverALista))]
     private bool _hayCatalogo;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(MostrarLista), nameof(MostrarFormulario), nameof(MostrarCampoUsuario), nameof(HayUsuarioSeleccionado))]
+    [NotifyPropertyChangedFor(nameof(MostrarLista), nameof(MostrarFormulario), nameof(MostrarCampoUsuario), nameof(HayUsuarioSeleccionado), nameof(MostrarVolverALista))]
     private UsuarioCatalogoItem? _usuarioSeleccionado;
 
     [ObservableProperty]
@@ -126,7 +129,7 @@ public partial class LoginViewModel
     public bool MostrarFormulario => !MostrarLista;
     public bool MostrarCampoUsuario => UsuarioSeleccionado is null;
     public bool HayUsuarioSeleccionado => UsuarioSeleccionado is not null;
-    public bool MostrarVolverALista => HayCatalogo;
+    public bool MostrarVolverALista => HayCatalogo && UsuarioSeleccionado is null;
 
     /// <summary>La vista pone el foco en la contraseña.</summary>
     public event Action? UsuarioElegido;
@@ -184,10 +187,9 @@ public partial class LoginViewModel
 
             Filtrar();
 
+            // La pantalla principal sigue siendo usuario y contraseña;
+            // solo aparece el botón para elegir de la lista.
             HayCatalogo = _todos.Length > 0;
-
-            if (HayCatalogo)
-                ListaMostrada?.Invoke();
         }
         finally
         {
