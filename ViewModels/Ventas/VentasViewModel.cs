@@ -3828,80 +3828,36 @@ private async Task EntregarTicketYLimpiarAsync(
             case "IMPRIMIR":
 
                 // =================================================
-                // 1. PRIMER TICKET (COPIA PARA EL NEGOCIO)
+                // COPIAS SEGÚN LA FORMA DE PAGO
+                // =================================================
+                //
+                // Efectivo 2, tarjeta 3, transferencia o crédito 5
+                // (pago mixto: la que pida más). Van en un solo
+                // trabajo de impresión, cada una con su corte.
                 // =================================================
                 try
                 {
-                    var impreso1 =
+                    var copias =
+                        TicketVentaService.CopiasSegunFormaPago(ticket);
+
+                    var impreso =
                         await _ticketVentaService
-                            .ImprimirAsync(
-                                ticket
+                            .ImprimirCopiasAsync(
+                                ticket,
+                                copias
                             );
 
-                    if (impreso1)
-                    {
-                        Console.WriteLine(
-                            "====================================");
-                        Console.WriteLine(
-                            $"TICKET 1 (NEGOCIO) ENVIADO A IMPRESORA: {ticket.FolioTicket}");
-                        Console.WriteLine(
-                            "====================================");
-                    }
-                    else
-                    {
-                        Console.WriteLine(
-                            $"No se pudo confirmar la impresión del ticket 1 (negocio) {ticket.FolioTicket}."
-                        );
-                    }
+                    Console.WriteLine(
+                        impreso
+                            ? $"TICKET {ticket.FolioTicket}: {copias} COPIAS ENVIADAS A LA IMPRESORA"
+                            : $"No se pudo confirmar la impresión del ticket {ticket.FolioTicket} ({copias} copias).");
                 }
-                catch (Exception exImpresion1)
+                catch (Exception exImpresion)
                 {
                     Console.WriteLine(
                         "====================================");
                     Console.WriteLine(
-                        $"VENTA FINALIZADA, PERO FALLÓ IMPRESIÓN TICKET 1: {exImpresion1.Message}");
-                    Console.WriteLine(
-                        "====================================");
-                }
-
-                // =================================================
-                // DELAY DE 5 SEGUNDOS PARA ARRANCAR EL PRIMER TICKET
-                // =================================================
-                await Task.Delay(5000);
-
-                // =================================================
-                // 2. SEGUNDO TICKET (COPIA PARA EL CLIENTE)
-                // =================================================
-                try
-                {
-                    var impreso2 =
-                        await _ticketVentaService
-                            .ImprimirAsync(
-                                ticket
-                            );
-
-                    if (impreso2)
-                    {
-                        Console.WriteLine(
-                            "====================================");
-                        Console.WriteLine(
-                            $"TICKET 2 (CLIENTE) ENVIADO A IMPRESORA: {ticket.FolioTicket}");
-                        Console.WriteLine(
-                            "====================================");
-                    }
-                    else
-                    {
-                        Console.WriteLine(
-                            $"No se pudo confirmar la impresión del ticket 2 (cliente) {ticket.FolioTicket}."
-                        );
-                    }
-                }
-                catch (Exception exImpresion2)
-                {
-                    Console.WriteLine(
-                        "====================================");
-                    Console.WriteLine(
-                        $"VENTA FINALIZADA, PERO FALLÓ IMPRESIÓN TICKET 2: {exImpresion2.Message}");
+                        $"VENTA FINALIZADA, PERO FALLÓ LA IMPRESIÓN DEL TICKET: {exImpresion.Message}");
                     Console.WriteLine(
                         "====================================");
                 }

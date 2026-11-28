@@ -48,6 +48,52 @@ public class TicketVentaService
 
 
     // =========================================================
+    // VARIAS COPIAS EN UN SOLO TRABAJO DE IMPRESIÓN
+    // =========================================================
+    //
+    // Cada copia lleva su corte. El pagaré del banco (cobro directo
+    // con el lector) sale una sola vez, después de la primera copia.
+    // Un solo trabajo evita que la impresora pierda copias cuando se
+    // mandan muy seguidas.
+
+    public async Task<bool> ImprimirCopiasAsync(TicketVenta ticket, int copias)
+    {
+        copias = Math.Clamp(copias, 1, 10);
+
+        var formato = _formatoService.Obtener();
+        var contenido = new List<byte>();
+
+        for (var i = 0; i < copias; i++)
+            contenido.AddRange(ConstruirTicket(ticket, formato, incluirPagare: i == 0));
+
+        return await _printerService.ImprimirAsync(
+            contenido.ToArray(),
+            copias == 1 ? $"Ticket {ticket.FolioTicket}" : $"Ticket {ticket.FolioTicket} ({copias} copias)");
+    }
+
+
+    /// <summary>
+    /// Copias según cómo se pagó (pedido de la empresa):
+    /// efectivo 2, tarjeta 3, transferencia o crédito 5.
+    /// Pago mixto: las de la forma que pida más.
+    /// </summary>
+    public static int CopiasSegunFormaPago(TicketVenta ticket)
+    {
+        var esCredito =
+            (ticket.FormaPago ?? string.Empty).Contains("dito", StringComparison.OrdinalIgnoreCase) &&
+            (ticket.FormaPago ?? string.Empty).StartsWith("Cr", StringComparison.OrdinalIgnoreCase);
+
+        if (esCredito || ticket.Transferencia > 0)
+            return 5;
+
+        if (ticket.Tarjeta > 0)
+            return 3;
+
+        return 2;
+    }
+
+
+    // =========================================================
     // TICKET DE MUESTRA (para probar el formato sin hacer una venta)
     // =========================================================
 
@@ -238,7 +284,8 @@ public class TicketVentaService
 
     private static byte[] ConstruirTicket(
         TicketVenta ticket,
-        TicketFormatConfiguration formato)
+        TicketFormatConfiguration formato,
+        bool incluirPagare = true)
     {
         var bytes = new List<byte>();
         var ancho = formato.AnchoCaracteres;
@@ -575,7 +622,7 @@ public class TicketVentaService
 
         foreach (var pago in ticket.PagosTarjeta)
         {
-            if (pago.Pagare is null)
+            if (!incluirPagare || pago.Pagare is null)
                 continue;
 
             AgregarPagare(bytes, ticket, pago, formato, "COMERCIO");
